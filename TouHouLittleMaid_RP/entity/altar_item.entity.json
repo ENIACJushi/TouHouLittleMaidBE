@@ -1,0 +1,18 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "touhou_little_maid:altar_item",
+      "materials": { "default": "bee" },
+      "textures" : { "default": "textures/blocks/altar_log_block.png" },
+      "geometry":  { "default": "geometry.touhou_little_maid.altar_item" },
+      "render_controllers": [ "controller.render.touhou_little_maid.general" ],
+      "animations": {
+        "float": "animation.touhou_little_maid.altar_item.float"
+      },
+      "scripts": {
+        "animate": [ "float" ]
+      }
+    }
+  }
+}

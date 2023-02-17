@@ -1,0 +1,50 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "touhou_little_maid:altar_item",
+      "is_spawnable": false,
+      "is_summonable": true
+    },
+    "component_groups": {
+      "despawn":{ 
+        "minecraft:transformation": {
+        "into": "minecraft:area_effect_cloud",
+        "drop_inventory": true
+      } }
+    },
+    "components": {
+      "minecraft:behavior.pickup_items": {
+        "priority": 1,
+        "max_dist": 1,
+        "goal_radius": 2,
+        "speed_multiplier": 0.8,
+        "pickup_based_on_chance": false,
+        "can_pickup_to_hand_or_equipment":true,
+        "can_pickup_any_item": true
+      },
+      "minecraft:behavior.equip_item": {
+        "priority": 0
+      },
+      "minecraft:equip_item": {
+      },
+      "minecraft:navigation.walk": {
+        "can_path_over_water": true,
+        "can_open_doors": true
+      },
+      "minecraft:shareables": {
+        "all_items":true,
+        "all_items_max_amount":1
+      },
+
+      "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+      "minecraft:collision_box": { "width": 0, "height": 0 },
+      "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+      "minecraft:persistent": {},
+      "minecraft:knockback_resistance": { "value": 1.0 }
+    },
+    "events": {
+      "despawn":{ "add": { "component_groups": [ "despawn" ] } }
+    }
+  }
+}

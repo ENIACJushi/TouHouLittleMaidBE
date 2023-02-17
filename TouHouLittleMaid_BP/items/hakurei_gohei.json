@@ -1,0 +1,25 @@
+{
+  "format_version": "1.18.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "touhou_little_maid:hakurei_gohei"
+    },
+    "components": {
+      "minecraft:icon": {
+        "texture": "touhou_little_maid.hakurei_gohei"
+      },
+      "minecraft:hand_equipped": true,
+      "minecraft:allow_off_hand": true,
+      "minecraft:on_use_on": {
+        "on_use_on": {
+          "event": "minecraft:on_use_on"
+        }
+      }
+    },
+    "events": {
+      "minecraft:on_use_on": {
+        "swing": {}
+      }
+    }
+  }
+}
