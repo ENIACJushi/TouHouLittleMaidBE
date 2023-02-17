@@ -1,6 +1,7 @@
 # TouHouLittleMaidBE
 A bedrock-edition Add-On transplanted by Java mod: TouHou Little Maid. (https://github.com/TartaricAcid/TouhouLittleMaid)
-This plugin is still in the development stage, only for development communication, please do not use in the game.
+
+This plugin is still in the development stage, only for development communication. Please do not load it in the world for play.
 
 ## Authors
 - Programmer: `ENIACJushi`
