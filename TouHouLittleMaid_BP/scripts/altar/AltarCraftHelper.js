@@ -1,95 +1,18 @@
 import { Dimension, Items, ItemStack } from "mojang-minecraft";
 import * as Tool from "../libs/scarletToolKit"
+import { recipeList } from "../recipes/index"
+import { tagDefines } from "../recipes/tag_define"
 
-const testRecipe = {
-    "type": "touhou_little_maid:altar_crafting",
-    "output": {
-        "type": "minecraft:lightning_bolt"
-    },
-    "power": 0.2,
-    "ingredients": [
-        {
-            "tag": "forge:gunpowder"
-        },
-        {
-            "tag": "forge:gunpowder"
-        },
-        {
-            "tag": "forge:gunpowder"
-        },
-        {
-            "item": "minecraft:blaze_powder"
-        },
-        {
-            "item": "minecraft:blaze_powder"
-        },
-        {
-            "item": "minecraft:blaze_powder"
-        }
-    ]
-}
-const testRecipe2 = {
-    "type": "touhou_little_maid:altar_crafting",
-    "output": {
-        "type": "minecraft:item",
-        "nbt": {
-            "Item": {
-                "id": "touhou_little_maid:hakurei_gohei",
-                "Count": 1,
-                "tag": {
-                    "Damage": 0
-                }
-            }
-        }
-    },
-    "power": 0.15,
-    "ingredients": [
-        {
-            "tag": "forge:rods/wooden"
-        },
-        {
-            "tag": "forge:rods/wooden"
-        },
-        {
-            "tag": "forge:rods/wooden"
-        },
-        {
-            "item": "minecraft:paper"
-        },
-        {
-            "item": "minecraft:paper"
-        },
-        {
-            "item": "minecraft:paper"
-        }
-    ]
-}
-// forge:gunpowder
-const testTagDefine = {
-    "name": "forge:gunpowder",
-    "data": [
-        {"item": "minecraft:gunpowder"},
-        {"item": "minecraft:grass"}
-    ]
-}
-// forge:rods/wooden
-const testTagDefine2 = {
-    "name": "forge:rods/wooden",
-    "data": [
-        {"item": "minecraft:gunpowder"}
-    ]
-}
+
 
 export class AltarCraftHelper{
     constructor(){
         this.recipes = [[], [], [], [], [], []];
-        this.tags = {};
-        try{
-            this.addRecipe(testRecipe);
-            this.addTagDefine(testTagDefine);
+        this.tags = tagDefines;
+        for(let recipe of recipeList){
+            this.addRecipe(recipe);
         }
-        catch(e){
-        }
+
     }
     addRecipe(recipe){
         let amount = recipe["ingredients"].length;
@@ -140,11 +63,13 @@ export class AltarCraftHelper{
     isItemMatchDefine(itemStack, define){
         let matchAtLeastOne = false;
         // Item label
-        if(define.item && itemStack.id != define.item) {
-            return false;
-        }
-        else{
-            matchAtLeastOne = true;
+        if(define.item) {
+            if(itemStack.id != define.item){
+                return false;
+            }
+            else{
+                matchAtLeastOne = true;
+            }
         }
         
         // Tag label

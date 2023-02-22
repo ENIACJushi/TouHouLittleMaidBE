@@ -118,9 +118,17 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         let baseLocation = super.getBaseLocationByPoint([2, 4, 0], [Math.floor(entity.location.x), Math.floor(entity.location.y), Math.floor(entity.location.z)], rotation);
 
         if(super.deactivate(entity.dimension, baseLocation, rotation)){
+            // Despawn main entity
             entity.dimension.runCommand(`event entity @e[x=${baseLocation[0]},y=${baseLocation[1]},z=${baseLocation[2]},dx=8,dy=6,dz=8,type=touhou_little_maid:altar_main] despawn`);
-            // entity.dimension.runCommand(`event entity @e[x=${baseLocation[0]},y=${baseLocation[1]},z=${baseLocation[2]},dx=8,dy=6,dz=8,type=touhou_little_maid:altar_item] despawn`);
-
+            
+            // Pop items
+            for(let platform of this.platforms){
+                let platformLocation = super.getPointByBaseLocation(platform, baseLocation, rotation);
+                let itemEntity = this.searchAltarItemEntity(entity.dimension, new BlockLocation(platformLocation[0], platformLocation[1] + 1, platformLocation[2]));
+                if(itemEntity != null) {
+                    this.popItem(itemEntity);
+                }
+            }
         }
     }
     /**
@@ -147,7 +155,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
                     
                     // This command will first clear the main hand.
                     player.runCommand(`clear @s ${item.id} ${item.data} 1`)
-                    this.craftEvent(blockLocation, player);
+                    scheduling.setTickTimeout(() =>{ this.craftEvent(blockLocation, player); }, 1, "craft");
                 }
                 else{
                     // unable to change item amount
@@ -179,7 +187,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
                                 }
                             }
                         }
-                        this.craftEvent(blockLocation, player);
+                        scheduling.setTickTimeout(() =>{ this.craftEvent(blockLocation, player); }, 1, "craft");
                     }, 1, "recover")
                 }
             }
@@ -188,12 +196,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         else{
             // There are no items on player main hand, pop item on platform.
             if(!item || item.id == ""){
-                itemEntity.removeTag("touhou_little_maid:altar_item");
-                let drectionX = Tool.getRandom() < 0.5 ? 1 : -1;
-                let drectionZ = Tool.getRandom() < 0.5 ? 1 : -1;
-                itemEntity.setVelocity(new Vector(drectionX * Tool.getRandom(0.1, 0.2),
-                                                              Tool.getRandom(0.3, 0.4),
-                                                  drectionZ * Tool.getRandom(0.1, 0.2)));
+                this.popItem(itemEntity);
             }
         }
     }
@@ -203,35 +206,33 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
      * @param {Player} player 
      */
     craftEvent(blockLocation, player){
-        scheduling.setTickTimeout(() =>{
-            let block = player.dimension.getBlock(blockLocation);
-            let number = block.permutation.getProperty("touhou_little_maid:number").value;
-            let rotation = block.permutation.getProperty("touhou_little_maid:rotation").value;
-            let baseLocation = super.getBaseLocationByPoint(this.platforms[number], [blockLocation.x, blockLocation.y, blockLocation.z], rotation);
-            let itemEntityArray = [];
-            let itemStackArray = [];
-            for(let platform of this.platforms){
-                let platformLocation = super.getPointByBaseLocation(platform, baseLocation, rotation);
-                let itemEntity = this.searchAltarItemEntity(player.dimension, new BlockLocation(platformLocation[0], platformLocation[1] + 1, platformLocation[2]));
-                if(itemEntity != null) {
-                    let itemStack = itemEntity.getComponent("minecraft:item").itemStack;
-                    if(itemStack.amount == 1){
-                        itemEntityArray.push(itemEntity);
-                        itemStackArray.push(itemStack);
-                    }
-                    else{
-                        // TODO: pop this item
-    
-                    }
+        let block = player.dimension.getBlock(blockLocation);
+        let number = block.permutation.getProperty("touhou_little_maid:number").value;
+        let rotation = block.permutation.getProperty("touhou_little_maid:rotation").value;
+        let baseLocation = super.getBaseLocationByPoint(this.platforms[number], [blockLocation.x, blockLocation.y, blockLocation.z], rotation);
+        let itemEntityArray = [];
+        let itemStackArray = [];
+        for(let platform of this.platforms){
+            let platformLocation = super.getPointByBaseLocation(platform, baseLocation, rotation);
+            let itemEntity = this.searchAltarItemEntity(player.dimension, new BlockLocation(platformLocation[0], platformLocation[1] + 1, platformLocation[2]));
+            if(itemEntity != null) {
+                let itemStack = itemEntity.getComponent("minecraft:item").itemStack;
+                if(itemStack.amount == 1){
+                    itemEntityArray.push(itemEntity);
+                    itemStackArray.push(itemStack);
+                }
+                else{
+                    // If amount lager than 1, pop this item
+                    this.popItem(itemEntity);
                 }
             }
-            let outputLocation = super.getPointByBaseLocation([3.5, 0, 3.5], baseLocation, rotation);
-            if(altarCraft.matchRecipes(itemStackArray, player.dimension, new Location(outputLocation[0], outputLocation[1], outputLocation[2]))){
-                for(let itemEntity of itemEntityArray){
-                    itemEntity.kill();
-                }
+        }
+        let outputLocation = super.getPointByBaseLocation([3.5, 0, 3.5], baseLocation, rotation);
+        if(altarCraft.matchRecipes(itemStackArray, player.dimension, new Location(outputLocation[0], outputLocation[1], outputLocation[2]))){
+            for(let itemEntity of itemEntityArray){
+                itemEntity.kill();
             }
-        }, 1, "craft")
+        }
     }
     /**
      * 
@@ -247,6 +248,14 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
             }
         }
         return null;
+    }
+    popItem(itemEntity){
+        itemEntity.removeTag("touhou_little_maid:altar_item");
+        let drectionX = Tool.getRandom() < 0.5 ? 1 : -1;
+        let drectionZ = Tool.getRandom() < 0.5 ? 1 : -1;
+        itemEntity.setVelocity(new Vector(drectionX * Tool.getRandom(0.1, 0.2),
+                                                      Tool.getRandom(0.3, 0.4),
+                                          drectionZ * Tool.getRandom(0.1, 0.2)));
     }
     refreshItemsEvent(entity){
         let rotation = entity.getComponent("minecraft:variant").value;

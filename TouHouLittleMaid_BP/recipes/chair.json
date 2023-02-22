@@ -1,0 +1,29 @@
+{
+	"format_version": "1.12",
+	"minecraft:recipe_shaped": {
+		"description": {
+			"identifier": "touhou_little_maid:chair"
+		},
+		"tags": [ "crafting_table" ],
+		"pattern": [
+			"   ",
+			"WWW",
+			"IPI"
+		],
+		"key": {
+			"W": {
+				"item": "minecraft:wool"
+			},
+			"I": {
+				"item": "minecraft:iron_ingot"
+			},
+			"P": {
+				"item": "minecraft:planks"
+			}
+		},
+		"result": {
+			"item": "touhou_little_maid:cushion",
+			"count": 1
+		}
+	}
+}

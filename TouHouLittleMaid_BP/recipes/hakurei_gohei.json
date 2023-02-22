@@ -1,0 +1,29 @@
+{
+	"format_version": "1.12",
+	"minecraft:recipe_shaped": {
+		"description": {
+			"identifier": "touhou_little_maid:hakurei_gohei"
+		},
+		"tags": [ "crafting_table" ],
+		"pattern": [
+			"  D",
+			" SP",
+			"S P"
+		],
+		"key": {
+			"S": {
+				"item": "minecraft:stick"
+			},
+			"D": {
+				"item": "minecraft:diamond"
+			},
+			"P": {
+				"item": "minecraft:paper"
+			}
+		},
+		"result": {
+			"item": "touhou_little_maid:hakurei_gohei",
+			"count": 1
+		}
+	}
+}
