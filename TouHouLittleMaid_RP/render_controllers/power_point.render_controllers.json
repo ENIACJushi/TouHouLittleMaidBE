@@ -1,0 +1,43 @@
+{
+	"format_version": "1.8.0",
+	"render_controllers": {
+		"controller.render.power_point": {
+			"arrays": {
+				"geometries": {
+					"Array.geos": [
+						"Geometry.p1",
+						"Geometry.p2",
+						"Geometry.p3",
+						"Geometry.p4",
+						"Geometry.f"
+					]
+				}
+			},
+			"geometry": "Array.geos[query.variant]",
+			"materials": [
+				{
+					"*": "Material.default"
+				}
+			],
+			"textures": [
+				"Texture.default"
+			],
+			"uv_anim": {
+				"offset": [
+					0.0,
+					0.0
+				],
+				"scale": [
+					1.0,
+					1.0
+				]
+			},
+			"overlay_color": {
+				"r": 0.0,
+				"g": 0.0,
+				"b": 0.0,
+				"a": 0.0
+			  }
+		}
+	}
+}

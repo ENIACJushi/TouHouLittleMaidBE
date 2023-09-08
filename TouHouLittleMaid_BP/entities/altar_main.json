@@ -11,29 +11,30 @@
       "north":{"minecraft:variant": { "value": 0 }},
       "east": {"minecraft:variant": { "value": 1 }},
       "south":{"minecraft:variant": { "value": 2 }},
-      "west": {"minecraft:variant": { "value": 3 }}
+      "west": {"minecraft:variant": { "value": 3 }},
+      "activated":{
+        "minecraft:timer": {
+        "looping": true,
+        "time": 0.5,
+        "time_down_event": {
+          "event": "thlm:at"
+        }
+      }}
     },
     "components": {
       "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
       "minecraft:collision_box": { "width": 0, "height": 0 },
       "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
       "minecraft:persistent": {},
-      "minecraft:knockback_resistance": { "value": 1.0 },
-      "minecraft:timer": {
-        "looping": true,
-        "time": 0,
-        "time_down_event": {
-          "event": "touhou_little_maid:altar_tick"
-        }
-      }
+      "minecraft:knockback_resistance": { "value": 1.0 }
     },
     "events": {
       "despawn":{ "add": { "component_groups": [ "despawn" ] } },
-      "south":{ "add": { "component_groups": [ "south" ] } },
-      "east" :{ "add": { "component_groups": [ "east"  ] } },
-      "north":{ "add": { "component_groups": [ "north" ] } },
-      "west" :{ "add": { "component_groups": [ "west"  ] } },
-      "touhou_little_maid:altar_tick": {}
+      "south":{ "add": { "component_groups": [ "south", "activated" ] } },
+      "east" :{ "add": { "component_groups": [ "east", "activated"  ] } },
+      "north":{ "add": { "component_groups": [ "north", "activated" ] } },
+      "west" :{ "add": { "component_groups": [ "west", "activated" ] } },
+      "thlm:at": {}
     }
   }
 }

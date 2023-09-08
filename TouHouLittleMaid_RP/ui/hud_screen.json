@@ -1,0 +1,47 @@
+{
+    "hud_tip_text": {
+        "type": "image",
+        "size": [
+            "100%c + 12px",
+            "100%c + 5px"
+        ],
+        "$hud_tip_text_offset|default": [
+            0,
+            15
+        ],
+        "texture": "textures/ui/hud_tip_text_background",
+        "alpha": "@hud.anim_item_name_background_alpha_out",
+        "anchor_from": "top_right",
+        "anchor_to": "top_right",
+        "$wait_duration|default": 1,
+        "$destroy_id|default": "popup_tip_text",
+        "variables": [
+            {
+                "requires": "($desktop_screen and not $education_edition)",
+                "$hud_tip_text_offset": [
+                    0,
+                    0
+                ]
+            }
+        ],
+        "offset": "$hud_tip_text_offset",
+        "controls": [
+            {
+                "item_text_label": {
+                    "type": "label",
+                    "layer": 31,
+                    "color": "$tool_tip_text",
+                    "text": "#text",
+                    "shadow": true,
+                    "alpha": "@hud.anim_item_name_text_alpha_out",
+                    "bindings": [
+                        {
+                            "binding_name": "#tip_text",
+                            "binding_name_override": "#text"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

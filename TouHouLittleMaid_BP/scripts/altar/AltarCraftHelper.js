@@ -1,8 +1,8 @@
-import { Dimension, Items, ItemStack } from "mojang-minecraft";
+import { Dimension, Items, ItemStack, Player } from "mojang-minecraft";
 import * as Tool from "../libs/scarletToolKit"
 import { recipeList } from "../recipes/index"
 import { tagDefines } from "../recipes/tag_define"
-
+import { get_power_number, set_power_number } from "../entities/power_point";
 
 
 export class AltarCraftHelper{
@@ -28,18 +28,26 @@ export class AltarCraftHelper{
         }
     }
     /**
-     * 
+     * @param {Player} player 
      * @param {ItemStack[]} itemStacks 
      * @param {Dimension} outputDimension 
      * @param {Location} outputLocation 
      */
-    matchRecipes(itemStacks, outputDimension, outputLocation){
+    matchRecipes(player, itemStacks, outputDimension, outputLocation){
         let amount = itemStacks.length;
+        let power = get_power_number(player.name);
         if(1 <= amount && amount <= 6){
             for(let recipe of this.recipes[amount - 1]){
                 if(this.matchRecipe(itemStacks, recipe["ingredients"])){
-                    this.summonOutput(outputDimension, outputLocation, recipe.output);
-                    return true;
+                    let after_power = power - Math.floor(recipe["power"]*100);
+                    if(after_power >= 0){
+                        this.summonOutput(outputDimension, outputLocation, recipe.output);
+                        set_power_number(player.name, after_power);
+                        return true;
+                    }
+                    else{
+                        Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:altar.not_enough_power.name")
+                    }
                 }
             }
         }

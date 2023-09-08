@@ -15,6 +15,11 @@ import { world } from "mojang-minecraft";
 function logger(str){
     world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
 }
+const debug = false;
+function logger_debug(str){
+    if(!debug) return;
+    world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
+}
 
 export class MultiBlockStructrueManager {
     /**
@@ -49,7 +54,13 @@ export class MultiBlockStructrueManager {
                 blockPermutation = MinecraftBlockTypes.get(structureBlock["activated"].name).createDefaultBlockPermutation();
                 if(structureBlock["activated"].data != null){
                     for(let data of structureBlock["activated"].data){
-                        blockPermutation.getProperty(data.type).value = data.value;
+                        if(data.value === "r"){
+                            blockPermutation.getProperty(data.type).value = rotate + 1;
+                        }
+                        else{
+                            blockPermutation.getProperty(data.type).value = data.value;
+                        }
+                        
                     }
                 }
             }
@@ -216,13 +227,18 @@ export class MultiBlockStructrueManager {
             if(structureBlock.data != null){
                 for(let data of structureBlock.data){
                     if(block.permutation.getProperty(data.type).value != data.value){
+                        logger_debug(`Broken permutation: ${data.type} - expected ${data.value}, but ${block.permutation.getProperty(data.type).value}`);
                         return false;
                     }
                 }
             }
             if(dataMatched) return true;
         }
-        return false;
+        else{
+            logger_debug(`Broken id: expected ${structureBlock.name}, but ${block.id}`);
+            return false;
+        }
+        
     }
 
 

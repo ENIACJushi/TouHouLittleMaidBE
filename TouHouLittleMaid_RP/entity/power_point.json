@@ -1,0 +1,39 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "touhou_little_maid:power_point",
+      "min_engine_version": "1.8.0",
+      "materials": {
+        "default": "entity_emissive_alpha"
+      },
+      "textures": {
+        "default": "textures/entity/power_point.png"
+      },
+      "geometry": {
+        "p1": "geometry.power_point_1",
+        "p2": "geometry.power_point_2",
+        "p3": "geometry.power_point_3",
+        "p4": "geometry.power_point_4",
+        "f" : "geometry.power_point_f"
+      },
+      "animations": {
+        "rotate": "animation.touhou_little_maid.camera_rot_by_power_point"
+      },
+      "scripts": {
+        "animate": [
+          "rotate"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.power_point"
+      ],
+      "spawn_egg": {
+        "texture": "touhou_little_maid:power_point",
+        "texture_index": 0
+      }
+      // "sound_effects": {
+      // }
+    }
+  }
+}

@@ -11,53 +11,53 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
             [{name:"minecraft:air", data: null}],
             [
                 // Left red wool column
-                { location: [2, 0, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [2, 1, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [2, 2, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [2, 3, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [2, 4, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [2, 5, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [2, 0, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [2, 1, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [2, 2, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [2, 3, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [2, 4, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [2, 5, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
                 // Right red wool column
-                { location: [5, 0, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [5, 1, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [5, 2, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [5, 3, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [5, 4, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [5, 5, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [5, 0, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [5, 1, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [5, 2, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [5, 3, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [5, 4, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [5, 5, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
                 // Down red wool row
-                { location: [1, 3, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [3, 3, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [4, 3, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [6, 3, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [1, 3, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [3, 3, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [4, 3, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [6, 3, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
                 // Up red wool row
-                { location: [1, 5, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [3, 5, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [4, 5, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
-                { location: [6, 5, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [1, 5, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [3, 5, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [4, 5, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
+                { location: [6, 5, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},
                 // Log 1
-                { location: [0, 0, 2], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [0, 1, 2], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [0, 2, 2], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 0}]}},
+                { location: [0, 0, 2], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [0, 1, 2], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [0, 2, 2], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 1}, {type: "touhou_little_maid:rotation", value: "r"}]}},
                 // Log 2
-                { location: [0, 0, 5], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [0, 1, 5], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [0, 2, 5], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 1}]}},
+                { location: [0, 0, 5], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [0, 1, 5], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [0, 2, 5], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 2}, {type: "touhou_little_maid:rotation", value: "r"}]}},
                 // Log 3
-                { location: [2, 0, 7], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [2, 1, 7], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [2, 2, 7], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 2}]}},
+                { location: [2, 0, 7], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [2, 1, 7], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [2, 2, 7], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 3}, {type: "touhou_little_maid:rotation", value: "r"}]}},
                 // Log 4
-                { location: [5, 0, 7], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [5, 1, 7], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [5, 2, 7], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 3}]}},
+                { location: [5, 0, 7], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [5, 1, 7], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [5, 2, 7], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 4}, {type: "touhou_little_maid:rotation", value: "r"}]}},
                 // Log 5
-                { location: [7, 0, 2], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [7, 1, 2], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [7, 2, 2], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 4}]}},
+                { location: [7, 0, 2], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [7, 1, 2], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [7, 2, 2], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 5}, {type: "touhou_little_maid:rotation", value: "r"}]}},
                 // Log 6
-                { location: [7, 0, 5], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [7, 1, 5], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
-                { location: [7, 2, 5], deactivated:{name:"minecraft:log", data:[{type:"pillar_axis", value:"y"}, {type:"old_log_type", value:"oak"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 5}]}}
+                { location: [7, 0, 5], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [7, 1, 5], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_log_block", data:null}},
+                { location: [7, 2, 5], deactivated:{name:"minecraft:oak_log", data:[{type:"pillar_axis", value:"y"}]}, activated:{name:"touhou_little_maid:altar_platform_block", data:[{type: "touhou_little_maid:number", value: 6}, {type: "touhou_little_maid:rotation", value: "r"}]}}
             ]
         );
         this.entities = [
@@ -92,24 +92,26 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         // Get baseLocation
         let blockLocation_json = [blockLocation.x, blockLocation.y, blockLocation.z];
         let baseLocation = super.getBaseLocationByPoint([3, 3, 0], blockLocation_json, rotation);
+        // Set structure
+        // Try 1: First direction
         if(super.activate(dimension, baseLocation, [rotation]) == -1){
             baseLocation = super.getBaseLocationByPoint([4, 3, 0], blockLocation_json, rotation);
+            // Try 2: Second direction
             if(super.activate(dimension, baseLocation, [rotation]) == -1){
                 baseLocation = null;
             }
         }
         
-        // Check and activate
+        // Activate the main entity (When structure was set)
         if(baseLocation != null){
             // Main entity
             for(let entity of this.entities){
                 let location = super.rotateCoordinate(entity.location, rotation);
-                dimension.runCommand(`summon ${entity.name} ${baseLocation[0] + location[0]} ${baseLocation[1] + location[1]} ${baseLocation[2] + location[2]} ${rotationString}`)
-            }
-            // Platfrom block rotation data
-            for(let platform of this.platforms){
-                dimension.getBlock(new BlockLocation(this.getPointByBaseLocation(platform, baseLocation, rotation)))
-                         .permutation.getProperty("touhou_little_maid:rotation").value = rotation;
+                let x = baseLocation[0] + location[0];
+                let y = baseLocation[1] + location[1];
+                let z = baseLocation[2] + location[2];
+                // new format: summon ${entity.name} ${x} ${y} ${z} ${x} ${z} ${rotationString}
+                dimension.runCommand(`summon ${entity.name} ${x} ${y} ${z} ${rotationString}`);
             }
         }
     }
@@ -195,6 +197,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         // There are some items on the platform
         else{
             // There are no items on player main hand, pop item on platform.
+            // TODO: 新版本中手上没有物品则不会触发这个事件，要另寻它法
             if(!item || item.id == ""){
                 this.popItem(itemEntity);
             }
@@ -207,8 +210,8 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
      */
     craftEvent(blockLocation, player){
         let block = player.dimension.getBlock(blockLocation);
-        let number = block.permutation.getProperty("touhou_little_maid:number").value;
-        let rotation = block.permutation.getProperty("touhou_little_maid:rotation").value;
+        let number = block.permutation.getProperty("touhou_little_maid:number").value - 1;
+        let rotation = block.permutation.getProperty("touhou_little_maid:rotation").value - 1;
         let baseLocation = super.getBaseLocationByPoint(this.platforms[number], [blockLocation.x, blockLocation.y, blockLocation.z], rotation);
         let itemEntityArray = [];
         let itemStackArray = [];
@@ -228,7 +231,8 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
             }
         }
         let outputLocation = super.getPointByBaseLocation([3.5, 0, 3.5], baseLocation, rotation);
-        if(altarCraft.matchRecipes(itemStackArray, player.dimension, new Location(outputLocation[0], outputLocation[1], outputLocation[2]))){
+        
+        if(altarCraft.matchRecipes(player, itemStackArray, player.dimension, new Location(outputLocation[0], outputLocation[1], outputLocation[2]))){
             for(let itemEntity of itemEntityArray){
                 itemEntity.kill();
             }
