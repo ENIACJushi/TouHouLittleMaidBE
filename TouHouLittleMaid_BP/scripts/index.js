@@ -12,7 +12,7 @@ world.events.worldInitialize.subscribe((e) => {
 // Before Item Use On
 world.events.beforeItemUseOn.subscribe(data => {
     const { blockFace, blockLocation, faceLocationX, faceLocationY, item, source } = data;
-    Tool.testBlockInfo(source.dimension, blockLocation);
+    // Tool.testBlockInfo(source.dimension, blockLocation);
     if (source.id == "minecraft:player") {
         const block = source.dimension.getBlock(blockLocation);
         // Activate Altar  (Interact with red wool by touhou_little_maid:hakurei_gohei)
