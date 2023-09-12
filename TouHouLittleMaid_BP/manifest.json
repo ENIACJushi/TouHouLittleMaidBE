@@ -5,7 +5,7 @@
     "uuid": "ab825193-c2da-42e6-b6b0-398f135cb5d5",
     "version": [ 1, 0, 0 ],
     "description": "Author: ENIAC_Jushi",
-    "min_engine_version": [ 1, 19, 0 ]
+    "min_engine_version": [ 1, 20, 10 ]
   },
   "modules": [
     {

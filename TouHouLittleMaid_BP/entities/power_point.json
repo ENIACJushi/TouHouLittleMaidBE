@@ -1,145 +1,52 @@
 {
-    "format_version": "1.16.0",
-    "minecraft:entity": {
-      "description": {
-        "identifier": "touhou_little_maid:power_point",
-        "is_spawnable": false,
-        "is_summonable": true,
-        "is_experimental": false
-      },
-      "component_groups": {
-        "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
-        "p1":{ "minecraft:variant": { "value": 0 }},
-        "p2":{ "minecraft:variant": { "value": 1 }},
-        "p3":{ "minecraft:variant": { "value": 2 }},
-        "p4":{ "minecraft:variant": { "value": 3 }},
-        "f" :{ "minecraft:variant": { "value": 4 }},
-        "scan":{
-          "minecraft:timer": {
-            "looping": true,
-            "time": 0.1,
-            "time_down_event": {
-              "event": "thlm:pps"
-            }
-          }
-        }
-      },
-      "components": {
-        "minecraft:collision_box": {
-          "width": 0,
-          "height": 0
-        },
-        "minecraft:damage_sensor": {
-          "triggers": [
-            {
-              "on_damage": {
-                "filters": {
-                  "all_of": [
-                    {
-                      "test": "is_family",
-                      "subject": "other",
-                      "value": "player"
-                    }
-                  ]
-                }
-              },
-              "deals_damage": false
-            },
-            {
-              "cause": "fall",
-              "deals_damage": false
-            },
-            {
-              "on_damage": {
-                "filters": {
-                  "none_of": [
-                    {
-                      "test": "is_family",
-                      "subject": "other",
-                      "value": "player"
-                    }
-                  ]
-                },
-                "event": "despawn"
-              },
-              "deals_damage": false
-            }
-          ]
-        },
-        "minecraft:friction_modifier":{
-          "value": 1.1
-        },
-        "minecraft:type_family": {
-          "family": [ "inanimate", "powerpoint" ]
-        },
+  "format_version": "1.12.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "touhou_little_maid:power_point",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false,
+      "runtime_identifier": "minecraft:xp_bottle"
+    },
 
-        "minecraft:health": {
-          "value": 5,
-          "max": 5
+    "components": {
+      "minecraft:collision_box": {
+        "width": 0.25,
+        "height": 0.25
+      },
+      "minecraft:projectile": {
+       "on_hit": {
+        
+        "definition_event": {
+          "event_trigger": {
+            "event": "thlm:pph",
+            "target": "self"
+          },
+          "affect_projectile": true
         },
-        "minecraft:buoyant":{
-          "apply_gravity": false,
-          "liquid_blocks": ["minecraft:flowing_water", "minecraft:water"] 
-        },
-        "minecraft:physics": {
-        },
-        "minecraft:pushable": {
-          "is_pushable": false,
-          "is_pushable_by_piston": true
-        },
-        "minecraft:conditional_bandwidth_optimization": {
-          "default_values": {
-            "max_optimized_distance": 80.0,
-            "max_dropped_ticks": 10,
-            "use_motion_prediction_hints": true
-          }
+        "remove_on_hit": { }
+       },
+        "power": 0.5,
+        "gravity": 0.05,
+        "angle_offset": -20.0,
+        "hit_sound": "glass"
+      },
+	    "minecraft:physics": {
+      },
+      "minecraft:pushable": {
+        "is_pushable": true,
+        "is_pushable_by_piston": true
+      },
+      "minecraft:conditional_bandwidth_optimization": {
+        "default_values": {
+          "max_optimized_distance": 80.0,
+          "max_dropped_ticks": 5,
+          "use_motion_prediction_hints": true
         }
       }
-      ,
-      "events": {
-        "despawn"   :{ "add": { "component_groups": [ "despawn" ] } },
-        "scan_start":{ "add": { "component_groups": [ "scan" ] } },
-        "scan_stop" :{ "remove": { "component_groups": [ "scan" ] } },
-        "thlm:ppi":{},
-        "thlm:pps":{},
-        "init_random":{
-          "randomize": [
-            { "trigger": "init_p1", "weight": 1 },
-            { "trigger": "init_p2", "weight": 1 },
-            { "trigger": "init_p3", "weight": 1 },
-            { "trigger": "init_p4", "weight": 1 }
-          ]
-        },
-        "init_p1":{
-          "sequence": [
-            { "add": { "component_groups": [ "p1" ] } },
-            { "trigger": "thlm:ppi" }
-          ]
-        },
-        "init_p2":{
-          "sequence": [
-            { "add": { "component_groups": [ "p2" ] } },
-            { "trigger": "thlm:ppi" }
-          ]
-        },
-        "init_p3":{
-          "sequence": [
-            { "add": { "component_groups": [ "p3" ] } },
-            { "trigger": "thlm:ppi" }
-          ]
-        },
-        "init_p4":{
-          "sequence": [
-            { "add": { "component_groups": [ "p4" ] } },
-            { "trigger": "thlm:ppi" }
-          ]
-        },
-        "init_f":{
-          "sequence": [
-            { "add": { "component_groups": [ "f" ] } },
-            { "trigger": "thlm:ppi" }
-          ]
-        }
-      }
+    },
+    "events": {
+      "thlm:pph":{}
     }
   }
+}

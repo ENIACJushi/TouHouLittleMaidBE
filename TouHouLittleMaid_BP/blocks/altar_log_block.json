@@ -24,12 +24,19 @@
 			"minecraft:explosion_resistance": 2,
 			"minecraft:breathability": "air",
 			"minecraft:on_player_destroyed": {
-    			"event" : "touhou_little_maid:destroy",
+    			"event" : "destroy",
     			"target": "self"
 			}
 		},
 		"events": {
-
+			"destroy":{
+				"run_command": {
+                    "command": [
+                        "function touhou_little_maid/altar_destroy"
+                    ],
+                    "target" : "self"
+                }
+			}
 		}
 	}
 }

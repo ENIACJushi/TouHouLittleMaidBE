@@ -15,11 +15,12 @@
       "activated":{
         "minecraft:timer": {
         "looping": true,
-        "time": 0.5,
+        "time": 60,
         "time_down_event": {
-          "event": "thlm:at"
+          "event": "thlm:af"
+          }
         }
-      }}
+      }
     },
     "components": {
       "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
@@ -34,7 +35,8 @@
       "east" :{ "add": { "component_groups": [ "east", "activated"  ] } },
       "north":{ "add": { "component_groups": [ "north", "activated" ] } },
       "west" :{ "add": { "component_groups": [ "west", "activated" ] } },
-      "thlm:at": {}
+      "thlm:at": {},
+      "thlm:af": {}
     }
   }
 }

@@ -18,11 +18,9 @@
 						{
 							"origin": [-4, 1, 0],
 							"size": [8, 8, 0],
+							"pivot": [0, 0, 0],
 							"uv": {
-								"south": {
-									"uv": [0.9375, 0.9375],
-									"uv_size": [1.875, 1.875]
-								}
+								"south": {"uv": [0.9375, 0.9375], "uv_size": [1.875, 1.875]}
 							}
 						}
 					]
@@ -131,7 +129,38 @@
 							"origin": [-7, 1, 0],
 							"size": [14, 14, 0],
 							"uv": {
-								"south": {"uv": [11.25, 7.5], "uv_size": [3.75, 3.75]}
+								"south": {
+									"uv": [11.25, 7.5],
+									"uv_size": [3.75, 3.75]
+								}
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"description": {
+				"identifier": "geometry.power_point_b",
+				"texture_width": 15,
+				"texture_height": 15,
+				"visible_bounds_width": 5,
+				"visible_bounds_height": 5,
+				"visible_bounds_offset": [0, 0.5, 0]
+			},
+			"bones": [
+				{
+					"name": "power_point",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{
+							"origin": [-6, -6, 0],
+							"size": [12, 12, 0],
+							"uv": {
+								"south": {
+									"uv": [0.46875, 4.21875],
+									"uv_size": [2.8125, 2.8125]
+								}
 							}
 						}
 					]

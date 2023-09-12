@@ -1,5 +1,5 @@
 import { MultiBlockStructrueManager } from "../libs/multiBlockStructrueManager";
-import { Block, BlockLocation, Dimension, Direction, ItemStack, Location, Player, Vector } from "mojang-minecraft";
+import { Block, BlockLocation, Dimension, Direction, Entity, ItemStack, Location, Player, Vector } from "mojang-minecraft";
 import * as Tool from"../libs/scarletToolKit";
 import * as scheduling from "../libs/scheduling"
 import { altarCraft } from "./AltarCraftHelper";
@@ -111,7 +111,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
                 let y = baseLocation[1] + location[1];
                 let z = baseLocation[2] + location[2];
                 // new format: summon ${entity.name} ${x} ${y} ${z} ${x} ${z} ${rotationString}
-                dimension.runCommand(`summon ${entity.name} ${x} ${y} ${z} ${rotationString}`);
+                dimension.spawnEntity(entity.name, new BlockLocation(x,y,z)).triggerEvent(rotationString)
             }
         }
     }
@@ -235,6 +235,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         if(altarCraft.matchRecipes(player, itemStackArray, player.dimension, new Location(outputLocation[0], outputLocation[1], outputLocation[2]))){
             for(let itemEntity of itemEntityArray){
                 itemEntity.kill();
+                Tool.executeCommand(`playsound altar_craft ${Tool.playerCMDName(player.name)}`);
             }
         }
     }
@@ -261,23 +262,24 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
                                                       Tool.getRandom(0.3, 0.4),
                                           drectionZ * Tool.getRandom(0.1, 0.2)));
     }
+    /**
+     * 
+     * @param {Entity} entity 
+     */
     refreshItemsEvent(entity){
         let rotation = entity.getComponent("minecraft:variant").value;
         let baseLocation = super.getBaseLocationByPoint([2, 4, 0], [Math.floor(entity.location.x), Math.floor(entity.location.y), Math.floor(entity.location.z)], rotation);
-
-        for(let location of this.platforms){
-            let platformLocation = this.getPointByBaseLocation(location, baseLocation, rotation)
+        
+        for(let platform of this.platforms){
+            let platformLocation = super.getPointByBaseLocation(platform, baseLocation, rotation);
             let itemLocation = new BlockLocation(platformLocation[0], platformLocation[1] + 1, platformLocation[2]);
-            for(let entity2 of entity.dimension.getEntitiesAtBlockLocation(itemLocation)){
-                if(entity2.id == "minecraft:item"){
-                    if(entity2.hasTag("touhou_little_maid:altar_item")){
-                        let temp = entity.dimension.spawnItem(entity2.getComponent("minecraft:item").itemStack, itemLocation);
-                        temp.addTag("touhou_little_maid:altar_item");
-                        temp.setVelocity(new Vector(0, 0, 0));
-                        entity2.kill();
-                        break;
-                    }
-                }
+            let itemEntity = this.searchAltarItemEntity(entity.dimension, itemLocation);
+            if(itemEntity != null) {
+                let item = itemEntity.getComponent("minecraft:item").itemStack;
+                let temp = entity.dimension.spawnItem(item, itemLocation);
+                temp.addTag("touhou_little_maid:altar_item");
+                temp.setVelocity(new Vector(0,0,0));
+                itemEntity.kill();
             }
         }
     }

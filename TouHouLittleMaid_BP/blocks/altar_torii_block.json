@@ -21,7 +21,11 @@
 			"minecraft:destroy_time": 1.2,
 			"minecraft:block_light_absorption": 0,
 			"minecraft:explosion_resistance": 0.8,
-			"minecraft:breathability": "air"
+			"minecraft:breathability": "air",
+			"minecraft:on_player_destroyed": {
+    			"event" : "destroy",
+    			"target": "self"
+			}
 		},
 		"events": {
 			"destroy":{

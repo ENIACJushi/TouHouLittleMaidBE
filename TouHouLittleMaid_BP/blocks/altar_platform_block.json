@@ -30,10 +30,22 @@
 			"minecraft:on_interact": {
 				"event": "interact",
 				"target": "self"
+			},
+			"minecraft:on_player_destroyed": {
+    			"event" : "destroy",
+    			"target": "self"
 			}
 		},
 		"events": {
-			"interact":{}
+			"interact":{},
+			"destroy":{
+				"run_command": {
+                    "command": [
+                        "function touhou_little_maid/altar_destroy"
+                    ],
+                    "target" : "self"
+                }
+			}
 		}
 	}
 }

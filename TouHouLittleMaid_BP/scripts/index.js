@@ -28,6 +28,7 @@ world.events.beforeItemUseOn.subscribe(data => {
 });
 
 // Entity Trigger Event
+
 world.events.dataDrivenEntityTriggerEvent.subscribe(data => {
     const {entity, id, modifiers} = data;
     if(id.substring(0, 5) == "thlm:"){
@@ -37,6 +38,10 @@ world.events.dataDrivenEntityTriggerEvent.subscribe(data => {
                 altarStructure.deactivateEvent(entity); 
                 // altarStructure.refreshItemsEvent(entity); // TODO: Reduce execution frequency
                 break;
+            // af: altar_refresh
+            case "af":
+                altarStructure.refreshItemsEvent(entity)
+                break;
             // ppi: power_point_init
             case "ppi":
                 PowerPoint.init_power_point(entity);
@@ -44,6 +49,13 @@ world.events.dataDrivenEntityTriggerEvent.subscribe(data => {
             // pps: power point scan (powerpoint)
             case "pps":
                 PowerPoint.scan_powerpoint(entity);
+                break;
+            // pph: power point hit (like xp bottle)
+            case "pph":
+                PowerPoint.powerpoint_hit(entity);
+                break;
+            case "hgd":
+                Tool.logger("thlm:hgd");
                 break;
             default: break;
         }
@@ -54,8 +66,8 @@ world.events.dataDrivenEntityTriggerEvent.subscribe(data => {
 var ticks_pp = 0;
 world.events.tick.subscribe(event => {
     // Power point scan loop (player)
-    ticks_pp++;
-    if (ticks_pp >= 1) {
+    ticks_pp ++;
+    if (ticks_pp >= 5) {
         ticks_pp = 0;
         PowerPoint.scan_tick();
     }
