@@ -8,27 +8,35 @@
       "is_experimental": false,
       "runtime_identifier": "minecraft:xp_bottle"
     },
-
+    "component_groups": {
+      "despawn":{
+        "minecraft:instant_despawn": {
+          "remove_child_entities": false
+        }
+      },
+      "activate":{
+        
+      "minecraft:projectile": {
+        "on_hit": {
+         "definition_event": {
+           "event_trigger": {
+             "event": "hit",
+             "target": "self"
+           },
+           "affect_projectile": true
+         }
+        },
+          "power": 0.5,
+          "gravity": 0.05,
+          "angle_offset": -20.0,
+          "hit_sound": "glass"
+       }
+      }
+    },
     "components": {
       "minecraft:collision_box": {
         "width": 0.25,
         "height": 0.25
-      },
-      "minecraft:projectile": {
-       "on_hit": {
-        
-        "definition_event": {
-          "event_trigger": {
-            "event": "thlm:pph",
-            "target": "self"
-          },
-          "affect_projectile": true
-        }
-       },
-        "power": 0.5,
-        "gravity": 0.05,
-        "angle_offset": -20.0,
-        "hit_sound": "glass"
       },
 	    "minecraft:physics": {
       },
@@ -45,7 +53,27 @@
       }
     },
     "events": {
-      "thlm:pph":{}
+      "minecraft:entity_spawned": {
+        "add": {
+          "component_groups": [
+            "activate"
+          ]
+        }
+      },
+      "hit":{
+       "remove": {
+        "component_groups": [
+          "activate"
+        ]
+       } 
+      },
+      "despawn":{
+        "add": {
+          "component_groups": [
+            "despawn"
+          ]
+        }
+      }
     }
   }
 }

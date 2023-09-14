@@ -67,12 +67,17 @@ export class AltarCraftHelper{
         let hungaryMatch = new HungaryMatch(count, edge).match();
         return hungaryMatch;
     }
-
+    /**
+     * 
+     * @param {ItemStack} itemStack 
+     * @param {string} define 
+     * @returns 
+     */
     isItemMatchDefine(itemStack, define){
         let matchAtLeastOne = false;
         // Item label
         if(define.item) {
-            if(itemStack.id != define.item){
+            if(itemStack.typeId != define.item){
                 return false;
             }
             else{

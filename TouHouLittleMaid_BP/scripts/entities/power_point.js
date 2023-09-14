@@ -1,4 +1,4 @@
-import { Player, world, Dimension, Entity, Vector, MolangVariableMap } from "@minecraft/server";
+import { Player, world, Dimension, Entity, Vector, MolangVariableMap,DynamicPropertiesDefinition,WorldInitializeAfterEvent,EntityTypes } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 
 export default class PowerPoint {
@@ -8,31 +8,49 @@ export default class PowerPoint {
         }
     }
     /**
-     * 
-     * @param {Entity} en 
+     * @param {WorldInitializeAfterEvent} event 
      */
-    static init_power_point(en){
-        en.setVelocity(get_velocity_xp_orb());
+    static init_dynamic_properties(event){
+        let def = new DynamicPropertiesDefinition();
+        def.defineString("target", 12);
+    
+        event.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get("touhou_little_maid:p_point"));
     }
     /**
      * 
      * @param {Entity} en 
      */
+    static init_power_point(en){
+        en.applyImpulse(this.get_velocity_xp_orb());
+    }
+    /**
+     * 
+     * @param {Entity} en 
+     * @param {Dimension} dimension 
+     */
     static powerpoint_hit(en, dimension){
         // int count = 30 + this.level.random.nextInt(30) + this.level.random.nextInt(30);
-        this.summon_power_velocity(Math.ceil(Tool.getRandom(30, 90)), dimension, en.location, [en.getVelocity().x/2, 0, en.getVelocity().z/2]);
-        var molang = new MolangVariableMap();
-        molang = molang.setColorRGBA("variable.color", {
-            alpha: 0,
-            blue: 61,
-            green: 255,
-            red: 75
-        });
-        dimension.spawnParticle("touhou_little_maid:splash_power_point", en.location, molang);
+        // may outside of the world
+        try{
+            // may inside a block
+            let summon_location = en.location;
+            if(dimension.getBlock(en.location).typeId != "minecraft:air"){
+                summon_location = new Vector(en.location.x, Math.ceil(en.location.y), en.location.z);
+            }
+            
+            this.summon_power_velocity(Math.ceil(Tool.getRandom(30, 90)), dimension, summon_location, [en.getVelocity().x/2, 0, en.getVelocity().z/2]);
+            var molang = new MolangVariableMap();
+            molang = molang.setColorRGBA("variable.color", {
+                alpha: 0,
+                blue: 61,
+                green: 255,
+                red: 75
+            });
+            dimension.spawnParticle("touhou_little_maid:splash_power_point", summon_location, molang);
+        }
+        catch{}
         en.triggerEvent("despawn");
     }
-    
-    
     
     /**
      * Scan tick of Power Point System
@@ -56,9 +74,9 @@ export default class PowerPoint {
         });
     
         for(let en of results){
-            if(en.target == null || en.target.id != "minecraft:player"){
+            if(en.getDynamicProperty("target") == ""){
                 en.triggerEvent("scan_start");
-                en.target = pl;
+                en.setDynamicProperty("target", pl.name);
             }
         }
     }
@@ -70,9 +88,9 @@ export default class PowerPoint {
     static scan_gohei(pl){
         let playerContainer2 = pl.getComponent("inventory").container;
         let item = playerContainer2.getItem(pl.selectedSlot);
-    
-        if(item && item.id == "touhou_little_maid:hakurei_gohei") {
-            Tool.title_player_actionbar(pl.name, `§cP: ${ (get_power_number(pl.name)/100).toFixed(2) }`);
+        
+        if(item && item.typeId == "touhou_little_maid:hakurei_gohei") {
+            Tool.title_player_actionbar(pl.name, `§cP: ${ (this.get_power_number(pl.name)/100).toFixed(2) }`);
         }
     }
     
@@ -81,15 +99,19 @@ export default class PowerPoint {
      * @param {Entity} en 
      */
     static scan_powerpoint(en){
-        if(en.target == null || en.target.id != "minecraft:player"){
+        let player_name = en.getDynamicProperty("target");
+        let pl_list = world.getPlayers({name: player_name});
+        if(pl_list.length == 0){
+            en.setDynamicProperty("target", "");
             en.triggerEvent("scan_stop");
         }
         else{
-            let pl = en.target;
-            let delta_y = pl.headLocation.y - en.location.y;
+            let pl = pl_list[0];
+            let pl_headLocation = pl.getHeadLocation();
+            let delta_y = pl_headLocation.y - en.location.y;
             // Follow box (xzy): 11 × 11 × 7
-            let delta_x = pl.headLocation.x - en.location.x;
-            let delta_z = pl.headLocation.z - en.location.z;
+            let delta_x = pl_headLocation.x - en.location.x;
+            let delta_z = pl_headLocation.z - en.location.z;
             if(    -5 < delta_x && delta_x < 5 
                 && -5 < delta_z && delta_z < 5 
                 && -3 < delta_y && delta_y < 6)
@@ -100,7 +122,7 @@ export default class PowerPoint {
                     && -2 < delta_y && delta_y < 1)
                 {
                     // PS. Fariy loot: 2*0p + 2*2p (16 points)
-                    let point_score = get_power_number(pl.name);
+                    let point_score = this.get_power_number(pl.name);
     
                     // If this power point has tag, add by tag number
                     let is_taged = false;
@@ -123,7 +145,7 @@ export default class PowerPoint {
                             default: break;
                         }
                     }
-                    set_power_number(pl.name, Math.min(500, point_score));
+                    this.set_power_number(pl.name, Math.min(500, point_score));
                     Tool.executeCommand(`playsound power_pop ${Tool.playerCMDName(pl.name)}`);
                     en.triggerEvent("despawn");
                 }
@@ -141,13 +163,13 @@ export default class PowerPoint {
                         && delta_y > 1){
                             v_y = (delta_y > 0) ? (0.35 - delta_y * 0.025) : (delta_y * 0.3);
                         }
-    
-                    en.setVelocity(new Vector(v_x, v_y, v_z));
+                    en.clearVelocity()
+                    en.applyImpulse(new Vector(v_x, v_y, v_z));
                 }
             }
             else{
                 en.triggerEvent("scan_stop");
-                en.target = en;
+                en.setDynamicProperty("target", "");
             }
         }
     }
@@ -192,7 +214,7 @@ export default class PowerPoint {
             let drectionX = Tool.getRandom() < 0.5 ? 1 : -1;
             let drectionZ = Tool.getRandom() < 0.5 ? 1 : -1;
             
-            temp.setVelocity(new Vector(velocity[0] + drectionX * Tool.getRandom(0, 0.2),
+            temp.applyImpulse(new Vector(velocity[0] + drectionX * Tool.getRandom(0, 0.2),
                                         velocity[1] + Tool.getRandom(0, 0.4),
                                         velocity[2] + drectionZ * Tool.getRandom(0, 0.2)));
             if(count >= 32){

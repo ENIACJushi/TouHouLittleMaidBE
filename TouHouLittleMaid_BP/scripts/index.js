@@ -8,36 +8,46 @@ import * as Tool from"./libs/scarletToolKit";
 // World Initialize
 world.afterEvents.worldInitialize.subscribe((e) => {
     PowerPoint.init_scoreboard_world();
+    PowerPoint.init_dynamic_properties(e);
 });
 
 system.runTimeout(()=>{
     thlm.main();
-    world.sendMessage("§e[THLM] Addon Loaded!")
 },100)
 
 class thlm {
     static main(){
+        world.afterEvents.playerSpawn.subscribe(event => {
+            if(event.initialSpawn){
+                // say something
+                // event.player.sendMessage({translate: ""})
+            }
+            
+        });
         // Before Item Use On
-        world.beforeEvents.itemUseOn.subscribe(data => {
+        world.beforeEvents.itemUseOn.subscribe(event => {
             system.run(()=>{
-                const { blockFace, blockLocation, faceLocationX, faceLocationY, item, source } = data;
                 // Tool.testBlockInfo(source.dimension, blockLocation);
-                if (source.id == "minecraft:player") {
-                    const block = source.dimension.getBlock(blockLocation);
+                if (event.source.typeId == "minecraft:player") {
                     // Activate Altar  (Interact with red wool by touhou_little_maid:hakurei_gohei)
-                    if(item.id == "touhou_little_maid:hakurei_gohei" && block.id == "minecraft:red_wool"){
-                        altarStructure.activate(source.dimension, blockLocation, blockFace);
+                    if(event.itemStack.typeId == "touhou_little_maid:hakurei_gohei" && event.block.typeId == "minecraft:red_wool"){
+                        altarStructure.activate(event.source.dimension, event.block.location, event.blockFace);
                     }
     
                     // Place or Pop Item  (Interact with touhou_little_maid:altar_platform_block)
-                    if(block.id == "touhou_little_maid:altar_platform_block" && !source.isSneaking){
-                        altarStructure.placeItemEvent(blockLocation, source, item)
+                    if(event.block.typeId == "touhou_little_maid:altar_platform_block" && !event.source.isSneaking){
+                        altarStructure.placeItemEvent(event.block.location, event.source)
                     }
                 }
             });
         });
 
+        // Item Events
+        world.beforeEvents.itemDefinitionEvent.subscribe(event => {
 
+        });
+
+        // Entity Events
         world.beforeEvents.dataDrivenEntityTriggerEvent.subscribe(data => {
             system.run(()=>{
                 // const {entity, id, modifiers} = data;
@@ -69,25 +79,29 @@ class thlm {
             });
         });
 
+        // Projectile Hit Event
+        world.afterEvents.projectileHit.subscribe(event =>{
+            system.run(()=>{
+                try{
+                    var projectile = event.projectile;
+                    if(projectile != undefined){
+                        var typeId = event.projectile.typeId;
+                        if(typeId != undefined){
+                            if(typeId.substring(0, 6) == "thlmd:"){
+                                Danmaku.danmakuHitEvent(event);
+                            }
+                            else if(typeId == "touhou_little_maid:power_point"){
+                                PowerPoint.powerpoint_hit(projectile, event.dimension);
+                            }
+                        }
+                    }
+                }
+                catch{}
+            });
+        });
+
         system.runInterval(()=>{
             PowerPoint.scan_tick();
         }, 5);
-
-        world.afterEvents.projectileHit.subscribe(event =>{
-            system.run(()=>{
-                Tool.logger(event.projectile.typeId);
-                if(event.projectile){
-                    if(event.projectile.typeId.substring(0, 6) == "thlmd:"){
-                        Danmaku.projectileHitEvent(event);
-                    }
-                    else if(event.projectile.typeId == "touhou_little_maid:power_point"){
-                        PowerPoint.powerpoint_hit(event.projectile, event.dimension);
-                    }
-                }
-            });
-        });
-        // world.events.projectileHit.subscribe(event =>{
-        //     Danmaku.projectileHitEvent(event);
-        // });
     }
 }

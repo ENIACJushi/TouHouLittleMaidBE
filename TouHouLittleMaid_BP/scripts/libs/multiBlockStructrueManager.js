@@ -8,13 +8,13 @@
    *  Date        :  2023.02.15                   *
   \* -------------------------------------------- */
 
-import { Block, Dimension, MinecraftBlockTypes } from "@minecraft/server"
+import { Block, Dimension, MinecraftBlockTypes, BlockPermutation, BlockType } from "@minecraft/server"
 import { world } from "@minecraft/server";
 
 function logger(str){
     world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
 }
-const debug = false;
+const debug = true;
 function logger_debug(str){
     if(!debug) return;
     world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
@@ -40,34 +40,40 @@ export class MultiBlockStructrueManager {
     activate(dimension, baseLocation, rotates = [0, 1, 2, 3]){
         let rotate = this.isStructrueUnbroken(dimension, baseLocation, rotates, "deactivated");
         if(rotate == -1) return -1;
+        logger_debug(`Structure activating: rotate ${rotate}`);
         // Activate structure, as structure pending activate is always unbroken, there is no need to check if the previous block matches the deactivated structure block.
         for(let structureBlock of this.blocks){
             // Calculate world coordinate
             let location = this.rotateCoordinate(structureBlock.location, rotate);
-            // Create the permutation
-            let blockPermutation;
+            logger_debug("activating 1")
+            // Set Block
+            const block = dimension.getBlock({x: baseLocation[0] + location[0], y: baseLocation[1] + location[1], z: baseLocation[2] + location[2]});
             if(structureBlock["activated"] == null){
-                blockPermutation = MinecraftBlockTypes.air.createDefaultBlockPermutation();
+                // Set block: air
+                block.setType(MinecraftBlockTypes.air);
             }
             else{
-                blockPermutation = MinecraftBlockTypes.get(structureBlock["activated"].name).createDefaultBlockPermutation();
-                if(structureBlock["activated"].data != null){
-                    for(let data of structureBlock["activated"].data){
-                        if(data.value === "r"){
-                            blockPermutation.getProperty(data.type).value = rotate + 1;
+                // Set block: [type: structureBlock["activated"].name] - [permutation: properties]
+                // block.setType(structureBlock["activated"].name);
+
+                // Set permutation
+                logger_debug("activating 2")
+                if(structureBlock["activated"].data == null){
+                    block.setPermutation(BlockPermutation.resolve(structureBlock["activated"].name));
+                }
+                else{
+                    let blockPermutation = {};
+                    for(let key in structureBlock["activated"].data){
+                        if(structureBlock["activated"].data[key] === "r"){
+                            blockPermutation[key] = rotate + 1;
                         }
                         else{
-                            blockPermutation.getProperty(data.type).value = data.value;
+                            blockPermutation[key] = structureBlock["activated"].data[key];
                         }
-                        
                     }
+                    block.setPermutation(BlockPermutation.resolve(structureBlock["activated"].name, blockPermutation));
                 }
             }
-            // Fetch the block
-            const block = dimension.getBlock({x: baseLocation[0] + location[0], y: baseLocation[1] + location[1], z: baseLocation[2] + location[2]});
-            // Set the permutation
-            block.setPermutation(blockPermutation);
-            
         }
         return rotate;
     }
@@ -91,22 +97,25 @@ export class MultiBlockStructrueManager {
             
             // Check if the previous block is destroyed, if not, do not set new block.
             if(structureBlock["activated"] != null && !this.isBlockInStructrue(block, structureBlock["activated"])) continue;
+            
             // Set new block
-            // Create the permutation
-            let blockPermutation;
             if(structureBlock["deactivated"] == null){
-                blockPermutation = MinecraftBlockTypes.air.createDefaultBlockPermutation();
+                // Set air
+                block.setType(MinecraftBlockTypes.air);
             }
             else{
-                blockPermutation = MinecraftBlockTypes.get(structureBlock["deactivated"].name).createDefaultBlockPermutation();
-                if(structureBlock["deactivated"].data != null){
-                    for(let data of structureBlock["deactivated"].data){
-                        blockPermutation.getProperty(data.type).value = data.value;
+                // Set defined block
+                if(structureBlock["deactivated"].data == null){
+                    block.setPermutation(BlockPermutation.resolve(structureBlock["deactivated"].name));
+                }
+                else{
+                    let blockPermutation = {};
+                    for(let key in structureBlock["deactivated"].data){
+                        blockPermutation[key] = structureBlock["deactivated"].data[key];
                     }
+                    block.setPermutation(BlockPermutation.resolve(structureBlock["deactivated"].name, blockPermutation));
                 }
             }
-            // Set the permutation
-            block.setPermutation(blockPermutation);
         }
         return true;
     }
@@ -128,6 +137,7 @@ export class MultiBlockStructrueManager {
             if(rotate < 0 || rotate > 3) continue;
             // If check background, use a scan matrix to increase speed.
             if(background){
+                logger_debug("scan structure: start")
                 // Create scan matrix [x][y][z].
                 let scanMatrix = [];
                 for(let x = 0; x < this.size[0]; x++){
@@ -144,6 +154,7 @@ export class MultiBlockStructrueManager {
                     let location = this.rotateCoordinate(this.blocks[i].location, rotate);
                     scanMatrix[location[0]][location[1]][location[2]] = i;
                 }
+                logger_debug("scan structure: check")
                 // Check the structure in the world if it is broken.
                 let broken = false;
                 for(let x = 0; x < scanMatrix.length; x++){
@@ -192,19 +203,20 @@ export class MultiBlockStructrueManager {
         }
         return -1;
     }
+    /**
+     * 
+     * @param {Block} block 
+     * @returns {boolean}
+     */
     isBackground(block){
         if(this.background != null && this.background != []){
             for(let backgroundBlock of this.background){
-                if(block.id == backgroundBlock.name){
+                if(block.typeId == backgroundBlock.name){
                     let dataMatched = true;
-                    if(backgroundBlock.data != null){
-                        if(backgroundBlock.data != null){
-                            for(let data of backgroundBlock.data){
-                                if(block.permutation.getProperty(data.type).value != data.value){
-                                    dataMatched = false;
-                                    break;
-                                }
-                            }
+                    for(let key in backgroundBlock.data){
+                        if(block.permutation.getState(key) != backgroundBlock.data[key]){
+                            dataMatched = false;
+                            break;
                         }
                     }
                     if(dataMatched) return true;
@@ -220,13 +232,13 @@ export class MultiBlockStructrueManager {
       * @param {String} mode "activated" or "deactivated".
       */
     isBlockInStructrue(block, structureBlock){
-        // logger(`${block.id},${this.blocks[iter][mode].name}`);
-        if(block.id == structureBlock.name){
+        // logger(`${block.typeId},${this.blocks[iter][mode].name}`);
+        if(block.typeId == structureBlock.name){
             let dataMatched = true;
             if(structureBlock.data != null){
-                for(let data of structureBlock.data){
-                    if(block.permutation.getProperty(data.type).value != data.value){
-                        logger_debug(`Broken permutation: ${data.type} - expected ${data.value}, but ${block.permutation.getProperty(data.type).value}`);
+                for(let key in structureBlock.data){
+                    if(block.permutation.getState(key) != structureBlock.data[key]){
+                        logger_debug(`Broken permutation: ${key} - expected ${structureBlock.data[key]}, but ${block.permutation.getState(key)}`);
                         return false;
                     }
                 }
@@ -234,7 +246,7 @@ export class MultiBlockStructrueManager {
             if(dataMatched) return true;
         }
         else{
-            logger_debug(`Broken id: expected ${structureBlock.name}, but ${block.id}`);
+            logger_debug(`Broken id: expected ${structureBlock.name}, but ${block.typeId}`);
             return false;
         }
         
