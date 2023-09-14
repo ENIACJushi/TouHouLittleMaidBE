@@ -13,7 +13,7 @@
             "volume": 0.5
           }
          ]
-       },
+      },
        "power_pop":{
         "category": "player",
         "sounds": [
@@ -54,6 +54,6 @@
             "volume" : 0.5, "pitch": 2, "weight" : 5
           }
         ]
-       }
+      }
    }
 }

@@ -1,7 +1,6 @@
 import { MultiBlockStructrueManager } from "../libs/multiBlockStructrueManager";
-import { Block, BlockLocation, Dimension, Direction, Entity, ItemStack, Location, Player, Vector } from "mojang-minecraft";
+import { system,Block, Dimension, Direction, Entity, ItemStack, Player, Vector } from "@minecraft/server";
 import * as Tool from"../libs/scarletToolKit";
-import * as scheduling from "../libs/scheduling"
 import { altarCraft } from "./AltarCraftHelper";
 
 export class AltarStructureHelper extends MultiBlockStructrueManager{
@@ -74,7 +73,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
     /**
      * Generate blocks and entities
      * @param {Dimension} dimension 
-     * @param {BlockLocation} blockLocation
+     * @param {Vector3} blockLocation
      * @param {Direction} blockFace 
      */
     activate(dimension, blockLocation, blockFace){
@@ -111,7 +110,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
                 let y = baseLocation[1] + location[1];
                 let z = baseLocation[2] + location[2];
                 // new format: summon ${entity.name} ${x} ${y} ${z} ${x} ${z} ${rotationString}
-                dimension.spawnEntity(entity.name, new BlockLocation(x,y,z)).triggerEvent(rotationString)
+                dimension.spawnEntity(entity.name, { x: x, y: y, z: z }).triggerEvent(rotationString)
             }
         }
     }
@@ -126,7 +125,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
             // Pop items
             for(let platform of this.platforms){
                 let platformLocation = super.getPointByBaseLocation(platform, baseLocation, rotation);
-                let itemEntity = this.searchAltarItemEntity(entity.dimension, new BlockLocation(platformLocation[0], platformLocation[1] + 1, platformLocation[2]));
+                let itemEntity = this.searchAltarItemEntity(entity.dimension, { x: platformLocation[0], y: platformLocation[1] + 1, z: platformLocation[2] });
                 if(itemEntity != null) {
                     this.popItem(itemEntity);
                 }
@@ -135,14 +134,14 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
     }
     /**
      * 
-     * @param {BlockLocation} blockLocation 
+     * @param {Vector3} blockLocation 
      * @param {Player} player 
      * @param {ItemStack} item 
      */
     placeItemEvent(blockLocation, player, item){
         let dimension = player.dimension;
         // Search for item entity.
-        let itemEntity = this.searchAltarItemEntity(dimension, new BlockLocation(blockLocation.x, blockLocation.y + 1, blockLocation.z));
+        let itemEntity = this.searchAltarItemEntity(dimension, {x: blockLocation.x, y: blockLocation.y + 1, z: blockLocation.z});
 
         // Place item then trigger craft event, pop item, or do nothing.
         // There are no items on the platform.
@@ -151,13 +150,13 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
             if(item && item.id != ""){
                 if(item.amount == 1){
                     // Place item in the player's hand on the platform.
-                    let temp = player.dimension.spawnItem(item, new BlockLocation(blockLocation.x, blockLocation.y + 1, blockLocation.z));
+                    let temp = player.dimension.spawnItem(item, {x: blockLocation.x, y: blockLocation.y + 1, z: blockLocation.z});
                     temp.setVelocity(new Vector(0,0,0));
                     temp.addTag("touhou_little_maid:altar_item");
                     
                     // This command will first clear the main hand.
                     player.runCommand(`clear @s ${item.id} ${item.data} 1`)
-                    scheduling.setTickTimeout(() =>{ this.craftEvent(blockLocation, player); }, 1, "craft");
+                    system.runTimeout(() =>{ this.craftEvent(blockLocation, player); }, 1);
                 }
                 else{
                     // unable to change item amount
@@ -167,11 +166,11 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
                     var amount = item.amount;
                     var player = player;
                     var slot = player.selectedSlot;
-                    scheduling.setTickTimeout(() =>{
+                    system.runTimeout(() =>{
                         let playerContainer2 = player.getComponent("inventory").container;
                         let item = playerContainer2.getItem(slot);
                         
-                        let temp = player.dimension.spawnItem(item, new BlockLocation(blockLocation.x, blockLocation.y + 1, blockLocation.z));
+                        let temp = player.dimension.spawnItem(item, {x: blockLocation.x, y: blockLocation.y + 1, z: blockLocation.z});
                         temp.addTag("touhou_little_maid:altar_item");
                         temp.setVelocity(new Vector(0,0,0));
                         
@@ -189,8 +188,8 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
                                 }
                             }
                         }
-                        scheduling.setTickTimeout(() =>{ this.craftEvent(blockLocation, player); }, 1, "craft");
-                    }, 1, "recover")
+                        system.runTimeout(() =>{ this.craftEvent(blockLocation, player); }, 1);
+                    }, 1);
                 }
             }
         }
@@ -205,7 +204,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
     }
     /**
      * 
-     * @param {BlockLocation} blockLocation 
+     * @param {Vector3} blockLocation 
      * @param {Player} player 
      */
     craftEvent(blockLocation, player){
@@ -217,7 +216,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         let itemStackArray = [];
         for(let platform of this.platforms){
             let platformLocation = super.getPointByBaseLocation(platform, baseLocation, rotation);
-            let itemEntity = this.searchAltarItemEntity(player.dimension, new BlockLocation(platformLocation[0], platformLocation[1] + 1, platformLocation[2]));
+            let itemEntity = this.searchAltarItemEntity(player.dimension, {x: platformLocation[0], y: platformLocation[1] + 1, z: platformLocation[2]});
             if(itemEntity != null) {
                 let itemStack = itemEntity.getComponent("minecraft:item").itemStack;
                 if(itemStack.amount == 1){
@@ -232,7 +231,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         }
         let outputLocation = super.getPointByBaseLocation([3.5, 0, 3.5], baseLocation, rotation);
         
-        if(altarCraft.matchRecipes(player, itemStackArray, player.dimension, new Location(outputLocation[0], outputLocation[1], outputLocation[2]))){
+        if(altarCraft.matchRecipes(player, itemStackArray, player.dimension, {x: outputLocation[0], y: outputLocation[1], z: outputLocation[2]})){
             for(let itemEntity of itemEntityArray){
                 itemEntity.kill();
                 Tool.executeCommand(`playsound altar_craft ${Tool.playerCMDName(player.name)}`);
@@ -242,7 +241,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
     /**
      * 
      * @param {Dimension} dimension 
-     * @param {BlockLocation} blockLocation 
+     * @param {Vector3} blockLocation 
      */
     searchAltarItemEntity(dimension, blockLocation){
         for(let entity of dimension.getEntitiesAtBlockLocation(blockLocation)){
@@ -272,7 +271,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         
         for(let platform of this.platforms){
             let platformLocation = super.getPointByBaseLocation(platform, baseLocation, rotation);
-            let itemLocation = new BlockLocation(platformLocation[0], platformLocation[1] + 1, platformLocation[2]);
+            let itemLocation = {x: platformLocation[0], y: platformLocation[1] + 1, z: platformLocation[2]};
             let itemEntity = this.searchAltarItemEntity(entity.dimension, itemLocation);
             if(itemEntity != null) {
                 let item = itemEntity.getComponent("minecraft:item").itemStack;

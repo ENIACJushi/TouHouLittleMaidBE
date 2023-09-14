@@ -22,7 +22,7 @@
       },
       "minecraft:projectile": {
         "minimum_critical_power": 1.25,
-        "projectile_entity": "arrow"
+        "projectile_entity": "thlmd:danmaku_basic_pellet"
       },
       "minecraft:shooter": {
         "ammunition": [
@@ -36,6 +36,13 @@
         "max_draw_duration": 1,
         "scale_power_by_draw_duration": true,
         "charge_on_draw": false
+      },
+      "minecraft:durability": {
+        "damage_chance": {
+          "min": 10,
+          "max": 50
+        },
+        "max_durability": 36
       }
     },
     "events": {

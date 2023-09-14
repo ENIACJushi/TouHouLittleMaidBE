@@ -1,8 +1,8 @@
-import { Dimension, Items, ItemStack, Player } from "mojang-minecraft";
+import { Dimension, ItemStack, Player } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import { recipeList } from "../recipes/index"
 import { tagDefines } from "../recipes/tag_define"
-import { get_power_number, set_power_number } from "../entities/power_point";
+import PowerPoint from "../entities/power_point";
 
 
 export class AltarCraftHelper{
@@ -35,14 +35,14 @@ export class AltarCraftHelper{
      */
     matchRecipes(player, itemStacks, outputDimension, outputLocation){
         let amount = itemStacks.length;
-        let power = get_power_number(player.name);
+        let power = PowerPoint.get_power_number(player.name);
         if(1 <= amount && amount <= 6){
             for(let recipe of this.recipes[amount - 1]){
                 if(this.matchRecipe(itemStacks, recipe["ingredients"])){
                     let after_power = power - Math.floor(recipe["power"]*100);
                     if(after_power >= 0){
                         this.summonOutput(outputDimension, outputLocation, recipe.output);
-                        set_power_number(player.name, after_power);
+                        PowerPoint.set_power_number(player.name, after_power);
                         return true;
                     }
                     else{
@@ -104,8 +104,7 @@ export class AltarCraftHelper{
                 let data = 0;
                 if(!itemInfo["id"]) return false;
                 if(itemInfo["Count"]) amount = itemInfo["Count"];
-                if(itemInfo["data"]) data = itemInfo["data"];
-                dimension.spawnItem(new ItemStack(Items.get(itemInfo["id"]), amount, data), location);
+                dimension.spawnItem(new ItemStack(itemInfo["id"], amount), location);
                 break;
             default:
                 dimension.spawnEntity(output.type, location);

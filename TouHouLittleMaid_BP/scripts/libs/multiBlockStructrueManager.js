@@ -8,9 +8,8 @@
    *  Date        :  2023.02.15                   *
   \* -------------------------------------------- */
 
-import { Block, Dimension, MinecraftBlockTypes } from "mojang-minecraft"
-import { BlockLocation } from "mojang-minecraft";
-import { world } from "mojang-minecraft";
+import { Block, Dimension, MinecraftBlockTypes } from "@minecraft/server"
+import { world } from "@minecraft/server";
 
 function logger(str){
     world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
@@ -65,7 +64,7 @@ export class MultiBlockStructrueManager {
                 }
             }
             // Fetch the block
-            const block = dimension.getBlock(new BlockLocation(baseLocation[0] + location[0], baseLocation[1] + location[1], baseLocation[2] + location[2]));
+            const block = dimension.getBlock({x: baseLocation[0] + location[0], y: baseLocation[1] + location[1], z: baseLocation[2] + location[2]});
             // Set the permutation
             block.setPermutation(blockPermutation);
             
@@ -88,7 +87,7 @@ export class MultiBlockStructrueManager {
             let location = this.rotateCoordinate(structureBlock.location, rotate);
             
             // Fetch the block
-            const block = dimension.getBlock(new BlockLocation(baseLocation[0] + location[0], baseLocation[1] + location[1], baseLocation[2] + location[2]));
+            const block = dimension.getBlock({x: baseLocation[0] + location[0], y: baseLocation[1] + location[1], z: baseLocation[2] + location[2]});
             
             // Check if the previous block is destroyed, if not, do not set new block.
             if(structureBlock["activated"] != null && !this.isBlockInStructrue(block, structureBlock["activated"])) continue;
@@ -151,7 +150,7 @@ export class MultiBlockStructrueManager {
                     for(let y = 0 ; y < scanMatrix[x].length; y++){
                         for (let z = 0; z < scanMatrix[x][y].length; z++){
                             // dimension.runCommand(`say ${baseLocation[0] + x},${baseLocation[1] + y},${baseLocation[2] + z}`);
-                            const block = dimension.getBlock(new BlockLocation(baseLocation[0] + x, baseLocation[1] + y, baseLocation[2] + z));
+                            const block = dimension.getBlock({x: baseLocation[0] + x, y: baseLocation[1] + y, z: baseLocation[2] + z});
                             // Background block
                             if(scanMatrix[x][y][z] === -1){
                                 if(!this.isBackground(block)) {
@@ -182,7 +181,7 @@ export class MultiBlockStructrueManager {
                     // Calculate world coordinate
                     let location = this.getPointByBaseLocation(structureBlock.location, baseLocation, rotate);
                     if(structureBlock[mode] != null 
-                        && !this.isBlockInStructrue(dimension.getBlock(new BlockLocation(location[0], location[1], location[2])), structureBlock[mode])){
+                        && !this.isBlockInStructrue(dimension.getBlock({x: location[0], y: location[1], z: location[2]}), structureBlock[mode])){
                         broken = true;
                         break;
                     }

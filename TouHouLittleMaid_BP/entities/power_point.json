@@ -23,8 +23,7 @@
             "target": "self"
           },
           "affect_projectile": true
-        },
-        "remove_on_hit": { }
+        }
        },
         "power": 0.5,
         "gravity": 0.05,

@@ -6,7 +6,7 @@
    *  Date        :  2023.02.17                   *
   \* -------------------------------------------- */
 
-import { world, Entity, Vector, Dimension } from "mojang-minecraft";
+import { world, Entity, Vector, Dimension } from "@minecraft/server";
 
 ////////// Logger //////////
 export function logger(str){
@@ -60,13 +60,13 @@ export function title_player_actionbar_translate(name, text){
  */
 export function testEntitySpeed(){
     for(let pl of world.getPlayers()){
-        const playerQueryOptions = new EntityQueryOptions();
-        playerQueryOptions.type = 'minecraft:xp_orb';
-        playerQueryOptions.maxDistance = 10;
-        playerQueryOptions.location = pl.location;
-        const results = pl.dimension.getEntities(playerQueryOptions);
+        const results = pl.dimension.getEntities({
+            type: 'minecraft:xp_orb',
+            maxDistance: 10,
+            location: pl.location
+        });
         for(let en of results){
-            Tool.logger(`${en.velocity.x.toFixed(3)}, ${en.velocity.y.toFixed(3)}, ${en.velocity.z.toFixed(3)}`);
+            Tool.logger(`${en.getVelocity().x.toFixed(3)}, ${en.getVelocity().y.toFixed(3)}, ${en.getVelocity().z.toFixed(3)}`);
         }
     }
 }
@@ -82,9 +82,9 @@ export function testEntitySpeed(){
 var vec = [0,0,0];
 var vecn = [10,10,10];
 export function testEntityMSpeed(entity){
-    let x = Math.abs(entity.velocity.x.toFixed(3));
-    let y = Math.abs(entity.velocity.y.toFixed(3));
-    let z = Math.abs(entity.velocity.z.toFixed(3));
+    let x = Math.abs(entity.getVelocity().x.toFixed(3));
+    let y = Math.abs(entity.getVelocity().y.toFixed(3));
+    let z = Math.abs(entity.getVelocity().z.toFixed(3));
     
     vec[0] = Math.max(vec[0], x);
     vec[1] = Math.max(vec[1], y);
@@ -102,7 +102,7 @@ export function testEntityMSpeed(entity){
  * Test Block Info
  * Put it into beforeItemUseOn event.
  * @param {Dimension} dimension 
- * @param {BlockLocation} blockLocation 
+ * @param {Vector3} blockLocation 
  */
 export function testBlockInfo(dimension, blockLocation){
     try{

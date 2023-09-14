@@ -1,0 +1,17 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.touhou_little_maid.camera_rot_by_danmaku": {
+      "loop": true,
+      "bones": {
+        "danmaku": {
+          "rotation": [
+            "query.camera_rotation(0)",
+            "query.camera_rotation(1)",
+            0
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "materials": {
+    "version": "1.0.0",
+    "danmaku_emissive:entity": {
+      "+defines": [ "USE_UV_ANIM", "ALPHA_TEST", "USE_EMISSIVE" ]
+    },
+    "danmaku_blending:entity": {
+      "+defines": [ "USE_UV_ANIM", "ALPHA_TEST", "USE_EMISSIVE" ],
+      "+states": [ "Blending", "DisableCulling","DisableDepthWrite"],
+      "blendSrc": "SourceAlpha",
+      "blendDst": "One"
+    }
+  }
+}
