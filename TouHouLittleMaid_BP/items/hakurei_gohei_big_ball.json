@@ -2,7 +2,8 @@
   "format_version": "1.18.0",
   "minecraft:item": {
     "description": {
-      "identifier": "touhou_little_maid:hakurei_gohei"
+      "category": "Equipment",
+      "identifier": "touhou_little_maid:hakurei_gohei_big_ball"
     },
     "components": {
       "minecraft:icon": {
@@ -14,20 +15,18 @@
           "event": "minecraft:on_use_on"
         }
       },
-      "minecraft:on_use": {
-        "on_use": {
-          "event": "thlm:hgd",
-          "target": "self"
-        }
-      },
       "minecraft:projectile": {
         "minimum_critical_power": 1.25,
-        "projectile_entity": "thlmd:danmaku_basic_pellet"
+        "projectile_entity": "thlmd:danmaku_basic_big_ball"
+      },
+      "minecraft:enchantable":{
+        "slot": "bow",
+        "value": 15
       },
       "minecraft:shooter": {
         "ammunition": [
           {            
-            "item": "touhou_little_maid:hakurei_gohei",
+            "item": "touhou_little_maid:hakurei_gohei_big_ball",
             "use_offhand": true,
             "search_inventory": true,
             "use_in_creative": true
@@ -37,20 +36,29 @@
         "scale_power_by_draw_duration": true,
         "charge_on_draw": false
       },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": ["minecraft:paper"],
+            "repair_amount": 32
+          }
+        ]
+      },
       "minecraft:durability": {
         "damage_chance": {
           "min": 10,
           "max": 50
         },
-        "max_durability": 36
-      }
+        "max_durability": 300
+      },
+      "minecraft:display_name": {
+        "value": "item.touhou_little_maid:hakurei_gohei"
+      },
+      "minecraft:max_stack_size": 1
     },
     "events": {
       "minecraft:on_use_on": {
         "swing": {}
-      },
-      "thlm:hgd":{
-        
       }
     }
   }

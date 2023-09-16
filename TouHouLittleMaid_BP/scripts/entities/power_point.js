@@ -88,8 +88,7 @@ export default class PowerPoint {
     static scan_gohei(pl){
         let playerContainer2 = pl.getComponent("inventory").container;
         let item = playerContainer2.getItem(pl.selectedSlot);
-        
-        if(item && item.typeId == "touhou_little_maid:hakurei_gohei") {
+        if(item && item.typeId.substring(0, 32) == "touhou_little_maid:hakurei_gohei") {
             Tool.title_player_actionbar(pl.name, `§cP: ${ (this.get_power_number(pl.name)/100).toFixed(2) }`);
         }
     }

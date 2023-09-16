@@ -2,7 +2,7 @@
 	"format_version": "1.12",
 	"minecraft:recipe_shaped": {
 		"description": {
-			"identifier": "touhou_little_maid:hakurei_gohei"
+			"identifier": "touhou_little_maid:hakurei_gohei_crafting_table"
 		},
 		"tags": [ "crafting_table" ],
 		"pattern": [
@@ -22,7 +22,7 @@
 			}
 		},
 		"result": {
-			"item": "touhou_little_maid:hakurei_gohei",
+			"item": "touhou_little_maid:hakurei_gohei_crafting_table",
 			"count": 1
 		}
 	}

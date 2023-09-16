@@ -1,4 +1,9 @@
 
+danmaku.pellet.name=§a点弹
+danmaku.ball.name=§a小玉
+danmaku.orbs.name=§a环玉
+danmaku.big_ball.name=§a大玉
+
 entity.touhou_little_maid:chair.name=椅子
 entity.touhou_little_maid:maid.name=小女仆
 entity.touhou_little_maid:fairy.name=妖精女仆
@@ -17,6 +22,7 @@ item.touhou_little_maid:maid_backpack_middle=中背包
 item.touhou_little_maid:maid_backpack_big=大背包
 item.touhou_little_maid:chair=椅子
 item.touhou_little_maid:hakurei_gohei=博丽的御币
+item.touhou_little_maid:hakurei_gohei_crafting_table=博丽的御币(未激活)
 item.touhou_little_maid:extinguisher=灭火器
 item.touhou_little_maid:ultramarine_orb_elixir=§6绀珠之药
 item.touhou_little_maid:explosion_protect_bauble=§6爆炸保护饰品
@@ -154,6 +160,7 @@ gui.touhou_little_maid:resources_download.tab.3.name=声音资源包
 gui.touhou_little_maid:resources_download.sound.downloaded.tip.name=声音包需要像原版资源包一样加载才能使用！
 gui.touhou_little_maid:model_gui.easter_egg.encrypt.name=这是一个加密的命名彩蛋
 gui.touhou_little_maid:model_gui.easter_egg.normal.name=这是一个普通的命名彩蛋
+
 message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止
 message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
 message.touhou_little_maid:altar.not_enough_power.name=你没有足够多的 P 点
@@ -162,6 +169,8 @@ message.touhou_little_maid:photo.not_suitable_for_place_maid.name=这该死的�
 message.touhou_little_maid:photo.have_no_nbt_data.name=这该死的照片没有 NBT 数据
 message.touhou_little_maid:chisel.hit_block_error.name=请右击粘土块
 message.touhou_little_maid:chisel.offhand_not_photo.name=请副手持有一张女仆照片
+message.touhou_little_maid:hakurei_gohei.switch=切换弹种： 
+
 commands.touhou_little_maid:pack.reload.info.name=所有的模型包已经重载！
 commands.touhou_little_maid:power.handle.info.name=修改了 %d 位玩家的 P 点
 commands.touhou_little_maid:maid_num.handle.info.name=修改了 %d 位玩家的女仆数量

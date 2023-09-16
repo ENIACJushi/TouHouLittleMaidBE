@@ -99,10 +99,19 @@ export function testEntityMSpeed(entity){
 }
 
 /**
+ * @param {Entity} en 
+*/
+export function showEntityComponents(en){
+    logger(`Entity type:${en.typeId}`);
+    for(let component of en.getComponents()){
+        logger(component.typeId);
+    }
+}
+/**
  * Test Block Info
  * Put it into beforeItemUseOn event.
  * @param {Dimension} dimension 
- * @param {Vector3} blockLocation 
+ * @param {Vector} blockLocation 
  */
 export function testBlockInfo(dimension, blockLocation){
     try{

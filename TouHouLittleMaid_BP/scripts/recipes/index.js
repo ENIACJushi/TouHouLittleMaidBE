@@ -27,8 +27,12 @@ import {recipe as craft_wireless_io} from "./craft/craft_wireless_io"
 
 import {recipe as reborn_maid} from "./spawn/reborn_maid"
 
+// Bedrock feature
+import {recipe as repair_hakurei_gohei} from "./bedrock/repair_hakurei_gohei"
+
 // Register
 export const recipeList = [
     spawn_lightning_bolt,
-    craft_hakurei_gohei
+    craft_hakurei_gohei,
+    repair_hakurei_gohei
 ]

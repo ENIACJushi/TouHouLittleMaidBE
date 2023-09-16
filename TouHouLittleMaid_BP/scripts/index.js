@@ -1,4 +1,4 @@
-import { world, system } from "@minecraft/server"
+import { world, system, Enchantment, ItemEnchantsComponent } from "@minecraft/server"
 import { altarStructure } from "./altar/AltarStructureHelper";
 
 import PowerPoint from "./entities/power_point"
@@ -25,18 +25,31 @@ class thlm {
             
         });
         // Before Item Use On
+        var on_use_player = {};
         world.beforeEvents.itemUseOn.subscribe(event => {
             system.run(()=>{
                 // Tool.testBlockInfo(source.dimension, blockLocation);
                 if (event.source.typeId == "minecraft:player") {
-                    // Activate Altar  (Interact with red wool by touhou_little_maid:hakurei_gohei)
-                    if(event.itemStack.typeId == "touhou_little_maid:hakurei_gohei" && event.block.typeId == "minecraft:red_wool"){
-                        altarStructure.activate(event.source.dimension, event.block.location, event.blockFace);
-                    }
-    
-                    // Place or Pop Item  (Interact with touhou_little_maid:altar_platform_block)
-                    if(event.block.typeId == "touhou_little_maid:altar_platform_block" && !event.source.isSneaking){
-                        altarStructure.placeItemEvent(event.block.location, event.source)
+                    let player = event.source;
+                    if(!on_use_player[player.name]){
+                        on_use_player[player.name] = true;
+                        system.runTimeout(function () {
+                            delete on_use_player[player.name];
+                        }, 10);
+                        // Activate Altar  (Interact with red wool by touhou_little_maid:hakurei_gohei_xxx)
+                        if(event.itemStack.typeId.substring(0, 32) == "touhou_little_maid:hakurei_gohei"){
+                            if(player.isSneaking){
+                                Danmaku.gohei_transform(event)
+                            }
+                            else if(event.block.typeId == "minecraft:red_wool"){
+                                altarStructure.activate(player.dimension, event.block.location, event.blockFace);
+                            }
+                        }
+        
+                        // Place or Pop Item  (Interact with touhou_little_maid:altar_platform_block)
+                        if(event.block.typeId == "touhou_little_maid:altar_platform_block" && !player.isSneaking){
+                            altarStructure.placeItemEvent(event.block.location, player)
+                        }
                     }
                 }
             });
@@ -44,7 +57,22 @@ class thlm {
 
         // Item Events
         world.beforeEvents.itemDefinitionEvent.subscribe(event => {
-
+            system.run(()=>{
+                if(event.eventName.substring(0, 5) == "thlm:"){
+                    switch(event.eventName.substring(5)){
+                        // hakurei gohei transform
+                        case "hgt":
+                            Danmaku.gohei_transform(event);
+                            break;
+                        // hakurei gohei activate - hakurei gohei (crafting table) transform to true gohei
+                        case "hga":
+                            Danmaku.gohei_activate(event);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            })
         });
 
         // Entity Events
@@ -69,9 +97,6 @@ class thlm {
                         // pps: power point scan (powerpoint)
                         case "pps":
                             PowerPoint.scan_powerpoint(data.entity);
-                            break;
-                        case "hgd":
-                            Tool.logger("thlm:hgd");
                             break;
                         default: break;
                     }

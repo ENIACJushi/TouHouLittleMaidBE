@@ -14,7 +14,7 @@ import { world } from "@minecraft/server";
 function logger(str){
     world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
 }
-const debug = true;
+const debug = false;
 function logger_debug(str){
     if(!debug) return;
     world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);

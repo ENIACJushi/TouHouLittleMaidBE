@@ -6,6 +6,9 @@ export const recipe = {
       "Item": {
         "id": "touhou_little_maid:hakurei_gohei",
         "Count": 1,
+        "Enchantments":{
+          "infinity": 1
+        },
         "tag": {
           "Damage": 0
         }

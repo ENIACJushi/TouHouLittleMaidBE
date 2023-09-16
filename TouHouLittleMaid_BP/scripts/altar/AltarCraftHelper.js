@@ -1,4 +1,4 @@
-import { Dimension, ItemStack, Player } from "@minecraft/server";
+import { Dimension, ItemStack, Player, Enchantment, ItemEnchantsComponent } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import { recipeList } from "../recipes/index"
 import { tagDefines } from "../recipes/tag_define"
@@ -41,9 +41,11 @@ export class AltarCraftHelper{
                 if(this.matchRecipe(itemStacks, recipe["ingredients"])){
                     let after_power = power - Math.floor(recipe["power"]*100);
                     if(after_power >= 0){
-                        this.summonOutput(outputDimension, outputLocation, recipe.output);
-                        PowerPoint.set_power_number(player.name, after_power);
-                        return true;
+                        if(this.summonOutput(outputDimension, outputLocation, recipe.output, itemStacks)){
+                            PowerPoint.set_power_number(player.name, after_power);
+                            return true;
+                        }
+                        return false;
                     }
                     else{
                         Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:altar.not_enough_power.name")
@@ -101,19 +103,45 @@ export class AltarCraftHelper{
         // Return
         return matchAtLeastOne;
     }
-    summonOutput(dimension, location, output){
-        switch(output.type){
-            case "minecraft:item":
-                let itemInfo = output["nbt"]["Item"];
-                let amount = 1;
-                let data = 0;
-                if(!itemInfo["id"]) return false;
-                if(itemInfo["Count"]) amount = itemInfo["Count"];
-                dimension.spawnItem(new ItemStack(itemInfo["id"], amount), location);
-                break;
-            default:
-                dimension.spawnEntity(output.type, location);
-                break;
+    summonOutput(dimension, location, output, itemStacks){
+        try{
+            switch(output.type){
+                case "minecraft:item":
+                    let itemInfo = output["nbt"]["Item"];
+                    let amount = 1;
+                    let data = 0;
+                    if(!itemInfo["id"]) return false;
+                    if(itemInfo["Count"]) amount = itemInfo["Count"];
+                    let output_item = new ItemStack(itemInfo["id"], amount);
+                    if(itemInfo["Enchantments"] != null){
+                        let ench_list = output_item.getComponent("minecraft:enchantments").enchantments
+                        for(let key in itemInfo["Enchantments"]){
+                            ench_list.addEnchantment(new Enchantment(key, itemInfo["Enchantments"][key]));
+                        }
+                        output_item.getComponent("minecraft:enchantments").enchantments = ench_list;
+                    }
+                    dimension.spawnItem(output_item, location);
+                    break;
+                case "thlm:repair":
+                    for(let source_item of itemStacks){
+                        if(this.isItemMatchDefine(source_item, output.item["target"])){
+                            let output_item = source_item.clone();
+                            let durability = output_item.getComponent("minecraft:durability");
+                            durability.damage = Math.max(0, durability.damage - output.item["amount"])
+                            dimension.spawnItem(output_item, location);
+                            return true;
+                        }
+                    }
+                    break;
+                
+                default:
+                    dimension.spawnEntity(output.type, location);
+                    break;
+            }
+            return true;
+        }
+        catch{
+            return false;
         }
     }
 }

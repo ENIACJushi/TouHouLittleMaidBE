@@ -7,6 +7,7 @@ item_group.touhou_little_maid:main.name=Parva Ancilla Tohonis: Principalis
 item_group.touhou_little_maid:chair.name=Parva Ancilla Tohonis: Sella
 item.touhou_little_maid:chair=Sella
 item.touhou_little_maid:hakurei_gohei=Gopeis Hacrei
+item.touhou_little_maid:hakurei_gohei_crafting_table=Gopeis Hacrei(non activated)
 item.touhou_little_maid:substitute_jizo=Dizo Subrogare
 item.touhou_little_maid:power_point=Punctum de Potentiis
 tile.touhou_little_maid:maid_bed.name=Lectus Ancillae

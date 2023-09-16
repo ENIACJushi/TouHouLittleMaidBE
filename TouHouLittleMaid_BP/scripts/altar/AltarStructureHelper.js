@@ -91,7 +91,6 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         // Get baseLocation
         let blockLocation_json = [blockLocation.x, blockLocation.y, blockLocation.z];
         let baseLocation = super.getBaseLocationByPoint([3, 3, 0], blockLocation_json, rotation);
-        Tool.logger("a1")
         // Set structure
         // Try 1: First direction
         if(super.activate(dimension, baseLocation, [rotation]) == -1){
@@ -109,7 +108,6 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
                 let x = Math.ceil(baseLocation[0] + location[0]) + 0.5;
                 let y = Math.ceil(baseLocation[1] + location[1]);
                 let z = Math.ceil(baseLocation[2] + location[2]) + 0.5;
-                Tool.logger(`${x} ${y} ${z}`)
                 dimension.spawnEntity(entity.name, { x: x, y: y, z: z }).triggerEvent(rotationString)
             }
         }

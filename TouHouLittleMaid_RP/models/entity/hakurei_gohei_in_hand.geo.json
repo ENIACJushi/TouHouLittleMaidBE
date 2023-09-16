@@ -1,0 +1,95 @@
+{
+	"format_version": "1.16.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.touhou_little_maid.hakurei_gohei_in_hand",
+				"texture_width": 32,
+				"texture_height": 32,
+				"visible_bounds_width": 5,
+				"visible_bounds_height": 6,
+				"visible_bounds_offset": [0, 0, 0]
+			},
+			"bones": [
+				{
+					"name": "rightitem",
+					"pivot": [0, 0, 0],
+					"binding": "'rightitem'"
+				},
+				{
+					"name": "item",
+					"parent": "rightitem",
+					"pivot": [0, 8, 0],
+					"cubes": [
+						{
+							"origin": [-0.3, 0.2, -0.3],
+							"size": [0.6, 19.6, 0.6],
+							"uv": {
+								"north": {"uv": [29.999, 0], "uv_size": [1.998, 31.997]},
+								"east": {"uv": [29.999, 0], "uv_size": [1.998, 31.997]},
+								"south": {"uv": [29.999, 0], "uv_size": [1.998, 31.997]},
+								"west": {"uv": [29.999, 0], "uv_size": [1.998, 31.997]},
+								"up": {"uv": [31.997, 31.997], "uv_size": [-1.998, -31.997]},
+								"down": {"uv": [31.997, 31.997], "uv_size": [-1.998, -31.997]}
+							}
+						},
+						{
+							"origin": [-0.35, 15.85, -0.35],
+							"size": [0.7, 2.7, 0.7],
+							"uv": {
+								"north": {"uv": [3, 2], "uv_size": [1.996, 1.996]},
+								"east": {"uv": [2, 1], "uv_size": [1.997, 1.997]},
+								"south": {"uv": [2, 1], "uv_size": [1.996, 1.996]},
+								"west": {"uv": [2, 0], "uv_size": [1.997, 1.997]},
+								"up": {"uv": [3.996, 2.996], "uv_size": [-1.996, -1.996]},
+								"down": {"uv": [4.996, 2.996], "uv_size": [-1.996, -1.996]}
+							}
+						}
+					]
+				},
+				{
+					"name": "group3",
+					"parent": "item",
+					"pivot": [0, 8, 0],
+					"cubes": [
+						{
+							"origin": [-0.001, 9.85, -7.2],
+							"size": [0.001, 8, 7],
+							"pivot": [0, 1.85, -0.2],
+							"rotation": [0, 22.5, 0],
+							"uv": {
+								"north": {"uv": [17.998, 0], "uv_size": [-17.998, 24.998]},
+								"east": {"uv": [2, 0], "uv_size": [19.996, 31.996]},
+								"south": {"uv": [17.998, 0], "uv_size": [-17.998, 24.998]},
+								"west": {"uv": [21.996, 0], "uv_size": [-19.996, 31.996]},
+								"up": {"uv": [0, 24.998], "uv_size": [17.998, -24.998]},
+								"down": {"uv": [0, 24.998], "uv_size": [17.998, -24.998]}
+							}
+						}
+					]
+				},
+				{
+					"name": "group",
+					"parent": "item",
+					"pivot": [0, 8, 0],
+					"cubes": [
+						{
+							"origin": [-0.001, 9.85, -7.2],
+							"size": [0.001, 8, 7],
+							"pivot": [0, 1.85, -0.2],
+							"rotation": [0, -22.5, 0],
+							"uv": {
+								"north": {"uv": [17.998, 0], "uv_size": [-17.998, 24.998]},
+								"east": {"uv": [2, 0], "uv_size": [19.996, 31.994]},
+								"south": {"uv": [17.998, 0], "uv_size": [-17.998, 24.998]},
+								"west": {"uv": [21.996, 0], "uv_size": [-19.996, 31.994]},
+								"up": {"uv": [0, 24.998], "uv_size": [17.998, -24.998]},
+								"down": {"uv": [0, 24.998], "uv_size": [17.998, -24.998]}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

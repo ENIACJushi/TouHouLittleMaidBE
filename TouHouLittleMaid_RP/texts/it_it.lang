@@ -5,6 +5,7 @@ item_group.touhou_little_maid:main.name=Touhou Little Maid: Generale
 item_group.touhou_little_maid:chair.name=Touhou Little Maid: Sedie
 item.touhou_little_maid:chair=Sedia
 item.touhou_little_maid:hakurei_gohei=Gohei Dell' Hakurei
+item.touhou_little_maid:hakurei_gohei_crafting_table=Gohei Dell' Hakurei(non attivato)
 item.touhou_little_maid:extinguisher=Estintore
 item.touhou_little_maid:ultramarine_orb_elixir=§6Elixir Sfera Ultramarina
 item.touhou_little_maid:explosion_protect_bauble=§6Gingillo Protezione Esplosioni
