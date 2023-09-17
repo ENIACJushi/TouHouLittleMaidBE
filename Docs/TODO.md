@@ -3,9 +3,7 @@
 *（待修复）p点边缘没有变透明。没有头绪。
 *（待修复）新版本中手上没有物品则不会触发beforeItemUseOn事件，导致空手取下祭坛上的物品失效，需要另寻它法。目前不是很急，因为可以跳起来取。
 
-加入：在沙漠神殿的箱子战利品中加入P点道具，权重15，同金锭（这将会引入一个版本更新时的检查项目）
-修复：祭坛刷新物品时错位
-修复：玩家名过长时，p点无法锁定
+
 
 -----
 
@@ -14,15 +12,6 @@
 *（待加入）实体不会被同组弹幕击伤。弹幕编组tag前缀：thdg:xxx （touhou danmaku group）
 *（待加入）追踪符札：[ 纸×3 + 火药 + 炸药/药水/纸 ] 在祭坛消耗0.5P点合成 [ 符札×8 ]。符札会自动追踪发射时瞄准的实体，若发射时视线上没有实体，则自行寻找运行方向上最近的敌对生物；基础伤害等于力量4的弓射出的箭，第三项合成材料为药水时会附带对应的药水效果，时长同药水箭，为炸药时造成范围伤害，为纸时仅造成基础单体伤害。
 *（待完善）各弹种的判定范围（可能无法实现）
-
-加入：妖精女仆生成规则。同僵尸
-加入：妖精女仆。多重弹幕攻击、步行、掉落P点，三种材质。
-完善：切换弹幕的英文信息文本
-danmaku.pellet.name=§aPellet
-danmaku.ball.name=§aBall
-danmaku.orbs.name=§aOrbs
-danmaku.big_ball.name=§aBig Ball
-message.touhou_little_maid:hakurei_gohei.switch=Switch danmaku type:  
 
 -----
 
@@ -38,3 +27,4 @@ message.touhou_little_maid:hakurei_gohei.switch=Switch danmaku type:
 
 *（待测试）确定各语言文件能被正常使用
 *（未使用）闪烁材质：见danmaku_basic render的注释部分
+*（费力见效少）使用ui制作记忆中的幻想乡。

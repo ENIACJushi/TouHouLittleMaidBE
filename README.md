@@ -16,3 +16,6 @@ This plugin is still in the development stage, only for development communicatio
 ## License
 - Code: [MIT](https://www.mit.edu/~amini/LICENSE.md)
 - Assets: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+## Tutorial
+- [Memorizable Gensokyo](Tutorial/Tutorial.md)
