@@ -9,6 +9,7 @@ import * as Tool from"./libs/scarletToolKit";
 world.afterEvents.worldInitialize.subscribe((e) => {
     PowerPoint.init_scoreboard_world();
     PowerPoint.init_dynamic_properties(e);
+    Danmaku.init_dynamic_properties(e);
 });
 
 system.runTimeout(()=>{
@@ -76,27 +77,39 @@ class thlm {
         });
 
         // Entity Events
-        world.beforeEvents.dataDrivenEntityTriggerEvent.subscribe(data => {
+        world.beforeEvents.dataDrivenEntityTriggerEvent.subscribe(event => {
             system.run(()=>{
+                // Tool.logger(event.id)
                 // const {entity, id, modifiers} = data;
-                if(data.id.substring(0, 5) == "thlm:"){
-                    switch(data.id.substring(5)){
+                if(event.id.substring(0, 5) == "thlm:"){
+                    switch(event.id.substring(5)){
                         // at: altar_tick
                         case "at": 
-                            altarStructure.deactivateEvent(data.entity); 
+                            altarStructure.deactivateEvent(event.entity); 
                             // altarStructure.refreshItemsEvent(entity); // TODO: Reduce execution frequency
                             break;
                         // af: altar_refresh
                         case "af":
-                            altarStructure.refreshItemsEvent(data.entity)
+                            altarStructure.refreshItemsEvent(event.entity)
                             break;
                         // ppi: power_point_init
                         case "ppi":
-                            PowerPoint.init_power_point(data.entity);
+                            PowerPoint.init_power_point(event.entity);
                             break;
                         // pps: power point scan (powerpoint)
                         case "pps":
-                            PowerPoint.scan_powerpoint(data.entity);
+                            PowerPoint.scan_powerpoint(event.entity);
+                            break;
+                        // pfd; power point - fairy death
+                        case  "pfd":
+                            PowerPoint.fairy_death(event.entity);
+                            break;
+                        // dfg: danmaku - fairy shoot
+                        case "dfs":
+                            Danmaku.fairy_shoot(event.entity);
+                            break;
+                        case "dgs":
+                            Danmaku.ghast_shoot(event.entity);
                             break;
                         default: break;
                     }

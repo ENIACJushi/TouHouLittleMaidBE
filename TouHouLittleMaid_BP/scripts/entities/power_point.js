@@ -2,6 +2,7 @@ import { Player, world, Dimension, Entity, Vector, MolangVariableMap,DynamicProp
 import * as Tool from "../libs/scarletToolKit"
 
 export default class PowerPoint {
+    //////// INIT ////////
     static init_scoreboard_world(){
         if(world.scoreboard.getObjective("p") == null){
             world.getDimension("overworld").runCommand("scoreboard objectives add p dummy power");
@@ -12,7 +13,7 @@ export default class PowerPoint {
      */
     static init_dynamic_properties(event){
         let def = new DynamicPropertiesDefinition();
-        def.defineString("target", 12);
+        def.defineString("target", 15, "0");
     
         event.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get("touhou_little_maid:p_point"));
     }
@@ -23,6 +24,7 @@ export default class PowerPoint {
     static init_power_point(en){
         en.applyImpulse(this.get_velocity_xp_orb());
     }
+
     /**
      * 
      * @param {Entity} en 
@@ -53,6 +55,16 @@ export default class PowerPoint {
     }
     
     /**
+     * 
+     * @param {Entity} en 
+     */
+    static fairy_death(en){
+        en.dimension.spawnEntity("touhou_little_maid:p_point", en.location).triggerEvent("init_p1");
+        en.dimension.spawnEntity("touhou_little_maid:p_point", en.location).triggerEvent("init_p1");
+        en.dimension.spawnEntity("touhou_little_maid:p_point", en.location).triggerEvent("init_p3");
+        en.dimension.spawnEntity("touhou_little_maid:p_point", en.location).triggerEvent("init_p3");
+    }
+    /**
      * Scan tick of Power Point System
      */
     static scan_tick(){
@@ -74,9 +86,9 @@ export default class PowerPoint {
         });
     
         for(let en of results){
-            if(en.getDynamicProperty("target") == ""){
+            if(en.getDynamicProperty("target") == "0"){
                 en.triggerEvent("scan_start");
-                en.setDynamicProperty("target", pl.name);
+                en.setDynamicProperty("target", pl.id);
             }
         }
     }
@@ -98,21 +110,20 @@ export default class PowerPoint {
      * @param {Entity} en 
      */
     static scan_powerpoint(en){
-        let player_name = en.getDynamicProperty("target");
-        let pl_list = world.getPlayers({name: player_name});
-        if(pl_list.length == 0){
-            en.setDynamicProperty("target", "");
+        let player_id = en.getDynamicProperty("target");
+        let pl = world.getEntity(player_id);
+        if(pl == undefined){
+            en.setDynamicProperty("target", "0");
             en.triggerEvent("scan_stop");
         }
         else{
-            let pl = pl_list[0];
             let pl_headLocation = pl.getHeadLocation();
             let delta_y = pl_headLocation.y - en.location.y;
             // Follow box (xzy): 11 × 11 × 7
             let delta_x = pl_headLocation.x - en.location.x;
             let delta_z = pl_headLocation.z - en.location.z;
-            if(    -5 < delta_x && delta_x < 5 
-                && -5 < delta_z && delta_z < 5 
+            if(    -5 < delta_x && delta_x < 5
+                && -5 < delta_z && delta_z < 5
                 && -3 < delta_y && delta_y < 6)
             {
                 // Score box (xzy): 3 × 3 × 4
@@ -168,7 +179,7 @@ export default class PowerPoint {
             }
             else{
                 en.triggerEvent("scan_stop");
-                en.setDynamicProperty("target", "");
+                en.setDynamicProperty("target", "0");
             }
         }
     }

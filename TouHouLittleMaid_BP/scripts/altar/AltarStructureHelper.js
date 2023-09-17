@@ -256,7 +256,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         
         for(let platform of this.platforms){
             let platformLocation = super.getPointByBaseLocation(platform, baseLocation, rotation);
-            let itemLocation = {x: platformLocation[0], y: platformLocation[1] + 1, z: platformLocation[2]};
+            let itemLocation = {x: platformLocation[0] + 0.5, y: platformLocation[1] + 1, z: platformLocation[2] + 0.5};
             let itemEntity = this.searchAltarItemEntity(entity.dimension, itemLocation);
             if(itemEntity != null) {
                 let item = itemEntity.getComponent("minecraft:item").itemStack;

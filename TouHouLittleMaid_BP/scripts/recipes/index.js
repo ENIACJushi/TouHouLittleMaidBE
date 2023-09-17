@@ -1,5 +1,5 @@
 // Spawn
-import {recipe, recipe as spawn_lightning_bolt} from "./spawn/spawn_lightning_bolt"
+import {recipe as spawn_lightning_bolt} from "./spawn/spawn_lightning_bolt"
 import {recipe as spawn_box} from "./spawn/spawn_box"
 
 // Craft

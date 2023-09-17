@@ -1,4 +1,4 @@
-import { Dimension, ItemStack, Player, Enchantment, ItemEnchantsComponent } from "@minecraft/server";
+import { Dimension, ItemStack, Player, Enchantment, ItemEnchantsComponent, Vector } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import { recipeList } from "../recipes/index"
 import { tagDefines } from "../recipes/tag_define"
@@ -103,6 +103,14 @@ export class AltarCraftHelper{
         // Return
         return matchAtLeastOne;
     }
+    /**
+     * 
+     * @param {Dimension} dimension 
+     * @param {Vector} location 
+     * @param {*} output 
+     * @param {*} itemStacks 
+     * @returns 
+     */
     summonOutput(dimension, location, output, itemStacks){
         try{
             switch(output.type){
@@ -112,6 +120,7 @@ export class AltarCraftHelper{
                     let data = 0;
                     if(!itemInfo["id"]) return false;
                     if(itemInfo["Count"]) amount = itemInfo["Count"];
+                    Tool.logger("c1");
                     let output_item = new ItemStack(itemInfo["id"], amount);
                     if(itemInfo["Enchantments"] != null){
                         let ench_list = output_item.getComponent("minecraft:enchantments").enchantments
@@ -133,7 +142,6 @@ export class AltarCraftHelper{
                         }
                     }
                     break;
-                
                 default:
                     dimension.spawnEntity(output.type, location);
                     break;

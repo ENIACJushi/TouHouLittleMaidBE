@@ -1,3 +1,10 @@
+
+danmaku.pellet.name=§aPellet
+danmaku.ball.name=§aBall
+danmaku.orbs.name=§aOrbs
+danmaku.big_ball.name=§aBig Ball
+message.touhou_little_maid:hakurei_gohei.switch=Switch danmaku type:  
+
 entity.touhou_little_maid:chair.name=Chair
 entity.touhou_little_maid:maid.name=Maid
 entity.touhou_little_maid:fairy.name=Maid Fairy

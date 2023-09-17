@@ -90,7 +90,7 @@
           ]
         },
         "minecraft:friction_modifier":{
-          "value": 1.2
+          "value": 1
         },
         "minecraft:type_family": {
           "family": [ "inanimate" ]

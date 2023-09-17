@@ -32,7 +32,7 @@
             }
           }
         },
-        "thlm:player_danmaku":{
+        "thlm:activated_danmaku":{
           "minecraft:projectile": {
             "on_hit": { },
             "power": 1.3,
@@ -72,6 +72,12 @@
         }
       },
       "components": {
+        "minecraft:despawn": {
+          "despawn_from_distance": {
+            "max_distance": 64,
+            "min_distance": 32
+          }
+        },
         "minecraft:collision_box": {
           "width": 0,
           "height": 0
@@ -96,13 +102,7 @@
         "minecraft:entity_spawned": {
           "sequence": [
             {
-              "filters": {"test": "is_family", "subject": "other", "value": "player"},
-              "add": { "component_groups" : [ "thlm:player_danmaku" ] },
-              "trigger": "init_ramdon"
-            },
-            {
-              "filters": {"test": "is_family", "subject": "other", "value": "fairy"},
-              "add": { "component_groups": [ "thlm:fairy_danmaku" ] },
+              "add": { "component_groups" : [ "thlm:activated_danmaku" ] },
               "trigger": "init_ramdon"
             }
           ]

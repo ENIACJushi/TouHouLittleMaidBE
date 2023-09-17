@@ -3,7 +3,7 @@
 	"minecraft:geometry": [
 		{
 			"description": {
-				"identifier": "geometry.unknown",
+				"identifier": "geometry.touhou_little_maid.fairy",
 				"texture_width": 128,
 				"texture_height": 128,
 				"visible_bounds_width": 3,
@@ -21,7 +21,7 @@
 				{
 					"name": "hair",
 					"parent": "head",
-					"pivot": [3.5, 18.5, 3.75]
+					"pivot": [0, 18.5, 3.75]
 				},
 				{
 					"name": "hair1",
