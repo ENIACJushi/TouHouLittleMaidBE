@@ -1,20 +1,25 @@
 import { world, system, Enchantment, ItemEnchantsComponent } from "@minecraft/server"
 import { altarStructure } from "./altar/AltarStructureHelper";
-
+import experiment from "./experiment"
 import PowerPoint from "./entities/power_point"
-import * as Danmaku from "./entities/danmaku/main"
+import * as Danmaku from "./entities/danmaku/DanmakuManager"
 import * as Tool from"./libs/scarletToolKit";
 
-// World Initialize
-world.afterEvents.worldInitialize.subscribe((e) => {
-    PowerPoint.init_scoreboard_world();
-    PowerPoint.init_dynamic_properties(e);
-    Danmaku.init_dynamic_properties(e);
-});
+if(true){
+    // World Initialize
+    world.afterEvents.worldInitialize.subscribe((e) => {
+        PowerPoint.init_scoreboard_world();
+        PowerPoint.init_dynamic_properties(e);
+        Danmaku.init_dynamic_properties(e);
+    });
 
-system.runTimeout(()=>{
-    thlm.main();
-},100)
+    system.runTimeout(()=>{
+        thlm.main();
+    },100)
+}
+else{
+    experiment.main();
+}
 
 class thlm {
     static main(){
@@ -108,8 +113,8 @@ class thlm {
                         case "dfs":
                             Danmaku.fairy_shoot(event.entity);
                             break;
-                        case "dgs":
-                            Danmaku.ghast_shoot(event.entity);
+                        case "ddb":
+                            Danmaku.debug_shoot(event.entity);
                             break;
                         default: break;
                     }

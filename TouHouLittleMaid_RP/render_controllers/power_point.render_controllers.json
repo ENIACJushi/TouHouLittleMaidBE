@@ -16,7 +16,7 @@
 			"geometry": "Array.geos[query.variant]",
 			"materials": [
 				{
-					"*": "Material.default"
+					"power_point": "Material.default"
 				}
 			],
 			"textures": [

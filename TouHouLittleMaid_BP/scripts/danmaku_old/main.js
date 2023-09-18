@@ -6,57 +6,10 @@ import * as Shoot from "./shoot";
 import * as Config from "./config"
 
 
-/**
- * 
- * @param {WorldInitializeAfterEvent} e 
- */
-export function init_dynamic_properties(e){
-    let def = new DynamicPropertiesDefinition();
-    def.defineString("source", 15, "0"); // Entity id
-    def.defineNumber("damage", 8);
 
-    for(let type in Config.DanmakuTypes){
-        console.info(type)
-        e.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get(Config.DanmakuPrefix + Config.DanmakuTypes[type].name));
-    }
-}
 
 //////// Danmaku ////////
-/**
- * 
- * @param {ProjectileHitAfterEvent} ev 
- * @returns 
- */
-export function danmakuHitEvent(ev){
-    let projectile = ev.projectile;
-    // Hit block
-    if(ev.getBlockHit() != undefined){
-        projectile.triggerEvent("despawn");
-        return;
-    }
-    // Hit entity
-    let hit_info = ev.getEntityHit()
-    if(hit_info != null){
-        // Get source entity by event or property
-        let source = ev.source;
-        if(source == undefined){
-            let id = projectile.getDynamicProperty("source");
-            if(id != "0"){
-                source =  world.getEntity(id);
-            }
-        }
 
-        // Do not hit source
-        if(hit_info.entity == source){
-            return;
-        }
-        // Hit other entities
-        else{
-            hit_info.entity.applyDamage(projectile.getDynamicProperty("damage"), {damagingEntity: source, damagingProjectile: projectile});
-            projectile.triggerEvent("despawn");
-        }
-    }
-}
 
 
 //////// Gohei ////////
@@ -122,7 +75,7 @@ export function fairy_shoot(fairy){
         let shootLocation = fairy.getHeadLocation();
         shootLocation = new Vector(shootLocation.x, shootLocation.y-0.4, shootLocation.z);
         Shoot.fanShapedShot(fairy.dimension, shootLocation, shootLocation, target.location, fairy.id,
-            Config.DanmakuTypes.BALL, Math.PI / 6, 3, [0,1,0], -1, 0.6, 8, Config.DanmakuColors.RANDOM);
+            Config.DanmakuTypes.BALL, Math.PI / 6, 3, [0,1,0], -1, 0.6, 8, Shoot.getRandomColor());
     }
 }
 
@@ -130,18 +83,26 @@ export function ghast_shoot(entity){
     let target = entity.target
     if(target != undefined){
         Shoot.fanShapedShot(entity.dimension, entity.getHeadLocation(), entity.getHeadLocation(),target.location, entity.id,
-            Config.DanmakuTypes.BALL, Math.PI, 18, [0,1,0], -0.5, 0.6, 8, Config.DanmakuColors.RANDOM);
+            Config.DanmakuTypes.BALL, Math.PI, 18, [0,1,0], 0, 0.6, 8, Shoot.getRandomColor());
         system.runTimeout(()=>{
             Shoot.fanShapedShot(entity.dimension, entity.getHeadLocation(), entity.getHeadLocation(),target.location, entity.id,
-            Config.DanmakuTypes.BALL, Math.PI/2, 18, [0,1,0], -5.5, 0.6, 8, Config.DanmakuColors.RANDOM);
+            Config.DanmakuTypes.BALL, Math.PI/2, 18, [0,1,0], -10, 0.6, 8, Shoot.getRandomColor());
             Shoot.fanShapedShot(entity.dimension, entity.getHeadLocation(), entity.getHeadLocation(),target.location, entity.id,
-            Config.DanmakuTypes.BALL, Math.PI/2, 18, [0,1,0], 4.5, 0.6, 8, Config.DanmakuColors.RANDOM);
+            Config.DanmakuTypes.BALL, Math.PI/2, 18, [0,1,0], 10, 0.6, 8, Shoot.getRandomColor());
         }, 5);
         system.runTimeout(()=>{
             Shoot.fanShapedShot(entity.dimension, entity.getHeadLocation(), entity.getHeadLocation(),target.location, entity.id,
-            Config.DanmakuTypes.BALL, Math.PI/3, 18, [0,1,0], -4.5, 0.6, 8, Config.DanmakuColors.RANDOM);
+            Config.DanmakuTypes.BALL, Math.PI/3, 18, [0,1,0], -20, 0.6, 8, Shoot.getRandomColor());
             Shoot.fanShapedShot(entity.dimension, entity.getHeadLocation(), entity.getHeadLocation(),target.location, entity.id,
-            Config.DanmakuTypes.BALL, Math.PI/3, 18, [0,1,0], 3.5, 0.6, 8, Config.DanmakuColors.RANDOM);
+            Config.DanmakuTypes.BALL, Math.PI/3, 18, [0,1,0], 20, 0.6, 8, Shoot.getRandomColor());
         }, 10);
+        var single_color = Shoot.getRandomColor();
+        for(let i=0; i<40;i++){
+            system.runTimeout(()=>{
+                Shoot.singleShoot(entity.dimension, entity.getHeadLocation(), entity.getHeadLocation(),target.location, entity.id,
+                Config.DanmakuTypes.BALL, -0.5, 0.6, 4, single_color)
+            }, i);
+        }
+        
     }
 }

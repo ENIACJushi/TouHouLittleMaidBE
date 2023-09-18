@@ -59,11 +59,11 @@ export function length(vector){
 
 // 单位化
 export function normalize(vector){
-    let length = vector.length
-    if (length < 1e-8){
+    let l = length(vector)
+    if (l < 1e-8){
         return [0, 0, 0]
     }
-    return [vector[0]/length, vector[1]/length, vector[2]/length]
+    return [vector[0]/l, vector[1]/l, vector[2]/l]
 }
 
 // 投影  a 在 以 b 为法向量的平面上的投影
@@ -79,12 +79,14 @@ export function projection_plane(a, b){
  * @param {number} theta A numeric expression that contains an angle measured in radians.
  */
 export function rotate_axis(source, axis, theta){
-    let cos = Math.cosh(theta);
-    let sin = Math.sinh(theta);
+    
+    let axis_n = normalize(axis);
+    let cos = Math.cos(theta);
+    let sin = Math.sin(theta);
     return add(
-                add(multi(source, cos), multi(cross(axis, source), sin)),
-                multi(multi(axis, dot(axis, source)), (1-cos))
-            )
+                add(multi(source, cos), multi(cross(axis_n, source), sin)),
+                multi(multi(axis_n, dot(axis_n, source)), (1-cos))
+            );
 }
 
 /**

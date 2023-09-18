@@ -1,6 +1,8 @@
 import { Player, world, Dimension, Entity, Vector, MolangVariableMap,DynamicPropertiesDefinition,WorldInitializeAfterEvent,EntityTypes } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 
+var gohei_scan = 0;
+
 export default class PowerPoint {
     //////// INIT ////////
     static init_scoreboard_world(){
@@ -68,9 +70,17 @@ export default class PowerPoint {
      * Scan tick of Power Point System
      */
     static scan_tick(){
+        let gohei = false;
+        if(gohei_scan >= 1){
+            gohei = true;
+            gohei_scan = 0
+        }
+        else{
+            gohei_scan ++;
+        }
         for(let pl of world.getPlayers()){
-            this.scan_gohei(pl);
-            this.scan_player(pl);
+            if(gohei) this.scan_gohei(pl);
+            this.scan_power_point(pl);
         }
     }
     
@@ -78,7 +88,7 @@ export default class PowerPoint {
      * Scan power point near the player
      * @param {Player} pl 
      */
-    static scan_player(pl){
+    static scan_power_point(pl){
         const results = pl.dimension.getEntities({
             type: 'touhou_little_maid:p_point',
             maxDistance: 5,

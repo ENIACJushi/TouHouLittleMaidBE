@@ -4,8 +4,8 @@
 		{
 			"description": {
 				"identifier": "geometry.power_point_1",
-				"texture_width": 15,
-				"texture_height": 15,
+				"texture_width": 64,
+				"texture_height": 64,
 				"visible_bounds_width": 5,
 				"visible_bounds_height": 5,
 				"visible_bounds_offset": [0, 0.5, 0]
@@ -18,9 +18,13 @@
 						{
 							"origin": [-4, 1, 0],
 							"size": [8, 8, 0],
-							"pivot": [0, 0, 0],
 							"uv": {
-								"south": {"uv": [0.9375, 0.9375], "uv_size": [1.875, 1.875]}
+								"north": {"uv": [4, 54], "uv_size": [3, 3]},
+								"east": {"uv": [4, 54], "uv_size": [3, 3]},
+								"south": {"uv": [4, 4], "uv_size": [8, 8]},
+								"west": {"uv": [4, 54], "uv_size": [3, 3]},
+								"up": {"uv": [7, 57], "uv_size": [-3, -3]},
+								"down": {"uv": [7, 57], "uv_size": [-3, -3]}
 							}
 						}
 					]

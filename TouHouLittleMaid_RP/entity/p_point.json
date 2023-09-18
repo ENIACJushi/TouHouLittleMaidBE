@@ -5,7 +5,7 @@
       "identifier": "touhou_little_maid:p_point",
       "min_engine_version": "1.8.0",
       "materials": {
-        "default": "power_point"
+        "default": "entity_emissive_alpha"
       },
       "textures": {
         "default": "textures/entity/power_point.png"

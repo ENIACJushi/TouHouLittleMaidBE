@@ -19,7 +19,7 @@
           "max": "hard"
         },
         "minecraft:weight": {
-          "default": 100
+          "default": 20
         },
         "minecraft:herd": {
           "min_size": 2,

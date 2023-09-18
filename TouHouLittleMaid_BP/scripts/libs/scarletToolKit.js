@@ -25,6 +25,9 @@ export function getRandom(min = 0, max = 1){
     else return null;
 }
 
+export function getRandomInteger(min=0, max=1){
+    return min + Math.floor(Math.random() * max)
+}
 
 
 ////////// Command //////////

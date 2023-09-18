@@ -44,7 +44,7 @@ Touhou 百科：https://en.touhouwiki.net/wiki/Touhou_Wiki
 
 ##### 多方块祭坛
 
-<span>&#8195;</span>祭坛是本模组用于合成所必需的多方块结构。祭坛的合成表可以在下问查询，合成同时还需要玩家的power值。
+<span>&#8195;</span>祭坛是本模组用于合成所必需的多方块结构。祭坛的合成表可以在文查询，合成同时还需要玩家的power值。
 <span>&#8195;</span>使用御币右击第四层中间偏左的红色羊毛正面，能够构建祭坛。
 
 <img style="margin-left:21px" src=Imgs/altar.png>
