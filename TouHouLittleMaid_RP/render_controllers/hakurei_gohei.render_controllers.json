@@ -3,8 +3,17 @@
   "render_controllers": {
     "controller.render.touhou_little_maid:hakurei_gohei": {
       "geometry": "geometry.default",
-      "materials": [ { "*": "variable.is_enchanted ? material.enchanted : material.default" } ],
-      "textures": [ "texture.default", "texture.enchanted" ]
+      "materials": [ 
+        { "item": "variable.is_enchanted ? material.enchanted : material.default" },
+        { "cross": "material.blending"}
+     ],
+      "textures": [ "texture.default", "texture.enchanted" ],
+      "part_visibility": [
+        {
+					"item": true,
+					"cross": true
+				}
+      ]
     }
   }
 }

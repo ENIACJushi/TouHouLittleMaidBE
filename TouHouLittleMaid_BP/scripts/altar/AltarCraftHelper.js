@@ -120,7 +120,6 @@ export class AltarCraftHelper{
                     let data = 0;
                     if(!itemInfo["id"]) return false;
                     if(itemInfo["Count"]) amount = itemInfo["Count"];
-                    Tool.logger("c1");
                     let output_item = new ItemStack(itemInfo["id"], amount);
                     if(itemInfo["Enchantments"] != null){
                         let ench_list = output_item.getComponent("minecraft:enchantments").enchantments
@@ -167,7 +166,6 @@ class HungaryMatch{
     }
     outputRes(){
         for (let i = 0 ; i < this.count; i++) {
-            Tool.logger(`${i}: ${this.path[i]}`);
         }
     }
     clearOnPathSign(){

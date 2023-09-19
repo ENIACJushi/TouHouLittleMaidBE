@@ -5,7 +5,8 @@
       "identifier": "touhou_little_maid:hakurei_gohei_crafting_table",
       "materials": {
         "default": "entity_alphatest",
-        "enchanted": "entity_alphatest_glint"
+        "enchanted": "entity_alphatest_glint",
+        "blending": "danmaku_blending"
       },
       "textures": {
         "default": "textures/items/hakurei_gohei_in_hand",
@@ -16,12 +17,16 @@
       },
       "animations": {
         "wield": "animation.hakurei_gohei.wield",
-        "wield_first_person_pull": "animation.hakurei_gohei.wield_first_person_pull"
+        "wield_first_person_pull": "animation.hakurei_gohei.wield_first_person_pull",
+        "hide_cross": "animation.hakurei_gohei.hide_cross"
       },
       "enable_attachables": true,
       "scripts": {
         "animate": [
           "wield",
+          {
+            "hide_cross": "!c.is_first_person || !query.is_using_item"
+          },
           {
             "wield_first_person_pull": "query.is_using_item && c.is_first_person"
           }
