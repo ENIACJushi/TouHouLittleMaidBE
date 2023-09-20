@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "thlmd:danmaku_basic_orbs",
+      "min_engine_version": "1.8.0",
+      "materials": {
+        "default": "danmaku_blending"
+      },
+      "textures": {
+        "default": "textures/entity/danmaku/danmaku_new.png"
+      },
+      "geometry": {
+        "default": "geometry.danmaku_basic_orbs"
+      },
+      "animations": {
+        "rotate": "animation.touhou_little_maid.camera_rot_by_danmaku",
+        "life":"animation.touhou_little_maid.danmaku.life"
+      },
+      "scripts": {
+        "animate": [
+          "rotate",
+          "life"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.danmaku_basic"
+      ],
+      "spawn_egg": {
+        "texture": "touhou_little_maid:p_point",
+        "texture_index": 0
+      }
+    }
+  }
+}

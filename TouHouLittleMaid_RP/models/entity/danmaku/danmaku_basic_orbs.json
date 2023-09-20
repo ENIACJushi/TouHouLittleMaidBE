@@ -1,0 +1,33 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.danmaku_basic_orbs",
+				"texture_width": 416,
+				"texture_height": 128,
+				"visible_bounds_width": 5,
+				"visible_bounds_height": 5,
+				"visible_bounds_offset": [0, 0.5, 0]
+			},
+			"bones": [
+				{
+					"name": "danmaku",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{
+							"origin": [-12, -12, 0],
+							"size": [24, 24, 0],
+							"uv": {
+								"south": {
+									"uv": [4, 68],
+									"uv_size": [24, 24]
+								}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

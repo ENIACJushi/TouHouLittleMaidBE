@@ -12,6 +12,11 @@
       "+states": [ "Blending", "DisableCulling","DisableDepthWrite"],
       "blendSrc": "SourceAlpha",
       "blendDst": "One"
+    },
+    "test_slime_outer:entity":{
+      "+states":[
+            "Blending"
+        ]
     }
   }
 }

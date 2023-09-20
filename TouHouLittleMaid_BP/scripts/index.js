@@ -2,7 +2,7 @@ import { world, system, Enchantment, ItemEnchantsComponent } from "@minecraft/se
 import { altarStructure } from "./altar/AltarStructureHelper";
 import experiment from "./experiment"
 import PowerPoint from "./entities/power_point"
-import * as Danmaku from "./entities/danmaku/DanmakuManager"
+import * as Danmaku from "./danmaku/DanmakuManager"
 import * as Tool from"./libs/scarletToolKit";
 
 if(true){
@@ -45,7 +45,7 @@ class thlm {
                         // Activate Altar  (Interact with red wool by touhou_little_maid:hakurei_gohei_xxx)
                         if(event.itemStack.typeId.substring(0, 32) == "touhou_little_maid:hakurei_gohei"){
                             if(player.isSneaking){
-                                Danmaku.gohei_transform(event)
+                                Danmaku.gohei_transform(event);
                             }
                             else if(event.block.typeId == "minecraft:red_wool"){
                                 altarStructure.activate(player.dimension, event.block.location, event.blockFace);
@@ -54,7 +54,7 @@ class thlm {
         
                         // Place or Pop Item  (Interact with touhou_little_maid:altar_platform_block)
                         if(event.block.typeId == "touhou_little_maid:altar_platform_block" && !player.isSneaking){
-                            altarStructure.placeItemEvent(event.block.location, player)
+                            altarStructure.placeItemEvent(event.block.location, player);
                         }
                     }
                 }

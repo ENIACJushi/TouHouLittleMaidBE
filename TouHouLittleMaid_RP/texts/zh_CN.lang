@@ -2,7 +2,13 @@
 danmaku.pellet.name=§a点弹
 danmaku.ball.name=§a小玉
 danmaku.orbs.name=§a环玉
-danmaku.big_ball.name=§a大玉
+danmaku.big_ball.name=§a中玉
+danmaku.bubble.name=§a大玉
+danmaku.heart.name=§a心弹
+danmaku.amulet.name=§a札弹
+danmaku.star.name=§a星弹
+danmaku.big_star.name=§a大星弹
+danmaku.glowey_ball.name=§a光玉
 
 entity.touhou_little_maid:chair.name=椅子
 entity.touhou_little_maid:maid.name=小女仆

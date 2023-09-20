@@ -96,9 +96,12 @@ export default class PowerPoint {
         });
     
         for(let en of results){
-            if(en.getDynamicProperty("target") == "0"){
-                en.triggerEvent("scan_start");
-                en.setDynamicProperty("target", pl.id);
+            try{
+                if(en.getDynamicProperty("target") == "0"){
+                    en.triggerEvent("scan_start");
+                    en.setDynamicProperty("target", pl.id);
+                }
+            }catch{
             }
         }
     }
@@ -120,78 +123,81 @@ export default class PowerPoint {
      * @param {Entity} en 
      */
     static scan_powerpoint(en){
-        let player_id = en.getDynamicProperty("target");
-        let pl = world.getEntity(player_id);
-        if(pl == undefined){
-            en.setDynamicProperty("target", "0");
-            en.triggerEvent("scan_stop");
-        }
-        else{
-            let pl_headLocation = pl.getHeadLocation();
-            let delta_y = pl_headLocation.y - en.location.y;
-            // Follow box (xzy): 11 × 11 × 7
-            let delta_x = pl_headLocation.x - en.location.x;
-            let delta_z = pl_headLocation.z - en.location.z;
-            if(    -5 < delta_x && delta_x < 5
-                && -5 < delta_z && delta_z < 5
-                && -3 < delta_y && delta_y < 6)
-            {
-                // Score box (xzy): 3 × 3 × 4
-                if(    -1 < delta_x && delta_x < 1 
-                    && -1 < delta_z && delta_z < 1
-                    && -2 < delta_y && delta_y < 1)
-                {
-                    // PS. Fariy loot: 2*0p + 2*2p (16 points)
-                    let point_score = this.get_power_number(pl.name);
-    
-                    // If this power point has tag, add by tag number
-                    let is_taged = false;
-                    for(let tag of en.getTags()){
-                        if(tag.substring(0, 6) == "thlm:p"){
-                            point_score += parseInt(tag.substring(6));
-                            is_taged = true;
-                            break;
-                        }
-                    }
-    
-                    // If not, add by default
-                    if(!is_taged){
-                        switch(en.getComponent("minecraft:variant").value){
-                            case 0: point_score += 1  ; break;
-                            case 1: point_score += 4  ; break;
-                            case 2: point_score += 7  ; break;
-                            case 3: point_score += 10  ; break;
-                            case 4: point_score += 500; break;
-                            default: break;
-                        }
-                    }
-                    this.set_power_number(pl.name, Math.min(500, point_score));
-                    Tool.executeCommand(`playsound power_pop ${Tool.playerCMDName(pl.name)}`);
-                    en.triggerEvent("despawn");
-                }
-                // ​If not in the score box, do storm suction
-                else{
-                    let distance = Math.sqrt(delta_x*delta_x + delta_z*delta_z);
-    
-                    let velocity_xz = (distance > 1) ? (0.2 - distance * 0.025) : (distance * 0.175);
-                    let v_x = velocity_xz*(delta_x/distance);
-                    let v_z = velocity_xz*(delta_z/distance);
-                
-                    let v_y = en.getVelocity().y - 0.036; // gravity
-                    if(-1.5 < delta_x && delta_x < 1.5
-                        && -1.5 < delta_z && delta_z < 1.5
-                        && delta_y > 1){
-                            v_y = (delta_y > 0) ? (0.35 - delta_y * 0.025) : (delta_y * 0.3);
-                        }
-                    en.clearVelocity()
-                    en.applyImpulse(new Vector(v_x, v_y, v_z));
-                }
+        try{
+            let player_id = en.getDynamicProperty("target");
+            let pl = world.getEntity(player_id);
+            if(pl == undefined){
+                en.setDynamicProperty("target", "0");
+                en.triggerEvent("scan_stop");
             }
             else{
-                en.triggerEvent("scan_stop");
-                en.setDynamicProperty("target", "0");
+                let pl_headLocation = pl.getHeadLocation();
+                let delta_y = pl_headLocation.y - en.location.y;
+                // Follow box (xzy): 11 × 11 × 7
+                let delta_x = pl_headLocation.x - en.location.x;
+                let delta_z = pl_headLocation.z - en.location.z;
+                if(    -5 < delta_x && delta_x < 5
+                    && -5 < delta_z && delta_z < 5
+                    && -3 < delta_y && delta_y < 6)
+                {
+                    // Score box (xzy): 3 × 3 × 4
+                    if(    -1 < delta_x && delta_x < 1 
+                        && -1 < delta_z && delta_z < 1
+                        && -2 < delta_y && delta_y < 1)
+                    {
+                        // PS. Fariy loot: 2*0p + 2*2p (16 points)
+                        let point_score = this.get_power_number(pl.name);
+        
+                        // If this power point has tag, add by tag number
+                        let is_taged = false;
+                        for(let tag of en.getTags()){
+                            if(tag.substring(0, 6) == "thlm:p"){
+                                point_score += parseInt(tag.substring(6));
+                                is_taged = true;
+                                break;
+                            }
+                        }
+        
+                        // If not, add by default
+                        if(!is_taged){
+                            switch(en.getComponent("minecraft:variant").value){
+                                case 0: point_score += 1  ; break;
+                                case 1: point_score += 4  ; break;
+                                case 2: point_score += 7  ; break;
+                                case 3: point_score += 10  ; break;
+                                case 4: point_score += 500; break;
+                                default: break;
+                            }
+                        }
+                        this.set_power_number(pl.name, Math.min(500, point_score));
+                        Tool.executeCommand(`playsound power_pop ${Tool.playerCMDName(pl.name)}`);
+                        en.triggerEvent("despawn");
+                    }
+                    // ​If not in the score box, do storm suction
+                    else{
+                        let distance = Math.sqrt(delta_x*delta_x + delta_z*delta_z);
+        
+                        let velocity_xz = (distance > 1) ? (0.2 - distance * 0.025) : (distance * 0.175);
+                        let v_x = velocity_xz*(delta_x/distance);
+                        let v_z = velocity_xz*(delta_z/distance);
+                    
+                        let v_y = en.getVelocity().y - 0.036; // gravity
+                        if(-1.5 < delta_x && delta_x < 1.5
+                            && -1.5 < delta_z && delta_z < 1.5
+                            && delta_y > 1){
+                                v_y = (delta_y > 0) ? (0.35 - delta_y * 0.025) : (delta_y * 0.3);
+                            }
+                        en.clearVelocity()
+                        en.applyImpulse(new Vector(v_x, v_y, v_z));
+                    }
+                }
+                else{
+                    en.triggerEvent("scan_stop");
+                    en.setDynamicProperty("target", "0");
+                }
             }
-        }
+            }
+        catch{}
     }
     
     /**

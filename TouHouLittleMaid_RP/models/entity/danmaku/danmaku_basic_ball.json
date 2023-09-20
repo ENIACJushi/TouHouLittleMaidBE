@@ -1,0 +1,33 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.danmaku_basic_ball",
+				"texture_width": 416,
+				"texture_height": 128,
+				"visible_bounds_width": 5,
+				"visible_bounds_height": 5,
+				"visible_bounds_offset": [0, 0.5, 0]
+			},
+			"bones": [
+				{
+					"name": "danmaku",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{
+							"origin": [-9, -9, 0],
+							"size": [18, 18, 0],
+							"uv": {
+								"south": {
+									"uv": [7, 39],
+									"uv_size": [18, 18]
+								}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}
