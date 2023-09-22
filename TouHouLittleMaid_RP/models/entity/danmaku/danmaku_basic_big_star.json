@@ -13,6 +13,11 @@
 			"bones": [
 				{
 					"name": "danmaku",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "star",
+					"parent": "danmaku",
 					"pivot": [0, 0, 0],
 					"cubes": [
 						{

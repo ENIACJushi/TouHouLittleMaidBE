@@ -60,7 +60,6 @@ export default class DanmakuShoot{
         }
         else{
             // 指定射击实体模式
-            danmaku.setThrowerOffset(this.thrower_offset);
             let s;
             try{// 有的实体死了，但对象仍然在，只能用try检测
                 s = this.thrower.location;
@@ -71,6 +70,7 @@ export default class DanmakuShoot{
             s_location = [s.x + this.thrower_offset[0],
                         s.y + this.thrower_offset[1],
                         s.z + this.thrower_offset[2]];
+            danmaku.setThrowerOffset(this.thrower_offset);
         }
         // Get target location
         if(this.enable_target_location){

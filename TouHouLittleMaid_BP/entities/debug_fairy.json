@@ -101,6 +101,14 @@
               "value": "player"
             },
             "max_dist": 16
+          },
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "debug_target"
+            },
+            "max_dist": 32
           }
         ]
       },

@@ -13,7 +13,7 @@ import * as Tool from "../libs/scarletToolKit"
 export default class EntityDanmaku{
     /**
      * @param {Dimension} world 名为world，实为维度
-     * @param {Entity} thrower 
+     * @param {Entity} thrower 发射者，设为false时不指定
      */
     constructor(world, thrower) {
         this.world   = world;
@@ -43,8 +43,13 @@ export default class EntityDanmaku{
             spawn_location = this.Throwerlocation;
         }
         else{
-            if(this.thrower == undefined) return false;
-            let s = this.thrower.location;
+            let s;
+            try{
+                s = this.thrower.location;
+            }
+            catch{
+                return false;
+            }
             spawn_location = [s.x + this.thrower_offset[0],
                           s.y + this.thrower_offset[1],
                           s.z + this.thrower_offset[2]];
@@ -58,7 +63,9 @@ export default class EntityDanmaku{
         // Set color
         danmaku.triggerEvent(DanmakuColor.getTriggerEvent(this.color));
         // Set source
-        danmaku.setDynamicProperty("source", this.thrower.id);
+        if(this.thrower !== false){
+            danmaku.setDynamicProperty("source", this.thrower.id);
+        }
         // Set damage
         danmaku.setDynamicProperty("damage", this.damage);
 
@@ -149,6 +156,16 @@ export default class EntityDanmaku{
      * @returns 
      */
     setGravityVelocity(gravity){
+        return this;
+    }
+     /**
+     * 指定发射位置
+     * @param {Entity} thrower 
+     * @returns {DanmakuShoot}
+     */
+    setThrower(thrower){
+        this.thrower = thrower;
+        this.enableThrowerLocation = false;
         return this;
     }
     /**

@@ -35,7 +35,7 @@
       },
       "minecraft:collision_box": {
         "width": 0.6,
-        "height": 1.9
+        "height": 1.6
       },
       "minecraft:type_family": {
         "family": [ "fairy", "monster", "mob" ]
@@ -140,9 +140,9 @@
       },
       "init_ramdon":{
         "randomize": [
-            { "trigger": "init_f1", "weight": 6 },
+            { "trigger": "init_f1", "weight": 4 },
             { "trigger": "init_f2", "weight": 3 },
-            { "trigger": "init_f3", "weight": 1 }
+            { "trigger": "init_f3", "weight": 2 }
         ]
       },
       "init_f1":{"sequence": [{ "add": { "component_groups": [ "f1" ] } }]},

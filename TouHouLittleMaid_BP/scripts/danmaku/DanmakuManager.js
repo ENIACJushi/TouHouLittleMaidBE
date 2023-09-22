@@ -38,21 +38,23 @@ export function danmakuHitEvent(ev){
     let hit_info = ev.getEntityHit()
     if(hit_info != null){
         // Get source entity by event or property
+        let projectileOptions = {"damagingProjectile": projectile};
         let source = ev.source;
         if(source == undefined){
+            // 没有原版框架下的攻击实体，则通过动态属性寻找
             let id = projectile.getDynamicProperty("source");
             if(id != "0"){
                 source =  world.getEntity(id);
             }
         }
-
+        if(source != undefined) projectileOptions["damagingEntity"] = source;
         // Do not hit source
-        if(hit_info.entity == source){
+        if(hit_info.entity.id == source.id){
             return;
         }
         // Hit other entities
         else{
-            hit_info.entity.applyDamage(projectile.getDynamicProperty("damage"), {damagingEntity: source, damagingProjectile: projectile});
+            hit_info.entity.applyDamage(projectile.getDynamicProperty("damage"), projectileOptions);
             projectile.triggerEvent("despawn");
         }
     }
@@ -68,7 +70,7 @@ const GoheiSequence = Object.freeze([
     DanmakuType.HEART,
     DanmakuType.AMULET,
     // DanmakuType.STAR, 用八卦炉发射
-    // DanmakuType.BIG_STAR,
+    // DanmakuType.BIG_STAR, 用八卦炉发射
     DanmakuType.GLOWEY_BALL,
 ]);
 const GoheiPrefix = "touhou_little_maid:hakurei_gohei_";
@@ -149,12 +151,10 @@ export function debug_shoot(entity){
     let target = entity.target
     if(target != undefined){
         let type = -1;
-        for(let tag of entity.getTags()){
-            if(tag.substring(0, 10) == "thlm:debug"){
-                type=parseInt(tag.substring(10))
-                break;
-            }
+        if(entity.nameTag && entity.nameTag.substring(0, 10) == "thlm:debug"){
+            type=parseInt(entity.nameTag.substring(10))
         }
+        
         switch(type){
             case 0:{// 米字弹幕
                 let fanDanmaku = DanmakuShoot.create().setWorld(entity.dimension)
@@ -195,6 +195,27 @@ export function debug_shoot(entity){
                     fanDanmaku.setAxisRotation_direction(i*yaw).fanShapedShot();
                 }
             } break;
+            case 3:{// 带sigma的自机狙（星型）
+                var aimDanmakuShoot_small =DanmakuShoot.create().setWorld(entity.dimension)
+                    .setThrower(entity).setTarget(target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
+                    .setColor(DanmakuColor.RANDOM).setType(DanmakuType.STAR)
+                    .setDamage(6).setGravity(0)
+                    .setVelocity(0.8).setInaccuracy(Math.PI/7);
+                var aimDanmakuShoot_big =DanmakuShoot.create().setWorld(entity.dimension)
+                    .setThrower(entity).setTarget(target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
+                    .setColor(DanmakuColor.RANDOM).setType(DanmakuType.BIG_STAR)
+                    .setDamage(6).setGravity(0)
+                    .setVelocity(0.6).setInaccuracy(Math.PI/15);
+                for(let i=0; i<20;i++){
+                    system.runTimeout(()=>{
+                        aimDanmakuShoot_small.setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                        aimDanmakuShoot_small.setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                        aimDanmakuShoot_small.setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                        aimDanmakuShoot_big.setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                        aimDanmakuShoot_big.setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                    }, i+10);
+                }
+            }break;
             default:
                 // 默认弹幕（妖精女仆）
                 fairy_shoot(entity);

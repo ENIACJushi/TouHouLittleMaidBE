@@ -125,11 +125,12 @@ class thlm {
         // Projectile Hit Event
         world.afterEvents.projectileHit.subscribe(event =>{
             system.run(()=>{
-                try{
-                    var projectile = event.projectile;
-                    if(projectile != undefined){
+                var projectile = event.projectile;
+                if(projectile !== undefined){
+                    // 弹幕可能正在释放，无法获取typeId
+                    try{
                         var typeId = event.projectile.typeId;
-                        if(typeId != undefined){
+                        if(typeId !== undefined){
                             if(typeId.substring(0, 6) == "thlmd:"){
                                 Danmaku.danmakuHitEvent(event);
                             }
@@ -138,8 +139,8 @@ class thlm {
                             }
                         }
                     }
+                    catch{}
                 }
-                catch{}
             });
         });
 

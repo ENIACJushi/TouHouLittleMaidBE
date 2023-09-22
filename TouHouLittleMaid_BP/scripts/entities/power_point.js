@@ -24,7 +24,7 @@ export default class PowerPoint {
      * @param {Entity} en 
      */
     static init_power_point(en){
-        en.applyImpulse(this.get_velocity_xp_orb());
+        en.applyImpulse(this.get_velocity_power_point());
     }
 
     /**
@@ -88,10 +88,12 @@ export default class PowerPoint {
      * Scan power point near the player
      * @param {Player} pl 
      */
+    static power_point_distance = 8;
+    static power_point_max_speed = 1;
     static scan_power_point(pl){
         const results = pl.dimension.getEntities({
             type: 'touhou_little_maid:p_point',
-            maxDistance: 5,
+            maxDistance: this.power_point_distance,
             location: pl.location
         });
     
@@ -123,79 +125,80 @@ export default class PowerPoint {
      * @param {Entity} en 
      */
     static scan_powerpoint(en){
-        try{
-            let player_id = en.getDynamicProperty("target");
-            let pl = world.getEntity(player_id);
-            if(pl == undefined){
-                en.setDynamicProperty("target", "0");
-                en.triggerEvent("scan_stop");
+        let player_id = en.getDynamicProperty("target");
+        let pl = world.getEntity(player_id);
+        if(pl == undefined){
+            en.setDynamicProperty("target", "0");
+            en.triggerEvent("scan_stop");
+        }
+        else{
+            let pl_headLocation = pl.getHeadLocation();
+            let delta_y = pl_headLocation.y - en.location.y;
+            // Follow box (xzy) x-z-7
+            let delta_x = pl_headLocation.x - en.location.x;
+            let delta_z = pl_headLocation.z - en.location.z;
+            if(    -1*this.power_point_distance < delta_x && delta_x < this.power_point_distance
+                && -1*this.power_point_distance < delta_z && delta_z < this.power_point_distance
+                && -5 < delta_y && delta_y < 6)
+            {
+                // Score box (xzy): 3 × 3 × 4
+                if(    -1 < delta_x && delta_x < 1 
+                    && -1 < delta_z && delta_z < 1
+                    && -2 < delta_y && delta_y < 1)
+                {
+                    // PS. Fariy loot: 2*0p + 2*2p (16 points)
+                    let point_score = this.get_power_number(pl.name);
+    
+                    // If this power point has tag, add by tag number
+                    let is_taged = false;
+                    for(let tag of en.getTags()){
+                        if(tag.substring(0, 6) == "thlm:p"){
+                            point_score += parseInt(tag.substring(6));
+                            is_taged = true;
+                            break;
+                        }
+                    }
+    
+                    // If not, add by default
+                    if(!is_taged){
+                        switch(en.getComponent("minecraft:variant").value){
+                            case 0: point_score += 1  ; break;
+                            case 1: point_score += 4  ; break;
+                            case 2: point_score += 7  ; break;
+                            case 3: point_score += 10  ; break;
+                            case 4: point_score += 500; break;
+                            default: break;
+                        }
+                    }
+                    this.set_power_number(pl.name, Math.min(500, point_score));
+                    Tool.executeCommand(`playsound power_pop ${Tool.playerCMDName(pl.name)}`);
+                    en.triggerEvent("despawn");
+                }
+                // ​If not in the score box, do storm suction
+                else{
+                    let distance = Math.sqrt(delta_x*delta_x + delta_z*delta_z);
+    
+                    let velocity_xz = (distance > 1) ? (this.power_point_max_speed - distance * (this.power_point_max_speed/this.power_point_distance)) : (distance * (this.power_point_max_speed/this.power_point_distance));
+                    let v_x = velocity_xz*(delta_x/distance);
+                    let v_z = velocity_xz*(delta_z/distance);
+                
+                    let v_y = en.getVelocity().y - 0.036; // gravity
+                    if(-1.5 < delta_x && delta_x < 1.5
+                        && -1.5 < delta_z && delta_z < 1.5
+                        && delta_y > 1){
+                            v_y = (delta_y > 0) ? (0.5 - delta_y * 0.025) : (delta_y * 0.3);
+                        }
+                    en.clearVelocity()
+                    en.applyImpulse(new Vector(v_x, v_y, v_z));
+                }
             }
             else{
-                let pl_headLocation = pl.getHeadLocation();
-                let delta_y = pl_headLocation.y - en.location.y;
-                // Follow box (xzy): 11 × 11 × 7
-                let delta_x = pl_headLocation.x - en.location.x;
-                let delta_z = pl_headLocation.z - en.location.z;
-                if(    -5 < delta_x && delta_x < 5
-                    && -5 < delta_z && delta_z < 5
-                    && -3 < delta_y && delta_y < 6)
-                {
-                    // Score box (xzy): 3 × 3 × 4
-                    if(    -1 < delta_x && delta_x < 1 
-                        && -1 < delta_z && delta_z < 1
-                        && -2 < delta_y && delta_y < 1)
-                    {
-                        // PS. Fariy loot: 2*0p + 2*2p (16 points)
-                        let point_score = this.get_power_number(pl.name);
-        
-                        // If this power point has tag, add by tag number
-                        let is_taged = false;
-                        for(let tag of en.getTags()){
-                            if(tag.substring(0, 6) == "thlm:p"){
-                                point_score += parseInt(tag.substring(6));
-                                is_taged = true;
-                                break;
-                            }
-                        }
-        
-                        // If not, add by default
-                        if(!is_taged){
-                            switch(en.getComponent("minecraft:variant").value){
-                                case 0: point_score += 1  ; break;
-                                case 1: point_score += 4  ; break;
-                                case 2: point_score += 7  ; break;
-                                case 3: point_score += 10  ; break;
-                                case 4: point_score += 500; break;
-                                default: break;
-                            }
-                        }
-                        this.set_power_number(pl.name, Math.min(500, point_score));
-                        Tool.executeCommand(`playsound power_pop ${Tool.playerCMDName(pl.name)}`);
-                        en.triggerEvent("despawn");
-                    }
-                    // ​If not in the score box, do storm suction
-                    else{
-                        let distance = Math.sqrt(delta_x*delta_x + delta_z*delta_z);
-        
-                        let velocity_xz = (distance > 1) ? (0.2 - distance * 0.025) : (distance * 0.175);
-                        let v_x = velocity_xz*(delta_x/distance);
-                        let v_z = velocity_xz*(delta_z/distance);
-                    
-                        let v_y = en.getVelocity().y - 0.036; // gravity
-                        if(-1.5 < delta_x && delta_x < 1.5
-                            && -1.5 < delta_z && delta_z < 1.5
-                            && delta_y > 1){
-                                v_y = (delta_y > 0) ? (0.35 - delta_y * 0.025) : (delta_y * 0.3);
-                            }
-                        en.clearVelocity()
-                        en.applyImpulse(new Vector(v_x, v_y, v_z));
-                    }
-                }
-                else{
-                    en.triggerEvent("scan_stop");
-                    en.setDynamicProperty("target", "0");
-                }
+                en.triggerEvent("scan_stop");
+                en.setDynamicProperty("target", "0");
             }
+        }
+        try{
+
             }
         catch{}
     }
@@ -240,9 +243,7 @@ export default class PowerPoint {
             let drectionX = Tool.getRandom() < 0.5 ? 1 : -1;
             let drectionZ = Tool.getRandom() < 0.5 ? 1 : -1;
             
-            temp.applyImpulse(new Vector(velocity[0] + drectionX * Tool.getRandom(0, 0.2),
-                                        velocity[1] + Tool.getRandom(0, 0.4),
-                                        velocity[2] + drectionZ * Tool.getRandom(0, 0.2)));
+            temp.applyImpulse(this.get_velocity_power_point(velocity));
             if(count >= 32){
                 temp.triggerEvent("init_ns_p4");
                 temp.addTag("thlm:p32");
@@ -274,11 +275,11 @@ export default class PowerPoint {
         return false;
     }
     
-    static get_velocity_xp_orb(base_velocity){
+    static get_velocity_power_point(base_velocity=[0,0,0]){
         let drectionX = Tool.getRandom() < 0.5 ? 1 : -1;
         let drectionZ = Tool.getRandom() < 0.5 ? 1 : -1;
-        return new Vector(drectionX * Tool.getRandom(0, 0.2),
-                                  Tool.getRandom(0, 0.4),
-                                  drectionZ * Tool.getRandom(0, 0.2));
+        return new Vector(base_velocity[0] + drectionX * Tool.getRandom(0, 0.4), // xp_orb 0~0.2
+                            base_velocity[1] + Tool.getRandom(0, 0.8), // xp_orb 0~0.4
+                            base_velocity[2] + drectionZ * Tool.getRandom(0, 0.4)); // xp_orb 0~0.2
     }
 }
