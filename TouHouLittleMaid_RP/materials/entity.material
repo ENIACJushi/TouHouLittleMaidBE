@@ -1,0 +1,22 @@
+{
+  "materials": {
+    "version": "1.0.0",
+    "power_point:entity":{
+      "+defines": [ "USE_UV_ANIM", "ALPHA_TEST", "USE_EMISSIVE" ]
+    },
+    "danmaku_emissive:entity": {
+      "+defines": [ "USE_UV_ANIM", "ALPHA_TEST", "USE_EMISSIVE" ]
+    },
+    "danmaku_blending:entity": {
+      "+defines": [ "USE_UV_ANIM", "ALPHA_TEST", "USE_EMISSIVE" ],
+      "+states": [ "Blending", "DisableCulling","DisableDepthWrite"],
+      "blendSrc": "SourceAlpha",
+      "blendDst": "One"
+    },
+    "test_slime_outer:entity":{
+      "+states":[
+            "Blending"
+        ]
+    }
+  }
+}

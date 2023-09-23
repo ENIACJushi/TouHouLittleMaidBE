@@ -1,0 +1,30 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.danmaku_basic_amulet",
+				"texture_width": 416,
+				"texture_height": 32,
+				"visible_bounds_width": 5,
+				"visible_bounds_height": 5,
+				"visible_bounds_offset": [0, 0.5, 0]
+			},
+			"bones": [
+				{
+					"name": "danmaku",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{
+							"origin": [-6, -7, 0],
+							"size": [12, 14, 0],
+							"uv": {
+								"south": {"uv": [10, 9], "uv_size": [12, 14]}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

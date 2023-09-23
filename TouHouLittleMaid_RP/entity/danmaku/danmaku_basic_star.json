@@ -1,0 +1,43 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "thlmd:danmaku_basic_star",
+      "min_engine_version": "1.8.0",
+      "materials": {
+        "default": "danmaku_blending"
+      },
+      "textures": {
+        "default": "textures/entity/danmaku/star_danmaku.png"
+      },
+      "geometry": {
+        "default": "geometry.danmaku_basic_star"
+      },
+      "animations": {
+        "rotate": "animation.touhou_little_maid.camera_rot_by_danmaku",
+        "star_rotate":"animation.touhou_little_maid.danmaku.star_rotate",
+        "life":"animation.touhou_little_maid.danmaku.life"
+      },
+      "scripts": {
+        "initialize": [
+          "variable.speed=0;"
+        ],
+        "pre_animation": [
+          "variable.speed=(variable.speed==0)?(q.ground_speed):(variable.speed);"
+        ],
+        "animate": [
+          "star_rotate",
+          "rotate",
+          "life"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.danmaku_basic"
+      ],
+      "spawn_egg": {
+        "texture": "touhou_little_maid:p_point",
+        "texture_index": 0
+      }
+    }
+  }
+}
