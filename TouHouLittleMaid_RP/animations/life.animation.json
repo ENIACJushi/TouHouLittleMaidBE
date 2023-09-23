@@ -1,9 +1,0 @@
-{
-  "format_version": "1.8.0",
-  "animations": {
-    "animation.touhou_little_maid.danmaku.life": {
-      "loop": true,
-      "animation_length": 30
-    }
-  }
-}

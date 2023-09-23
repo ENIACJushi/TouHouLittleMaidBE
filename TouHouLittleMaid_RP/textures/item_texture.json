@@ -1,8 +1,0 @@
-{
-	"resource_pack_name": "touhou_little_maid",
-	"texture_name": "atlas.items",
-  "texture_data": {
-    "touhou_little_maid.hakurei_gohei": { "textures": "textures/items/hakurei_gohei" },
-    "touhou_little_maid.power_point": { "textures": "textures/items/power_point" }
-  }
-}
