@@ -4,14 +4,14 @@
     "name": "TouHou Little Maid BE",
     "description": "Author: ENIAC_Jushi",
     "uuid": "4e765185-2ed7-438e-8e39-3d5fbb239b30",
-    "version": [ 1, 2, 6 ],
+    "version": [ 1, 2, 7 ],
     "min_engine_version": [ 1, 20, 0 ]
   },
   "modules": [
     {
       "type": "resources",
       "uuid": "54fb4925-ef9d-4a00-99cd-8b111793ef31",
-      "version": [ 1, 2, 5 ]
+      "version": [ 1, 2, 7 ]
     }
   ],
   "dependencies": [
