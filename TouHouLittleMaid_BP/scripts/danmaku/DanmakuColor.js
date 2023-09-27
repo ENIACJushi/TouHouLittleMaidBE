@@ -1,7 +1,7 @@
 /**
  * PS：颜色索引由1开始，而不是0
  */
-export default class DanmakuColor{
+export class DanmakuColor{
     static AMOUNT  = 13;
 
     static RANDOM  = -1;

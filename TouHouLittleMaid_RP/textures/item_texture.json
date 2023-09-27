@@ -3,6 +3,12 @@
 	"texture_name": "atlas.items",
   "texture_data": {
     "touhou_little_maid.hakurei_gohei": { "textures": "textures/items/hakurei_gohei" },
-    "touhou_little_maid.power_point": { "textures": "textures/items/power_point" }
+    "touhou_little_maid.power_point": { "textures": "textures/items/power_point" },
+    "touhou_little_maid.spellcard.default":{"textures": "textures/items/spellcard/spellcard_default"},
+    "touhou_little_maid.spellcard.boundary_between_wave_and_particle_3d":{"textures": "textures/items/spellcard/boundary_between_wave_and_particle_3d"},
+    "touhou_little_maid.spellcard.boundary_between_wave_and_particle":{"textures":"textures/items/spellcard/boundary_between_wave_and_particle"},
+    "touhou_little_maid.spellcard.metal_fatigue":{"textures":"textures/items/spellcard/metal_fatigue"},
+    "touhou_little_maid.spellcard.milky_way":{"textures":"textures/items/spellcard/milky_way"},
+    "touhou_little_maid.spellcard.night_bird":{"textures":"textures/items/spellcard/night_bird"}
   }
 }

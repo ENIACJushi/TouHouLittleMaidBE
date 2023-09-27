@@ -5,10 +5,10 @@ import { ProjectileHitAfterEvent, ItemDefinitionTriggeredBeforeEvent, ItemStack,
     DynamicPropertiesDefinition, world, Entity, Vector, Dimension, DataDrivenEntityTriggerAfterEvent, DataDrivenEntityTriggerBeforeEvent, WorldInitializeAfterEvent, system
     ,EntityDamageCause } from "@minecraft/server";
 
-import DanmakuColor  from "./DanmakuColor";
-import DanmakuType   from "./DanmakuType";
-import EntityDanmaku from "./EntityDanmaku";
-import DanmakuShoot  from "./DanmakuShoot";
+import {DanmakuColor}  from "./DanmakuColor";
+import {DanmakuType}   from "./DanmakuType";
+import {EntityDanmaku} from "./EntityDanmaku";
+import {DanmakuShoot}  from "./DanmakuShoot";
 
 /**
  * 初始化动态属性

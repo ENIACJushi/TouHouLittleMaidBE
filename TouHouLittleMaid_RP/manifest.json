@@ -11,7 +11,7 @@
     {
       "type": "resources",
       "uuid": "54fb4925-ef9d-4a00-99cd-8b111793ef31",
-      "version": [ 1, 2, 7 ]
+      "version": [ 1, 2, 5 ]
     }
   ],
   "dependencies": [

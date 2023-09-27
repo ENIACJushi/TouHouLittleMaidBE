@@ -3,13 +3,13 @@
  */
 
 import { Dimension, Entity, Vector } from "@minecraft/server";
-import DanmakuColor from "./DanmakuColor"
-import DanmakuType from "./DanmakuType"
-import EntityDanmaku from "./EntityDanmaku"
+import {DanmakuColor} from "./DanmakuColor"
+import {DanmakuType} from "./DanmakuType"
+import {EntityDanmaku} from "./EntityDanmaku"
 import * as Vec from "../libs/vector3d"
 import * as Tool from "../libs/scarletToolKit"
 
-export default class DanmakuShoot{
+export class DanmakuShoot{
     static RANDOM      = Math.random();
     static MAX_YAW     = 2 * Math.PI;
     static MIN_FAN_NUM = 2;
@@ -101,6 +101,7 @@ export default class DanmakuShoot{
                 .setDanmakuType(this.type).setColor(this.color);
         let v = this.calculateVelocity(danmaku);
         if(!v) return false;
+
         danmaku.shoot(v[0], v[1], v[2], this.velocity, this.inaccuracy);
         return true;
         // TODO: world.playSound(null, thrower.getX(), thrower.getY(), thrower.getZ(), SoundEvents.SNOWBALL_THROW, thrower.getSoundSource(), 1.0f, 0.8f);
@@ -120,7 +121,7 @@ export default class DanmakuShoot{
         // 处理扇形偏转
         let yaw = -(this.yawTotal / 2);
         let addYaw = this.yawTotal / (this.fanNum - 1);
-        let yawAxis
+        let yawAxis;
         // 计算旋转轴
         if(v[1] == 0){
             // 发射向量与水平面平行，取y轴为旋转轴
@@ -152,6 +153,20 @@ export default class DanmakuShoot{
         }
         return true;
         // world.playSound(null, thrower.getX(), thrower.getY(), thrower.getZ(), SoundEvents.SNOWBALL_THROW, thrower.getSoundSource(), 1.0f, 0.8f);
+    }
+    /**
+     * 指定方向发射
+     * @param {number} x 
+     * @param {number} y 
+     * @param {number} z
+     * @returns 
+     */
+    directionShoot(x,y,z){
+        let danmaku = new EntityDanmaku(this.world, this.thrower)
+            .setDamage(this.damage).setGravityVelocity(this.gravity)
+            .setDanmakuType(this.type).setColor(this.color);
+        
+        danmaku.shoot(x,y,z, this.velocity, this.inaccuracy);
     }
     /**
      * @param {Dimension} world 

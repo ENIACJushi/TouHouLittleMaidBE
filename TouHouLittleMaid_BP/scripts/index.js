@@ -3,7 +3,9 @@ import { altarStructure } from "./altar/AltarStructureHelper";
 import experiment from "./experiment"
 import PowerPoint from "./entities/power_point"
 import * as Danmaku from "./danmaku/DanmakuManager"
+import { CustomSpellCardManger } from "./danmaku/CustomSpellCardManger";
 import * as Tool from"./libs/scarletToolKit";
+import { itemShootManager } from "./danmaku/ItemShootManager";
 
 if(true){
     // World Initialize
@@ -73,6 +75,14 @@ class thlm {
                         // hakurei gohei activate - hakurei gohei (crafting table) transform to true gohei
                         case "hga":
                             Danmaku.gohei_activate(event);
+                            break;
+                        // spell card
+                        case "sc":
+                            CustomSpellCardManger.onSpellCardUseEvent(event);
+                            break;
+                        // item shoot
+                        case "is":
+                            itemShootManager.itemShootEvent(event);
                             break;
                         default:
                             break;

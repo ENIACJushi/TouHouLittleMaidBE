@@ -1,5 +1,5 @@
 
-export default class DanmakuType{
+export class DanmakuType{
     static DanmakuPrefix = "thlmd:danmaku_basic_";
     static AMOUNT      = 10;      // 总数
 

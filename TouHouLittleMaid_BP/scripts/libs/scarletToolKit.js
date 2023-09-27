@@ -29,6 +29,13 @@ export function getRandomInteger(min=0, max=1){
     return min + Math.floor(Math.random() * max)
 }
 
+export function raduis2angle(raduis){
+    return raduis*(180/Math.PI);
+}
+
+export function angle2raduis(angle){
+    return angle*(Math.PI/180);
+}
 
 ////////// Command //////////
 /**
