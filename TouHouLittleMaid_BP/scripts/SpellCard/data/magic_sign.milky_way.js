@@ -1,13 +1,40 @@
-var Task = Java.type("com.github.tartaricacid.touhoulittlemaid.util.DelayedTask");
-var Color = Java.type("com.github.tartaricacid.touhoulittlemaid.danmaku.DanmakuColor");
-var Type = Java.type("com.github.tartaricacid.touhoulittlemaid.danmaku.DanmakuType");
-var Danmaku = Java.type("com.github.tartaricacid.touhoulittlemaid.danmaku.script.EntityDanmakuWrapper");
-var Vec3d = Java.type("com.github.tartaricacid.touhoulittlemaid.danmaku.script.Vec3dWrapper");
+import { Dimension, Entity, Vector, system } from "@minecraft/server";
+import { Vector as Vec3d } from "@minecraft/server";
+import { DanmakuColor as Color } from "../../danmaku/DanmakuColor";
+import { DanmakuType as Type } from "../../danmaku/DanmakuType";
+import { EntityDanmaku as Danmaku } from "../../danmaku/EntityDanmaku";
+import { rotate_axis, add } from "../../libs/vector3d";
+import * as Tool from "../../libs/scarletToolKit"
 
-Java.asJSONCompatible({
+/**
+ * entity.getRotation()获取 [-180, 180]，对应(-180~180)的角度
+ */
+
+
+/**
+ * 
+ * @param {float} x 
+ * @param {float} y 
+ * @param {float} z 
+ * @param {float} yawIn 
+ * @param {float} yOffset 
+ * @param {Entity} entity
+ */
+function getRotationVector(x, y, z, yawIn, yOffset, entity){
+    let yaw = (entity.getRotation().y + yawIn) * -0.01745329251;// PI/180
+    let pos = entity.location;
+
+    let vec3d = [x, y, z]
+    vec3d = rotate_axis(vec3d, [0,1,0], yaw);
+    vec3d = add(vec3d, [pos.x, pos.y + 1 + yOffset, pos.z]);
+    
+    return vec3d;
+}
+
+export const SpellCard = {
     // 符卡的 id，字符串，必需参数
     // 推荐格式：资源域:X符.符卡名
-    id: "touhou_little_maid:magic_sign.milky_way",
+    id: "thlms:magic_sign.milky_way",
     // 作者，字符串
     author: "tartaric_acid",
     // 版本，字符串
@@ -16,45 +43,53 @@ Java.asJSONCompatible({
     cooldown: 250,
     /**
      * 执行的符卡逻辑，函数签名固定，会直接调用
-     * @param world 当前所处的世界
-     * @param entity 释放符卡的实体
+     * @param {Dimension} world 当前所处的世界
+     * @param {Entity} entity 释放符卡的实体
      */
     spellCard: function (world, entity) {
         // 中心散发的大星弹
         for (var i = 0; i < 50; i++) {
-            Task.add(function (times) {
+            var shoot_basic = function($times){
                 for (var j = 0; j < 9; j++) {
-                    var danmaku = new Danmaku(world, entity, 2.0, 0.0, Type.BIG_STAR, Color.RED);
-                    if (times % 2 == 1) {
+                    
+                    var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset([0,0.8,0]).
+                        setDanmakuType(Type.BIG_STAR).setColor(Color.RED);
+                    if ($times % 2 == 1) {
                         danmaku.setColor(Color.BLUE);
                     }
-                    danmaku.shoot(entity, 0, entity.getYaw() - 5 * times + 40 * j, 0, 0.7, 0);
-                    world.spawnDanmaku(danmaku);
+                    let direction = rotate_axis([0,0,1], [0,-1,0], Tool.angle2raduis(- 5 * $times + 40 * j));// 旋转弹幕感觉没必要跟着转 Tool.angle2raduis(entity.getRotation().y - 5 * $times + 40 * j)
+                    danmaku.shoot(direction[0], direction[1], direction[2], 0.7, 0);
                 }
-            }, 5 * i, i);
+            }
+            var shoot = function($times){return function () {shoot_basic($times);}};
+            system.runTimeout(shoot(i), 5 * i);
         }
 
         // 一段时间后的斜向弹幕
         for (i = 0; i < 20; i++) {
-            Task.add(function (times) {
+            system.runTimeout(()=>{
                 for (var j = 0; j < 5; j++) {
-                    var pos = Vec3d.getRotationVector(-15, 0, Math.random() * 30 - 10, 0, -0.1, entity);
-                    var danmaku = new Danmaku(world, entity, 2.0, 0.0, Type.STAR, Color.YELLOW);
-                    danmaku.setPosition(pos);
-                    danmaku.shoot(entity, 0, entity.getYaw() - 60, 0, 0.3, 0);
-                    world.spawnDanmaku(danmaku);
+                    var pos = getRotationVector(-15, 0, Math.random() * 30 - 10, 0, -0.1, entity);
+                    
+                    var danmaku = new Danmaku(world, entity).setDamage(2)
+                        .setDanmakuType(Type.STAR).setColor(Color.YELLOW);
+                    danmaku.setThrowerLocation(pos);
+                    let direction = rotate_axis([0,0,1], [0,-1,0], Tool.angle2raduis(entity.getRotation().y - 60));
+                    danmaku.shoot(direction[0], direction[1], direction[2], 0.3, 0);
                 }
-            }, 10 * i + 50, i);
+            }, 10 * i + 50);
 
-            Task.add(function (times) {
+            system.runTimeout(()=>{
                 for (var j = 0; j < 5; j++) {
-                    var pos = Vec3d.getRotationVector(15, 0, Math.random() * 30 - 10, 0, -0.1, entity);
-                    var danmaku = new Danmaku(world, entity, 2.0, 0.0, Type.STAR, Color.GREEN);
-                    danmaku.setPosition(pos);
-                    danmaku.shoot(entity, 0, entity.getYaw() + 60, 0, 0.3, 0);
-                    world.spawnDanmaku(danmaku);
+                    var pos = getRotationVector(15, 0, Math.random() * 30 - 10, 0, -0.1, entity);
+
+                    var danmaku = new Danmaku(world, entity).setDamage(2)
+                        .setDanmakuType(Type.STAR).setColor(Color.GREEN);
+                    danmaku.setThrowerLocation(pos);
+                    let direction = rotate_axis([0,0,1], [0,-1,0], Tool.angle2raduis(entity.getRotation().y + 60));
+                    danmaku.shoot(direction[0], direction[1], direction[2], 0.3, 0);
                 }
-            }, 10 * i + 50, i);
+            }, 10 * i + 50);
         }
     }
-});
+}

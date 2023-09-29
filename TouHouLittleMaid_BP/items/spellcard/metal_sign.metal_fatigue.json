@@ -3,18 +3,18 @@
   "minecraft:item": {
     "description": {
       "category": "Equipment",
-      "identifier": "thlms:border_sign.boundary_between_wave_and_particle"
+      "identifier": "thlms:metal_sign.metal_fatigue"
     },
     "components": {
       "minecraft:icon": {
-        "texture": "touhou_little_maid.spellcard.boundary_between_wave_and_particle"
+        "texture": "touhou_little_maid.spellcard.metal_sign.metal_fatigue"
       },
       "minecraft:display_name": {
-        "value": "§6境符「波と粒の境界」 \n§a▮§7 作者: tartaric_acid \n§a▮§7 版本: 1.0.0 \n§a▮§7 冷却: 13秒"
+        "value": "§6金符「Metal Fatigue」 \n§a▮§7 作者: tartaric_acid \n§a▮§7 版本: 1.0.0 \n§a▮§7 冷却: 9秒"
       },
       "minecraft:cooldown": {
         "category": "spellcard",
-        "duration": 13
+        "duration": 9
       },
 
       "minecraft:hand_equipped": true,

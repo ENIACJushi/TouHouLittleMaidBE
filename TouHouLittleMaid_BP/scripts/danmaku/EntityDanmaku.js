@@ -3,7 +3,7 @@
  * 这里的一些方法只是为了保持接口一致而提供的，只是帮助定义和发射弹幕的工具类而不是弹幕本身
  * (Override方法是用于定义实体的，全部不提供)
  */
-import { Dimension, Entity, Vector } from "@minecraft/server";
+import { Dimension, Entity, Vector, system } from "@minecraft/server";
 import {DanmakuColor} from "./DanmakuColor";
 import {DanmakuType} from "./DanmakuType";
 import * as Vec from "../libs/vector3d";
@@ -26,6 +26,8 @@ export class EntityDanmaku{
         this.damage = 6;
         this.color  = DanmakuColor.RANDOM;
         this.type   = DanmakuType.RANDOM;
+
+        this.ticks_existed = 0;
     }
     /**
      * 以基岩版原生方式，指定三维动量发射弹幕
@@ -170,6 +172,12 @@ export class EntityDanmaku{
         }
         //  Apply impulse to entity
         danmaku.applyImpulse(new Vector(bedrock_velocity[0], bedrock_velocity[1], bedrock_velocity[2]));
+        // Ticks existed
+        if(this.ticks_existed > 0){
+            system.runTimeout(()=>{
+                danmaku.triggerEvent("despawn");
+            }, this.ticks_existed)
+        }
     }
 
     /**
@@ -250,6 +258,15 @@ export class EntityDanmaku{
      */
     setThrowerOffset(offset){
         this.thrower_offset = offset;
+        return this;
+    }
+
+    /**
+     * 设置弹幕的留存时间
+     * @param {number} tick 
+     */
+    setTicksExisted(tick){
+        this.ticks_existed = tick;
         return this;
     }
 }

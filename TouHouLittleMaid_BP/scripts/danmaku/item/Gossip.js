@@ -15,11 +15,11 @@ export const Gossip = {
          */
         function(entity){
             var aimDanmakuShoot_small = new EntityDanmaku(entity.dimension, entity);
-            aimDanmakuShoot_small.setThrowerOffset([0,1,0]).setColor(DanmakuColor.RANDOM).
-                setDanmakuType(DanmakuType.STAR).setDamage(4);
+            aimDanmakuShoot_small.setThrowerOffset([0,0.8,0]).setColor(DanmakuColor.RANDOM).
+                setDanmakuType(DanmakuType.STAR).setDamage(2);
 
             var aimDanmakuShoot_big = new EntityDanmaku(entity.dimension, entity);
-            aimDanmakuShoot_big.setThrowerOffset([0,1,0]).setColor(DanmakuColor.RANDOM).
+            aimDanmakuShoot_big.setThrowerOffset([0,0.8,0]).setColor(DanmakuColor.RANDOM).
                 setDanmakuType(DanmakuType.BIG_STAR).setDamage(4);
             
             for(let i=0; i<20;i++){

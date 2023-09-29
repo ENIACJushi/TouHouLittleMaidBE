@@ -36,7 +36,7 @@ export const SpellCard = {
                     
                     // 原发射参数 entityThrower, rotationPitchIn, rotationYawIn, pitchOffset, velocity, inaccuracy
                     // 旋转角设置
-                    let direction = rotate_axis([1,0,0], [0,1,0], Tool.angle2raduis(- 40 * j + 5 * Math.pow($times / 4, 2)))
+                    let direction = rotate_axis([0,0,1], [0,-1,0], Tool.angle2raduis(- 40 * j + 5 * Math.pow($times / 4, 2)))
                     // danmaku.setAxisRotation_direction();
                     danmaku.shoot(direction[0], direction[1], direction[2], 0.4, 0);
                     // world.spawnDanmaku(danmaku);

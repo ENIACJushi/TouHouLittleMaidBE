@@ -10,7 +10,7 @@
         "texture": "touhou_little_maid.spellcard.boundary_between_wave_and_particle_3d"
       },
       "minecraft:display_name": {
-        "value": "§6境符「波と粒の境界」- 3D \n§a▮§7 作者: snownee \n§a▮§7 版本: 1.0.0 \n§a▮§7 冷却: 150刻"
+        "value": "§6境符「波と粒の境界」- 3D \n§a▮§7 作者: snownee \n§a▮§7 版本: 1.0.0 \n§a▮§7 冷却: 8秒"
       },
       "minecraft:cooldown": {
         "category": "spellcard",
