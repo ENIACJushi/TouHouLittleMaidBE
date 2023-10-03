@@ -8,7 +8,7 @@
    *  Date        :  2023.02.15                   *
   \* -------------------------------------------- */
 
-import { Block, Dimension, MinecraftBlockTypes, BlockPermutation, BlockType } from "@minecraft/server"
+import { Block, Dimension, BlockPermutation, BlockType } from "@minecraft/server"
 import { world } from "@minecraft/server";
 
 function logger(str){
@@ -50,14 +50,13 @@ export class MultiBlockStructrueManager {
             const block = dimension.getBlock({x: baseLocation[0] + location[0], y: baseLocation[1] + location[1], z: baseLocation[2] + location[2]});
             if(structureBlock["activated"] == null){
                 // Set block: air
-                block.setType(MinecraftBlockTypes.air);
+                block.setType("air");
             }
             else{
                 // Set block: [type: structureBlock["activated"].name] - [permutation: properties]
                 // block.setType(structureBlock["activated"].name);
-
+                
                 // Set permutation
-                logger_debug("activating 2")
                 if(structureBlock["activated"].data == null){
                     block.setPermutation(BlockPermutation.resolve(structureBlock["activated"].name));
                 }
@@ -101,7 +100,7 @@ export class MultiBlockStructrueManager {
             // Set new block
             if(structureBlock["deactivated"] == null){
                 // Set air
-                block.setType(MinecraftBlockTypes.air);
+                block.setType("air");
             }
             else{
                 // Set defined block

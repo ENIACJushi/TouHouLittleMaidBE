@@ -1,9 +1,12 @@
 
 import * as Tool from "../libs/scarletToolKit"
 import * as Vec from "../libs/vector3d"
-import { ProjectileHitAfterEvent, ItemDefinitionTriggeredBeforeEvent, ItemStack, Enchantment, EntityTypes, ItemUseOnBeforeEvent,
+import { ItemDefinitionTriggeredBeforeEvent, ItemStack, Enchantment, EntityTypes, ItemUseOnBeforeEvent,
     DynamicPropertiesDefinition, world, Entity, Vector, Dimension, DataDrivenEntityTriggerAfterEvent, DataDrivenEntityTriggerBeforeEvent, WorldInitializeAfterEvent, system
-    ,EntityDamageCause } from "@minecraft/server";
+    ,EntityDamageCause, 
+    ProjectileHitEntityAfterEvent,
+    ProjectileHitBlockAfterEventSignal,
+    ProjectileHitBlockAfterEvent} from "@minecraft/server";
 
 import {DanmakuColor}  from "./DanmakuColor";
 import {DanmakuType}   from "./DanmakuType";
@@ -25,11 +28,11 @@ export function init_dynamic_properties(e){
 }
 
 /**
- * 弹幕击中处理
+ * 弹幕击中处理(在1.6.0-beta被拆分为两个事件)
  * @param {ProjectileHitAfterEvent} ev 
  * @returns 
  */
-export function danmakuHitEvent(ev){
+function danmakuHitEvent(ev){
     let projectile = ev.projectile;
     // Hit block
     if(ev.getBlockHit() != undefined){
@@ -61,6 +64,49 @@ export function danmakuHitEvent(ev){
             projectile.triggerEvent("despawn");
         }
     }
+}
+
+/**
+ * 弹幕击中实体
+ * @param {ProjectileHitEntityAfterEvent} ev 
+ */
+export function danmakuHitEntityEvent(ev){
+    let projectile = ev.projectile;
+    let hit_info = ev.getEntityHit()
+    if(hit_info != null){
+        // Get source entity by event or property
+        // let damageOptions = {"damagingProjectile": projectile}; // 弹射物
+        let damageOptions = {"cause" : EntityDamageCause.magic} // 魔法
+        let source = ev.source;
+        if(source == undefined){
+            // 没有原版框架下的攻击实体，则通过动态属性寻找
+            let id = projectile.getDynamicProperty("source");
+            if(id != "0"){
+                source =  world.getEntity(id);
+            }
+        }
+        if(source != undefined) damageOptions["damagingEntity"] = source;
+        // Do not hit source
+        if(hit_info.entity.id == source.id){
+            return;
+        }
+        // Hit other entities
+        else{
+            hit_info.entity.applyDamage(projectile.getDynamicProperty("damage"), damageOptions);
+            projectile.triggerEvent("despawn");
+        }
+    }
+
+}
+
+/**
+ * 弹幕击中方块
+ * @param {ProjectileHitBlockAfterEvent} ev
+ */
+export function danmakuHitBlockEvent(ev){
+    let projectile = ev.projectile;
+    projectile.triggerEvent("despawn");
+    return;
 }
 
 //////// Gohei ////////

@@ -133,7 +133,7 @@ class thlm {
         });
 
         // Projectile Hit Event
-        world.afterEvents.projectileHit.subscribe(event =>{
+        world.afterEvents.projectileHitEntity.subscribe(event =>{
             system.run(()=>{
                 var projectile = event.projectile;
                 if(projectile !== undefined){
@@ -142,7 +142,29 @@ class thlm {
                         var typeId = event.projectile.typeId;
                         if(typeId !== undefined){
                             if(typeId.substring(0, 6) == "thlmd:"){
-                                Danmaku.danmakuHitEvent(event);
+                                Danmaku.danmakuHitEntityEvent(event);
+                            }
+                            else if(typeId == "touhou_little_maid:power_point"){
+                                PowerPoint.powerpoint_hit(projectile, event.dimension);
+                            }
+                        }
+                    }
+                    catch{}
+                }
+            });
+        });
+        
+        // Projectile Hit Block Event
+        world.afterEvents.projectileHitBlock.subscribe(event=>{
+            system.run(()=>{
+                var projectile = event.projectile;
+                if(projectile !== undefined){
+                    // 弹幕可能正在释放，无法获取typeId
+                    try{
+                        var typeId = event.projectile.typeId;
+                        if(typeId !== undefined){
+                            if(typeId.substring(0, 6) == "thlmd:"){
+                                Danmaku.danmakuHitBlockEvent(event);
                             }
                             else if(typeId == "touhou_little_maid:power_point"){
                                 PowerPoint.powerpoint_hit(projectile, event.dimension);
