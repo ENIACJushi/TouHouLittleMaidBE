@@ -195,6 +195,7 @@ task.touhou_little_maid:attack.name=攻击
 task.touhou_little_maid:ranged_attack.name=弓兵
 task.touhou_little_maid:danmaku_attack.name=弹幕攻击
 task.touhou_little_maid:farm.name=农场
+task.touhou_little_maid:phantom_killer.name=幻翼杀手
 task.touhou_little_maid:sugar_cane.name=甘蔗
 task.touhou_little_maid:melon.name=瓜类
 task.touhou_little_maid:cocoa.name=可可

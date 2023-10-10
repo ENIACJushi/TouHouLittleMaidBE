@@ -1,0 +1,442 @@
+{
+  "format_version": "1.18.10",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "thlmm:maid_basic",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+
+    "component_groups": {
+      "thlmm:maid_wild": {
+        "minecraft:behavior.panic": {
+          "priority": 1,
+          "speed_multiplier": 1.25
+        },
+        "minecraft:tameable": {
+          "probability": 0.8,
+          "tame_items": "cake",
+          "tame_event": {
+            "event": "on_tamed",
+            "target": "self"
+          }
+        }
+      },
+      "thlmm:maid_tame": {
+        "minecraft:sittable": {},
+        "minecraft:inventory":{
+          "container_type": "inventory",
+          "inventory_size": 27,
+          "private": false,
+          "restrict_to_owner": true
+        },
+        "minecraft:is_tamed": {
+        },
+        "minecraft:health": {
+          "value": 20,
+          "max": 20
+        },
+        "minecraft:damage_sensor": { 
+          "triggers": [
+            {
+              "cause": "attack",
+              "on_damage": {
+                "filters": {
+                  "all_of": [
+                    {"test": "is_family","subject": "damager","value": "player"},
+                    {"test": "is_owner","subject": "damager","value": true}
+                  ]
+                },
+                "event": "thlmm:omi",
+                "target": "self"
+              },
+              "deals_damage": false
+            }
+          ]
+        }
+      },
+      "thlmm:maid_tame_sit":{
+        "minecraft:entity_sensor": {
+          "sensor_range": 6,
+          "relative_range": false,
+          "minimum_count": 1,
+          "maximum_count": 2,
+          "event_filters": {
+            "all_of": [
+              {"test": "is_owner","subject": "other","value": true},
+              {"test": "is_sneaking","subject": "other","value": false}
+            ]
+          },
+          "event": "inventory_mode"
+        }
+      },
+      "thlmm:maid_tame_inventory":{
+        "minecraft:entity_sensor": {
+          "sensor_range": 6,
+          "relative_range": false,
+          "minimum_count": 1,
+          "maximum_count": 2,
+          "event_filters": {
+            "all_of": [
+              {"test": "is_owner","subject": "other","value": true},
+              {"test": "is_sneaking","subject": "other","value": true}
+            ]
+          },
+          "event": "sit_mode"
+        }
+      },
+
+      "status:follow_on_tame":{
+        "minecraft:behavior.follow_owner": {
+          "priority": 1,
+          "speed_multiplier": 1.0,
+          "start_distance": 1,
+          "stop_distance": 1,
+          "can_teleport": true
+        },
+        "minecraft:entity_sensor": {
+          "sensor_range": 1,
+          "relative_range": false,
+          "minimum_count": 1,
+          "maximum_count": 2,
+          "event_filters": {
+            "all_of": [
+              { "test": "is_owner", "subject": "other", "value": true }
+            ]
+          },
+          "event": "thlmm:onfs"
+        }
+      },
+      "status:follow_standard":{
+        "minecraft:behavior.follow_owner": {
+          "priority": 6,
+          "speed_multiplier": 1.0,
+          "start_distance": 10,
+          "stop_distance": 2,
+          "can_teleport": true
+        }
+      },
+      "status:home":{
+        "minecraft:is_baby": {},
+        "minecraft:timer": {
+          "time": 3,
+          "looping": true,
+          "time_down_event": {
+            "event": "thlmm:rh",
+            "target": "self"
+          }
+        }
+      },
+      "mode:idle":{
+        "minecraft:variant": {"value": 0},
+        "minecraft:behavior.panic": {
+          "priority": 1,
+          "speed_multiplier": 1.25
+        }
+      },
+      "mode:attack":{
+        "minecraft:variant": {"value": 1},
+        "minecraft:attack": {
+          "damage": 4
+        },
+        "minecraft:behavior.melee_attack": {
+          "priority": 5
+        },
+        "minecraft:behavior.nearest_attackable_target": {
+          "priority": 3,
+          "must_reach": true,
+          "must_see": true,
+          "entity_types": [
+            {
+              "filters": {
+                "all_of": [
+                  {
+                    "test": "is_family",
+                    "subject": "other",
+                    "value": "monster"
+                  },
+                  {
+                    "test": "is_family",
+                    "subject": "other",
+                    "operator": "!=",
+                    "value": "creeper"
+                  }
+                ]
+              },
+              "within_default": 10
+            },
+            {
+              "filters": {
+                "all_of": [
+                  {
+                    "test": "is_family",
+                    "subject": "other",
+                    "value": "hoglin"
+                  },
+                  {
+                    "test": "is_difficulty",
+                    "operator": "!=",
+                    "value": "peaceful"
+                  }
+                ]
+              },
+              "max_dist": 16
+            },
+            {
+              "filters": {
+                "all_of": [
+                  {
+                    "test": "is_family",
+                    "subject": "other",
+                    "value": "zoglin"
+                  },
+                  {
+                    "test": "is_difficulty",
+                    "operator": "!=",
+                    "value": "peaceful"
+                  }
+                ]
+              },
+              "max_dist": 16
+            }
+          ]
+        },
+        "minecraft:behavior.owner_hurt_by_target": {
+          "priority": 1
+        },
+        "minecraft:behavior.owner_hurt_target": {
+          "priority": 2
+        }
+      }
+    },
+
+    "components": {
+      "minecraft:rideable": {
+        "controlling_seat": 1,
+        "crouching_skip_interact": true,
+        "family_types": [],
+        "interact_text": "",
+        "pull_in_entities": false,
+        "rider_can_interact": false,
+        "seat_count": 1,
+        "seats":[{
+          "position": [0,0,0]
+        }]
+      },
+      "minecraft:balloonable": {
+        "mass": 0.8
+      },
+      "minecraft:is_hidden_when_invisible": {
+      },
+      "minecraft:nameable": {
+        "always_show": false,
+        "allow_name_tag_renaming": false
+      },
+      "minecraft:type_family": {
+        "family": [ "maid", "mob" ]
+      },
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0
+      },
+      "minecraft:collision_box": {
+        "width": 0.6,
+        "height": 1.5
+      },
+      "minecraft:health": {
+        "value": 8,
+        "max": 8
+      },
+      "minecraft:movement": {
+        "value": 0.3
+      },
+      "minecraft:loot": {
+        "table": "loot_tables/empty.json"
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 0,
+        "look_distance": 6.0,
+        "probability": 0.02
+      },
+      "minecraft:physics": {
+      },
+      "minecraft:pushable": {
+        "is_pushable": true,
+        "is_pushable_by_piston": true
+      },
+      "minecraft:attack": {
+        "damage": 3
+      },
+
+      "minecraft:navigation.walk": {
+        "can_path_over_water": true,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:movement.basic": {
+      },
+      "minecraft:jump.static": {
+      },
+      "minecraft:can_climb": {
+      },
+      "minecraft:healable": {
+        "items": [
+          {
+            "item": "porkchop",
+            "heal_amount": 3
+          },
+          {
+            "item": "cooked_porkchop",
+            "heal_amount": 8
+          },
+          {
+            "item": "fish",
+            "heal_amount": 2
+          },
+          {
+            "item": "salmon",
+            "heal_amount": 2
+          },
+          {
+            "item": "clownfish",
+            "heal_amount": 1
+          },
+          {
+            "item": "pufferfish",
+            "heal_amount": 1
+          },
+          {
+            "item": "cooked_fish",
+            "heal_amount": 5
+          },
+          {
+            "item": "cooked_salmon",
+            "heal_amount": 6
+          },
+          {
+            "item": "beef",
+            "heal_amount": 3
+          },
+          {
+            "item": "cooked_beef",
+            "heal_amount": 8
+          },
+          {
+            "item": "chicken",
+            "heal_amount": 2
+          },
+          {
+            "item": "cooked_chicken",
+            "heal_amount": 6
+          },
+          {
+            "item": "muttonRaw",
+            "heal_amount": 2
+          },
+          {
+            "item": "muttonCooked",
+            "heal_amount": 6
+          },
+          {
+            "item": "rotten_flesh",
+            "heal_amount": 4
+          },
+          {
+            "item": "rabbit",
+            "heal_amount": 3
+          },
+          {
+            "item": "cooked_rabbit",
+            "heal_amount": 5
+          },
+          {
+            "item": "rabbit_stew",
+            "heal_amount": 10
+          }
+        ]
+      },
+      "minecraft:despawn": {
+        "despawn_from_distance": {}
+      },
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.mount_pathing": {
+        "priority": 1,
+        "speed_multiplier": 1.25,
+        "target_dist": 0,
+        "track_target": true
+      },
+      "minecraft:behavior.stay_while_sitting": {
+        "priority": 3
+      },
+      
+      "minecraft:behavior.random_stroll": {
+        "priority": 8,
+        "speed_multiplier": 1.0
+      },
+      "minecraft:behavior.beg": {
+        "priority": 9,
+        "look_distance": 8,
+        "look_time": [ 2, 4 ],
+        "items": [ "cake" ]
+      },
+
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 3
+      },
+      "minecraft:conditional_bandwidth_optimization": {
+      }
+    },
+
+    "events": {
+      "minecraft:entity_spawned": {
+        "add": {
+          "component_groups": [
+            "thlmm:maid_wild"
+          ]
+        }
+      },
+      "on_tamed": {
+        "remove": {
+          "component_groups": [
+            "thlmm:maid_wild"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "thlmm:maid_tame",
+            "status:follow_on_tame",
+            "mode:idle"
+          ]
+        }
+      },
+      "inventory_mode":{
+        "remove": {"component_groups": ["thlmm:maid_tame_sit"]},
+        "add": {"component_groups": ["thlmm:maid_tame_inventory"]}
+      },
+      "sit_mode":{
+        "add": {"component_groups": ["thlmm:maid_tame_sit"]},
+        "remove": {"component_groups": ["thlmm:maid_tame_inventory"]}
+      },
+      "thlmm:onfs":{},
+      "thlmm:omi":{},
+      "thlmm:rh":{},
+      
+      "api:follow_on_tame_over":{
+        "add": {"component_groups": ["status:follow_standard", "thlmm:maid_tame_sit"]},
+        "remove": {"component_groups": ["status:follow_on_tame"]}
+      },
+
+      "api:status_follow"     :{"add"   : {"component_groups": ["status:follow_standard"]}},
+      "api:status_quit_follow":{"remove": {"component_groups": ["status:follow_standard"]}},
+      "api:status_home"       :{"add"   : {"component_groups": ["status:home"]}},
+      "api:status_quit_home"  :{"remove": {"component_groups": ["status:home"]}},
+      
+      "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}}]},
+      "api:mode_quit_idle":  {"sequence": [{"remove": {"component_groups": ["mode:idle"]}}]},
+      "api:mode_attack"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack"]}}]},
+      "api:mode_quit_attack":{"sequence": [{"remove": {"component_groups": ["mode:attack"]}}]}
+    }
+  }
+}

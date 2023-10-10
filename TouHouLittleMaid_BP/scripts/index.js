@@ -6,6 +6,7 @@ import * as Danmaku from "./danmaku/DanmakuManager"
 import { CustomSpellCardManger } from "./danmaku/CustomSpellCardManger";
 import * as Tool from"./libs/scarletToolKit";
 import { itemShootManager } from "./danmaku/ItemShootManager";
+import { MaidManager } from "./maid/MaidManager";
 
 if(true){
     // World Initialize
@@ -25,8 +26,9 @@ else{
 
 class thlm {
     static main(){
+        
         world.afterEvents.playerSpawn.subscribe(event => {
-            if(event.initialSpawn){
+            if(event.initialSpawn){                
                 // say something
                 // event.player.sendMessage({translate: ""})
             }
@@ -94,40 +96,66 @@ class thlm {
         // Entity Events
         world.beforeEvents.dataDrivenEntityTriggerEvent.subscribe(event => {
             system.run(()=>{
-                // Tool.logger(event.id)
+                Tool.logger(event.id)
                 // const {entity, id, modifiers} = data;
-                if(event.id.substring(0, 5) == "thlm:"){
-                    switch(event.id.substring(5)){
-                        // at: altar_tick
-                        case "at": 
-                            altarStructure.deactivateEvent(event.entity); 
-                            // altarStructure.refreshItemsEvent(entity); // TODO: Reduce execution frequency
+                if(event.id.substring(0, 4) == "thlm"){
+                    switch(event.id.substring(4, 5)){
+                        // 通用事件前缀
+                        case ":":
+                            switch(event.id.substring(5)){
+                                // at: altar_tick
+                                case "at": 
+                                    altarStructure.deactivateEvent(event.entity); 
+                                    // altarStructure.refreshItemsEvent(entity); // TODO: Reduce execution frequency
+                                    break;
+                                // af: altar_refresh
+                                case "af":
+                                    altarStructure.refreshItemsEvent(event.entity)
+                                    break;
+                                // ppi: power_point_init
+                                case "ppi":
+                                    PowerPoint.init_power_point(event.entity);
+                                    break;
+                                // pps: power point scan (powerpoint)
+                                case "pps":
+                                    PowerPoint.scan_powerpoint(event.entity);
+                                    break;
+                                // pfd; power point - fairy death
+                                case  "pfd":
+                                    PowerPoint.fairy_death(event.entity);
+                                    break;
+                                // dfg: danmaku - fairy shoot
+                                case "dfs":
+                                    Danmaku.fairy_shoot(event.entity);
+                                    break;
+                                case "ddb":
+                                    Danmaku.debug_shoot(event.entity);
+                                    break;
+                                default: break;
+                            }; break;
+                        // 女仆专用事件
+                        case "m":
+                            switch(event.id.substring(6)){
+                                // fon: follow on tamed
+                                case "onfs":
+                                    MaidManager.onTameFollowSuccess(event);
+                                    break;
+                                // omi: on master interact
+                                case "omi":
+                                    MaidManager.onInteractEvent(event);
+                                    break;
+                                // rh: return home
+                                case "rh":
+                                    MaidManager.returnHomeEvent(event);
+                                    break;
+                                default:
+                                    break;
+                            }
                             break;
-                        // af: altar_refresh
-                        case "af":
-                            altarStructure.refreshItemsEvent(event.entity)
+                        default:
                             break;
-                        // ppi: power_point_init
-                        case "ppi":
-                            PowerPoint.init_power_point(event.entity);
-                            break;
-                        // pps: power point scan (powerpoint)
-                        case "pps":
-                            PowerPoint.scan_powerpoint(event.entity);
-                            break;
-                        // pfd; power point - fairy death
-                        case  "pfd":
-                            PowerPoint.fairy_death(event.entity);
-                            break;
-                        // dfg: danmaku - fairy shoot
-                        case "dfs":
-                            Danmaku.fairy_shoot(event.entity);
-                            break;
-                        case "ddb":
-                            Danmaku.debug_shoot(event.entity);
-                            break;
-                        default: break;
                     }
+                    
                 } 
             });
         });
@@ -176,6 +204,7 @@ class thlm {
             });
         });
 
+        // Power Point Scan
         system.runInterval(()=>{
             PowerPoint.scan_tick();
         }, 5);

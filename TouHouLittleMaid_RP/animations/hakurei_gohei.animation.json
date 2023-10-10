@@ -22,6 +22,14 @@
 				}
 			}
 		},
+		"animation.hakurei_gohei.wield_third_person_pull":{
+			"loop" : true,
+			"bones" : {
+				"rightarm" : {
+					"rotation" : [ "22.5 * variable.charge_amount - this", "-this", 0.0 ]
+				}
+			}
+		},
 		"animation.hakurei_gohei.hide_cross": {
 			"loop": true,
 			"bones": {

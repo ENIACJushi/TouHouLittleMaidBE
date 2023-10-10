@@ -18,6 +18,7 @@
       "animations": {
         "wield": "animation.hakurei_gohei.wield",
         "wield_first_person_pull": "animation.hakurei_gohei.wield_first_person_pull",
+        "wield_third_person_pull": "animation.hakurei_gohei.wield_third_person_pull",
         "hide_cross": "animation.hakurei_gohei.hide_cross"
       },
       "enable_attachables": true,
@@ -29,6 +30,9 @@
           },
           {
             "wield_first_person_pull": "query.is_using_item && c.is_first_person"
+          },
+          {
+            "wield_third_person_pull": "query.is_using_item && !c.is_first_person"
           }
         ]
       },

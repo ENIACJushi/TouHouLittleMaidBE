@@ -1,0 +1,77 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "touhou_little_maid:maid_bag_default",
+      "is_spawnable": false,
+      "is_summonable": true
+    },
+    "component_groups": {
+      "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
+      "hide_mode":{
+        "minecraft:collision_box": {
+          "width": 0.3,
+          "height": 0.5
+        }
+      },
+      "show_mode":{
+        "minecraft:collision_box": {
+          "width": 0.8,
+          "height": 1.7
+        }
+      },
+      "type:default":{
+        "minecraft:skin_id": {"value": 0},
+        "minecraft:inventory":{
+          "container_type": "inventory",
+          "inventory_size": 6,
+          "private": false
+        }
+      },
+      "type:small":{
+        "minecraft:skin_id": {"value": 1},
+        "minecraft:inventory":{
+          "container_type": "inventory",
+          "inventory_size": 12,
+          "private": false
+        }
+      },
+      "type:medium":{
+        "minecraft:skin_id": {"value": 2},
+        "minecraft:inventory":{
+          "container_type": "inventory",
+          "inventory_size": 24,
+          "private": false
+        }
+      },
+      "type:big":{
+        "minecraft:skin_id": {"value": 3},
+        "minecraft:inventory":{
+          "container_type": "inventory",
+          "inventory_size": 36,
+          "private": false
+        }
+      }
+      
+    },
+    "components": {
+      "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+      "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+      "minecraft:persistent": {},
+      "minecraft:knockback_resistance": { "value": 1.0 }
+    },
+    "events": {
+      "despawn":{ "add": { "component_groups": [ "despawn" ] } },
+
+      "api:default": { "add": { "component_groups": [ "type:default" ] } },
+      "api:small"  : { "add": { "component_groups": [ "type:small" ] } },
+      "api:medium" : { "add": { "component_groups": [ "type:medium" ] } },
+      "api:big"    : { "add": { "component_groups": [ "type:big" ] } },
+      "api:quit_default": { "remove": { "component_groups": [ "type:default" ] } },
+      "api:quit_small"  : { "remove": { "component_groups": [ "type:small" ] } },
+      "api:quit_medium" : { "remove": { "component_groups": [ "type:medium" ] } },
+      "api:quit_big"    : { "remove": { "component_groups": [ "type:big" ] } }
+
+    }
+  }
+}

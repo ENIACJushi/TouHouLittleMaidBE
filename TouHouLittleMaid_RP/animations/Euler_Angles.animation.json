@@ -1,7 +1,7 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.euler_Angles.new": {
+		"animation.Euler_Angles.new": {
 			"animation_length": 3.8,
 			"bones": {
 				"direction": {
