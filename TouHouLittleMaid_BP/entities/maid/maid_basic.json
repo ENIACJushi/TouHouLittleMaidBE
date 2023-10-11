@@ -9,6 +9,7 @@
     },
 
     "component_groups": {
+      "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
       "thlmm:maid_wild": {
         "minecraft:behavior.panic": {
           "priority": 1,
@@ -52,6 +53,45 @@
                 "target": "self"
               },
               "deals_damage": false
+            }
+          ]
+        },
+        "minecraft:interact": {
+          "interactions": [
+            {
+              "cooldown": 2.5,
+              "use_item": false,
+              "hurt_item": 1,
+              "interact_text": "action.interact.camera",
+              "vibration": "none",
+              "on_interact": {
+                "filters": {
+                  "all_of": [
+                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:camera"},
+                    { "test": "is_family", "subject": "other", "value": "player" },
+                    { "test": "is_owner", "subject": "other", "value": true }
+                  ]
+                },
+                "event": "thlmm:p",
+                "target": "self"
+              }
+            },
+            {
+              "cooldown": 2.5,
+              "use_item": false,
+              "interact_text": "action.interact.smart_slab",
+              "vibration": "none",
+              "on_interact": {
+                "filters": {
+                  "all_of": [
+                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:smart_slab_empty"},
+                    { "test": "is_family", "subject": "other", "value": "player" },
+                    { "test": "is_owner", "subject": "other", "value": true }
+                  ]
+                },
+                "event": "thlmm:ss",
+                "target": "self"
+              }
             }
           ]
         }
@@ -210,18 +250,21 @@
         }
       }
     },
-
     "components": {
+      "minecraft:on_death": {
+        "event": "thlmm:d",
+        "target": "self"
+      },
       "minecraft:rideable": {
         "controlling_seat": 1,
         "crouching_skip_interact": true,
-        "family_types": [],
+        "family_types": ["thlm:maid_backpack"],
         "interact_text": "",
         "pull_in_entities": false,
         "rider_can_interact": false,
         "seat_count": 1,
         "seats":[{
-          "position": [0,0,0]
+          "position": [0,0.8,-0.3]
         }]
       },
       "minecraft:balloonable": {
@@ -355,9 +398,6 @@
           }
         ]
       },
-      "minecraft:despawn": {
-        "despawn_from_distance": {}
-      },
       "minecraft:behavior.float": {
         "priority": 0
       },
@@ -388,15 +428,16 @@
       "minecraft:conditional_bandwidth_optimization": {
       }
     },
-
     "events": {
       "minecraft:entity_spawned": {
         "add": {
           "component_groups": [
             "thlmm:maid_wild"
           ]
-        }
+        },
+        "trigger": "thlmm:sp"
       },
+      "despawn":{ "add": { "component_groups": [ "despawn" ] } },
       "on_tamed": {
         "remove": {
           "component_groups": [
@@ -419,10 +460,13 @@
         "add": {"component_groups": ["thlmm:maid_tame_sit"]},
         "remove": {"component_groups": ["thlmm:maid_tame_inventory"]}
       },
+      "thlmm:sp":{},
       "thlmm:onfs":{},
       "thlmm:omi":{},
       "thlmm:rh":{},
-      
+      "thlmm:d":{},
+      "thlmm:p":{},
+      "thlmm:ss":{},
       "api:follow_on_tame_over":{
         "add": {"component_groups": ["status:follow_standard", "thlmm:maid_tame_sit"]},
         "remove": {"component_groups": ["status:follow_on_tame"]}

@@ -1,0 +1,48 @@
+{
+    "format_version": "1.13.0",
+    "minecraft:entity": {
+        "description": {
+            "identifier": "touhou_little_maid:chunk_loader",
+            "is_spawnable": true,
+            "is_summonable": true,
+            "is_experimental": false
+        },
+        "component_groups":{	
+            "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } }
+        },
+      
+        "components": {
+            "minecraft:tick_world":{
+                "never_despawn": true,
+                "radius": 2
+            },
+            "minecraft:damage_sensor": {
+                "triggers": {
+                    "cause": "all",
+                    "deals_damage": false
+                }
+            },
+            "minecraft:persistent":{},
+            "minecraft:collision_box":{
+                "height": 0,
+                "width": 0
+            },
+            "minecraft:nameable":{
+                "allow_name_tag_renaming": false,
+                "always_show": false
+            },
+            "minecraft:knockback_resistance": {
+                "value": 1
+            },
+            "minecraft:physics": {
+                "has_collision": false,
+                "has_gravity": false
+            },
+            "minecraft:conditional_bandwidth_optimization": {}
+        },
+        "events":{
+            "despawn":{ "add": { "component_groups": [ "despawn" ] } }
+        }
+    }
+}
+  

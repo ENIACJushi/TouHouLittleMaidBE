@@ -1,0 +1,30 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "touhou_little_maid:maid_backpack",
+      "materials": {
+        "default": "entity_emissive_alpha"
+      },
+      "textures": {
+        "default": "textures/entity/maid_backpack_small",
+        "small"  :"textures/entity/maid_backpack_small",
+        "middle"  :"textures/entity/maid_backpack_middle",
+        "big"  :"textures/entity/maid_backpack_big"
+      },
+      "geometry": {
+        "default": "geometry.touhou_little_maid.void",
+        "small": "geometry.touhou_little_maid.maid_backpack_small",
+        "middle": "geometry.touhou_little_maid.maid_backpack_middle",
+        "big": "geometry.touhou_little_maid.maid_backpack_big"
+      },
+      "render_controllers": [
+        "controller.render.touhou_little_maid:maid_backpack"
+      ],
+      "spawn_egg": {
+        "base_color": "#ffffff",
+        "overlay_color": "#ca0011"
+      }
+    }
+  }
+}

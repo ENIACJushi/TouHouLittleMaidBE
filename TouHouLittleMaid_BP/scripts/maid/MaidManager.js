@@ -1,15 +1,130 @@
 /**
+ * 女仆tag
  * thlmo:<主人生物id>
  * thlmh:<家坐标x>,<家坐标y>,<家坐标z>,<维度> (整数)
+ * thlmb:<背包生物id>
  */
-import { world, Entity,Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent } from "@minecraft/server";
+/**
+ * 其它tag
+ * 背包：thlmb:<女仆id>
+ */
+import { ItemStack, world, Entity,Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
+import { MaidBag } from "./MaidBag";
 
 const HOME_RADIUS=25;
 
 export class MaidManager{
+    /**
+     * 女仆生成事件
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     */
+    static onSpawnEvent(event){
+        // 生成 默 认 背包  为脚本召唤背包预留2刻
+        system.runTimeout(()=>{
+            try{
+                let maid = event.entity;
+                var rideable = maid.getComponent("minecraft:rideable");
+                const rider = rideable.getRiders()[0];
+                if(rider === undefined){
+                    // 生成背包
+                    var bag = MaidBag.create(maid, MaidBag.default, maid.dimension, maid.location);
+                    // 背上背包   无效：rideable.addRider(bag);
+                    maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
+                }
+            }
+            catch{};
+        }, 2);
+        
+    }
+    /**
+     * 女仆寄事件
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     */
+    static onDeathEvent(event){
+        let lore = EntityMaid.toLore(event.entity);
+        let output_item = new ItemStack("touhou_little_maid:film", 1);
+        output_item.setLore(lore);
+        event.entity.dimension.spawnItem(output_item, event.entity.location);
+    }
+    
+    /**
+     * 女仆被拍照事件
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     */
+    static onPhotoEvent(event){
+        let maid = event.entity
+        let lore = EntityMaid.toLore(maid);
+        
+        // 发出声音
+        Tool.executeCommand(`playsound camera_use @a ${maid.location.x} ${maid.location.y} ${maid.location.z}`);
+        
+        // 清除实体
+        maid.triggerEvent("despawn");
+        let bag=EntityMaid.getBagEntity(maid);
+        if(bag!=undefined){
+            MaidBag.setInvisible(bag, true);
+        }
+
+        // 输出照片
+        let output_item = new ItemStack("touhou_little_maid:photo", 1);
+        output_item.setLore(lore);
+        maid.dimension.spawnItem(output_item, maid.location);
+    }
+    /**
+     * 女仆被魂符收回事件
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     */
+    static onSmartSlabRecycleEvent(event){
+        let maid = event.entity;
+        // 获取魂符物品
+        let owner = EntityMaid.getOwner(maid);
+        if(owner === undefined) return;
+        let item = Tool.getPlayerMainHand(owner);
+        if(item === undefined || item.typeId !== "touhou_little_maid:smart_slab_empty") return;
+
+        // 将女仆转为lore
+        let lore = EntityMaid.toLore(maid);
+        
+        // 清除实体
+        maid.triggerEvent("despawn");
+        let bag=EntityMaid.getBagEntity(maid);
+        if(bag!=undefined){
+            MaidBag.setInvisible(bag, true);
+        }
+
+        // 修改魂符
+        let new_itme = new ItemStack("touhou_little_maid:smart_slab_has_maid", 1)
+        new_itme.setLore(lore);
+        Tool.setPlayerMainHand(owner, new_itme);
+    }
+
+    /**
+     * 照片使用事件
+     * @param {ItemDefinitionTriggeredBeforeEvent} event 
+     */
+    static photoOnUseEvent(event){
+        EntityMaid.fromItem(event.itemStack, event.source.dimension, event.source.location);
+    }
+    /**
+     * 魂符使用事件
+     * @param {ItemDefinitionTriggeredBeforeEvent} event 
+     */
+    static smartSlabOnUseEvent(event){
+        let item = event.itemStack;
+        // 生成女仆
+        if(item.getLore().length === 0){
+            // 首次使用
+            EntityMaid.spawnRandomMaid(event.source.dimension, event.source.location);
+        }
+        else{
+            EntityMaid.fromItem(event.itemStack, event.source.dimension, event.source.location);
+        }
+        // 转换物品
+        Tool.setPlayerMainHand(event.source, new ItemStack("touhou_little_maid:smart_slab_empty", 1));
+    }
     /**
      * 女仆驯服寻主事件
      * 因为 1.没有实体交互事件 2.实体触发器事件没有发动者 3.脚本无法获取主人 4.若与实体交互成功，则物品使用事件不会触发
@@ -24,7 +139,7 @@ export class MaidManager{
         // 寻主成功
         if(results.length == 1){
             event.entity.triggerEvent("api:follow_on_tame_over");
-            event.entity.addTag(`thlmo:${results[0].id}`); // 记录主人id - touhou little maid owner
+            EntityMaid.setOwnerID(event.entity, results[0].id);
         }
     }
     /**
@@ -32,17 +147,18 @@ export class MaidManager{
      * @param {DataDrivenEntityTriggerBeforeEvent} event
      */
     static onInteractEvent(event){
+        let maid = event.entity;
+
         // Search for owner
-        let pl;
-        for(let tag of event.entity.getTags()){
-            if(tag.substring(0, 6) == "thlmo:"){
-                pl = world.getEntity(tag.substring(6));
-                // Send form
-                let form = new UI.MaidMenu(pl, event.entity);
-                form.main();
-                break;
-            }
+        let pl_id = EntityMaid.getOwnerID(maid);
+        if(pl_id!==undefined){
+            let pl = world.getEntity(pl_id);
+            // Send form
+            let form = new UI.MaidMenu(pl, event.entity);
+            form.main();
+            return true;
         }
+        return false;
     }
 
     /**

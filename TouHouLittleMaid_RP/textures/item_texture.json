@@ -9,6 +9,11 @@
     "touhou_little_maid.spellcard.boundary_between_wave_and_particle":{"textures":"textures/items/spellcard/boundary_between_wave_and_particle"},
     "touhou_little_maid.spellcard.metal_sign.metal_fatigue":{"textures":"textures/items/spellcard/metal_fatigue"},
     "touhou_little_maid.spellcard.magic_sign.milky_way":{"textures":"textures/items/spellcard/milky_way"},
-    "touhou_little_maid.spellcard.night_sign.night_bird":{"textures":"textures/items/spellcard/night_bird"}
+    "touhou_little_maid.spellcard.night_sign.night_bird":{"textures":"textures/items/spellcard/night_bird"},
+    "touhou_little_maid.film":{"textures":"textures/items/film"},
+    "touhou_little_maid.photo":{"textures":"textures/items/photo"},
+    "touhou_little_maid.camera":{"textures":"textures/items/camera_2d"},
+    "touhou_little_maid.smart_slab_empty":{"textures":"textures/items/smart_slab_empty"},
+    "touhou_little_maid.smart_slab_has_maid":{"textures":"textures/items/smart_slab_has_maid"}
   }
 }

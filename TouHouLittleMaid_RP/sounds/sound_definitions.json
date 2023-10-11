@@ -54,6 +54,16 @@
             "volume" : 0.5, "pitch": 2, "weight" : 5
           }
         ]
+      },
+      "camera_use":{
+        "category": "player",
+        "sounds": [
+          {
+            "is3D" : false,
+            "load_on_low_memory": true,
+            "name" : "sounds/item/camera_use"
+          }
+        ]
       }
    }
 }

@@ -1,0 +1,36 @@
+{
+    "format_version": "1.10.0",
+    "minecraft:attachable": {
+      "description": {
+        "identifier": "touhou_little_maid:camera",
+        "materials": {
+          "default": "entity_alphatest",
+          "enchanted": "entity_alphatest_glint"
+        },
+        "textures": {
+          "default": "textures/items/camera_3d",
+          "enchanted": "textures/items/camera_3d"
+        },
+        "geometry": {
+          "default": "geometry.touhou_little_maid.camera_in_hand"
+        },
+        "animations": {
+            "default_first_person": "animation.camera.default_first_person",
+            "default_thrid_person": "animation.camera.default_thrid_person"
+        },
+        "enable_attachables": true,
+        "scripts": {
+            "animate": [
+                {
+                    "default_first_person": "c.is_first_person"
+                },
+                {
+                    "default_thrid_person": "!c.is_first_person"
+                }
+            ]
+        },
+        "render_controllers": [ "controller.render.touhou_little_maid:camera" ]
+      }
+    }
+  }
+  

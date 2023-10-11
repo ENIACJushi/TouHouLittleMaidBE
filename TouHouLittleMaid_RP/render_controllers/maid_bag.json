@@ -1,0 +1,28 @@
+{
+	"format_version": "1.8.0",
+	"render_controllers": {
+		"controller.render.touhou_little_maid.maid_backpack": {
+			"geometry": "Geometry.default",
+			"materials": [
+				{"*": "Material.default"}
+			],
+			"textures": [ "Texture.default" ],
+			"uv_anim": {
+				"offset": [
+					0.0,
+					0.0
+				],
+				"scale": [
+					1.0,
+					1.0
+				]
+			},
+			"overlay_color": {
+				"r": 0.0,
+				"g": 0.0,
+				"b": 0.0,
+				"a": 0.0
+			}
+		}
+	}
+}

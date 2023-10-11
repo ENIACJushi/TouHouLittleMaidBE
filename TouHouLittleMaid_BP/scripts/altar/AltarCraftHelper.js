@@ -3,7 +3,7 @@ import * as Tool from "../libs/scarletToolKit"
 import { recipeList } from "../recipes/index"
 import { tagDefines } from "../recipes/tag_define"
 import PowerPoint from "../entities/power_point";
-
+import { EntityMaid } from "../maid/EntityMaid"
 
 export class AltarCraftHelper{
     constructor(){
@@ -114,6 +114,7 @@ export class AltarCraftHelper{
     summonOutput(dimension, location, output, itemStacks){
         try{
             switch(output.type){
+                // 生成物品
                 case "minecraft:item":
                     let itemInfo = output["nbt"]["Item"];
                     let amount = 1;
@@ -130,6 +131,7 @@ export class AltarCraftHelper{
                     }
                     dimension.spawnItem(output_item, location);
                     break;
+                // 修理物品
                 case "thlm:repair":
                     for(let source_item of itemStacks){
                         if(this.isItemMatchDefine(source_item, output.item["target"])){
@@ -141,6 +143,16 @@ export class AltarCraftHelper{
                         }
                     }
                     break;
+                // 复活女仆
+                case "touhou_little_maid:maid":
+                    for(let source_item of itemStacks){
+                        if(this.isItemMatchDefine(source_item, output.copy["ingredient"])){
+                            EntityMaid.fromItem(source_item, dimension, location);
+                            return true;
+                        }
+                    }
+                    break;
+                // 生成实体
                 default:
                     dimension.spawnEntity(output.type, location);
                     break;

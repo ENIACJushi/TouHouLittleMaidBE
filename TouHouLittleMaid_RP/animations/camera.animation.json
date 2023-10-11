@@ -1,0 +1,24 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.camera.default_first_person": {
+			"loop": true,
+			"bones": {
+				"rightitem": {
+					"rotation": [89.58589, 60.912, -51.89789],
+					"position": [4.26874, 30.21901, -9.26215]
+				}
+			}
+		},
+		"animation.camera.default_thrid_person": {
+			"loop": true,
+			"bones": {
+				"rightitem": {
+					"rotation": [85, 2, 357],
+					"position": [0, 20.96472, -1.8637],
+					"scale":[0.8,0.8,0.8]
+				}
+			}
+		}
+	}
+}

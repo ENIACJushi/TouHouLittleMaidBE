@@ -2,7 +2,7 @@
   "format_version": "1.12.0",
   "minecraft:entity": {
     "description": {
-      "identifier": "touhou_little_maid:maid_bag_default",
+      "identifier": "touhou_little_maid:maid_backpack",
       "is_spawnable": false,
       "is_summonable": true
     },
@@ -10,15 +10,19 @@
       "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
       "hide_mode":{
         "minecraft:collision_box": {
-          "width": 0.3,
-          "height": 0.5
+          "width": 0,
+          "height": 0
         }
       },
       "show_mode":{
         "minecraft:collision_box": {
           "width": 0.8,
-          "height": 1.7
+          "height": 0.5
         }
+      },
+
+      "status:invisible":{
+        "minecraft:is_baby": {}
       },
       "type:default":{
         "minecraft:skin_id": {"value": 0},
@@ -52,9 +56,11 @@
           "private": false
         }
       }
-      
     },
     "components": {
+      "minecraft:type_family": {
+        "family": ["thlm:maid_backpack"]
+      },
       "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
       "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
       "minecraft:persistent": {},
@@ -70,8 +76,10 @@
       "api:quit_default": { "remove": { "component_groups": [ "type:default" ] } },
       "api:quit_small"  : { "remove": { "component_groups": [ "type:small" ] } },
       "api:quit_medium" : { "remove": { "component_groups": [ "type:medium" ] } },
-      "api:quit_big"    : { "remove": { "component_groups": [ "type:big" ] } }
-
+      "api:quit_big"    : { "remove": { "component_groups": [ "type:big" ] } },
+      
+      "api:invisible"     :{ "add": { "component_groups": [ "status:invisible" ] } },
+      "api:quit_invisible":{ "remove": { "component_groups": [ "status:invisible" ] } }
     }
   }
 }

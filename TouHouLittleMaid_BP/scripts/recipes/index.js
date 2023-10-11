@@ -34,5 +34,7 @@ import {recipe as repair_hakurei_gohei} from "./bedrock/repair_hakurei_gohei"
 export const recipeList = [
     spawn_lightning_bolt,
     craft_hakurei_gohei,
-    repair_hakurei_gohei
+    repair_hakurei_gohei,
+    reborn_maid,
+    craft_camera
 ]

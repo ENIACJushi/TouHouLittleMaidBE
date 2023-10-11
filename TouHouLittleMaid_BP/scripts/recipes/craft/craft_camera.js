@@ -13,22 +13,22 @@ export const recipe = {
   "power": 0.2,
   "ingredients": [
     {
-      "tag": "forge:storage_blocks/quartz"
+      "item": "minecraft:quartz_block"
     },
     {
-      "tag": "forge:storage_blocks/quartz"
+      "item": "minecraft:quartz_block"
     },
     {
-      "tag": "forge:storage_blocks/quartz"
+      "item": "minecraft:quartz_block"
     },
     {
-      "tag": "forge:storage_blocks/quartz"
+      "item": "minecraft:quartz_block"
     },
     {
-      "tag": "forge:obsidian"
+      "item": "minecraft:obsidian"
     },
     {
-      "tag": "forge:obsidian"
+      "item": "minecraft:obsidian"
     }
   ]
 }

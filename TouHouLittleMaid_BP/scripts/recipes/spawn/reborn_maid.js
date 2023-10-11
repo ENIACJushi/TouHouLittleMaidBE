@@ -16,16 +16,16 @@ export const recipe = {
       "item": "touhou_little_maid:film"
     },
     {
-      "tag": "forge:gems/lapis"
+      "item": "minecraft:lapis_lazuli"
     },
     {
-      "tag": "forge:ingots/gold"
+      "item": "minecraft:gold_ingot"
     },
     {
-      "tag": "forge:dusts/redstone"
+      "item": "minecraft:redstone"
     },
     {
-      "tag": "forge:ingots/iron"
+      "item": "minecraft:iron_ingot"
     },
     {
       "item": "minecraft:coal"

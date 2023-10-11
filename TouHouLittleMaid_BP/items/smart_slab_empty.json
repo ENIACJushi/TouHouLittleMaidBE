@@ -1,0 +1,26 @@
+{
+    "format_version": "1.18.0",
+    "minecraft:item": {
+      "description": {
+        "category": "Equipment",
+        "identifier": "touhou_little_maid:smart_slab_empty"
+      },
+      "components": {
+        "minecraft:icon": {
+          "texture": "touhou_little_maid.smart_slab_empty"
+        },
+        "minecraft:display_name": {
+          "value": "item.touhou_little_maid:smart_slab"
+        },
+        "minecraft:hand_equipped": true,
+        "minecraft:max_stack_size": 1
+      },
+      "events": {
+        "transform":{
+          "transform_item": {
+            "transform": "touhou_little_maid.smart_slab_has_maid"
+          }
+        }
+      }
+    }
+  }

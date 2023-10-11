@@ -86,6 +86,13 @@ class thlm {
                         case "is":
                             itemShootManager.itemShootEvent(event);
                             break;
+                        // ph: photo
+                        case "ph":
+                            MaidManager.photoOnUseEvent(event);
+                        // ss: smart slab
+                        case "ss":
+                            MaidManager.smartSlabOnUseEvent(event);
+                            break;
                         default:
                             break;
                     }
@@ -128,6 +135,7 @@ class thlm {
                                 case "dfs":
                                     Danmaku.fairy_shoot(event.entity);
                                     break;
+                                // ddb: danmaku debug shoot
                                 case "ddb":
                                     Danmaku.debug_shoot(event.entity);
                                     break;
@@ -147,6 +155,22 @@ class thlm {
                                 // rh: return home
                                 case "rh":
                                     MaidManager.returnHomeEvent(event);
+                                    break;
+                                // sp: spawn
+                                case "sp":
+                                    MaidManager.onSpawnEvent(event);
+                                    break;
+                                // d: death
+                                case "d":
+                                    MaidManager.onDeathEvent(event);
+                                    break;
+                                // p: photo
+                                case "p":
+                                    MaidManager.onPhotoEvent(event);
+                                    break;
+                                // ss: smart slab
+                                case "ss":
+                                    MaidManager.onSmartSlabRecycleEvent(event);
                                     break;
                                 default:
                                     break;
@@ -208,5 +232,6 @@ class thlm {
         system.runInterval(()=>{
             PowerPoint.scan_tick();
         }, 5);
+        world.sendMessage("§e[Touhou Little Maid] Addon Loaded!");
     }
 }

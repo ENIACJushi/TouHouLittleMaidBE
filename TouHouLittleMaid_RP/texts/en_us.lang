@@ -11,6 +11,8 @@ danmaku.big_star.name=§aBig Star
 danmaku.glowey_ball.name=§aGlowey Ball
 message.touhou_little_maid:hakurei_gohei.switch=Switch danmaku type:  
 
+action.interact.camera=photo
+
 entity.touhou_little_maid:chair.name=Chair
 entity.touhou_little_maid:maid.name=Maid
 entity.touhou_little_maid:fairy.name=Maid Fairy

@@ -1,23 +1,29 @@
 {
-	"format_version": "1.12.0",
+	"format_version": "1.16.0",
 	"minecraft:geometry": [
 		{
 			"description": {
-				"identifier": "geometry.camera_in_hand",
+				"identifier": "geometry.touhou_little_maid.camera_in_hand",
 				"texture_width": 64,
 				"texture_height": 64,
-				"visible_bounds_width": 2,
+				"visible_bounds_width": 3,
 				"visible_bounds_height": 2.5,
 				"visible_bounds_offset": [0, 0.75, 0]
 			},
 			"bones": [
 				{
-					"name": "group2",
+					"name": "rightitem",
+					"pivot": [0, 0, 0],
+					"binding": "'rightitem'"
+				},
+				{
+					"name": "item",
+					"parent": "rightitem",
 					"pivot": [0, 8, 0]
 				},
 				{
 					"name": "group3",
-					"parent": "group2",
+					"parent": "item",
 					"pivot": [-4, 0.5, -4.29289],
 					"cubes": [
 						{
@@ -140,7 +146,7 @@
 				},
 				{
 					"name": "group4",
-					"parent": "group2",
+					"parent": "item",
 					"pivot": [-4, 0.5, -4.29289],
 					"cubes": [
 						{
@@ -969,7 +975,7 @@
 				},
 				{
 					"name": "group9",
-					"parent": "group2",
+					"parent": "item",
 					"pivot": [-4, 0.5, -4.29289],
 					"cubes": [
 						{
@@ -1080,6 +1086,7 @@
 				},
 				{
 					"name": "group",
+					"parent": "item",
 					"pivot": [6.12792, -6.47049, -10],
 					"cubes": [
 						{

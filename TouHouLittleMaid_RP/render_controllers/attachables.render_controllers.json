@@ -1,0 +1,57 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.touhou_little_maid:hakurei_gohei": {
+      "geometry": "geometry.default",
+      "materials": [ 
+        { "item": "variable.is_enchanted ? material.enchanted : material.default" },
+        { "cross": "material.blending"}
+     ],
+      "textures": [ "texture.default", "texture.enchanted" ],
+      "part_visibility": [
+        {
+					"item": true,
+					"cross": true
+				}
+      ]
+    },
+    "controller.render.touhou_little_maid:camera": {
+      "geometry": "geometry.default",
+      "materials": [ 
+        { "item": "variable.is_enchanted ? material.enchanted : material.default" }
+     ],
+      "textures": [ "texture.default", "texture.enchanted" ]
+    },
+
+    "controller.render.touhou_little_maid:maid_backpack": {
+      "arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.default",
+						"Texture.small",
+						"Texture.middle",
+            "Texture.big"
+					]
+				},
+        "geometries": {
+					"Array.geos": [
+						"Geometry.default",
+						"Geometry.small",
+						"Geometry.middle",
+            "Geometry.big"
+					]
+				}
+			},
+      "geometry": "Array.geos[query.variant]",
+      "materials": [ 
+        { "*": "material.default" }
+     ],
+      "textures": [ "Array.skins[query.variant]" ],
+      "part_visibility": [
+        {
+					"*" : "query.is_baby"
+				}
+      ]
+    }
+  }
+}

@@ -6,7 +6,8 @@
    *  Date        :  2023.02.17                   *
   \* -------------------------------------------- */
 
-import { world, Entity, Vector, Dimension } from "@minecraft/server";
+import { world, Entity, Vector, Dimension,Player, ItemStack } from "@minecraft/server";
+
 
 ////////// Logger //////////
 export function logger(str){
@@ -93,7 +94,32 @@ export function pointInArea_3D(x,y,z,areaStart_x,areaStart_y,areaStart_z,areaEnd
         }
     }
     return true;
-
+}
+////////// Tool//////////
+/**
+ * 获取玩家主手物品
+ * @param {Player} player
+ * @returns {ItemStack|undefined} 
+ */
+export function getPlayerMainHand(player){
+    let container = player.getComponent("inventory").container;
+    let slot = player.selectedSlot;
+    return container.getItem(slot);
+}
+/**
+ * 设置玩家主手物品
+ * @param {Player} player
+ * @param {?ItemStack} item
+ */
+export function setPlayerMainHand(player, item=undefined){
+    let container = player.getComponent("inventory").container;
+    let slot = player.selectedSlot;
+    if(item===undefined){
+        container.setItem(slot);
+    }
+    else{
+        container.setItem(slot, item);
+    }
 }
 ////////// Command //////////
 /**
