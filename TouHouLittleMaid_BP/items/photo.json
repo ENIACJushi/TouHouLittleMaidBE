@@ -23,8 +23,7 @@
       },
       "events": {
         "thlm:ph": {
-          "swing": {},
-          "decrement_stack": {}
+          "swing": {}
         }
       }
     }

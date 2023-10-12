@@ -12,7 +12,7 @@ import { ItemStack, world, Entity,Vector, DataDrivenEntityTriggerBeforeEvent, It
 import * as Tool from "../libs/scarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
-import { MaidBag } from "./MaidBag";
+import { MaidBackpack } from "./MaidBackpack";
 
 const HOME_RADIUS=25;
 
@@ -30,8 +30,8 @@ export class MaidManager{
                 const rider = rideable.getRiders()[0];
                 if(rider === undefined){
                     // 生成背包
-                    var bag = MaidBag.create(maid, MaidBag.default, maid.dimension, maid.location);
-                    // 背上背包   无效：rideable.addRider(bag);
+                    var backpack = MaidBackpack.create(maid, MaidBackpack.default, maid.dimension, maid.location);
+                    // 背上背包   无效：rideable.addRider(backpack);
                     maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
                 }
             }
@@ -63,9 +63,9 @@ export class MaidManager{
         
         // 清除实体
         maid.triggerEvent("despawn");
-        let bag=EntityMaid.getBagEntity(maid);
-        if(bag!=undefined){
-            MaidBag.setInvisible(bag, true);
+        let backpack=EntityMaid.getBackpackEntity(maid);
+        if(backpack!=undefined){
+            MaidBackpack.setInvisible(backpack, true);
         }
 
         // 输出照片
@@ -90,9 +90,9 @@ export class MaidManager{
         
         // 清除实体
         maid.triggerEvent("despawn");
-        let bag=EntityMaid.getBagEntity(maid);
-        if(bag!=undefined){
-            MaidBag.setInvisible(bag, true);
+        let backpack=EntityMaid.getBackpackEntity(maid);
+        if(backpack!=undefined){
+            MaidBackpack.setInvisible(backpack, true);
         }
 
         // 修改魂符
@@ -107,6 +107,7 @@ export class MaidManager{
      */
     static photoOnUseEvent(event){
         EntityMaid.fromItem(event.itemStack, event.source.dimension, event.source.location);
+        Tool.setPlayerMainHand(event.source);
     }
     /**
      * 魂符使用事件

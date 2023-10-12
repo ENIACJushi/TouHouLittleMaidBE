@@ -1,12 +1,12 @@
 import { world, system, Enchantment, ItemEnchantsComponent } from "@minecraft/server"
-import { altarStructure } from "./altar/AltarStructureHelper";
+import { altarStructure } from "./src/altar/AltarStructureHelper";
 import experiment from "./experiment"
-import PowerPoint from "./entities/power_point"
-import * as Danmaku from "./danmaku/DanmakuManager"
-import { CustomSpellCardManger } from "./danmaku/CustomSpellCardManger";
-import * as Tool from"./libs/scarletToolKit";
-import { itemShootManager } from "./danmaku/ItemShootManager";
-import { MaidManager } from "./maid/MaidManager";
+import PowerPoint from "./src/altar/PowerPoint"
+import * as Danmaku from "./src/danmaku/DanmakuManager"
+import { CustomSpellCardManger } from "./src/danmaku/CustomSpellCardManger";
+import * as Tool from"./src/libs/scarletToolKit";
+import { itemShootManager } from "./src/danmaku/ItemShootManager";
+import { MaidManager } from "./src/maid/MaidManager";
 
 if(true){
     // World Initialize
@@ -26,7 +26,6 @@ else{
 
 class thlm {
     static main(){
-        
         world.afterEvents.playerSpawn.subscribe(event => {
             if(event.initialSpawn){                
                 // say something
@@ -55,7 +54,6 @@ class thlm {
                                 altarStructure.activate(player.dimension, event.block.location, event.blockFace);
                             }
                         }
-        
                         // Place or Pop Item  (Interact with touhou_little_maid:altar_platform_block)
                         if(event.block.typeId == "touhou_little_maid:altar_platform_block" && !player.isSneaking){
                             altarStructure.placeItemEvent(event.block.location, player);
@@ -71,30 +69,18 @@ class thlm {
                 if(event.eventName.substring(0, 5) == "thlm:"){
                     switch(event.eventName.substring(5)){
                         // hakurei gohei transform
-                        case "hgt":
-                            Danmaku.gohei_transform(event);
-                            break;
+                        case "hgt": Danmaku.gohei_transform(event); break;
                         // hakurei gohei activate - hakurei gohei (crafting table) transform to true gohei
-                        case "hga":
-                            Danmaku.gohei_activate(event);
-                            break;
+                        case "hga": Danmaku.gohei_activate(event); break;
                         // spell card
-                        case "sc":
-                            CustomSpellCardManger.onSpellCardUseEvent(event);
-                            break;
+                        case "sc":  CustomSpellCardManger.onSpellCardUseEvent(event); break;
                         // item shoot
-                        case "is":
-                            itemShootManager.itemShootEvent(event);
-                            break;
+                        case "is":  itemShootManager.itemShootEvent(event); break;
                         // ph: photo
-                        case "ph":
-                            MaidManager.photoOnUseEvent(event);
+                        case "ph":  MaidManager.photoOnUseEvent(event); break;
                         // ss: smart slab
-                        case "ss":
-                            MaidManager.smartSlabOnUseEvent(event);
-                            break;
-                        default:
-                            break;
+                        case "ss":  MaidManager.smartSlabOnUseEvent(event); break;
+                        default: break;
                     }
                 }
             })
@@ -111,69 +97,39 @@ class thlm {
                         case ":":
                             switch(event.id.substring(5)){
                                 // at: altar_tick
-                                case "at": 
-                                    altarStructure.deactivateEvent(event.entity); 
-                                    // altarStructure.refreshItemsEvent(entity); // TODO: Reduce execution frequency
-                                    break;
+                                case "at": altarStructure.deactivateEvent(event.entity); break;
                                 // af: altar_refresh
-                                case "af":
-                                    altarStructure.refreshItemsEvent(event.entity)
-                                    break;
+                                case "af": altarStructure.refreshItemsEvent(event.entity); break;
                                 // ppi: power_point_init
-                                case "ppi":
-                                    PowerPoint.init_power_point(event.entity);
-                                    break;
+                                case "ppi": PowerPoint.init_power_point(event.entity); break;
                                 // pps: power point scan (powerpoint)
-                                case "pps":
-                                    PowerPoint.scan_powerpoint(event.entity);
-                                    break;
+                                case "pps": PowerPoint.scan_powerpoint(event.entity); break;
                                 // pfd; power point - fairy death
-                                case  "pfd":
-                                    PowerPoint.fairy_death(event.entity);
-                                    break;
+                                case  "pfd": PowerPoint.fairy_death(event.entity); break;
                                 // dfg: danmaku - fairy shoot
-                                case "dfs":
-                                    Danmaku.fairy_shoot(event.entity);
-                                    break;
+                                case "dfs": Danmaku.fairy_shoot(event.entity); break;
                                 // ddb: danmaku debug shoot
-                                case "ddb":
-                                    Danmaku.debug_shoot(event.entity);
-                                    break;
+                                case "ddb": Danmaku.debug_shoot(event.entity); break;
                                 default: break;
                             }; break;
                         // 女仆专用事件
                         case "m":
                             switch(event.id.substring(6)){
                                 // fon: follow on tamed
-                                case "onfs":
-                                    MaidManager.onTameFollowSuccess(event);
-                                    break;
+                                case "onfs": MaidManager.onTameFollowSuccess(event); break;
                                 // omi: on master interact
-                                case "omi":
-                                    MaidManager.onInteractEvent(event);
-                                    break;
+                                case "omi": MaidManager.onInteractEvent(event); break;
                                 // rh: return home
-                                case "rh":
-                                    MaidManager.returnHomeEvent(event);
-                                    break;
+                                case "rh": MaidManager.returnHomeEvent(event); break;
                                 // sp: spawn
-                                case "sp":
-                                    MaidManager.onSpawnEvent(event);
-                                    break;
+                                case "sp": MaidManager.onSpawnEvent(event); break;
                                 // d: death
-                                case "d":
-                                    MaidManager.onDeathEvent(event);
-                                    break;
+                                case "d": MaidManager.onDeathEvent(event); break;
                                 // p: photo
-                                case "p":
-                                    MaidManager.onPhotoEvent(event);
-                                    break;
+                                case "p": MaidManager.onPhotoEvent(event); break;
                                 // ss: smart slab
-                                case "ss":
-                                    MaidManager.onSmartSlabRecycleEvent(event);
-                                    break;
-                                default:
-                                    break;
+                                case "ss": MaidManager.onSmartSlabRecycleEvent(event); break;
+                                default: break;
                             }
                             break;
                         default:

@@ -1,10 +1,10 @@
 import { Dimension, Entity, system } from "@minecraft/server";
 import { Vector as Vec3d } from "@minecraft/server";
-import { DanmakuColor as Color } from "../../danmaku/DanmakuColor";
-import { DanmakuType as Type } from "../../danmaku/DanmakuType";
-import { EntityDanmaku as Danmaku } from "../../danmaku/EntityDanmaku";
-import { rotate_axis } from "../../libs/vector3d";
-import * as Tool from "../../libs/scarletToolKit"
+import { DanmakuColor as Color } from "../../../src/danmaku/DanmakuColor";
+import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
+import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";
+import { rotate_axis } from "../../../src/libs/vector3d";
+import * as Tool from "../../../src/libs/scarletToolKit"
 
 // Java.asJSONCompatible 改为 export const SpellCard = 
 export const SpellCard = {

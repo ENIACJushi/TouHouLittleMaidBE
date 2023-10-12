@@ -1,8 +1,8 @@
 import { Dimension, ItemStack, Player, Enchantment, ItemEnchantsComponent, Vector } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
-import { recipeList } from "../recipes/index"
-import { tagDefines } from "../recipes/tag_define"
-import PowerPoint from "../entities/power_point";
+import { recipeList } from "../../data/recipes/index"
+import { tagDefines } from "../../data/recipes/tag_define"
+import PowerPoint from "./PowerPoint";
 import { EntityMaid } from "../maid/EntityMaid"
 
 export class AltarCraftHelper{

@@ -1,4 +1,4 @@
-import { MultiBlockStructrueManager } from "../libs/multiBlockStructrueManager";
+import { MultiBlockStructrueManager } from "../libs/MultiBlockStructrueManager";
 import { system,Block, Dimension, Direction, Entity, ItemStack, Player, Vector } from "@minecraft/server";
 import * as Tool from"../libs/scarletToolKit";
 import { altarCraft } from "./AltarCraftHelper";

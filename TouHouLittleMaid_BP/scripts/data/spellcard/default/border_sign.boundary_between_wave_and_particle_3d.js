@@ -7,10 +7,10 @@
 
 import { Dimension, Entity, system } from "@minecraft/server";
 import { Vector as Vec3d } from "@minecraft/server";
-import { DanmakuColor as Color } from "../../danmaku/DanmakuColor";
-import { DanmakuType as Type } from "../../danmaku/DanmakuType";
-import { EntityDanmaku as Danmaku } from "../../danmaku/EntityDanmaku";
-import * as Tool from "../../libs/scarletToolKit"
+import { DanmakuColor as Color } from "../../../src/danmaku/DanmakuColor";
+import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
+import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";
+import * as Tool from "../../../src/libs/scarletToolKit"
 
 function fibonacciSphere(radius, samples, rotation) {
     rotation += 1;

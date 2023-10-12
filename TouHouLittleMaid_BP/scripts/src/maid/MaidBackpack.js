@@ -1,7 +1,7 @@
 import { Entity,world,Vector,Dimension,Container } from "@minecraft/server";
 
 
-export class MaidBag{
+export class MaidBackpack{
     static default = 0;
     static small   = 1;
     static medium  = 2;
@@ -16,48 +16,48 @@ export class MaidBag{
     /**
      * 在指定位置生成一个背包
      * @param {Entity|undefined} maid 
-     * @param {MaidBag} type
+     * @param {MaidBackpack} type
      * @param {Dimension} dimension 
      * @param {Vector} location
      * @returns {Entity}
      */
     static create(maid, type, dimension, location){
         // 创建背包
-        let bag = dimension.spawnEntity(
+        let backpack = dimension.spawnEntity(
             "touhou_little_maid:maid_backpack",location
         );
         
         // 设置大小
-        bag.triggerEvent(`api:${this.type2Name(type)}`);
+        backpack.triggerEvent(`api:${this.type2Name(type)}`);
         
         // 添加标签
         if(maid!==undefined){
-            bag.addTag(`thlmb:${maid.id}`);
-            maid.addTag(`thlmb:${bag.id}`);
+            backpack.addTag(`thlmb:${maid.id}`);
+            maid.addTag(`thlmb:${backpack.id}`);
         }
-        return bag;
+        return backpack;
     }
 
     ///// GET /////
     /**
      * 获取背包名称
-     * @param {Entity} bag
+     * @param {Entity} backpack
      * @return {string}
      */
     static getName(type){
-        return this.type2Name(this.getType(bag));
+        return this.type2Name(this.getType(backpack));
     }
     /**
      * 获取背包类型
-     * @param {Entity} bag
-     * @return {MaidBag}
+     * @param {Entity} backpack
+     * @return {MaidBackpack}
      */
-    static getType(bag){
-        return bag.getComponent("skin_id").value;
+    static getType(backpack){
+        return backpack.getComponent("skin_id").value;
     }
     /**
      * 由类型获取名称
-     * @param {MaidBag} type
+     * @param {MaidBackpack} type
      * @return {string}
      */
     static type2Name(type){
@@ -65,51 +65,51 @@ export class MaidBag{
     }
     /**
      * 获取背包的container对象
-     * @param {Entity} bag 
+     * @param {Entity} backpack 
      * @returns {Container}
      */
-    static getContainer(bag){
-        return bag.getComponent("inventory").container;
+    static getContainer(backpack){
+        return backpack.getComponent("inventory").container;
     }
     ///// SET /////
     /**
      * 设置类型
-     * @param {Entity} bag 
-     * @param {MaidBag} type
+     * @param {Entity} backpack 
+     * @param {MaidBackpack} type
      * @returns {boolean}
      */
-    static setType(bag, type){
-        let type_old = this.getType(bag);
+    static setType(backpack, type){
+        let type_old = this.getType(backpack);
         if(type_old !== type){
-            bag.triggerEvent(`api:quit_${this.type2Name(type_old)}`);
-            bag.triggerEvent(`api:${this.type2Name(type)}`);
+            backpack.triggerEvent(`api:quit_${this.type2Name(type_old)}`);
+            backpack.triggerEvent(`api:${this.type2Name(type)}`);
             return true;
         }
         return false;
     }
     /**
      * 设置不可见
-     * @param {Entity} bag 
+     * @param {Entity} backpack 
      * @param {boolean} status 
      */
-    static setInvisible(bag, status){
+    static setInvisible(backpack, status){
         if(status){
-            bag.triggerEvent("api:invisible");
+            backpack.triggerEvent("api:invisible");
         }
         else{
-            bag.triggerEvent("api:quit_invisible");
+            backpack.triggerEvent("api:quit_invisible");
         }
     }
     /**
      * 将背包1的物品复制到背包2
      * 背包2的容量必须大于或等于背包1，否则返回false
-     * @param {Entity} bag1 
-     * @param {Entity} bag2 
+     * @param {Entity} backpack1 
+     * @param {Entity} backpack2 
      * @returns {boolean}
      */
-    static copy(bag1, bag2){
-        let c1 = this.getContainer(bag1);
-        let c2 = this.getContainer(bag2);
+    static copy(backpack1, backpack2){
+        let c1 = this.getContainer(backpack1);
+        let c2 = this.getContainer(backpack2);
         if(c1.size <= c2.size){
             for(let i = 0; i<c1.size; i++){
                 // 将c1的物品移到c2
@@ -121,9 +121,9 @@ export class MaidBag{
     }
     /**
      * 清除背包
-     * @param {Entity} bag 
+     * @param {Entity} backpack 
      */
-    static clear(bag){
-        this.getContainer(bag).clearAll();
+    static clear(backpack){
+        this.getContainer(backpack).clearAll();
     }
 }

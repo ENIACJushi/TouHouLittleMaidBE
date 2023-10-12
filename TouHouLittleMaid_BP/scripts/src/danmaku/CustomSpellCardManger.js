@@ -1,5 +1,5 @@
 import { ItemStack, Player } from "@minecraft/server";
-import { spellCardList } from "../SpellCard/CustomSpellCardEntry"
+import { spellCardList } from "../../data/spellcard/CustomSpellCardEntry"
 import { ItemDefinitionTriggeredBeforeEvent } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 

@@ -208,14 +208,12 @@ export function showEntityComponents(en){
  * @param {Vector} blockLocation 
  */
 export function testBlockInfo(dimension, blockLocation){
-    try{
-        const bl = dimension.getBlock(blockLocation);
-        var block_p = bl.permutation;
-        logger(`touhou_little_maid:rotation ${block_p.getProperty("touhou_little_maid:rotation").value}`);
-        logger(`touhou_little_maid:number ${block_p.getProperty("touhou_little_maid:number").value}`);
-        logger(bl.id);
+    const bl = dimension.getBlock(blockLocation);
+    var block_p = bl.permutation;
+    var states = block_p.getAllStates();
+    for(let s in states){
+        logger(`${s} -- ${block_p.getState(s)}`);
     }
-    catch{}
 }
 
 

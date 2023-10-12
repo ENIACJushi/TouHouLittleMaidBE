@@ -236,8 +236,10 @@ export class MultiBlockStructrueManager {
             let dataMatched = true;
             if(structureBlock.data != null){
                 for(let key in structureBlock.data){
-                    if(block.permutation.getState(key) != structureBlock.data[key]){
-                        logger_debug(`Broken permutation: ${key} - expected ${structureBlock.data[key]}, but ${block.permutation.getState(key)}`);
+                    let expected_value = structureBlock.data[key];
+                    if(expected_value === "r") continue; // Ingnore rotation state
+                    if(block.permutation.getState(key) != expected_value){
+                        logger_debug(`Broken permutation: ${key} - expected ${expected_value}, but ${block.permutation.getState(key)}`);
                         return false;
                     }
                 }
