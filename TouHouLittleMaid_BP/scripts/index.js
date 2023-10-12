@@ -8,7 +8,7 @@ import * as Tool from"./src/libs/scarletToolKit";
 import { itemShootManager } from "./src/danmaku/ItemShootManager";
 import { MaidManager } from "./src/maid/MaidManager";
 
-if(true){
+if(false){
     // World Initialize
     world.afterEvents.worldInitialize.subscribe((e) => {
         PowerPoint.init_scoreboard_world();
@@ -23,7 +23,7 @@ if(true){
 else{
     experiment.main();
 }
-
+world.sendMessage("§e[Touhou Little Maid] Addon Loaded!");
 class thlm {
     static main(){
         world.afterEvents.playerSpawn.subscribe(event => {
@@ -188,6 +188,5 @@ class thlm {
         system.runInterval(()=>{
             PowerPoint.scan_tick();
         }, 5);
-        world.sendMessage("§e[Touhou Little Maid] Addon Loaded!");
     }
 }
