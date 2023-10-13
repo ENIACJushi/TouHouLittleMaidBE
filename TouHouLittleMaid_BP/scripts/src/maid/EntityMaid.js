@@ -191,26 +191,28 @@ export class EntityMaid{
          * b: backpack,背包大小
          * bi: backpack id, 临时背包的生物id
          */
-        var chunk_loader = dimension.spawnEntity("touhou_little_maid:chunk_loader", location);
-        chunk_loader.teleport(new Vector(infos.l[0], -63, infos.l[2]));
-        Tool.logger(infos["b"]);
-        var new_backpack = MaidBackpack.create(maid, infos["b"], dimension, location);
-        var old_id = infos["bi"];
-        system.runTimeout(()=>{
-            maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
-        }, 1);
-        // 没法找,考虑直接ticking area或者设置常驻加载区
-        let interval_id = system.runInterval(()=>{
-            Tool.logger("run");
-            let old_backpack = world.getEntity(old_id);
-            if(old_backpack !== undefined){
-                Tool.logger("run_over");
-                MaidBackpack.copy(old_backpack, new_backpack);
-                old_backpack.triggerEvent("despawn");
-                chunk_loader.triggerEvent("despawn");
-                system.clearRun(interval_id);
-            }
-        }, 1);
+        if(infos["b"] != undefined){
+            var chunk_loader = dimension.spawnEntity("touhou_little_maid:chunk_loader", location);
+            chunk_loader.teleport(new Vector(infos.l[0], -63, infos.l[2]));
+            Tool.logger(infos["b"]);
+            var new_backpack = MaidBackpack.create(maid, infos["b"], dimension, location);
+            var old_id = infos["bi"];
+            system.runTimeout(()=>{
+                maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
+            }, 1);
+            // 没法找,考虑直接ticking area或者设置常驻加载区
+            let interval_id = system.runInterval(()=>{
+                Tool.logger("run");
+                let old_backpack = world.getEntity(old_id);
+                if(old_backpack !== undefined){
+                    Tool.logger("run_over");
+                    MaidBackpack.copy(old_backpack, new_backpack);
+                    old_backpack.triggerEvent("despawn");
+                    chunk_loader.triggerEvent("despawn");
+                    system.clearRun(interval_id);
+                }
+            }, 1);
+        }
         return maid;
     }
     /**
@@ -333,5 +335,19 @@ export class EntityMaid{
      */
     static setHealth(maid, amount){
         return this.getHealthComponent(maid).setCurrentValue(amount);
+    }
+    /**
+     * 设置背包id
+     * @param {Entity} maid 
+     * @param {string} id 
+     */
+    static setBackpackID(maid, id){
+        for(let tag of maid.getTags()){
+            if(tag.substring(0, 6) == "thlmb:"){
+                maid.removeTag(tag);
+                break;
+            }
+        }
+        maid.addTag(`thlmb:${id}`);
     }
 }

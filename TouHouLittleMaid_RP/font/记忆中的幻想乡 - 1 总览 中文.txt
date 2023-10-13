@@ -14,10 +14,12 @@
 1
 =============
 
-             §l总览§r
-             §7(1/3)§r
+             {"rawtext":[{"tanslate":"me.chapter1.page1.title"}]}
+             §7(1/{"rawtext":[{"tanslate":"me.total_chapter"}]})§r
   一个与女仆和东方 Project 有关的模组。 感谢酒石酸菌和雪尼制作的java版TouhouLittleMaid。 感谢酒石酸菌、琥珀酸、帕金伊、天顶乌、天幂、Paulzzh、尤里的猫以及其他美工制作了如此优秀的模型和材质。 感谢 Little Maid Mob 的作者 Verclene。
+
 =============
+
 2作为目录
 =============
 
@@ -35,10 +37,9 @@
 3
 =============
 
-             §l总览§r
-
 §l东方Project§r
    东方 Project 是日本同人社团上海爱丽丝幻乐团制作的一系列同人作品，系列以清版弹幕射击游戏为主。
+
   Touhou 百科： https://en.touhouwiki.net/wiki/Touhou_Wiki
 =============
 
@@ -65,7 +66,7 @@
 
 
 
-       
+       
 
 
 =============

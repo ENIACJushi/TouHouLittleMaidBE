@@ -8,7 +8,7 @@ import * as Tool from"./src/libs/scarletToolKit";
 import { itemShootManager } from "./src/danmaku/ItemShootManager";
 import { MaidManager } from "./src/maid/MaidManager";
 
-if(false){
+if(true){
     // World Initialize
     world.afterEvents.worldInitialize.subscribe((e) => {
         PowerPoint.init_scoreboard_world();

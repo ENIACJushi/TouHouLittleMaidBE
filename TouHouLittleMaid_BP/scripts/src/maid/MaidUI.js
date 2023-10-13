@@ -22,7 +22,6 @@ export class MaidMenu {
         const form = new mcui.ActionFormData()
             .title(this.maid_name) // 女仆名，为空则使用默认标题
             .body(`${health.currentValue}/${health.defaultValue}`)
-            
             .button({rawtext:[
                 {translate: "gui.touhou_little_maid:task.switch.name"},
                 {text: " | "},

@@ -31,6 +31,7 @@ export class MaidManager{
                 if(rider === undefined){
                     // 生成背包
                     var backpack = MaidBackpack.create(maid, MaidBackpack.default, maid.dimension, maid.location);
+                    EntityMaid.setBackpackID(maid, backpack.id);
                     // 背上背包   无效：rideable.addRider(backpack);
                     maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
                 }
