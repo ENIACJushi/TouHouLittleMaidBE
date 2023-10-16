@@ -103,12 +103,17 @@
           "minimum_count": 1,
           "maximum_count": 2,
           "event_filters": {
-            "all_of": [
-              {"test": "is_owner","subject": "other","value": true},
-              {"test": "is_sneaking","subject": "other","value": false}
+            "all_of":[
+              {
+                "all_of": [
+                  {"test": "is_owner","subject": "other","value": true},
+                  {"test": "is_sneaking","subject": "other","value": true}
+                ]
+              },
+              { "test": "distance_to_nearest_player", "subject" : "self", "operator": "<", "value" : 7}
             ]
           },
-          "event": "inventory_mode"
+          "event": "thlmm:i"
         }
       },
       "thlmm:maid_tame_inventory":{
@@ -118,12 +123,18 @@
           "minimum_count": 1,
           "maximum_count": 2,
           "event_filters": {
-            "all_of": [
-              {"test": "is_owner","subject": "other","value": true},
-              {"test": "is_sneaking","subject": "other","value": true}
+            "any_of":[
+              {
+                "all_of": [
+                  {"test": "is_owner","subject": "other","value": true},
+                  {"test": "is_sneaking","subject": "other","value": false},
+                  {"test": "has_container_open", "subject": "other", "value": false}
+                ]
+              },
+              { "test": "distance_to_nearest_player", "subject" : "self", "operator": ">", "value" : 7}
             ]
           },
-          "event": "sit_mode"
+          "event": "thlmm:s"
         }
       },
 
@@ -264,7 +275,7 @@
         "rider_can_interact": false,
         "seat_count": 1,
         "seats":[{
-          "position": [0,0.8,-0.3]
+          "position": [0,0,0]
         }]
       },
       "minecraft:balloonable": {
@@ -452,11 +463,11 @@
           ]
         }
       },
-      "inventory_mode":{
+      "thlmm:i":{
         "remove": {"component_groups": ["thlmm:maid_tame_sit"]},
         "add": {"component_groups": ["thlmm:maid_tame_inventory"]}
       },
-      "sit_mode":{
+      "thlmm:s":{
         "add": {"component_groups": ["thlmm:maid_tame_sit"]},
         "remove": {"component_groups": ["thlmm:maid_tame_inventory"]}
       },

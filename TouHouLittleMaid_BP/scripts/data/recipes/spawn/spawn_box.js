@@ -13,22 +13,22 @@ export const recipe = {
   "power": 0.5,
   "ingredients": [
     {
-      "tag": "forge:gems/diamond"
+      "item": "minecraft:diamond"
     },
     {
-      "tag": "forge:gems/lapis"
+      "item": "minecraft:lapis_block"
     },
     {
-      "tag": "forge:ingots/gold"
+      "item": "minecraft:gold_block"
     },
     {
-      "tag": "forge:dusts/redstone"
+      "item": "minecraft:redstone_block"
     },
     {
-      "tag": "forge:ingots/iron"
+      "item": "minecraft:iron_block"
     },
     {
-      "item": "minecraft:coal"
+      "item": "minecraft:coal_block"
     }
   ]
 }

@@ -1,6 +1,7 @@
 import { Entity,world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack } from "@minecraft/server";
 import { MaidBackpack } from "./MaidBackpack";
 import * as Tool from "../libs/scarletToolKit"
+import { config } from '../../data/config'
 
 export class EntityMaid{
     // 家模式
@@ -122,18 +123,40 @@ export class EntityMaid{
                 let backpack_type = backpack.getComponent("skin_id").value;
                 infos["b"] = backpack_type;
 
-                // 在地底创建新背包(隐形)
-                let temp_backpack = MaidBackpack.create(undefined, backpack_type, backpack.dimension, 
-                    new Vector(location[0], -63, location[2]));
-                MaidBackpack.setInvisible(temp_backpack, true);
-                infos["bi"] = temp_backpack.id;
-                system.runTimeout(()=>{
-                    // 将物品移入临时背包
-                    MaidBackpack.copy(backpack, temp_backpack);
-                    MaidBackpack.clear(backpack);
-                    // 清除旧背包
-                    backpack.triggerEvent("despawn");
-                },1);
+                // lore→实体时，靠是否有infos.bi判断用的是哪种保存方法，身上背的背包都会保留
+                let deathBagSuccess = false;
+                // 将物品转移到常加载区域, 若区块加载器不存在则会失败，转而使用原地生成法
+                if(config.Maid.death_bag === false){
+                    let loader = MaidBackpack.loader.get();
+                    Tool.logger("1");
+                    if(loader !== undefined){
+                        Tool.logger("2");
+                        // 在地底创建新背包(隐形)
+                        let temp_backpack = MaidBackpack.create(undefined, backpack_type,
+                            backpack.dimension, loader.location);
+                        MaidBackpack.setInvisible(temp_backpack, true);
+                        infos["bi"] = temp_backpack.id;
+
+                        system.runTimeout(()=>{
+                            // 将物品移入临时背包
+                            MaidBackpack.copy(backpack, temp_backpack);
+                            MaidBackpack.clear(backpack);
+                            // 清除旧背包
+                            backpack.triggerEvent("despawn");
+                        }, 1); // 延时是因为要等新背包完成初始化
+                        deathBagSuccess = true;
+                    }
+                }
+                // 原地生成法，如果没有背包(default)就会爆出物品
+                if(deathBagSuccess === false){
+                    if(backpack_type === MaidBackpack.default){
+                        // 爆出物品
+                        backpack.kill();
+                    }
+                    else{
+                        MaidBackpack.setInvisible(backpack, false);
+                    }
+                }
             }
         }
 
@@ -191,26 +214,25 @@ export class EntityMaid{
          * b: backpack,背包大小
          * bi: backpack id, 临时背包的生物id
          */
-        if(infos["b"] != undefined){
-            var chunk_loader = dimension.spawnEntity("touhou_little_maid:chunk_loader", location);
-            chunk_loader.teleport(new Vector(infos.l[0], -63, infos.l[2]));
-            Tool.logger(infos["b"]);
+        if(infos["b"] !== undefined){
+            // 生成新包
             var new_backpack = MaidBackpack.create(maid, infos["b"], dimension, location);
-            var old_id = infos["bi"];
+
+            // 寻找旧包(保存到常加载区域的方案)
+            let old_id = infos["bi"];
+            if(old_id !== undefined){
+                system.runTimeout(()=>{
+                    let old_backpack = world.getEntity(old_id);
+                    if(old_backpack !== undefined){
+                        MaidBackpack.copy(old_backpack, new_backpack);
+                        old_backpack.triggerEvent("despawn");
+                    }
+                }, 1);// 延迟是为了背包初始化
+            }
+
+            // 背上包
             system.runTimeout(()=>{
                 maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
-            }, 1);
-            // 没法找,考虑直接ticking area或者设置常驻加载区
-            let interval_id = system.runInterval(()=>{
-                Tool.logger("run");
-                let old_backpack = world.getEntity(old_id);
-                if(old_backpack !== undefined){
-                    Tool.logger("run_over");
-                    MaidBackpack.copy(old_backpack, new_backpack);
-                    old_backpack.triggerEvent("despawn");
-                    chunk_loader.triggerEvent("despawn");
-                    system.clearRun(interval_id);
-                }
             }, 1);
         }
         return maid;

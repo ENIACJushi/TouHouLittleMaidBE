@@ -2,7 +2,7 @@
     "format_version": "1.13.0",
     "minecraft:entity": {
         "description": {
-            "identifier": "touhou_little_maid:chunk_loader",
+            "identifier": "thlm:chunk_loader",
             "is_spawnable": true,
             "is_summonable": true,
             "is_experimental": false

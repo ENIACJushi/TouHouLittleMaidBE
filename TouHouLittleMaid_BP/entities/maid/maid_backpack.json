@@ -1,5 +1,5 @@
 {
-  "format_version": "1.12.0",
+  "format_version": "1.18.10",
   "minecraft:entity": {
     "description": {
       "identifier": "touhou_little_maid:maid_backpack",
@@ -16,8 +16,8 @@
       },
       "show_mode":{
         "minecraft:collision_box": {
-          "width": 0.8,
-          "height": 0.5
+          "width": 0.61,
+          "height": 1.5
         }
       },
 
@@ -40,7 +40,7 @@
           "private": false
         }
       },
-      "type:medium":{
+      "type:middle":{
         "minecraft:skin_id": {"value": 2},
         "minecraft:inventory":{
           "container_type": "inventory",
@@ -55,7 +55,11 @@
           "inventory_size": 36,
           "private": false
         }
-      }
+      },
+
+      "emoji:0":{"minecraft:skin_id": {"value": 0}},
+      "emoji:1":{"minecraft:skin_id": {"value": 1}}
+
     },
     "components": {
       "minecraft:type_family": {
@@ -71,15 +75,23 @@
 
       "api:default": { "add": { "component_groups": [ "type:default" ] } },
       "api:small"  : { "add": { "component_groups": [ "type:small" ] } },
-      "api:medium" : { "add": { "component_groups": [ "type:medium" ] } },
+      "api:middle" : { "add": { "component_groups": [ "type:middle" ] } },
       "api:big"    : { "add": { "component_groups": [ "type:big" ] } },
       "api:quit_default": { "remove": { "component_groups": [ "type:default" ] } },
       "api:quit_small"  : { "remove": { "component_groups": [ "type:small" ] } },
-      "api:quit_medium" : { "remove": { "component_groups": [ "type:medium" ] } },
+      "api:quit_middle" : { "remove": { "component_groups": [ "type:middle" ] } },
       "api:quit_big"    : { "remove": { "component_groups": [ "type:big" ] } },
       
+      "api:show" : { "remove": { "component_groups": [ "hide_mode" ] }, "add": { "component_groups": [ "show_mode" ] } },
+      "api:hide" : { "remove": { "component_groups": [ "show_mode" ] }, "add": { "component_groups": [ "hide_mode" ] }  },
+      
       "api:invisible"     :{ "add": { "component_groups": [ "status:invisible" ] } },
-      "api:quit_invisible":{ "remove": { "component_groups": [ "status:invisible" ] } }
+      "api:quit_invisible":{ "remove": { "component_groups": [ "status:invisible" ] } },
+      
+      "emoji:0"     : {"add"   : { "component_groups": [ "emoji:0" ] }},
+      "emoji_quit:0": {"remove": { "component_groups": [ "emoji:0" ] }},
+      "emoji:1"     : {"add"   : { "component_groups": [ "emoji:1" ] }},
+      "emoji_quit:1": {"remove": { "component_groups": [ "emoji:1" ] }}
     }
   }
 }

@@ -1,0 +1,67 @@
+{
+    "format_version": "1.18.10",
+    "minecraft:entity": {
+      "description": {
+        "identifier": "touhou_little_maid:box",
+        "is_spawnable": false,
+        "is_summonable": true,
+        "is_experimental": false
+      },
+      "component_groups": {
+        "b0": {"minecraft:variant": {"value": 0}},
+        "b1": {"minecraft:variant": {"value": 1}},
+        "b2": {"minecraft:variant": {"value": 2}},
+        "b3": {"minecraft:variant": {"value": 3}},
+        "b4": {"minecraft:variant": {"value": 4}},
+        "b5": {"minecraft:variant": {"value": 5}},
+        "b6": {"minecraft:variant": {"value": 6}},
+        "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } }
+      },
+      "components": {
+        "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+        "minecraft:collision_box": { "width": 1, "height": 1 },
+        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+        "minecraft:persistent": {},
+        "minecraft:knockback_resistance": { "value": 1.0 },
+        "minecraft:physics": {
+          "has_collision": true,
+          "has_gravity": true
+        },
+        "minecraft:health": {
+          "value": 10,
+          "max": 10
+        },
+        "minecraft:interact": {
+          "interactions": [
+            {
+              "on_interact": {
+                "filters": {
+                  "all_of": [
+                    { "test": "is_family", "subject" : "other", "value" :  "player"}
+                  ]
+                },
+                "event": "thlm:b",
+                "target": "self"
+              },
+              "interact_text": "action.interact.box"
+            }
+          ]
+        }
+      },
+      "events": {
+        "thlm:b":{},
+        "minecraft:entity_spawned": {
+          "randomize": [
+            { "add": { "component_groups": [ "b0" ] }, "weight": 1 },
+            { "add": { "component_groups": [ "b1" ] }, "weight": 1 },
+            { "add": { "component_groups": [ "b2" ] }, "weight": 1 },
+            { "add": { "component_groups": [ "b3" ] }, "weight": 1 },
+            { "add": { "component_groups": [ "b4" ] }, "weight": 1 },
+            { "add": { "component_groups": [ "b5" ] }, "weight": 1 },
+            { "add": { "component_groups": [ "b6" ] }, "weight": 1 }
+          ]
+        },
+        "despawn":{ "add": { "component_groups": [ "despawn" ] } }
+      }
+    }
+  }

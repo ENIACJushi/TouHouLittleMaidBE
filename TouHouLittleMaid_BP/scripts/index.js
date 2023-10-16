@@ -11,14 +11,17 @@ import { MaidManager } from "./src/maid/MaidManager";
 if(true){
     // World Initialize
     world.afterEvents.worldInitialize.subscribe((e) => {
-        PowerPoint.init_scoreboard_world();
-        PowerPoint.init_dynamic_properties(e);
-        Danmaku.init_dynamic_properties(e);
+        system.run(()=>{
+            PowerPoint.init_scoreboard_world();
+            PowerPoint.init_dynamic_properties(e);
+            Danmaku.init_dynamic_properties(e);
+            MaidManager.init();
+        });
     });
 
     system.runTimeout(()=>{
         thlm.main();
-    },100)
+    }, 20);
 }
 else{
     experiment.main();
@@ -105,11 +108,13 @@ class thlm {
                                 // pps: power point scan (powerpoint)
                                 case "pps": PowerPoint.scan_powerpoint(event.entity); break;
                                 // pfd; power point - fairy death
-                                case  "pfd": PowerPoint.fairy_death(event.entity); break;
+                                case "pfd": PowerPoint.fairy_death(event.entity); break;
                                 // dfg: danmaku - fairy shoot
                                 case "dfs": Danmaku.fairy_shoot(event.entity); break;
                                 // ddb: danmaku debug shoot
                                 case "ddb": Danmaku.debug_shoot(event.entity); break;
+                                // b: box open
+                                case "b": MaidManager.boxOpenEvent(event); break;
                                 default: break;
                             }; break;
                         // 女仆专用事件
@@ -129,6 +134,10 @@ class thlm {
                                 case "p": MaidManager.onPhotoEvent(event); break;
                                 // ss: smart slab
                                 case "ss": MaidManager.onSmartSlabRecycleEvent(event); break;
+                                // s: sit mode
+                                case "s": MaidManager.sitModeEvent(event); break;
+                                // i: inventory mode
+                                case "i": MaidManager.inventoryModeEvent(event); break;
                                 default: break;
                             }
                             break;

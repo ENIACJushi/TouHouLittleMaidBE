@@ -14,9 +14,16 @@ import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
 import { MaidBackpack } from "./MaidBackpack";
 
+
 const HOME_RADIUS=25;
 
 export class MaidManager{
+    /**
+     * 初始化事件
+     */
+    static init(){
+        MaidBackpack.loader.init();
+    }
     /**
      * 女仆生成事件
      * @param {DataDrivenEntityTriggerBeforeEvent} event 
@@ -183,6 +190,33 @@ export class MaidManager{
             maid.teleport(new Vector(home_location[0]+0.5,home_location[1],home_location[2]+0.5),
                 {dimension: world.getDimension(home_location[3])});
         }
-    } 
+    }
+    /**
+     * 模式切换为坐下，此时主人状态由潜行切换到站立
+     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     */
+    static sitModeEvent(event){
+        let maid = event.entity;
+        let bag = EntityMaid.getBackpackEntity(maid);
+        MaidBackpack.hide(bag);
+    }
+    /**
+     * 模式切换为背包操作，此时主人状态由站立切换到潜行
+     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     */
+    static inventoryModeEvent(event){
+        let maid = event.entity;
+        let bag = EntityMaid.getBackpackEntity(maid);
+        MaidBackpack.show(bag);
+    }
+    /**
+     * 开盒，生成一只随机女仆
+     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     */
+    static boxOpenEvent(event){
+        let box = event.entity;
+        EntityMaid.spawnRandomMaid(box.dimension, box.location);
+        box.triggerEvent("despawn");
+    }
 }
 
