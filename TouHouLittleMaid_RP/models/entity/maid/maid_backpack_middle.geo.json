@@ -12,13 +12,13 @@
 			},
 			"bones": [
 				{
-					"name": "body",
+					"name": "backpack",
 					"pivot": [0, -3, 3],
 					"binding": "'body'"
 				},
 				{
 					"name": "band2",
-					"parent": "body",
+					"parent": "backpack",
 					"pivot": [3, 7.25, -1]
 				},
 				{
@@ -58,7 +58,7 @@
 				},
 				{
 					"name": "band",
-					"parent": "body",
+					"parent": "backpack",
 					"pivot": [-3, 7.25, -1]
 				},
 				{
@@ -98,7 +98,7 @@
 				},
 				{
 					"name": "decoration",
-					"parent": "body",
+					"parent": "backpack",
 					"pivot": [8.2, -1.6, 1.5],
 					"rotation": [5.00192, 0, 0],
 					"cubes": [
@@ -197,7 +197,7 @@
 				},
 				{
 					"name": "paw",
-					"parent": "body",
+					"parent": "backpack",
 					"pivot": [0, -3, 3],
 					"cubes": [
 						{"origin": [9.4822, 8.3, 1.078], "size": [4, 3, 3], "inflate": 0.25, "uv": [96, 64]},
@@ -385,7 +385,7 @@
 				},
 				{
 					"name": "bag",
-					"parent": "body",
+					"parent": "backpack",
 					"pivot": [0, -3, 3],
 					"cubes": [
 						{"origin": [-8, -0.2, -1], "size": [16, 9, 1], "uv": [94, 96]}
@@ -882,7 +882,7 @@
 				},
 				{
 					"name": "sign",
-					"parent": "body",
+					"parent": "backpack",
 					"pivot": [7, -4.2, 6.6]
 				},
 				{

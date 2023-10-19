@@ -8,22 +8,97 @@
 				{"wingLeft": "Material.wing"},
 				{"wingRight": "Material.wing"}
 			],
-			"textures": [ "Texture.default" ],
+			"textures": [ "Texture.default" ]
+		},
+		"controller.render.touhou_little_maid.maid.maid_backpack": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.backpack_default",
+						"Texture.backpack_small",
+						"Texture.backpack_middle",
+						"Texture.backpack_big"
+					]
+				},
+				"geometries": {
+					"Array.geos":[
+						"Geometry.backpack_default",
+						"Geometry.backpack_small",
+						"Geometry.backpack_middle",
+						"Geometry.backpack_big"
+					]
+				}
+			},
+			
+			"geometry": "Array.geos[q.property('thlm:backpack_type')]",
+			"materials": [
+				{ "*": "Material.default" }
+			],
+			"textures": [ "Array.skins[q.property('thlm:backpack_type')]" ],
+			"part_visibility": [
+				{ "*": "!q.property('thlm:backpack_invisible')" }
+			]
+		},
+		"controller.render.touhou_little_maid.maid_backpack": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.default",
+						"Texture.small",
+						"Texture.middle",
+						"Texture.big"
+					]
+				},
+				"geometries": {
+					"Array.geos":[
+						"Geometry.default",
+						"Geometry.small",
+						"Geometry.middle",
+						"Geometry.big"
+					]
+				}
+			},
+			
+			"geometry": "Array.geos[query.variant]",
+			"materials": [
+				{ "*": "Material.default" }
+			],
+			"textures": [ "Array.skins[query.variant]" ],
+			"part_visibility": [
+				{ "*": "!query.is_baby && !query.is_riding" }
+			]
+		},
+		"controller.render.touhou_little_maid.maid.emoji": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.e0", "Texture.e1", "Texture.e2", "Texture.e3", "Texture.e4", "Texture.e5", "Texture.e6", "Texture.e7", "Texture.e8", "Texture.e9"
+					]
+				},
+				"geometries": {
+					"Array.geos":[
+						"Geometry.e0", "Geometry.e1", "Geometry.e2", "Geometry.e3", "Geometry.e4", "Geometry.e5", "Geometry.e6", "Geometry.e7", "Geometry.e8", "Geometry.e9"
+					]
+				}
+			},
+			
+			"geometry": "Array.geos[q.property('emoji:index')]",
+			"materials": [
+				{ "*": "Material.default" }
+			],
+			"textures": [ "Array.skins[q.property('emoji:index')]" ],
+			"part_visibility": [
+				{ "*": true }
+			],
 			"uv_anim": {
 				"offset": [
 					0.0,
-					0.0
+					"math.mod(math.floor(query.life_time * q.property('emoji:frames_per_second')), q.property('emoji:frame_count')) / q.property('emoji:frame_count')"
 				],
 				"scale": [
 					1.0,
-					1.0
+					"1 / q.property('emoji:frame_count')"
 				]
-			},
-			"overlay_color": {
-				"r": 0.0,
-				"g": 0.0,
-				"b": 0.0,
-				"a": 0.0
 			}
 		}
 	}

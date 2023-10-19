@@ -58,6 +58,8 @@ danmaku.glowey_ball.name=§a光玉
 
 entity.touhou_little_maid:chair.name=椅子
 entity.touhou_little_maid:maid.name=小女仆
+entity.thlmm:maid_basic.name=小女仆
+entity.touhou_little_maid:maid_backpack.name=背包
 entity.touhou_little_maid:fairy.name=妖精女仆
 entity.touhou_little_maid:danmaku.name=弹幕
 entity.touhou_little_maid:box.name=蛋糕盒

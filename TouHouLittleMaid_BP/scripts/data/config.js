@@ -8,6 +8,7 @@ export const config = {
          */
         "death_bag": true
     },
-    "SkinList": [0, 2], // 填已装载模型包的编号
-    "SkinList_private": ["doge"] // 填未公开模型包的标识符
+    "UseUI"   : false,  // 是否启用特殊UI
+    "SkinList": [0, 2], // 已装载的公开模型包的编号
+    "SkinList_private": ["doge"] // 未公开模型包的标识符
 }

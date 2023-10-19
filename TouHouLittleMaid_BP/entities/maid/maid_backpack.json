@@ -90,13 +90,17 @@
 
     },
     "components": {
+      "minecraft:nameable": {
+        "always_show": false,
+        "allow_name_tag_renaming": false
+      },
       "minecraft:type_family": {
         "family": ["thlm:maid_backpack"]
       },
       "minecraft:interact": {
         "interactions": [
           {
-            "cooldown": 2.5, "use_item": true, "play_sounds": "pop", "vibration": "none",
+            "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
             "interact_text": "action.interact.maid_backpack_carry",
             "on_interact": {
               "filters": {"all_of": [
@@ -109,7 +113,7 @@
             }
           },
           {
-            "cooldown": 2.5, "use_item": true, "play_sounds": "pop", "vibration": "none",
+            "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
             "interact_text": "action.interact.maid_backpack_carry",
             "on_interact": {
               "filters": {"all_of": [
@@ -122,7 +126,7 @@
             }
           },
           {
-            "cooldown": 2.5, "use_item": true, "play_sounds": "pop", "vibration": "none",
+            "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
             "interact_text": "action.interact.maid_backpack_carry",
             "on_interact": {
               "filters": {"all_of": [

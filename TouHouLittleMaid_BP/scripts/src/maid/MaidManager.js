@@ -229,6 +229,7 @@ export class MaidManager{
     static inventoryModeEvent(event){
         let maid = event.entity;
         let bag = EntityMaid.getBackpackEntity(maid);
+        // bag.nameTag = maid.nameTag===""?"entity.touhou_little_maid:maid.name":maid.nameTag;
         MaidBackpack.show(bag);
     }
     /**

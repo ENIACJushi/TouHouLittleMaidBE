@@ -4,16 +4,37 @@
     "description": {
       "identifier": "thlmm:maid_basic",
       "materials": {
-        "default": "entity_emissive_alpha",
+        "default": "warden",
         "wing": "danmaku_blending"
       },
       "textures": {
+        "backpack_default": "textures/entity/maid_backpack_small",
+        "backpack_small"  :"textures/entity/maid_backpack_small",
+        "backpack_middle"  :"textures/entity/maid_backpack_middle",
+        "backpack_big"  :"textures/entity/maid_backpack_big",
+
+
+        "e0": "textures/entity/maid_backpack_big",
+        
+
         "default": "textures/entity/maid/hakurei_reimu"
+
       },
       "geometry": {
+        "backpack_default": "geometry.touhou_little_maid.void",
+        "backpack_small": "geometry.touhou_little_maid.maid_backpack_small",
+        "backpack_middle": "geometry.touhou_little_maid.maid_backpack_middle",
+        "backpack_big": "geometry.touhou_little_maid.maid_backpack_big",
+
+
+        "e0": "geometry.touhou_little_maid.maid_backpack_big",
+
+
         "default": "geometry.touhou_little_maid.hakurei_reimu"
+
       },
       "animations": {
+        "backpack_offset": "animation.touhou_little_maid.basic.backpack_offset",
         "blink": "animation.touhou_little_maid.basic.blink",
         "look_at_target": "animation.common.look_at_target",
         "wing": "animation.touhou_little_maid.basic.wing",
@@ -25,6 +46,7 @@
           "variable.tcos0 = (Math.cos(query.modified_distance_moved * 38.17) * query.modified_move_speed / variable.gliding_speed_value) * 28.65;"
         ],
         "animate": [
+          "backpack_offset",
           "blink",
           "wing",
           "look_at_target",
@@ -33,7 +55,8 @@
         ]
       },
       "render_controllers": [
-        "controller.render.touhou_little_maid.maid_basic"
+        "controller.render.touhou_little_maid.maid_basic",
+        "controller.render.touhou_little_maid.maid.maid_backpack"
       ],
       "spawn_egg": {
         "base_color": "#ffffff",

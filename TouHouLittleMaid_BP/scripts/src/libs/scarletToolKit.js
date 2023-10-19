@@ -122,6 +122,32 @@ export function setPlayerMainHand(player, item=undefined){
     }
 }
 /**
+ * 将维度字符转为数字
+ * @param {string} name
+ * @param {number|undefined} 
+ */
+export function dim_string2int(name){
+    switch(name){
+        case "minecraft:overworld": return 0;
+        case "minecraft:nether": return 1;
+        case "minecraft:the_end": return 2;
+        default: return undefined;
+    }
+}
+/**
+ * 将维度数字转为字符
+ * @param {number} index
+ * @param {string|undefined} 
+ */
+export function dim_int2string(index){
+    switch(index){
+        case 0: return "minecraft:overworld";
+        case 1: return "minecraft:nether";
+        case 2: return "minecraft:the_end";
+        default: return undefined;
+    }
+}
+/**
  * 获取tag数据 最多获取一个
  * @param {Entity} entity 
  * @param {string} prefix like "thlmo:"

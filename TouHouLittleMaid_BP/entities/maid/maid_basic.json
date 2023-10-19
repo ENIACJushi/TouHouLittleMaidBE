@@ -5,9 +5,21 @@
       "identifier": "thlmm:maid_basic",
       "is_spawnable": true,
       "is_summonable": true,
-      "is_experimental": false
-    },
+      "is_experimental": false,
+      "properties": {
+        "thlm:backpack_type"     :{"type": "int" , "default": 0    , "range":[0,3], "client_sync": true},
+        "thlm:backpack_invisible":{"type": "bool", "default": false, "client_sync": true},
 
+        "thlm:home_x"  :{"type": "int", "client_sync": false, "default": 0, "range": [-2147483648, 2147483647]},
+        "thlm:home_y"  :{"type": "int", "client_sync": false, "default": 0, "range": [-2147483648, 2147483647]},
+        "thlm:home_z"  :{"type": "int", "client_sync": false, "default": 0, "range": [-2147483648, 2147483647]},
+        "thlm:home_dim":{"type": "int", "client_sync": false, "default": 0, "range": [0, 2]},
+
+        "emoji:index"             :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
+        "emoji:frames_per_second" :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
+        "emoji:frame_count"       :{"type": "float", "client_sync": true, "default": 1, "range": [0, 99999]}
+      }
+    },
     "component_groups": {
       "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
       "thlmm:maid_wild": {
@@ -26,12 +38,6 @@
       },
       "thlmm:maid_tame": {
         "minecraft:sittable": {},
-        "minecraft:inventory":{
-          "container_type": "inventory",
-          "inventory_size": 27,
-          "private": false,
-          "restrict_to_owner": true
-        },
         "minecraft:is_tamed": {
         },
         "minecraft:damage_sensor": { 
@@ -134,9 +140,22 @@
         }
       },
 
+      "backpack:default":{
+        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": true}
+      },
+      "backpack:small":{
+        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 12, "private": true}
+      },
+      "backpack:middle":{
+        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 24, "private": true}
+      },
+      "backpack:big":{
+        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 36, "private": true}
+      },
+
       "status:follow_on_tame":{
         "minecraft:behavior.follow_owner": {
-          "priority": 1,
+          "priority": 3,
           "speed_multiplier": 1.0,
           "start_distance": 1,
           "stop_distance": 1,
@@ -175,6 +194,7 @@
           }
         }
       },
+
       "mode:idle":{
         "minecraft:variant": {"value": 0},
         "minecraft:behavior.panic": {
@@ -200,6 +220,17 @@
       }
     },
     "components": {
+      "minecraft:equippable": {
+        "slots": [
+          {        
+            "slot": 0,
+            "item": "saddle",
+            "accepted_items": [ "saddle" ],
+            "on_equip": {"event": "minecraft:horse_saddled"},
+            "on_unequip": {"event": "minecraft:horse_unsaddled"}
+          }
+        ]
+      },
       "minecraft:behavior.nearest_attackable_target": {
         "priority": 2,
         "must_reach": true,
@@ -246,8 +277,10 @@
       },
       "minecraft:nameable": {
         "always_show": false,
-        "allow_name_tag_renaming": false
+        
+        "allow_name_tag_renaming": true
       },
+      
       "minecraft:type_family": {
         "family": [ "maid", "mob" ]
       },
@@ -439,6 +472,7 @@
       "thlmm:d":{},
       "thlmm:p":{},
       "thlmm:ss":{},
+
       "api:follow_on_tame_over":{
         "add": {"component_groups": ["status:follow_standard", "thlmm:maid_tame_sit"]},
         "remove": {"component_groups": ["status:follow_on_tame"]}
@@ -452,7 +486,15 @@
       "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}}]},
       "api:mode_quit_idle":  {"sequence": [{"remove": {"component_groups": ["mode:idle"]}}]},
       "api:mode_attack"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack"]}}]},
-      "api:mode_quit_attack":{"sequence": [{"remove": {"component_groups": ["mode:attack"]}}]}
+      "api:mode_quit_attack":{"sequence": [{"remove": {"component_groups": ["mode:attack"]}}]},
+
+      "api:backpack_default":{"add":{"component_groups":["backpack:default"]},"set_property":{"thlm:backpack_type":0}},
+      "api:backpack_small":{"add":{"component_groups":["backpack:small"]},"set_property":{"thlm:backpack_type":1}},
+      "api:backpack_middle":{"add":{"component_groups":["backpack:middle"]},"set_property":{"thlm:backpack_type": 2}},
+      "api:backpack_big":{"add":{"component_groups":["backpack:big"]},"set_property":{"thlm:backpack_type": 3}},
+
+      "api:backpack_invisible":{"set_property":{"thlm:backpack_invisible": true}},
+      "api:backpack_quit_invisible":{"set_property":{"thlm:backpack_invisible": false}}
     }
   }
 }

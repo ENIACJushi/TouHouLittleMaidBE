@@ -20,7 +20,6 @@ export class EntityMaid{
         switchMode(maid){
             if(this.getMode(maid)===true){
                 // 家模式 → 跟随模式
-                this.clearLocation(maid);
                 maid.triggerEvent("api:status_quit_home");
                 maid.triggerEvent("api:status_follow");
             }
@@ -42,33 +41,22 @@ export class EntityMaid{
          * @param {Entity} maid 
          */
         setLocation(maid){
-            this.clearLocation(maid);
             let l = maid.location;
-            Tool.setTagData(maid, "thlmh:", `${Math.ceil(l.x)},${Math.ceil(l.y)},${Math.ceil(l.z)},${maid.dimension.id}`)
+            maid.setProperty("thlm:home_x", Math.ceil(l.x));
+            maid.setProperty("thlm:home_y", Math.ceil(l.y));
+            maid.setProperty("thlm:home_z", Math.ceil(l.z));
+            maid.setProperty("thlm:home_dim", Tool.dim_string2int(maid.dimension.id));
         },
         /**
          * 获取家的位置
          * @param {Entity} maid 
-         * @returns {number[]|undefined}
+         * @returns {number[]}
          */
         getLocation(maid){
-            let result = Tool.getTagData(maid, "thlmh:");
-            if(result !== undefined){
-                let lstring = result.split(",");
-                return [parseInt(lstring[0]), 
-                        parseInt(lstring[1]),
-                        parseInt(lstring[2]),
-                        lstring[3]];
-            }
-            return undefined;
-        },
-        /**
-         * 清除家的位置
-         * @param {Entity} maid 
-         * @returns {number[]|undefined}
-         */
-        clearLocation(maid){
-            Tool.delTagData(maid, "thlmh:");
+            return [maid.getProperty("thlm:home_x"), 
+                    maid.getProperty("thlm:home_y"),
+                    maid.getProperty("thlm:home_z"),
+                    Tool.dim_int2string(maid.getProperty("thlm:home_dim"))];
         }
     }
     // 拾物模式
@@ -317,6 +305,14 @@ export class EntityMaid{
         return undefined;
     }
     /**
+     * 获取背包是否隐藏
+     * @param {Entity} maid 
+     * @returns {boolean}
+     */
+    static getBackPackInvisible(maid){
+        return maid.getProperty("thlm:backpack_invisible");
+    }
+    /**
      * 获取健康属性
      * @param {Entity} maid
      * @returns {EntityHealthComponent}
@@ -351,5 +347,13 @@ export class EntityMaid{
     static setBackpackID(maid, id){
         Tool.delTagData(maid, "thlmb:");
         Tool.setTagData(maid, "thlmb:", id);
+    }
+    /**
+     * 设置背包是否隐藏
+     * @param {Entity} maid
+     * @param {boolean} target
+     */
+    static setBackPackInvisible(maid, value){
+        return maid.setProperty("thlm:backpack_invisible", value);
     }
 }

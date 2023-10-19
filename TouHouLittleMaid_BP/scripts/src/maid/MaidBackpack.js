@@ -179,6 +179,19 @@ export class MaidBackpack{
         return Tool.getTagData(backpack, "thlmm:");
     }
     /**
+     * 获取女仆实体
+     * @param {Entity} backpack 
+     * @returns {Entity|undefined}
+     */
+    static getMaid(backpack){
+        let maidID = this.getMaidID(backpack);
+        if(maidID !== undefined){
+            return world.getEntity(maidID);
+        }
+        return undefined;
+    }
+    
+    /**
      * 获取表情
      * @param {Entity} backpack
      */
@@ -210,6 +223,11 @@ export class MaidBackpack{
         if(type_old !== type){
             backpack.triggerEvent(`api:quit_${this.type2Name(type_old)}`);
             backpack.triggerEvent(`api:${this.type2Name(type)}`);
+            // 改变女仆的背包类型
+            let maid = this.getMaid(backpack);
+            if(maid !== undefined){
+                maid.triggerEvent(`api:backpack_${this.type2Name(type)}`);
+            }
             return true;
         }
         return false;
@@ -220,11 +238,18 @@ export class MaidBackpack{
      * @param {boolean} status 
      */
     static setInvisible(backpack, status){
+        let maid = this.getMaid(backpack);
         if(status){
             backpack.triggerEvent("api:invisible");
+            if(maid !== undefined){
+                maid.triggerEvent(`api:backpack_invisible`);
+            }
         }
         else{
             backpack.triggerEvent("api:quit_invisible");
+            if(maid !== undefined){
+                maid.triggerEvent(`api:backpack_quit_invisible`);
+            }
         }
     }
     /**

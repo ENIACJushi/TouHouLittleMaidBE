@@ -12,12 +12,12 @@
 			},
 			"bones": [
 				{
-					"name": "all",
+					"name": "backpack",
 					"pivot": [0, 0, 1]
 				},
 				{
 					"name": "bandRight",
-					"parent": "all",
+					"parent": "backpack",
 					"pivot": [-2.8, 8, -1],
 					"rotation": [0, 5.00192, 0]
 				},
@@ -152,7 +152,7 @@
 				},
 				{
 					"name": "pedobear",
-					"parent": "all",
+					"parent": "backpack",
 					"pivot": [0, 0, 1],
 					"cubes": [
 						{"origin": [-4.6, 3.7, -0.3], "size": [1, 3, 3], "inflate": -0.3, "uv": [29, 39]},
@@ -188,7 +188,7 @@
 				},
 				{
 					"name": "handle",
-					"parent": "all",
+					"parent": "backpack",
 					"pivot": [0, -0.4, 1]
 				},
 				{
@@ -237,7 +237,7 @@
 				},
 				{
 					"name": "bandLeft",
-					"parent": "all",
+					"parent": "backpack",
 					"pivot": [2.8, 8, -1],
 					"rotation": [0, -5.00192, 0]
 				},
@@ -372,7 +372,7 @@
 				},
 				{
 					"name": "cap",
-					"parent": "all",
+					"parent": "backpack",
 					"pivot": [0, 0, 2]
 				},
 				{
@@ -477,7 +477,7 @@
 				},
 				{
 					"name": "bag",
-					"parent": "all",
+					"parent": "backpack",
 					"pivot": [0, 0, 2],
 					"cubes": [
 						{"origin": [-4, 0, -1], "size": [8, 8, 4], "uv": [20, 20]},
