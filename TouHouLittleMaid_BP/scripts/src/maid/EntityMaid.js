@@ -44,7 +44,7 @@ export class EntityMaid{
         setLocation(maid){
             this.clearLocation(maid);
             let l = maid.location;
-            maid.addTag(`thlmh:${Math.ceil(l.x)},${Math.ceil(l.y)},${Math.ceil(l.z)},${maid.dimension.id}`)
+            Tool.setTagData(maid, "thlmh:", `${Math.ceil(l.x)},${Math.ceil(l.y)},${Math.ceil(l.z)},${maid.dimension.id}`)
         },
         /**
          * 获取家的位置
@@ -52,14 +52,13 @@ export class EntityMaid{
          * @returns {number[]|undefined}
          */
         getLocation(maid){
-            for(let tag of maid.getTags()){
-                if(tag.substring(0, 6) == "thlmh:"){
-                    let lstring = tag.substring(6).split(",");
-                    return [parseInt(lstring[0]), 
-                            parseInt(lstring[1]),
-                            parseInt(lstring[2]),
-                            lstring[3]];
-                }
+            let result = Tool.getTagData(maid, "thlmh:");
+            if(result !== undefined){
+                let lstring = result.split(",");
+                return [parseInt(lstring[0]), 
+                        parseInt(lstring[1]),
+                        parseInt(lstring[2]),
+                        lstring[3]];
             }
             return undefined;
         },
@@ -69,11 +68,7 @@ export class EntityMaid{
          * @returns {number[]|undefined}
          */
         clearLocation(maid){
-            for(let tag of maid.getTags()){
-                if(tag.substring(0, 6) == "thlmh:"){
-                    maid.removeTag(tag);
-                }
-            }
+            Tool.delTagData(maid, "thlmh:");
         }
     }
     // 拾物模式
@@ -84,7 +79,8 @@ export class EntityMaid{
     /**
      * 将女仆转为物品lore
      * 会自动清除背包
-     * @param {Entity} maid 
+     * @param {Entity} maid
+     * @returns {string} lore
      */
     static toLore(maid){
         let infos={};
@@ -119,8 +115,8 @@ export class EntityMaid{
         let backpack_id = this.getBackpackID(maid);
         if(backpack_id !== undefined){
             let backpack = world.getEntity(backpack_id);
-            if(backpack !==undefined){
-                let backpack_type = backpack.getComponent("skin_id").value;
+            if(backpack !== undefined){
+                let backpack_type = MaidBackpack.getType(backpack);
                 infos["b"] = backpack_type;
 
                 // lore→实体时，靠是否有infos.bi判断用的是哪种保存方法，身上背的背包都会保留
@@ -132,7 +128,7 @@ export class EntityMaid{
                     if(loader !== undefined){
                         Tool.logger("2");
                         // 在地底创建新背包(隐形)
-                        let temp_backpack = MaidBackpack.create(undefined, backpack_type,
+                        let temp_backpack = MaidBackpack.create(maid, backpack_type,
                             backpack.dimension, loader.location);
                         MaidBackpack.setInvisible(temp_backpack, true);
                         infos["bi"] = temp_backpack.id;
@@ -155,6 +151,8 @@ export class EntityMaid{
                     }
                     else{
                         MaidBackpack.setInvisible(backpack, false);
+                        MaidBackpack.show(backpack);
+                        backpack.triggerEvent("api:grave");
                     }
                 }
             }
@@ -217,6 +215,8 @@ export class EntityMaid{
         if(infos["b"] !== undefined){
             // 生成新包
             var new_backpack = MaidBackpack.create(maid, infos["b"], dimension, location);
+            // 隐藏包（因为无法正常渲染）
+            MaidBackpack.setInvisible(new_backpack, true);
 
             // 寻找旧包(保存到常加载区域的方案)
             let old_id = infos["bi"];
@@ -229,6 +229,7 @@ export class EntityMaid{
                     }
                 }, 1);// 延迟是为了背包初始化
             }
+           
 
             // 背上包
             system.runTimeout(()=>{
@@ -269,12 +270,7 @@ export class EntityMaid{
      * @returns {string|undefined}
      */
     static getOwnerID(maid){
-        for(let tag of maid.getTags()){
-            if(tag.substring(0, 6) == "thlmo:"){
-                return tag.substring(6);
-            }
-        }
-        return undefined;
+        return Tool.getTagData(maid, "thlmo:");
     }
     /**
      * 获取主人
@@ -294,12 +290,7 @@ export class EntityMaid{
      * @returns {string|undefined}
      */
     static getBackpackID(maid){
-        for(let tag of maid.getTags()){
-            if(tag.substring(0, 6) == "thlmb:"){
-                return tag.substring(6);
-            }
-        }
-        return undefined;
+        return Tool.getTagData(maid, "thlmb:");
     }
     /**
      * 获取背包实体
@@ -318,7 +309,7 @@ export class EntityMaid{
      * @param {Entity} maid 
      * @returns {Container|undefined}
      */
-    static getBackpack(maid){
+    static getBackpackContainer(maid){
         let backpack = this.getBackpackEntity(maid);
         if(backpack !== undefined){
             return MaidBackpack.getContainer(backpack);
@@ -341,14 +332,8 @@ export class EntityMaid{
      * @param {string} id 
      */
     static setOwnerID(maid, id){
-        // clear
-        for(let tag of maid.getTags()){
-            if(tag.substring(0, 6) == "thlmo:"){
-                maid.removeTag(tag);
-            }
-        }
-        // set
-        maid.addTag(`thlmo:${id}`);
+        Tool.delTagData(maid, "thlmo:");
+        Tool.setTagData(maid, "thlmo:", id);
     }
     /**
      * 设置生命值
@@ -364,12 +349,7 @@ export class EntityMaid{
      * @param {string} id 
      */
     static setBackpackID(maid, id){
-        for(let tag of maid.getTags()){
-            if(tag.substring(0, 6) == "thlmb:"){
-                maid.removeTag(tag);
-                break;
-            }
-        }
-        maid.addTag(`thlmb:${id}`);
+        Tool.delTagData(maid, "thlmb:");
+        Tool.setTagData(maid, "thlmb:", id);
     }
 }

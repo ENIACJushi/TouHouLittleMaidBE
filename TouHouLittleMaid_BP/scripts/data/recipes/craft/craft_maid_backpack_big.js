@@ -24,7 +24,7 @@ export const recipe = {
       "item": "minecraft:gray_wool"
     },
     {
-      "tag": "forge:gems/diamond"
+      "item": "minecraft:diamond"
     },
     {
       "item": "minecraft:gray_wool"

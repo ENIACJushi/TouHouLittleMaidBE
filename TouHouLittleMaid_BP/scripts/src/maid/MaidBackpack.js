@@ -1,5 +1,7 @@
-import { system, Entity,world,Vector,Dimension,Container } from "@minecraft/server";
+import { system, Entity,world,Vector,Dimension,Container, ItemStack } from "@minecraft/server";
 import { config } from '../../data/config'
+import * as Tool from "../libs/scarletToolKit"
+import { EntityMaid } from "./EntityMaid";
 
 export class MaidBackpack{
     static default = 0;
@@ -12,6 +14,7 @@ export class MaidBackpack{
         "middle",
         "big"
     ]
+    static capacityList = [6, 12, 24, 36]
     // 区块加载器, config.Maid.death_bag 为false时启用
     static loader = {
         // 区块加载器的实体id
@@ -70,7 +73,7 @@ export class MaidBackpack{
     }
 
     /**
-     * 在指定位置生成一个背包
+     * 在指定位置生成一个指定女仆的背包
      * @param {Entity|undefined} maid 
      * @param {MaidBackpack} type
      * @param {Dimension} dimension 
@@ -90,14 +93,42 @@ export class MaidBackpack{
         backpack.triggerEvent(`emoji:0`); // 表情0
         backpack.triggerEvent(`api:hide`);// 隐藏
 
-        // 添加标签
+        // 设置关系
         if(maid!==undefined){
-            backpack.addTag(`thlmb:${maid.id}`);
-            maid.addTag(`thlmb:${backpack.id}`);
+            MaidBackpack.setMaidID(backpack, maid.id);
+            let ownerID = EntityMaid.getOwnerID(maid);
+            if(ownerID !== undefined){
+                MaidBackpack.setOwnerID(backpack, ownerID);
+            }
+
+            EntityMaid.setBackpackID(maid, backpack.id);
         }
         return backpack;
     }
-
+    /**
+     * 在指定位置将背包释放
+     * @param {Entity} backpack 
+     * @param {Vector} location 
+     */
+    static dump(backpack, location){
+        // 释放包内物品
+        let dimension = backpack.dimension;
+        let container = this.getContainer(backpack);
+        for(let i = 0; i < container.size; i++){
+            let item = container.getItem(i);
+            if(item !== undefined){
+                dimension.spawnItem(item, location);
+                container.setItem(i);
+            }
+        }
+        // 生成背包物品
+        let backpackItem = this.type2ItemName(this.getType(backpack))
+        if(backpackItem !== undefined){
+            dimension.spawnItem(new ItemStack(backpackItem, 1), location);
+        }
+        // 删除背包
+        backpack.triggerEvent("despawn");
+    }
     ///// GET /////
     /**
      * 获取背包名称
@@ -113,7 +144,7 @@ export class MaidBackpack{
      * @return {MaidBackpack}
      */
     static getType(backpack){
-        return backpack.getComponent("skin_id").value;
+        return backpack.getComponent("variant").value;
     }
     /**
      * 由类型获取名称
@@ -132,6 +163,22 @@ export class MaidBackpack{
         return backpack.getComponent("inventory").container;
     }
     /**
+     * 获取主人生物id
+     * @param {Entity} backpack 
+     * @returns {string|undefined}
+     */
+    static getOwnerID(backpack){
+        return Tool.getTagData(backpack, "thlmo:");
+    }
+    /**
+     * 获取女仆生物id
+     * @param {Entity} backpack 
+     * @returns {string|undefined}
+     */
+    static getMaidID(backpack){
+        return Tool.getTagData(backpack, "thlmm:");
+    }
+    /**
      * 获取表情
      * @param {Entity} backpack
      */
@@ -141,6 +188,15 @@ export class MaidBackpack{
             return undefined;
         }
         return component.value;
+    }
+    /**
+     * 获取类型对应物品的名称
+     * @param {string} type
+     * @returns {string|undefined}
+     */
+    static type2ItemName(type){
+        if(type === this.default) return undefined;
+        return `touhou_little_maid:maid_backpack_${this.type2Name(type)}`;
     }
     ///// SET /////
     /**
@@ -223,5 +279,21 @@ export class MaidBackpack{
         }
         backpack.triggerEvent(`emoji:${emoji}`);
 
+    }
+    /**
+     * 设置主人ID
+     * @param {Entity} backpack 
+     * @param {string} id 
+     */
+    static setOwnerID(backpack, id){
+        Tool.setTagData(backpack, "thlmo:", id);
+    }
+    /**
+     * 设置女仆ID
+     * @param {Entity} backpack 
+     * @param {string} id 
+     */
+    static setMaidID(backpack, id){
+        Tool.setTagData(backpack, "thlmm:", id);
     }
 }

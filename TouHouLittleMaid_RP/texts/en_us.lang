@@ -13,6 +13,7 @@ message.touhou_little_maid:hakurei_gohei.switch=Switch danmaku type:
 
 action.interact.camera=Photo
 action.interact.box=Open
+action.interact.maid_backpack_carry=Carry
 
 entity.touhou_little_maid:chair.name=Chair
 entity.touhou_little_maid:maid.name=Maid

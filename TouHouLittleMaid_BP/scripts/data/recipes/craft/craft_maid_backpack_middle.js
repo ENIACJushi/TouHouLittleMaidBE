@@ -24,7 +24,7 @@ export const recipe = {
       "item": "minecraft:pink_wool"
     },
     {
-      "tag": "forge:ingots/gold"
+      "item": "minecraft:gold_ingot"
     },
     {
       "item": "minecraft:pink_wool"

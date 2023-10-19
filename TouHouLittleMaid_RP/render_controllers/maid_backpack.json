@@ -2,11 +2,33 @@
 	"format_version": "1.8.0",
 	"render_controllers": {
 		"controller.render.touhou_little_maid.maid_backpack": {
-			"geometry": "Geometry.default",
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.default",
+						"Texture.small",
+						"Texture.middle",
+						"Texture.big"
+					]
+				},
+				"geometries": {
+					"Array.geos":[
+						"Geometry.default",
+						"Geometry.small",
+						"Geometry.middle",
+						"Geometry.big"
+					]
+				}
+			},
+			
+			"geometry": "Array.geos[query.variant]",
 			"materials": [
-				{"*": "Material.default"}
+				{ "*": "Material.default" }
 			],
-			"textures": [ "Texture.default" ],
+			"textures": [ "Array.skins[query.variant]" ],
+			"part_visibility": [
+				{ "*": "!query.is_baby" }
+			],
 			"uv_anim": {
 				"offset": [
 					0.0,

@@ -21,7 +21,7 @@ export class MaidMenu {
         let home_mode = EntityMaid.Home.getMode(this.maid);
         const form = new mcui.ActionFormData()
             .title(this.maid_name) // 女仆名，为空则使用默认标题
-            .body(`${health.currentValue}/${health.defaultValue}`)
+            .body(`${health.currentValue.toFixed(1)}/${health.defaultValue}`)
             .button({rawtext:[
                 {translate: "gui.touhou_little_maid:task.switch.name"},
                 {text: " | "},
@@ -53,7 +53,7 @@ export class MaidMenu {
         }
         
         form.show(this.player).then((response) => {
-            if(response.selection!=null){
+            if(response.selection !== null){
                 WorkType.set(this.maid, response.selection);
                 system.runTimeout(()=>{this.main()},1);
             }

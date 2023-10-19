@@ -171,7 +171,7 @@ export default class PowerPoint {
                         }
                     }
                     this.set_power_number(pl.name, Math.min(500, point_score));
-                    Tool.executeCommand(`playsound power_pop ${Tool.playerCMDName(pl.name)}`);
+                    pl.dimension.runCommand(`playsound power_pop ${Tool.playerCMDName(pl.name)}`);
                     en.triggerEvent("despawn");
                 }
                 // ​If not in the score box, do storm suction

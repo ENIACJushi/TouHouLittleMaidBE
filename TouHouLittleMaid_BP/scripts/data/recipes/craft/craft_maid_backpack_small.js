@@ -24,7 +24,7 @@ export const recipe = {
       "item": "minecraft:red_wool"
     },
     {
-      "tag": "forge:ingots/iron"
+      "item": "minecraft:iron_ingot"
     },
     {
       "item": "minecraft:red_wool"

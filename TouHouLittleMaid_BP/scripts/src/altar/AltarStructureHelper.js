@@ -185,7 +185,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
     }
     /**
      * 
-     * @param {Vector3} blockLocation 
+     * @param {Vector} blockLocation 
      * @param {Player} player 
      */
     craftEvent(blockLocation, player){
@@ -215,7 +215,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         if(altarCraft.matchRecipes(player, itemStackArray, player.dimension, {x: outputLocation[0], y: outputLocation[1], z: outputLocation[2]})){
             for(let itemEntity of itemEntityArray){
                 itemEntity.kill();
-                Tool.executeCommand(`playsound altar_craft ${Tool.playerCMDName(player.name)}`);
+                player.dimension.runCommand(`playsound altar_craft ${Tool.playerCMDName(player.name)}`);
             }
         }
     }

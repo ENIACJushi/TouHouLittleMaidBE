@@ -4,16 +4,23 @@
   "texture_data": {
     "touhou_little_maid.hakurei_gohei": { "textures": "textures/items/hakurei_gohei" },
     "touhou_little_maid.power_point": { "textures": "textures/items/power_point" },
+
+
     "touhou_little_maid.spellcard.default":{"textures": "textures/items/spellcard/spellcard_default"},
     "touhou_little_maid.spellcard.boundary_between_wave_and_particle_3d":{"textures": "textures/items/spellcard/boundary_between_wave_and_particle_3d"},
     "touhou_little_maid.spellcard.boundary_between_wave_and_particle":{"textures":"textures/items/spellcard/boundary_between_wave_and_particle"},
     "touhou_little_maid.spellcard.metal_sign.metal_fatigue":{"textures":"textures/items/spellcard/metal_fatigue"},
     "touhou_little_maid.spellcard.magic_sign.milky_way":{"textures":"textures/items/spellcard/milky_way"},
     "touhou_little_maid.spellcard.night_sign.night_bird":{"textures":"textures/items/spellcard/night_bird"},
+
+
     "touhou_little_maid.film":{"textures":"textures/items/film"},
     "touhou_little_maid.photo":{"textures":"textures/items/photo"},
     "touhou_little_maid.camera":{"textures":"textures/items/camera_2d"},
     "touhou_little_maid.smart_slab_empty":{"textures":"textures/items/smart_slab_empty"},
-    "touhou_little_maid.smart_slab_has_maid":{"textures":"textures/items/smart_slab_has_maid"}
+    "touhou_little_maid.smart_slab_has_maid":{"textures":"textures/items/smart_slab_has_maid"},
+    "touhou_little_maid.maid_backpack_small":{"textures":"textures/items/maid_backpack_small"},
+    "touhou_little_maid.maid_backpack_middle":{"textures":"textures/items/maid_backpack_middle"},
+    "touhou_little_maid.maid_backpack_big":{"textures":"textures/items/maid_backpack_big"}
   }
 }

@@ -5,15 +5,16 @@
  * thlmb:<背包生物id>
  */
 /**
- * 其它tag
- * 背包：thlmb:<女仆id>
+ * 背tag
+ *  thlmm:<女仆id>
+ *  thlmo:<主人生物id>
  */
 import { ItemStack, world, Entity,Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
 import { MaidBackpack } from "./MaidBackpack";
-
+import { config } from '../../data/config'
 
 const HOME_RADIUS=25;
 
@@ -39,6 +40,10 @@ export class MaidManager{
                     // 生成背包
                     var backpack = MaidBackpack.create(maid, MaidBackpack.default, maid.dimension, maid.location);
                     EntityMaid.setBackpackID(maid, backpack.id);
+
+                    // 隐藏背包（因为无法正常渲染）
+                    MaidBackpack.setInvisible(backpack, true);
+
                     // 背上背包   无效：rideable.addRider(backpack);
                     maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
                 }
@@ -52,9 +57,22 @@ export class MaidManager{
      * @param {DataDrivenEntityTriggerBeforeEvent} event 
      */
     static onDeathEvent(event){
-        let lore = EntityMaid.toLore(event.entity);
+        let maid = event.entity;
+        let backpack = EntityMaid.getBackpackEntity(maid);
+        let lore = EntityMaid.toLore(maid);
         let output_item = new ItemStack("touhou_little_maid:film", 1);
         output_item.setLore(lore);
+        
+        // 导出胶片物品
+        if(config.Maid.death_bag){
+            if(MaidBackpack.getType(backpack) !== MaidBackpack.default){
+                let container = MaidBackpack.getContainer(backpack);
+                if(container.emptySlotsCount > 0){
+                    container.addItem(output_item);
+                    return;
+                }
+            }
+        }
         event.entity.dimension.spawnItem(output_item, event.entity.location);
     }
     
@@ -67,7 +85,7 @@ export class MaidManager{
         let lore = EntityMaid.toLore(maid);
         
         // 发出声音
-        Tool.executeCommand(`playsound camera_use @a ${maid.location.x} ${maid.location.y} ${maid.location.z}`);
+        maid.dimension.runCommand(`playsound camera_use @a ${maid.location.x} ${maid.location.y} ${maid.location.z}`);
         
         // 清除实体
         maid.triggerEvent("despawn");
@@ -147,8 +165,12 @@ export class MaidManager{
         })
         // 寻主成功
         if(results.length == 1){
-            event.entity.triggerEvent("api:follow_on_tame_over");
-            EntityMaid.setOwnerID(event.entity, results[0].id);
+            let maid = event.entity;
+            let backpack = EntityMaid.getBackpackEntity(event.entity);
+
+            maid.triggerEvent("api:follow_on_tame_over");
+            EntityMaid.setOwnerID(maid, results[0].id);
+            MaidBackpack.setOwnerID(backpack, results[0].id);
         }
     }
     /**
@@ -216,7 +238,61 @@ export class MaidManager{
     static boxOpenEvent(event){
         let box = event.entity;
         EntityMaid.spawnRandomMaid(box.dimension, box.location);
+        box.dimension.runCommand(`playsound thlm.box @a ${box.location.x} ${box.location.y} ${box.location.z}`);
         box.triggerEvent("despawn");
+    }
+    /**
+     * 坟墓受击
+     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     */
+    static graveAttackEvent(event){
+        let backpack = event.entity;
+        let backpackL = backpack.location;
+        let owenerID = MaidBackpack.getOwnerID(backpack);
+        if(owenerID !== undefined){
+            Tool.logger(owenerID);
+            // 当主人在附近时，在主人位置开包
+            let owner = world.getEntity(owenerID);
+            if(owner !== undefined){
+                if(Tool.pointInArea_2D(owner.location.x, owner.location.z,
+                    backpackL.x - 5, backpackL.z - 5, backpackL.x + 5, backpackL.z + 5)){
+                        MaidBackpack.dump(backpack, owner.location);
+                }
+            }
+        }
+        else{
+            // 没有主人id，所有人都可以开包
+            MaidBackpack.dump(backpack, backpack.location);
+        }
+    }
+    /**
+     * 背包种类切换
+     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     * @param {number} typeNew 1, 2, 3 
+     */
+    static backpackTypeChangeEvent(event, typeNew){
+        let backpack = event.entity;
+        let typeOld = MaidBackpack.getType(backpack);
+        let dimension = backpack.dimension;
+        let location = backpack.location;
+
+        if(typeOld > typeNew){
+            // 将多余的物品丢出
+            let container = MaidBackpack.getContainer(backpack);
+            for(let i = MaidBackpack.capacityList[typeNew]; i < MaidBackpack.capacityList[typeOld]; i++){
+                let item = container.getItem(i);
+                if(item !== undefined){
+                    dimension.spawnItem(item, location);
+                    container.setItem(i);
+                }
+            }
+        }
+        // 升级
+        MaidBackpack.setType(backpack, typeNew);
+        // 返还旧背包
+        if(typeOld !== MaidBackpack.default){
+            dimension.spawnItem(new ItemStack(MaidBackpack.type2ItemName(typeOld), 1), location);
+        }
     }
 }
 

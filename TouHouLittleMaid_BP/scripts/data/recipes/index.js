@@ -37,5 +37,8 @@ export const recipeList = [
     repair_hakurei_gohei,
     reborn_maid,
     craft_camera,
-    spawn_box
+    spawn_box,
+    craft_maid_backpack_small,
+    craft_maid_backpack_middle,
+    craft_maid_backpack_big
 ]

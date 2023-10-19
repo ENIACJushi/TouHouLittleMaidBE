@@ -69,6 +69,7 @@ item.spawn_egg.entity.touhou_little_maid:debug_fairy.name=弹幕测试妖精女�
 
 action.interact.camera=照相
 action.interact.box=打开
+action.interact.maid_backpack_carry=背包
 
 item_group.touhou_little_maid:main.name=车万女仆丨主体
 item_group.touhou_little_maid:chair.name=车万女仆丨坐垫

@@ -18,8 +18,9 @@
         "middle": "geometry.touhou_little_maid.maid_backpack_middle",
         "big": "geometry.touhou_little_maid.maid_backpack_big"
       },
+      "queryable_geometry": "",
       "render_controllers": [
-        "controller.render.touhou_little_maid:maid_backpack"
+        "controller.render.touhou_little_maid.maid_backpack"
       ],
       "spawn_egg": {
         "base_color": "#ffffff",

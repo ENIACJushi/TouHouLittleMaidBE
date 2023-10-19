@@ -25,35 +25,63 @@
         "minecraft:is_baby": {}
       },
       "type:default":{
-        "minecraft:skin_id": {"value": 0},
-        "minecraft:inventory":{
-          "container_type": "inventory",
-          "inventory_size": 6,
-          "private": false
-        }
+        "minecraft:variant": {"value": 0},
+        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": false}
       },
+      "type:default_private":{
+        "minecraft:is_sheared": {},
+        "minecraft:variant": {"value": 0},
+        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": true}
+      },
+
       "type:small":{
-        "minecraft:skin_id": {"value": 1},
-        "minecraft:inventory":{
-          "container_type": "inventory",
-          "inventory_size": 12,
-          "private": false
-        }
+        "minecraft:variant": {"value": 1},
+        "minecraft:inventory":{"container_type": "inventory", "inventory_size": 12, "private": false}
       },
+      "type:small_private":{
+        "minecraft:is_sheared": {},
+        "minecraft:variant": {"value": 1},
+        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 12, "private": true}
+      },
+
       "type:middle":{
-        "minecraft:skin_id": {"value": 2},
-        "minecraft:inventory":{
-          "container_type": "inventory",
-          "inventory_size": 24,
-          "private": false
-        }
+        "minecraft:variant": {"value": 2},
+        "minecraft:inventory":{"container_type": "inventory", "inventory_size": 24, "private": false}
       },
+      "type:middle_private":{
+        "minecraft:is_sheared": {},
+        "minecraft:variant": {"value": 2},
+        "minecraft:inventory":{"container_type": "inventory", "inventory_size": 24, "private": true}
+      },
+
       "type:big":{
-        "minecraft:skin_id": {"value": 3},
-        "minecraft:inventory":{
-          "container_type": "inventory",
-          "inventory_size": 36,
-          "private": false
+        "minecraft:variant": {"value": 3},
+        "minecraft:inventory":{"container_type": "inventory", "inventory_size": 36, "private": false }
+      },
+      "type:big_private":{
+        "minecraft:is_sheared": {},
+        "minecraft:variant": {"value": 3},
+        "minecraft:inventory":{"container_type": "inventory", "inventory_size": 36, "private": true }
+      },
+
+      "status:grave":{
+        "minecraft:physics": {"has_collision": true,"has_gravity": true},
+        "minecraft:damage_sensor": {
+          "triggers": [
+            { 
+              "cause": "all",
+              "on_damage": {
+                "filters": {
+                  "all_of": [
+                    {"test": "is_family","subject": "damager","value": "player"}
+                  ]
+                },
+                "event": "thlmb:g",
+                "target": "self"
+              },
+              "deals_damage": false
+            }
+          ]
         }
       },
 
@@ -65,6 +93,49 @@
       "minecraft:type_family": {
         "family": ["thlm:maid_backpack"]
       },
+      "minecraft:interact": {
+        "interactions": [
+          {
+            "cooldown": 2.5, "use_item": true, "play_sounds": "pop", "vibration": "none",
+            "interact_text": "action.interact.maid_backpack_carry",
+            "on_interact": {
+              "filters": {"all_of": [
+                { "test": "is_family", "subject": "other", "value": "player" },
+                { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:maid_backpack_small"},
+                { "test" : "has_component", "value": "minecraft:is_sheared", "operator": "!="},
+                { "test" : "is_variant", "value": 1, "operator": "!="}
+              ]},
+              "event": "thlmb:t1", "target": "self"
+            }
+          },
+          {
+            "cooldown": 2.5, "use_item": true, "play_sounds": "pop", "vibration": "none",
+            "interact_text": "action.interact.maid_backpack_carry",
+            "on_interact": {
+              "filters": {"all_of": [
+                { "test": "is_family", "subject": "other", "value": "player" },
+                { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:maid_backpack_middle"},
+                { "test" : "has_component", "value": "minecraft:is_sheared", "operator": "!="},
+                { "test" : "is_variant", "value": 2, "operator": "!="}
+              ]},
+              "event": "thlmb:t2", "target": "self"
+            }
+          },
+          {
+            "cooldown": 2.5, "use_item": true, "play_sounds": "pop", "vibration": "none",
+            "interact_text": "action.interact.maid_backpack_carry",
+            "on_interact": {
+              "filters": {"all_of": [
+                { "test": "is_family", "subject": "other", "value": "player" },
+                { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:maid_backpack_big"},
+                { "test" : "has_component", "value": "minecraft:is_sheared", "operator": "!="},
+                { "test" : "is_variant", "value": 3, "operator": "!="}
+              ]},
+              "event": "thlmb:t3", "target": "self"
+            }
+          }
+        ]
+      },
       "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
       "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
       "minecraft:persistent": {},
@@ -72,6 +143,12 @@
     },
     "events": {
       "despawn":{ "add": { "component_groups": [ "despawn" ] } },
+
+      "thlmb:g": {},
+      "thlmb:t0": {},
+      "thlmb:t1": {},
+      "thlmb:t2": {},
+      "thlmb:t3": {},
 
       "api:default": { "add": { "component_groups": [ "type:default" ] } },
       "api:small"  : { "add": { "component_groups": [ "type:small" ] } },
@@ -88,6 +165,32 @@
       "api:invisible"     :{ "add": { "component_groups": [ "status:invisible" ] } },
       "api:quit_invisible":{ "remove": { "component_groups": [ "status:invisible" ] } },
       
+      "api:grave": { 
+        "sequence": [
+          {"add"   : { "component_groups": [ "status:grave" ] }},
+          {
+            "filters": { "test": "is_variant", "subject": "self", "value": 0 },
+            "remove": { "component_groups": [ "type:default"]},
+            "add": { "component_groups": [ "type:default_private"]}
+          },
+          {
+            "filters": { "test": "is_variant", "subject": "self", "value": 1 },
+            "remove": { "component_groups": [ "type:small"]},
+            "add": { "component_groups": [ "type:small_private"]}
+          },
+          {
+            "filters": { "test": "is_variant", "subject": "self", "value": 2 },
+            "remove": { "component_groups": [ "type:middle"]},
+            "add": { "component_groups": [ "type:middle_private"]}
+          },
+          {
+            "filters": { "test": "is_variant", "subject": "self", "value": 3 },
+            "remove": { "component_groups": [ "type:big"]},
+            "add": { "component_groups": [ "type:big_private"]}
+          }
+        ]
+      },
+
       "emoji:0"     : {"add"   : { "component_groups": [ "emoji:0" ] }},
       "emoji_quit:0": {"remove": { "component_groups": [ "emoji:0" ] }},
       "emoji:1"     : {"add"   : { "component_groups": [ "emoji:1" ] }},

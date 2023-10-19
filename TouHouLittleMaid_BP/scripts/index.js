@@ -88,7 +88,7 @@ class thlm {
                 }
             })
         });
-
+        
         // Entity Events
         world.beforeEvents.dataDrivenEntityTriggerEvent.subscribe(event => {
             system.run(()=>{
@@ -100,9 +100,9 @@ class thlm {
                         case ":":
                             switch(event.id.substring(5)){
                                 // at: altar_tick
-                                case "at": altarStructure.deactivateEvent(event.entity); break;
+                                case "at" : altarStructure.deactivateEvent(event.entity); break;
                                 // af: altar_refresh
-                                case "af": altarStructure.refreshItemsEvent(event.entity); break;
+                                case "af" : altarStructure.refreshItemsEvent(event.entity); break;
                                 // ppi: power_point_init
                                 case "ppi": PowerPoint.init_power_point(event.entity); break;
                                 // pps: power point scan (powerpoint)
@@ -114,7 +114,7 @@ class thlm {
                                 // ddb: danmaku debug shoot
                                 case "ddb": Danmaku.debug_shoot(event.entity); break;
                                 // b: box open
-                                case "b": MaidManager.boxOpenEvent(event); break;
+                                case "b"  : MaidManager.boxOpenEvent(event); break;
                                 default: break;
                             }; break;
                         // 女仆专用事件
@@ -123,22 +123,37 @@ class thlm {
                                 // fon: follow on tamed
                                 case "onfs": MaidManager.onTameFollowSuccess(event); break;
                                 // omi: on master interact
-                                case "omi": MaidManager.onInteractEvent(event); break;
+                                case "omi" : MaidManager.onInteractEvent(event); break;
                                 // rh: return home
-                                case "rh": MaidManager.returnHomeEvent(event); break;
+                                case "rh"  : MaidManager.returnHomeEvent(event); break;
                                 // sp: spawn
-                                case "sp": MaidManager.onSpawnEvent(event); break;
+                                case "sp"  : MaidManager.onSpawnEvent(event); break;
                                 // d: death
-                                case "d": MaidManager.onDeathEvent(event); break;
+                                case "d"   : MaidManager.onDeathEvent(event); break;
                                 // p: photo
-                                case "p": MaidManager.onPhotoEvent(event); break;
+                                case "p"   : MaidManager.onPhotoEvent(event); break;
                                 // ss: smart slab
-                                case "ss": MaidManager.onSmartSlabRecycleEvent(event); break;
+                                case "ss"  : MaidManager.onSmartSlabRecycleEvent(event); break;
                                 // s: sit mode
-                                case "s": MaidManager.sitModeEvent(event); break;
+                                case "s"   : MaidManager.sitModeEvent(event); break;
                                 // i: inventory mode
-                                case "i": MaidManager.inventoryModeEvent(event); break;
+                                case "i"   : MaidManager.inventoryModeEvent(event); break;
                                 default: break;
+                            }
+                            break;
+                        // 女仆背包专用事件
+                        case "b":
+                            switch(event.id.substring(6)){
+                                // g: grave
+                                case "g" : MaidManager.graveAttackEvent(event); break;
+                                // t0: type 0 (default)
+                                case "t0" : MaidManager.backpackTypeChangeEvent(event, 0); break;
+                                // t1: type 1 (small)
+                                case "t1" : MaidManager.backpackTypeChangeEvent(event, 1); break;
+                                // t2: type 2 (middle)
+                                case "t2" : MaidManager.backpackTypeChangeEvent(event, 2); break;
+                                // t3: type 3 (big)
+                                case "t3" : MaidManager.backpackTypeChangeEvent(event, 3); break;
                             }
                             break;
                         default:

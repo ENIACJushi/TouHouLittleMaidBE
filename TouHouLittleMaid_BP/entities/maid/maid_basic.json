@@ -34,10 +34,6 @@
         },
         "minecraft:is_tamed": {
         },
-        "minecraft:health": {
-          "value": 20,
-          "max": 20
-        },
         "minecraft:damage_sensor": { 
           "triggers": [
             {
@@ -162,8 +158,8 @@
       "status:follow_standard":{
         "minecraft:behavior.follow_owner": {
           "priority": 6,
-          "speed_multiplier": 1.0,
-          "start_distance": 10,
+          "speed_multiplier": 1.2,
+          "start_distance": 15,
           "stop_distance": 2,
           "can_teleport": true
         }
@@ -189,70 +185,12 @@
       "mode:attack":{
         "minecraft:variant": {"value": 1},
         "minecraft:attack": {
-          "damage": 4
+          "damage": 2
         },
         "minecraft:behavior.melee_attack": {
-          "priority": 5
+          "priority": 2
         },
-        "minecraft:behavior.nearest_attackable_target": {
-          "priority": 3,
-          "must_reach": true,
-          "must_see": true,
-          "entity_types": [
-            {
-              "filters": {
-                "all_of": [
-                  {
-                    "test": "is_family",
-                    "subject": "other",
-                    "value": "monster"
-                  },
-                  {
-                    "test": "is_family",
-                    "subject": "other",
-                    "operator": "!=",
-                    "value": "creeper"
-                  }
-                ]
-              },
-              "within_default": 10
-            },
-            {
-              "filters": {
-                "all_of": [
-                  {
-                    "test": "is_family",
-                    "subject": "other",
-                    "value": "hoglin"
-                  },
-                  {
-                    "test": "is_difficulty",
-                    "operator": "!=",
-                    "value": "peaceful"
-                  }
-                ]
-              },
-              "max_dist": 16
-            },
-            {
-              "filters": {
-                "all_of": [
-                  {
-                    "test": "is_family",
-                    "subject": "other",
-                    "value": "zoglin"
-                  },
-                  {
-                    "test": "is_difficulty",
-                    "operator": "!=",
-                    "value": "peaceful"
-                  }
-                ]
-              },
-              "max_dist": 16
-            }
-          ]
-        },
+        
         "minecraft:behavior.owner_hurt_by_target": {
           "priority": 1
         },
@@ -262,6 +200,28 @@
       }
     },
     "components": {
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "must_reach": true,
+        "must_see": true,
+        "reselect_targets": true,
+        "within_radius": 20,
+        "scan_interval": 10,
+        "entity_types": [
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "monster"
+                }
+              ]
+            },
+            "max_dist": 20
+          }
+        ]
+      },
       "minecraft:on_death": {
         "event": "thlmm:d",
         "target": "self"
@@ -275,7 +235,8 @@
         "rider_can_interact": false,
         "seat_count": 1,
         "seats":[{
-          "position": [0,0,0]
+          "position": [0,0,0],
+          "lock_rider_rotation": 1
         }]
       },
       "minecraft:balloonable": {
@@ -299,8 +260,8 @@
         "height": 1.5
       },
       "minecraft:health": {
-        "value": 8,
-        "max": 8
+        "value": 40,
+        "max": 40
       },
       "minecraft:movement": {
         "value": 0.3

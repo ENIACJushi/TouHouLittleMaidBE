@@ -64,6 +64,92 @@
             "name" : "sounds/item/camera_use"
           }
         ]
+      },
+      "thlm.box":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/entity/box"
+          }
+        ]
+      },
+      "thlm.maid.ai.death":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/ai/death1"
+          },
+          "sounds/maid/ai/death2"
+        ]
+      },
+      "thlm.maid.ai.find_target":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/ai/find_target1"
+          },
+          "sounds/maid/ai/find_target2",
+          "sounds/maid/ai/find_target3"
+        ]
+      },
+      "thlm.maid.ai.hurt_player":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/ai/hurt_player1"
+          },
+          "sounds/maid/ai/hurt_player2",
+          "sounds/maid/ai/hurt_player3"
+        ]
+      },
+      "thlm.maid.ai.hurt":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/ai/hurt1"
+          },
+          "sounds/maid/ai/hurt2",
+          "sounds/maid/ai/hurt3",
+          "sounds/maid/ai/hurt4",
+          "sounds/maid/ai/hurt5",
+          "sounds/maid/ai/hurt6",
+          "sounds/maid/ai/hurt7",
+          "sounds/maid/ai/hurt8"
+        ]
+      },
+      "thlm.maid.ai.item_get":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/ai/item_get1"
+          }
+        ]
+      },
+      "thlm.maid.ai.tamed":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/ai/tamed1"
+          },
+          "sounds/maid/ai/tamed2",
+          "sounds/maid/ai/tamed3",
+          "sounds/maid/ai/tamed4"
+        ]
       }
+      
    }
 }
