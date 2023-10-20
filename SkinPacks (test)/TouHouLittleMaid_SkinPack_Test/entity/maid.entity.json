@@ -1,0 +1,14 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "thlmm:maid",
+      "textures": {
+        "maid2_0": "textures/entity/maid/hakurei_reimu"
+      },
+      "geometry": {
+        "maid2_0": "geometry.touhou_little_maid.hakurei_reimu"
+      }
+    }
+  }
+}

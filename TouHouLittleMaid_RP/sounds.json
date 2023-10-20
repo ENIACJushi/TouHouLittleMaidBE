@@ -1,7 +1,7 @@
 {
    "entity_sounds" : {
       "entities" : {
-         "thlmm:maid_basic" : {
+         "thlmm:maid" : {
             "events" : {
                "ambient": "mob.thlmm.maid.idle",
                "death"  : "mob.thlmm.maid.death",

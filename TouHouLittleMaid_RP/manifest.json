@@ -15,5 +15,17 @@
     }
   ],
   "dependencies": [
+  ],
+  "subpacks": [
+    {
+      "folder_name": "touhou",
+      "memory_tier": 0,
+      "name": "TouHou"
+    },
+    {
+      "folder_name": "test",
+      "memory_tier": 0,
+      "name": "Test"
+    }
   ]
 }

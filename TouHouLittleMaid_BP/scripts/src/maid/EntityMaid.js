@@ -255,7 +255,7 @@ export class EntityMaid{
      */
     static spawnRandomMaid(dimension, location){
         // 现在只是生成默认女仆
-        dimension.spawnEntity("thlmm:maid_basic", location);
+        dimension.spawnEntity("thlmm:maid", location);
     }
     /**
      * 获取主人id
@@ -326,6 +326,22 @@ export class EntityMaid{
         return this.maid.getComponent("health");
     }
 
+    /**
+     * 获取模型包编号
+     * @param {Entity} maid 
+     * @returns {number}
+     */
+    static getSkinPack(maid){
+        return maid.getProperty("thlm:skin_pack");
+    }
+    /**
+     * 获取模型编号
+     * @param {Entity} maid 
+     * @returns {number}
+     */
+    static getSkinIndex(maid){
+        return maid.getProperty("thlm:skin_index");
+    }
     ///// SET /////
     /**
      * 设置主人id
@@ -360,5 +376,24 @@ export class EntityMaid{
      */
     static setBackPackInvisible(maid, value){
         return maid.setProperty("thlm:backpack_invisible", value);
+    }
+
+    /**
+     * 设置模型包编号
+     * @param {Entity} maid 
+     * @param {number} skinpack
+     * @returns {number}
+     */
+    static setSkinPack(maid, skinpack){
+        return maid.setProperty("thlm:skin_pack", skinpack);
+    }
+    /**
+     * 设置模型编号
+     * @param {Entity} maid 
+     *  @param {number} index
+     * @returns {number} 
+     */
+    static setSkinIndex(maid, index){
+        return maid.setProperty("thlm:skin_index", index);
     }
 }

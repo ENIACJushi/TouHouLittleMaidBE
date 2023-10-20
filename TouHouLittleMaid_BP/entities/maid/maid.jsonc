@@ -2,8 +2,11 @@
   "format_version": "1.18.10",
   "minecraft:entity": {
     "description": {
-      "identifier": "thlmm:maid_basic", "is_spawnable": true, "is_summonable": true, "is_experimental": false,
+      "identifier": "thlmm:maid", "is_spawnable": true, "is_summonable": true, "is_experimental": false,
       "properties": {
+        // 模型包
+        "thlm:skin_pack"  : {"type": "int", "default": 0, "range":[0, 99999], "client_sync": true},
+        "thlm:skin_index" : {"type": "int", "default": 0, "range":[0, 99999], "client_sync": true},
         // 背包
         "thlm:backpack_type"     :{"type": "int" , "default": 0    , "range":[0,3], "client_sync": true},
         "thlm:backpack_invisible":{"type": "bool", "default": false, "client_sync": true},

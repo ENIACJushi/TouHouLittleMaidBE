@@ -1,0 +1,28 @@
+{
+	"format_version": "1.8.0",
+	"render_controllers": {
+		"controller.render.touhou_little_maid.maid_test": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.maid2_0"
+					]
+				},
+				"geometries": {
+					"Array.geos":[
+						"Geometry.void",
+						"Geometry.maid2_0"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:skin_pack')==2?q.property('thlm:skin_index')+1:0]",
+			"materials": [
+				{"*": "Material.default"},
+				{"wingLeft": "Material.wing"},
+				{"wingRight": "Material.wing"}
+			],
+			"textures": [ "Array.skins[q.property('thlm:skin_pack')==2?q.property('thlm:skin_index')+1:0]" ]
+		}
+	}
+}
