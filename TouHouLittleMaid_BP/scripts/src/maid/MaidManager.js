@@ -176,7 +176,6 @@ export class MaidManager{
      */
     static onInteractEvent(event){
         let maid = event.entity;
-
         // Search for owner
         let pl_id = EntityMaid.getOwnerID(maid);
         if(pl_id!==undefined){

@@ -2,31 +2,31 @@
   "format_version": "1.18.10",
   "minecraft:entity": {
     "description": {
-      "identifier": "thlmm:maid_basic",
-      "is_spawnable": true,
-      "is_summonable": true,
-      "is_experimental": false,
+      "identifier": "thlmm:maid_basic", "is_spawnable": true, "is_summonable": true, "is_experimental": false,
       "properties": {
+        // 背包
         "thlm:backpack_type"     :{"type": "int" , "default": 0    , "range":[0,3], "client_sync": true},
         "thlm:backpack_invisible":{"type": "bool", "default": false, "client_sync": true},
-
+        // 家
         "thlm:home_x"  :{"type": "int", "client_sync": false, "default": 0, "range": [-2147483648, 2147483647]},
         "thlm:home_y"  :{"type": "int", "client_sync": false, "default": 0, "range": [-2147483648, 2147483647]},
         "thlm:home_z"  :{"type": "int", "client_sync": false, "default": 0, "range": [-2147483648, 2147483647]},
         "thlm:home_dim":{"type": "int", "client_sync": false, "default": 0, "range": [0, 2]},
-
+        // 表情
         "emoji:index"             :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
         "emoji:frames_per_second" :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
-        "emoji:frame_count"       :{"type": "float", "client_sync": true, "default": 1.0, "range": [0.0, 99999.0]}
+        "emoji:frame_count"       :{"type": "float", "client_sync": true, "default": 1.0, "range": [0.0, 99999.0]},
+        // 环境
+        "environment:status" :{"type": "int", "client_sync": true, "default": 0, "range": [0, 5]},
+        "environment:daytime":{"type": "bool", "default": false, "client_sync": true}
+        // *工作模式：variant
       }
     },
     "component_groups": {
       "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
+      ///// 基础属性 /////
       "thlmm:maid_wild": {
-        "minecraft:behavior.panic": {
-          "priority": 1,
-          "speed_multiplier": 1.25
-        },
+        "minecraft:behavior.panic": { "priority": 1, "speed_multiplier": 1.25 },
         "minecraft:tameable": {
           "probability": 0.8,
           "tame_items": "cake",
@@ -51,7 +51,7 @@
                     {"test": "is_owner","subject": "damager","value": true}
                   ]
                 },
-                "event": "thlmm:omi",
+                "event": "thlmm:m",
                 "target": "self"
               },
               "deals_damage": false
@@ -91,13 +91,14 @@
                     { "test": "is_owner", "subject": "other", "value": true }
                   ]
                 },
-                "event": "thlmm:ss",
+                "event": "thlmm:1",
                 "target": "self"
               }
             }
           ]
         }
       },
+      // 右键坐下/站起
       "thlmm:maid_tame_sit":{
         "minecraft:entity_sensor": {
           "sensor_range": 6,
@@ -118,6 +119,7 @@
           "event": "thlmm:i"
         }
       },
+      // 右键打开背包
       "thlmm:maid_tame_inventory":{
         "minecraft:entity_sensor": {
           "sensor_range": 6,
@@ -139,7 +141,8 @@
           "event": "thlmm:s"
         }
       },
-
+ 
+      ///// 背包类别 /////
       "backpack:default":{
         "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": true}
       },
@@ -153,6 +156,8 @@
         "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 36, "private": true}
       },
 
+      ///// 跟随类别 /////
+      // 拐走后跟随
       "status:follow_on_tame":{
         "minecraft:behavior.follow_owner": {
           "priority": 3,
@@ -171,9 +176,10 @@
               { "test": "is_owner", "subject": "other", "value": true }
             ]
           },
-          "event": "thlmm:onfs"
+          "event": "thlmm:f"
         }
       },
+      // 正常跟随
       "status:follow_standard":{
         "minecraft:behavior.follow_owner": {
           "priority": 6,
@@ -183,18 +189,20 @@
           "can_teleport": true
         }
       },
+      // 守家模式
       "status:home":{
         "minecraft:is_baby": {},
         "minecraft:timer": {
           "time": 3,
           "looping": true,
           "time_down_event": {
-            "event": "thlmm:rh",
+            "event": "thlmm:h",
             "target": "self"
           }
         }
       },
 
+      ///// 工作模式 /////
       "mode:idle":{
         "minecraft:variant": {"value": 0},
         "minecraft:behavior.panic": {
@@ -204,22 +212,75 @@
       },
       "mode:attack":{
         "minecraft:variant": {"value": 1},
-        "minecraft:attack": {
-          "damage": 2
-        },
-        "minecraft:behavior.melee_attack": {
-          "priority": 2
-        },
-        
-        "minecraft:behavior.owner_hurt_by_target": {
-          "priority": 1
-        },
-        "minecraft:behavior.owner_hurt_target": {
-          "priority": 2
+        "minecraft:attack"                       : { "damage"  : 2 },
+        "minecraft:behavior.melee_attack"        : { "priority": 2 },
+        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
+        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
+      },
+
+      // 环境状态
+      "environment:simple":{
+        "minecraft:environment_sensor": {
+          "triggers": [
+            // 热
+            {
+              "event": "environment:hot",
+              "target": "self",
+              "filters": [
+                {
+                  "all_of": [
+                    {
+                      "any_of": [
+                        {"test": "is_biome", "value": "desert"},
+                        {"test": "is_biome", "value": "savanna"},
+                        {"test": "is_biome", "value": "the_nether"}
+                      ]
+                    },
+                    {"test": "in_water_or_rain", "value": false},
+                    {"test": "weather", "value": "clear"}
+                  ]
+                }
+              ]
+            },
+            // 早晨/夜晚报时
+            { "event": "environment:morning", "target": "self", "filters": [{ "all_of": [{"test": "bool_property", "value": false, "domain": "environment:daytime"}, {"test": "is_daytime", "value": true}]}]},
+            { "event": "environment:night"  , "target": "self", "filters": [{ "all_of": [{"test": "bool_property", "value": true , "domain": "environment:daytime"}, {"test": "is_daytime", "value": false}]}]}
+          ]
         }
       }
     },
     "components": {
+      ///// 基础属性 /////
+      "minecraft:health"       : { "value": 40, "max": 40 },
+      "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
+      "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
+      "minecraft:loot"         : { "table": "loot_tables/empty.json" },
+      "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": true },
+      "minecraft:on_death"     : { "event": "thlmm:d", "target": "self" },
+      "minecraft:movement"     : { "value": 0.3 },
+      "minecraft:physics"      : { },
+      "minecraft:pushable"     : { "is_pushable": true, "is_pushable_by_piston": true },
+      "minecraft:attack"       : { "damage": 6 },
+      "minecraft:balloonable"  : { "mass": 0.8 },
+      "minecraft:breathable"   : { "total_supply": 15, "suffocate_time": 0 },
+      "minecraft:is_hidden_when_invisible": { },
+      "minecraft:conditional_bandwidth_optimization": { },
+      "minecraft:behavior.look_at_player": { "priority": 0, "look_distance": 6.0, "probability": 0.02 },
+      
+      ///// 交互属性 /////
+      "minecraft:rideable": {
+        "controlling_seat": 1,
+        "crouching_skip_interact": true,
+        "family_types": ["thlm:maid_backpack"],
+        "interact_text": "",
+        "pull_in_entities": false,
+        "rider_can_interact": false,
+        "seat_count": 1,
+        "seats":[{
+          "position": [0,0,0],
+          "lock_rider_rotation": 1
+        }]
+      },
       "minecraft:equippable": {
         "slots": [
           {        
@@ -231,6 +292,15 @@
           }
         ]
       },
+      "minecraft:healable": {
+        "items": [
+          {"item": "cake", "heal_amount": 20}
+        ]
+      },
+      "minecraft:behavior.beg": { "priority": 9, "look_distance": 8, "look_time": [ 2, 4 ], "items": [ "cake" ] },
+
+      ///// AI属性 /////
+      // 索敌
       "minecraft:behavior.nearest_attackable_target": {
         "priority": 2,
         "must_reach": true,
@@ -253,195 +323,36 @@
           }
         ]
       },
-      "minecraft:on_death": {
-        "event": "thlmm:d",
-        "target": "self"
-      },
-      "minecraft:rideable": {
-        "controlling_seat": 1,
-        "crouching_skip_interact": true,
-        "family_types": ["thlm:maid_backpack"],
-        "interact_text": "",
-        "pull_in_entities": false,
-        "rider_can_interact": false,
-        "seat_count": 1,
-        "seats":[{
-          "position": [0,0,0],
-          "lock_rider_rotation": 1
-        }]
-      },
-      "minecraft:balloonable": {
-        "mass": 0.8
-      },
-      "minecraft:is_hidden_when_invisible": {
-      },
-      "minecraft:nameable": {
-        "always_show": false,
-        
-        "allow_name_tag_renaming": true
-      },
-      
-      "minecraft:type_family": {
-        "family": [ "maid", "mob" ]
-      },
-      "minecraft:breathable": {
-        "total_supply": 15,
-        "suffocate_time": 0
-      },
-      "minecraft:collision_box": {
-        "width": 0.6,
-        "height": 1.5
-      },
-      "minecraft:health": {
-        "value": 40,
-        "max": 40
-      },
-      "minecraft:movement": {
-        "value": 0.3
-      },
-      "minecraft:loot": {
-        "table": "loot_tables/empty.json"
-      },
-      "minecraft:behavior.look_at_player": {
-        "priority": 0,
-        "look_distance": 6.0,
-        "probability": 0.02
-      },
-      "minecraft:physics": {
-      },
-      "minecraft:pushable": {
-        "is_pushable": true,
-        "is_pushable_by_piston": true
-      },
-      "minecraft:attack": {
-        "damage": 3
-      },
-      
-      "minecraft:navigation.walk": {
-        "can_path_over_water": true,
-        "avoid_damage_blocks": true
-      },
-      "minecraft:movement.basic": {
-      },
-      "minecraft:jump.static": {
-      },
-      "minecraft:can_climb": {
-      },
-      "minecraft:healable": {
-        "items": [
-          {
-            "item": "porkchop",
-            "heal_amount": 3
-          },
-          {
-            "item": "cooked_porkchop",
-            "heal_amount": 8
-          },
-          {
-            "item": "fish",
-            "heal_amount": 2
-          },
-          {
-            "item": "salmon",
-            "heal_amount": 2
-          },
-          {
-            "item": "clownfish",
-            "heal_amount": 1
-          },
-          {
-            "item": "pufferfish",
-            "heal_amount": 1
-          },
-          {
-            "item": "cooked_fish",
-            "heal_amount": 5
-          },
-          {
-            "item": "cooked_salmon",
-            "heal_amount": 6
-          },
-          {
-            "item": "beef",
-            "heal_amount": 3
-          },
-          {
-            "item": "cooked_beef",
-            "heal_amount": 8
-          },
-          {
-            "item": "chicken",
-            "heal_amount": 2
-          },
-          {
-            "item": "cooked_chicken",
-            "heal_amount": 6
-          },
-          {
-            "item": "muttonRaw",
-            "heal_amount": 2
-          },
-          {
-            "item": "muttonCooked",
-            "heal_amount": 6
-          },
-          {
-            "item": "rotten_flesh",
-            "heal_amount": 4
-          },
-          {
-            "item": "rabbit",
-            "heal_amount": 3
-          },
-          {
-            "item": "cooked_rabbit",
-            "heal_amount": 5
-          },
-          {
-            "item": "rabbit_stew",
-            "heal_amount": 10
-          }
-        ]
-      },
-      "minecraft:behavior.float": {
-        "priority": 0
-      },
+      "minecraft:behavior.hurt_by_target": { "priority": 3 },
+
+      // 基本移动
+      "minecraft:navigation.walk": { "can_path_over_water": true, "avoid_damage_blocks": true },
+      "minecraft:movement.basic": { },
+      "minecraft:jump.static": { },
+      "minecraft:can_climb": { },
+      "minecraft:behavior.float": { "priority": 0 },
+      "minecraft:behavior.stay_while_sitting": { "priority": 3 },
+
       "minecraft:behavior.mount_pathing": {
         "priority": 1,
         "speed_multiplier": 1.25,
         "target_dist": 0,
         "track_target": true
       },
-      "minecraft:behavior.stay_while_sitting": {
-        "priority": 3
-      },
-      
       "minecraft:behavior.random_stroll": {
         "priority": 8,
         "speed_multiplier": 1.0
-      },
-      "minecraft:behavior.beg": {
-        "priority": 9,
-        "look_distance": 8,
-        "look_time": [ 2, 4 ],
-        "items": [ "cake" ]
-      },
-
-      "minecraft:behavior.hurt_by_target": {
-        "priority": 3
-      },
-      "minecraft:conditional_bandwidth_optimization": {
       }
     },
     "events": {
-      
       "minecraft:entity_spawned": {
         "add": {
           "component_groups": [
-            "thlmm:maid_wild"
+            "thlmm:maid_wild",
+            "environment:simple"
           ]
         },
-        "trigger": "thlmm:sp"
+        "trigger": "thlmm:0"
       },
       "despawn":{ "add": { "component_groups": [ "despawn" ] } },
       "on_tamed": {
@@ -458,44 +369,56 @@
           ]
         }
       },
-      "thlmm:i":{
-        "remove": {"component_groups": ["thlmm:maid_tame_sit"]},
-        "add": {"component_groups": ["thlmm:maid_tame_inventory"]}
-      },
-      "thlmm:s":{
-        "add": {"component_groups": ["thlmm:maid_tame_sit"]},
-        "remove": {"component_groups": ["thlmm:maid_tame_inventory"]}
-      },
-      "thlmm:sp":{},
-      "thlmm:onfs":{},
-      "thlmm:omi":{},
-      "thlmm:rh":{},
-      "thlmm:d":{},
-      "thlmm:p":{},
-      "thlmm:ss":{},
 
-      "api:follow_on_tame_over":{
-        "add": {"component_groups": ["status:follow_standard", "thlmm:maid_tame_sit"]},
-        "remove": {"component_groups": ["status:follow_on_tame"]}
-      },
+      ///// 脚本事件 /////
+      "thlmm:d" :{}, // Death
+      "thlmm:f" :{}, // Follow on tamed
+      "thlmm:h" :{}, // Home
+      "thlmm:i" :{ "remove": {"component_groups": ["thlmm:maid_tame_sit"]}, "add": {"component_groups": ["thlmm:maid_tame_inventory"]} },
+      "thlmm:m" :{}, // Master interact
+      "thlmm:p" :{}, // Photo
+      "thlmm:s" :{ "add": {"component_groups": ["thlmm:maid_tame_sit"]}, "remove": {"component_groups": ["thlmm:maid_tame_inventory"]} },
+      "thlmm:0" :{}, // Spawn
+      "thlmm:1" :{}, // Smart slab
 
-      "api:status_follow"     :{"add"   : {"component_groups": ["status:follow_standard"]}},
-      "api:status_quit_follow":{"remove": {"component_groups": ["status:follow_standard"]}},
-      "api:status_home"       :{"add"   : {"component_groups": ["status:home"]}},
-      "api:status_quit_home"  :{"remove": {"component_groups": ["status:home"]}},
-      
+      ///// 脚本接口 /////
+      // 跟随类型
+      "api:status_follow"  :{"add"   : {"component_groups": ["status:follow_standard"]}, "remove": {"component_groups": ["status:home"]}},
+      "api:status_home"    :{"add"   : {"component_groups": ["status:home"]}, "remove": {"component_groups": ["status:follow_standard"]}},
+      "api:follow_on_tame_over":{ "add": {"component_groups": ["status:follow_standard", "thlmm:maid_tame_sit"]}, "remove": {"component_groups": ["status:follow_on_tame"]} },
+
+      // 工作模式
       "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}}]},
       "api:mode_quit_idle":  {"sequence": [{"remove": {"component_groups": ["mode:idle"]}}]},
       "api:mode_attack"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack"]}}]},
       "api:mode_quit_attack":{"sequence": [{"remove": {"component_groups": ["mode:attack"]}}]},
 
-      "api:backpack_default":{"add":{"component_groups":["backpack:default"]},"set_property":{"thlm:backpack_type":0}},
-      "api:backpack_small":{"add":{"component_groups":["backpack:small"]},"set_property":{"thlm:backpack_type":1}},
-      "api:backpack_middle":{"add":{"component_groups":["backpack:middle"]},"set_property":{"thlm:backpack_type": 2}},
-      "api:backpack_big":{"add":{"component_groups":["backpack:big"]},"set_property":{"thlm:backpack_type": 3}},
+      // 背包类型
+      "api:backpack_default" :{ "add":{"component_groups":["backpack:default"]}, "set_property":{"thlm:backpack_type": 0}},
+      "api:backpack_small"   :{ "add":{"component_groups":["backpack:small"  ]}, "set_property":{"thlm:backpack_type": 1}},
+      "api:backpack_middle"  :{ "add":{"component_groups":["backpack:middle" ]}, "set_property":{"thlm:backpack_type": 2}},
+      "api:backpack_big"     :{ "add":{"component_groups":["backpack:big"    ]}, "set_property":{"thlm:backpack_type": 3}},
+      "api:backpack_invisible"     :{ "set_property":{"thlm:backpack_invisible": true } },
+      "api:backpack_quit_invisible":{ "set_property":{"thlm:backpack_invisible": false} },
 
-      "api:backpack_invisible":{"set_property":{"thlm:backpack_invisible": true}},
-      "api:backpack_quit_invisible":{"set_property":{"thlm:backpack_invisible": false}}
+      ///// 环境变化 /////
+      "environment:simple":{
+        "set_property":{"environment:status": 0}
+      },
+      "environment:cold":{
+        "set_property":{"environment:status": 1}
+      },
+      "environment:hot":{
+        "set_property":{"environment:status": 2}
+      },
+      "environment:rain":{
+        "set_property":{"environment:status": 3}
+      },
+      "environment:snow":{
+        "set_property":{"environment:status": 4}
+      },
+      "environment:morning":{ "set_property":{"environment:daytime": true}, "run_command":{ "command": ["playsound mob.thlmm.maid.morning @a ~~~"]}},
+      "environment:night"  :{ "set_property":{"environment:daytime": false}, "run_command":{ "command": ["playsound mob.thlmm.maid.night @a ~~~"]}}
     }
   }
 }

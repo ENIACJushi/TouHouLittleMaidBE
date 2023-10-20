@@ -120,24 +120,15 @@ class thlm {
                         // 女仆专用事件
                         case "m":
                             switch(event.id.substring(6)){
-                                // fon: follow on tamed
-                                case "onfs": MaidManager.onTameFollowSuccess(event); break;
-                                // omi: on master interact
-                                case "omi" : MaidManager.onInteractEvent(event); break;
-                                // rh: return home
-                                case "rh"  : MaidManager.returnHomeEvent(event); break;
-                                // sp: spawn
-                                case "sp"  : MaidManager.onSpawnEvent(event); break;
-                                // d: death
-                                case "d"   : MaidManager.onDeathEvent(event); break;
-                                // p: photo
-                                case "p"   : MaidManager.onPhotoEvent(event); break;
-                                // ss: smart slab
-                                case "ss"  : MaidManager.onSmartSlabRecycleEvent(event); break;
-                                // s: sit mode
-                                case "s"   : MaidManager.sitModeEvent(event); break;
-                                // i: inventory mode
-                                case "i"   : MaidManager.inventoryModeEvent(event); break;
+                                case "d": MaidManager.onDeathEvent(event); break; // Death
+                                case "f": MaidManager.onTameFollowSuccess(event); break; // Follow on tamed
+                                case "h": MaidManager.returnHomeEvent(event); break; // Home
+                                case "i": MaidManager.inventoryModeEvent(event); break; // Inventory mode
+                                case "m": MaidManager.onInteractEvent(event); break; // Master interact
+                                case "p": MaidManager.onPhotoEvent(event); break; // Photo
+                                case "s": MaidManager.sitModeEvent(event); break; // Sit mode
+                                case "0": MaidManager.onSpawnEvent(event); break; // 0 Spawn
+                                case "1": MaidManager.onSmartSlabRecycleEvent(event); break;// 1 Smart slab
                                 default: break;
                             }
                             break;

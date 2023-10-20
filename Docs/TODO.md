@@ -12,20 +12,21 @@
     mob.thlmm.maid.death        自动触发
     mob.thlmm.maid.find_target
     mob.thlmm.maid.hurt_player
-    mob.thlmm.maid.hurt         自动触发
+    mob.thlmm.maid.hurt         受伤  自动触发
     mob.thlmm.maid.item_get
-    mob.thlmm.maid.tamed        脚本触发
+    mob.thlmm.maid.tamed        拐骗成功  脚本触发
 
-    mob.thlmm.maid.cold
-    mob.thlmm.maid.hot
-    mob.thlmm.maid.morning
-    mob.thlmm.maid.night
-    mob.thlmm.maid.rain
-    mob.thlmm.maid.snow
+    mob.thlmm.maid.cold     1 
+    mob.thlmm.maid.hot      2 
+    mob.thlmm.maid.rain     3 
+    mob.thlmm.maid.snow     4
 
-    mob.thlmm.maid.attack      脚本触发 切换模式时
-    mob.thlmm.maid.feed        脚本触发 切换模式时
-    mob.thlmm.maid.idle        自动触发 存在频率过高的问题
+    mob.thlmm.maid.morning     早安  行为包触发
+    mob.thlmm.maid.night       晚安  行为包触发
+
+    mob.thlmm.maid.attack      攻击模式  脚本触发 切换模式时
+    mob.thlmm.maid.feed        喂养模式  脚本触发 切换模式时
+    mob.thlmm.maid.idle        休息模式  自动触发 存在频率过高的问题
 
     mob.thlmm.maid.credit
   为了使用静音模式，以后应该都会改成脚本触发

@@ -20,13 +20,11 @@ export class EntityMaid{
         switchMode(maid){
             if(this.getMode(maid)===true){
                 // 家模式 → 跟随模式
-                maid.triggerEvent("api:status_quit_home");
                 maid.triggerEvent("api:status_follow");
             }
             else{
                 // 跟随模式 → 家模式
                 this.setLocation(maid);
-                maid.triggerEvent("api:status_quit_follow");
                 maid.triggerEvent("api:status_home");
             }
         },
