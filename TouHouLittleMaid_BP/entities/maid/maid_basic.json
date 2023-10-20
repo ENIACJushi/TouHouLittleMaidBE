@@ -17,7 +17,7 @@
 
         "emoji:index"             :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
         "emoji:frames_per_second" :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
-        "emoji:frame_count"       :{"type": "float", "client_sync": true, "default": 1, "range": [0, 99999]}
+        "emoji:frame_count"       :{"type": "float", "client_sync": true, "default": 1.0, "range": [0.0, 99999.0]}
       }
     },
     "component_groups": {
@@ -316,7 +316,7 @@
       "minecraft:attack": {
         "damage": 3
       },
-
+      
       "minecraft:navigation.walk": {
         "can_path_over_water": true,
         "avoid_damage_blocks": true
@@ -434,6 +434,7 @@
       }
     },
     "events": {
+      
       "minecraft:entity_spawned": {
         "add": {
           "component_groups": [

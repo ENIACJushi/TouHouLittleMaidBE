@@ -62,7 +62,7 @@ export class MaidMenu {
         form.show(this.player).then((response) => {
             if(response.selection !== null){
                 WorkType.set(this.maid, response.selection);
-                system.runTimeout(()=>{this.main()},1);
+                system.runTimeout(()=>{this.main()},2);
             }
         });
     }

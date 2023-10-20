@@ -1,0 +1,15 @@
+{
+   "entity_sounds" : {
+      "entities" : {
+         "thlmm:maid_basic" : {
+            "events" : {
+               "ambient": "mob.thlmm.maid.idle",
+               "death"  : "mob.thlmm.maid.death",
+               "hurt"   : "mob.thlmm.maid.hurt"
+            },
+            "pitch" : [ 0.80, 1.20 ],
+            "volume" : 1.0
+         }
+      }
+   }
+}

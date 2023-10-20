@@ -14,7 +14,7 @@
           }
          ]
       },
-       "power_pop":{
+      "power_pop":{
         "category": "player",
         "sounds": [
           {
@@ -55,7 +55,7 @@
           }
         ]
       },
-      "camera_use":{
+      "thlm.camera_use":{
         "category": "player",
         "sounds": [
           {
@@ -75,7 +75,10 @@
           }
         ]
       },
-      "thlm.maid.ai.death":{
+
+
+      // AI
+      "mob.thlmm.maid.death":{
         "category": "neutral",
         "__use_legacy_max_distance" : true,
         "sounds": [
@@ -86,7 +89,7 @@
           "sounds/maid/ai/death2"
         ]
       },
-      "thlm.maid.ai.find_target":{
+      "mob.thlmm.maid.find_target":{
         "category": "neutral",
         "__use_legacy_max_distance" : true,
         "sounds": [
@@ -98,7 +101,7 @@
           "sounds/maid/ai/find_target3"
         ]
       },
-      "thlm.maid.ai.hurt_player":{
+      "mob.thlmm.maid.hurt_player":{
         "category": "neutral",
         "__use_legacy_max_distance" : true,
         "sounds": [
@@ -110,7 +113,7 @@
           "sounds/maid/ai/hurt_player3"
         ]
       },
-      "thlm.maid.ai.hurt":{
+      "mob.thlmm.maid.hurt":{
         "category": "neutral",
         "__use_legacy_max_distance" : true,
         "sounds": [
@@ -127,7 +130,7 @@
           "sounds/maid/ai/hurt8"
         ]
       },
-      "thlm.maid.ai.item_get":{
+      "mob.thlmm.maid.item_get":{
         "category": "neutral",
         "__use_legacy_max_distance" : true,
         "sounds": [
@@ -137,7 +140,7 @@
           }
         ]
       },
-      "thlm.maid.ai.tamed":{
+      "mob.thlmm.maid.tamed":{
         "category": "neutral",
         "__use_legacy_max_distance" : true,
         "sounds": [
@@ -149,7 +152,150 @@
           "sounds/maid/ai/tamed3",
           "sounds/maid/ai/tamed4"
         ]
+      },
+      // environment
+      "mob.thlmm.maid.cold":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/environment/cold1"
+          },
+          "sounds/maid/environment/cold2",
+          "sounds/maid/environment/cold3",
+          "sounds/maid/environment/cold4"
+        ]
+      },
+      "mob.thlmm.maid.hot":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/environment/hot1"
+          },
+          "sounds/maid/environment/hot2",
+          "sounds/maid/environment/hot3"
+        ]
+      },
+      "mob.thlmm.maid.morning":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/environment/morning1"
+          },
+          "sounds/maid/environment/morning2",
+          "sounds/maid/environment/morning3"
+        ]
+      },
+      "mob.thlmm.maid.night":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/environment/night1"
+          },
+          "sounds/maid/environment/night2"
+        ]
+      },
+      "mob.thlmm.maid.rain":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/environment/rain1"
+          },
+          "sounds/maid/environment/rain2",
+          "sounds/maid/environment/rain3"
+        ]
+      },
+      "mob.thlmm.maid.snow":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/environment/snow1"
+          },
+          "sounds/maid/environment/snow2"
+        ]
+      },
+      // mode
+      "mob.thlmm.maid.attack":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/mode/attack1"
+          },
+          "sounds/maid/mode/attack2",
+          "sounds/maid/mode/attack3",
+          "sounds/maid/mode/attack4",
+          "sounds/maid/mode/attack5",
+          "sounds/maid/mode/attack6",
+          "sounds/maid/mode/attack7"
+        ]
+      },
+      "mob.thlmm.maid.feed":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/mode/feed1"
+          },
+          "sounds/maid/mode/feed2",
+          "sounds/maid/mode/feed3",
+          "sounds/maid/mode/feed4",
+          "sounds/maid/mode/feed5",
+          "sounds/maid/mode/feed6",
+          "sounds/maid/mode/feed7"
+        ]
+      },
+      "mob.thlmm.maid.idle":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/mode/idle1"
+          },
+          "sounds/maid/mode/idle1",
+          "sounds/maid/mode/idle2",
+          "sounds/maid/mode/idle3",
+          "sounds/maid/mode/idle4",
+          "sounds/maid/mode/idle5",
+          "sounds/maid/mode/idle6",
+          "sounds/maid/mode/idle7",
+          "sounds/maid/mode/idle8",
+          "sounds/maid/mode/idle9",
+          "sounds/maid/mode/idle10",
+          "sounds/maid/mode/idle11",
+          "sounds/maid/mode/idle12",
+          "sounds/maid/mode/idle13",
+          "sounds/maid/mode/idle14",
+          "sounds/maid/mode/idle15",
+          "sounds/maid/mode/idle16",
+          "sounds/maid/mode/idle17",
+          "sounds/maid/mode/idle18",
+          "sounds/maid/mode/idle19"
+        ]
+      },
+      "mob.thlmm.maid.credit":{
+        "category": "neutral",
+        "__use_legacy_max_distance" : true,
+        "sounds": [
+          {
+            "load_on_low_memory" : true,
+            "name": "sounds/maid/other/credit"
+          }
+        ]
       }
-      
    }
 }

@@ -139,7 +139,6 @@ export class EntityMaid{
                     }
                     else{
                         MaidBackpack.setInvisible(backpack, false);
-                        MaidBackpack.show(backpack);
                         backpack.triggerEvent("api:grave");
                     }
                 }
@@ -240,6 +239,14 @@ export class EntityMaid{
             return EntityMaid.fromLore(lore, dimension, location, set_health);
         }
         return undefined;
+    }
+    /**
+     * 播放声音
+     * @param {Entity} maid 
+     * @param {string} name 
+     */
+    static playSound(maid, name){
+        maid.dimension.runCommand(`playsound ${name} @a ${maid.location.x} ${maid.location.y} ${maid.location.z}`);
     }
     ///// GET /////
     /**

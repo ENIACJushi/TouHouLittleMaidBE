@@ -41,9 +41,6 @@ export class MaidManager{
                     var backpack = MaidBackpack.create(maid, MaidBackpack.default, maid.dimension, maid.location);
                     EntityMaid.setBackpackID(maid, backpack.id);
 
-                    // 隐藏背包（因为无法正常渲染）
-                    MaidBackpack.setInvisible(backpack, true);
-
                     // 背上背包   无效：rideable.addRider(backpack);
                     maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
                 }
@@ -85,8 +82,7 @@ export class MaidManager{
         let lore = EntityMaid.toLore(maid);
         
         // 发出声音
-        maid.dimension.runCommand(`playsound camera_use @a ${maid.location.x} ${maid.location.y} ${maid.location.z}`);
-        
+        EntityMaid.playSound(maid, "thlm.camera_use");
         // 清除实体
         maid.triggerEvent("despawn");
         let backpack=EntityMaid.getBackpackEntity(maid);
@@ -171,6 +167,7 @@ export class MaidManager{
             maid.triggerEvent("api:follow_on_tame_over");
             EntityMaid.setOwnerID(maid, results[0].id);
             MaidBackpack.setOwnerID(backpack, results[0].id);
+            EntityMaid.playSound(maid, "mob.thlmm.maid.tamed");
         }
     }
     /**
@@ -239,7 +236,7 @@ export class MaidManager{
     static boxOpenEvent(event){
         let box = event.entity;
         EntityMaid.spawnRandomMaid(box.dimension, box.location);
-        box.dimension.runCommand(`playsound thlm.box @a ${box.location.x} ${box.location.y} ${box.location.z}`);
+        EntityMaid.playSound(box, "thlm.box");
         box.triggerEvent("despawn");
     }
     /**

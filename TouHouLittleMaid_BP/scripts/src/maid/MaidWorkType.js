@@ -1,4 +1,5 @@
-import { Entity } from "@minecraft/server";
+import { Entity, system } from "@minecraft/server";
+import { EntityMaid } from "./EntityMaid";
 
 export class WorkType{
     static AMOUNT         = 14;  // 总数
@@ -27,8 +28,8 @@ export class WorkType{
 
         "ranged_attack",
         "danmaku_attack", 
-        "farm",      
         "phantom_killer",
+        "farm",
         "sugar_cane",
         "melon",
         "cocoa",          
@@ -42,13 +43,34 @@ export class WorkType{
         "extinguishing"
     ]
 
+    // 切换到模式时的音效
+    static SOUND_LIST=[
+        undefined,
+        "mob.thlmm.maid.attack",
+        "mob.thlmm.maid.attack",
+        "mob.thlmm.maid.attack", 
+        "mob.thlmm.maid.attack",
+        undefined,
+        undefined,
+        undefined,
+        undefined,          
+        undefined,      
+        undefined,
+        "mob.thlmm.maid.feed",
+        undefined,
+        undefined,
+        undefined,
+        "mob.thlmm.maid.feed",
+        undefined
+    ]
+    // UI 图标
     static IMG_LIST=[
         "textures/items/feather.png",
         "textures/items/diamond_sword.png",
         "textures/items/bow_standby.png",
         "textures/items/hakurei_gohei.png",
-        "textures/items/iron_hoe.png",
         "textures/items/phantom_membrane.png",
+        "textures/items/iron_hoe.png",
         "textures/items/reeds.png",
         "textures/items/melon.png",
         "textures/items/dye_powder_brown.png",
@@ -76,8 +98,18 @@ export class WorkType{
      * @param {WorkType|number} type
      */
     static set(maid, type){
-        maid.triggerEvent(`api:mode_quit_${this.getName(this.get(maid))}`)
-        maid.triggerEvent(`api:mode_${this.getName(type)}`);
+        if(this.get(maid) !== type){
+            maid.triggerEvent(`api:mode_quit_${this.getName(this.get(maid))}`);
+            
+            system.runTimeout(()=>{
+                maid.triggerEvent(`api:mode_${this.getName(type)}`);
+            }, 1);
+
+            let sound = this.getSound(type);
+            if(sound !== undefined){
+                EntityMaid.playSound(maid, sound);
+            }
+        }
     }
     /**
      * 获取名称
@@ -102,5 +134,13 @@ export class WorkType{
      */
     static getIMG(type){
         return this.IMG_LIST[type];
+    }
+    /**
+     * 获取声音
+     * @param {*} type
+     * @returns {string|undefined}
+     */
+    static getSound(type){
+        return this.SOUND_LIST[type];
     }
 }

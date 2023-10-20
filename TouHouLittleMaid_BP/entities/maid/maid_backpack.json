@@ -66,6 +66,10 @@
 
       "status:grave":{
         "minecraft:physics": {"has_collision": true,"has_gravity": true},
+        "minecraft:collision_box": {
+          "width": 0.3,
+          "height": 0.5
+        },
         "minecraft:damage_sensor": {
           "triggers": [
             { 
