@@ -110,9 +110,7 @@ export class EntityMaid{
                 // 将物品转移到常加载区域, 若区块加载器不存在则会失败，转而使用原地生成法
                 if(config.Maid.death_bag === false){
                     let loader = MaidBackpack.loader.get();
-                    Tool.logger("1");
                     if(loader !== undefined){
-                        Tool.logger("2");
                         // 在地底创建新背包(隐形)
                         let temp_backpack = MaidBackpack.create(maid, backpack_type,
                             backpack.dimension, loader.location);
@@ -133,7 +131,7 @@ export class EntityMaid{
                 if(deathBagSuccess === false){
                     if(backpack_type === MaidBackpack.default){
                         // 爆出物品
-                        backpack.kill();
+                        MaidBackpack.dump(backpack, backpack.location);
                     }
                     else{
                         MaidBackpack.setInvisible(backpack, false);

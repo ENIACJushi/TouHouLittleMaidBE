@@ -29,12 +29,44 @@ else{
 world.sendMessage("§e[Touhou Little Maid] Addon Loaded!");
 class thlm {
     static main(){
+        // Script Event
+        system.afterEvents.scriptEventReceive.subscribe(event => {
+            system.run(()=>{
+                switch(event.id){
+                    case "thlm:skin_add":
+                        let infos = event.message.split(",");
+                        let name = infos[0];
+                        let index = parseInt(infos[1]);
+                        Tool.logger(`Name: ${name}, Index: ${index}`);
+
+                        break;
+                    case "thlm:skin_remove":
+                        break;
+                    case "thlm:skin_list":
+                        break;
+                    default:
+                        break;
+                }
+                
+            })
+        }, {namespaces: ["thlm"]});
         world.afterEvents.playerSpawn.subscribe(event => {
-            if(event.initialSpawn){                
-                // say something
-                // event.player.sendMessage({translate: ""})
-            }
-            
+            // 进服事件
+            if(event.initialSpawn){
+                let player = event.player;
+                // 首次进服事件
+                if(PowerPoint.test_power_number(player.name) === false){
+                    let playerName = Tool.playerCMDName(player.name);
+                    // 初始化p点计分板
+                    PowerPoint.set_power_number(player.name, 0);
+                    // 给书
+                    player.dimension.runCommand(`give ${playerName} touhou_little_maid:memorizable_gensokyo_1 1`);
+                    // 给魂符
+                    player.dimension.runCommand(`give ${playerName} touhou_little_maid:smart_slab_has_maid 1`);
+                    // say something
+                    // event.player.sendMessage({translate: ""})
+                }
+            }            
         });
         // Before Item Use On
         var on_use_player = {};
@@ -92,7 +124,7 @@ class thlm {
         // Entity Events
         world.beforeEvents.dataDrivenEntityTriggerEvent.subscribe(event => {
             system.run(()=>{
-                Tool.logger(event.id)
+                // Tool.logger(event.id)
                 // const {entity, id, modifiers} = data;
                 if(event.id.substring(0, 4) == "thlm"){
                     switch(event.id.substring(4, 5)){

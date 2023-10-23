@@ -5,7 +5,8 @@
       "identifier": "thlmm:maid",
       "materials": {
         "default": "warden",
-        "wing": "danmaku_blending"
+        "wing_default": "wing_default",
+        "wind_solid": "warden"
       },
       "textures": {
         "backpack_default": "textures/entity/maid_backpack_small",
@@ -36,8 +37,7 @@
         "blink": "animation.touhou_little_maid.basic.blink",
         "look_at_target": "animation.common.look_at_target",
         "wing": "animation.touhou_little_maid.basic.wing",
-        "walk": "animation.touhou_little_maid.basic.walk",
-        "hair_swing": "animation.touhou_little_maid.basic.hair_swing"
+        "walk": "animation.touhou_little_maid.basic.walk"
       },
       "scripts": {
         "pre_animation": [
@@ -48,15 +48,11 @@
           "blink",
           "wing",
           "look_at_target",
-          "walk",
-          "hair_swing"
+          "walk"
         ]
       },
       "render_controllers": [
-        "controller.render.touhou_little_maid.maid.maid_backpack",
-        "controller.render.touhou_little_maid.maid_basic",
-        "controller.render.touhou_little_maid.maid_touhou",
-        "controller.render.touhou_little_maid.maid_test"
+        "controller.render.touhou_little_maid.maid.maid_backpack"
       ],
       "spawn_egg": {
         "base_color": "#ffffff",

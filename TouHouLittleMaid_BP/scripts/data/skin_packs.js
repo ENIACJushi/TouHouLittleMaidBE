@@ -2,7 +2,7 @@
 export const skin_packs = [
     {
         "name": "default",
-        "amount": "1"
+        "amount": "120"
     },
     {
         "name": "touhou",
@@ -10,6 +10,6 @@ export const skin_packs = [
     },
     {
         "name": "test",
-        "amount": "1"
+        "amount": "4"
     }
 ]

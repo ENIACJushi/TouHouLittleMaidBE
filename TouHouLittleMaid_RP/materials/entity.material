@@ -13,9 +13,9 @@
       "blendSrc": "SourceAlpha",
       "blendDst": "One"
     },
-    "test_slime_outer:entity":{
+    "wing_default:entity":{
       "+states":[
-            "Blending"
+            "Blending","DisableCulling"
         ]
     }
   }

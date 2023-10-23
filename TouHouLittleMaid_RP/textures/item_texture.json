@@ -4,7 +4,7 @@
   "texture_data": {
     "touhou_little_maid.hakurei_gohei": { "textures": "textures/items/hakurei_gohei" },
     "touhou_little_maid.power_point": { "textures": "textures/items/power_point" },
-
+    "touhou_little_maid.memorizable_gensokyo": { "textures": "textures/items/memorizable_gensokyo" },
 
     "touhou_little_maid.spellcard.default":{"textures": "textures/items/spellcard/spellcard_default"},
     "touhou_little_maid.spellcard.boundary_between_wave_and_particle_3d":{"textures": "textures/items/spellcard/boundary_between_wave_and_particle_3d"},

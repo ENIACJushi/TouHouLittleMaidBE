@@ -204,6 +204,21 @@ export default class PowerPoint {
     }
     
     /**
+     * 检测玩家的p点计分板是否已经初始化，若没有则返回false
+     * 用于首次入服的检测
+     * @param {string} name
+     * @returns {boolean}
+     */
+    static test_power_number(name){
+        let scores = world.scoreboard.getObjective("p").getScores()
+        for(let s of scores){
+            if(s.participant.displayName == name){
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
      * Get player power point number in scoreboard (xxx)
      * @param {string} name
      * @returns {interger}

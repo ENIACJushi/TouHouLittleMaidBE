@@ -12,12 +12,10 @@
 		"animation.touhou_little_maid.basic.wing": {
 			"loop": true,
 			"bones": {
-				"wingLeft": {
-					"rotation": [0, "-10-math.cos(q.life_time * 75) * 15", 0]
-				},
-				"wingRight": {
-					"rotation": [0, "math.cos(q.life_time * 75) * 15 + 10", 0]
-				}
+				"wingLeft": { "rotation": [0, "-10-math.cos(q.life_time * 75) * 15", 0] },
+				"wingLeft_": { "rotation": [0, "-10-math.cos(q.life_time * 75) * 15", 0] },
+				"wingRight": { "rotation": [0, "math.cos(q.life_time * 75) * 15 + 10", 0] },
+				"wingRight_": { "rotation": [0, "math.cos(q.life_time * 75) * 15 + 10", 0] }
 			}
 		},
 		"animation.touhou_little_maid.basic.hair_swing":{

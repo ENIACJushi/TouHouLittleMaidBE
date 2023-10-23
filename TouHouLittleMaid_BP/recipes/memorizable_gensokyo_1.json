@@ -1,0 +1,28 @@
+{
+	"format_version": "1.12.10",
+	"minecraft:recipe_shapeless": {
+		"description": {
+			"identifier": "touhou_little_maid:memorizable_gensokyo_1"
+		},
+		"tags": [ "crafting_table" ],
+		"ingredients": [
+			{
+			  "item": "minecraft:book"
+			},
+			{
+			  "item": "minecraft:cake"
+			}
+		],
+		"unlock": [
+			{
+				"item": "minecraft:book"
+			},
+			{
+				"item": "minecraft:cake"
+			}
+		],
+		"result": {
+			"item": "touhou_little_maid:memorizable_gensokyo_1"
+		}
+	}
+}

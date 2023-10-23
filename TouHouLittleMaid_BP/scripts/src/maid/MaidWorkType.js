@@ -43,7 +43,7 @@ export class WorkType{
         "extinguishing"
     ]
 
-    // 切换到模式时的音效
+    // 切换到模式时的音效(现在已经转移到行为包内播放)
     static SOUND_LIST=[
         undefined,
         "mob.thlmm.maid.attack",
@@ -104,11 +104,6 @@ export class WorkType{
             system.runTimeout(()=>{
                 maid.triggerEvent(`api:mode_${this.getName(type)}`);
             }, 1);
-
-            let sound = this.getSound(type);
-            if(sound !== undefined){
-                EntityMaid.playSound(maid, sound);
-            }
         }
     }
     /**

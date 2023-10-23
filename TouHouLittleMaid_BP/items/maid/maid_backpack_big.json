@@ -13,7 +13,7 @@
           "value": "item.touhou_little_maid:maid_backpack_big"
         },
         "minecraft:hand_equipped": true,
-        "minecraft:max_stack_size": 1
+        "minecraft:max_stack_size": 64
       },
       "events": {
       }

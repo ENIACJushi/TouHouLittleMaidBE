@@ -2,8 +2,8 @@ import * as mcui from '@minecraft/server-ui';
 import { system, world, Entity, Player } from "@minecraft/server"
 import { WorkType } from './MaidWorkType';
 import { EntityMaid } from './EntityMaid';
-import { skin_packs } from '../../data/skin_packs';
 import {logger} from "../libs/scarletToolKit"
+import { MaidSkin } from './MaidSkin';
 
 export class MaidMenu {
     /**
@@ -21,9 +21,21 @@ export class MaidMenu {
         let work_type = WorkType.get(this.maid);
         let home_mode = EntityMaid.Home.getMode(this.maid);
         let backpack_invisible = EntityMaid.getBackPackInvisible(this.maid);
-        let skin_pack = EntityMaid.getSkinPack(this.maid);
+        let skin_pack_index = EntityMaid.getSkinPack(this.maid);
         let skin_index = EntityMaid.getSkinIndex(this.maid);
+        let skin_pack = MaidSkin.getPack(skin_pack_index)
+        let skin_display;
+        
+        // 轮询测试
+        // EntityMaid.setSkinIndex(this.maid, skin_index+1);
+        // return;
 
+        if(skin_pack === undefined){
+            skin_display = {text: "无效"}
+        }
+        else{
+            skin_display = MaidSkin.getSkinDisplayName(skin_pack["name"], skin_index)
+        }
         const form = new mcui.ActionFormData()
             .title(this.maid_name) // 女仆名，为空则使用默认标题
             .body(`${health.currentValue.toFixed(0)}/${health.defaultValue}`)
@@ -34,7 +46,10 @@ export class MaidMenu {
                 WorkType.getIMG(work_type)) // 切换工作模式 | 当前模式
             .button({ translate: EntityMaid.Home.getLang(home_mode)}, EntityMaid.Home.getImg(home_mode)) //home 模式
             .button(backpack_invisible?"显示背包":"隐藏背包")
-            .button(`选择模型 ${skin_pack},${skin_index}`)
+            .button({rawtext:[
+                {text: "选择模型"},
+                {text: " | "},
+                skin_display]})
 
         form.show(this.player).then((response) => {
             switch(response.selection){
@@ -77,29 +92,29 @@ export class MaidMenu {
         const form = new mcui.ActionFormData()
         .title(this.maid_name) // 女仆名，为空则使用默认标题
         .body(`模型选择`);
-
-        for(let i=0; i<skin_packs.length; i++){
-            form.button(skin_packs[i].name);
+        let skinList = MaidSkin.SkinList;
+        for(let i=0; i < MaidSkin.length(); i++){
+            form.button(MaidSkin.getPackDisplayName(skinList[i]["name"]));
         }
         
         form.show(this.player).then((response) => {
             if(response.selection !== null){
-                this.skinindexSelection(response.selection);
+                this.skinindexSelection(skinList[response.selection]);
             }
         });
     }
     skinindexSelection(pack){
         const form = new mcui.ActionFormData()
-        .title(this.maid_name) // 女仆名，为空则使用默认标题
-        .body(`模型选择`);
+        .title(MaidSkin.getPackDisplayName(pack["name"])) // 女仆名，为空则使用默认标题
+        .body(MaidSkin.getAuthors(pack["name"]));
 
-        for(let i=0; i<skin_packs[pack].amount; i++){
-            form.button(`${i}`);
+        for(let i = 0; i < pack["length"]; i++){
+            form.button(MaidSkin.getSkinDisplayName(pack["name"], i));
         }
         
         form.show(this.player).then((response) => {
             if(response.selection !== null){
-                EntityMaid.setSkinPack(this.maid, pack);
+                EntityMaid.setSkinPack(this.maid, pack["index"]);
                 EntityMaid.setSkinIndex(this.maid, response.selection);
             }
         });

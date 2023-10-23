@@ -8,36 +8,40 @@
  home模式、跟随模式（用minecraft:is_baby标记）
  空闲模式、近战模式
  三种背包及合成配方、渲染、换包交互（手持背包shift右键）。
+ 基本的模型包加载功能：
+    在模型包补充定义entity的模型与材质，注意前缀应该取不容易重复的，比如模型包的名称，然后修改render_controller
+    在主包-资源包的render_controller追加新定义的render_controller
+    在主包-行为包的scripts/data/skin_packs.js补充模型包的信息
+
  声音：
     mob.thlmm.maid.death        自动触发
     mob.thlmm.maid.find_target
     mob.thlmm.maid.hurt_player
     mob.thlmm.maid.hurt         受伤  自动触发
     mob.thlmm.maid.item_get
-    mob.thlmm.maid.tamed        拐骗成功  脚本触发
+    mob.thlmm.maid.tamed        拐骗成功  行为包触发
 
     mob.thlmm.maid.cold     1 
     mob.thlmm.maid.hot      2 
     mob.thlmm.maid.rain     3 
-    mob.thlmm.maid.snow     4
+    mob.thlmm.maid.snow     4 
 
     mob.thlmm.maid.morning     早安  行为包触发
     mob.thlmm.maid.night       晚安  行为包触发
 
-    mob.thlmm.maid.attack      攻击模式  脚本触发 切换模式时
-    mob.thlmm.maid.feed        喂养模式  脚本触发 切换模式时
+    mob.thlmm.maid.attack      攻击模式  行为包触发 切换模式时
+    mob.thlmm.maid.feed        喂养模式  行为包触发 切换模式时
     mob.thlmm.maid.idle        休息模式  自动触发 存在频率过高的问题
 
     mob.thlmm.maid.credit
   为了使用静音模式，以后应该都会改成脚本触发
 
 下一步：
-1. 完善私有背包与背包实体之间物品的传递，同时修改阵亡/收回时的相关处理
+1. 完善装备栏，完善私有背包与背包实体之间物品的传递，同时修改阵亡/收回时的相关处理
 完善各状态动画
-完善索敌，有时候不能及时锁定，锁定后还会出现丢锁的情况
-拾物模式（用tag标注）
-添加模型包加载功能（考虑由像素图表示模型，没有图则展示名称，这需要让图的UI叠在文字上方）
-添加第一轮的全部工作模式
+完善模型包转换与导入脚本
+拾物模式
+添加第一轮的全部工作模式：弓兵、弹幕攻击、农场、幻翼杀手
 *相册（如果lore没有上限或者在装满的状态不会溢出，可以考虑加一个）
 *表情显示（非核心功能，不过已经写了一点了）
 转beta

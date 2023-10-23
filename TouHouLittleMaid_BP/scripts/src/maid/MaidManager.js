@@ -83,13 +83,8 @@ export class MaidManager{
         
         // 发出声音
         EntityMaid.playSound(maid, "thlm.camera_use");
-        // 清除实体
+        // 清除女仆
         maid.triggerEvent("despawn");
-        let backpack=EntityMaid.getBackpackEntity(maid);
-        if(backpack!=undefined){
-            MaidBackpack.setInvisible(backpack, true);
-        }
-
         // 输出照片
         let output_item = new ItemStack("touhou_little_maid:photo", 1);
         output_item.setLore(lore);
@@ -110,12 +105,8 @@ export class MaidManager{
         // 将女仆转为lore
         let lore = EntityMaid.toLore(maid);
         
-        // 清除实体
+        // 清除女仆
         maid.triggerEvent("despawn");
-        let backpack=EntityMaid.getBackpackEntity(maid);
-        if(backpack!=undefined){
-            MaidBackpack.setInvisible(backpack, true);
-        }
 
         // 修改魂符
         let new_itme = new ItemStack("touhou_little_maid:smart_slab_has_maid", 1)
@@ -167,7 +158,6 @@ export class MaidManager{
             maid.triggerEvent("api:follow_on_tame_over");
             EntityMaid.setOwnerID(maid, results[0].id);
             MaidBackpack.setOwnerID(backpack, results[0].id);
-            EntityMaid.playSound(maid, "mob.thlmm.maid.tamed");
         }
     }
     /**
@@ -247,7 +237,6 @@ export class MaidManager{
         let backpackL = backpack.location;
         let owenerID = MaidBackpack.getOwnerID(backpack);
         if(owenerID !== undefined){
-            Tool.logger(owenerID);
             // 当主人在附近时，在主人位置开包
             let owner = world.getEntity(owenerID);
             if(owner !== undefined){

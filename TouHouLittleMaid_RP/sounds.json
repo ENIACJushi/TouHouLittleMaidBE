@@ -3,7 +3,7 @@
       "entities" : {
          "thlmm:maid" : {
             "events" : {
-               "ambient": "mob.thlmm.maid.idle",
+               "breathe": "mob.thlmm.maid.idle",
                "death"  : "mob.thlmm.maid.death",
                "hurt"   : "mob.thlmm.maid.hurt"
             },
