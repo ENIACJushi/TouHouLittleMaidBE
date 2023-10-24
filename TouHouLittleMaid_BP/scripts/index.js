@@ -1,4 +1,4 @@
-import { world, system, Enchantment, ItemEnchantsComponent, EquipmentSlot } from "@minecraft/server"
+import { world, system, Enchantment, ItemEnchantsComponent } from "@minecraft/server"
 import { altarStructure } from "./src/altar/AltarStructureHelper";
 import experiment from "./experiment"
 import PowerPoint from "./src/altar/PowerPoint"
@@ -31,13 +31,6 @@ class thlm {
     static main(){
         // Script Event
         system.afterEvents.scriptEventReceive.subscribe(event => {
-
-            // 装备栏测试
-            Tool.logger(event.message)
-            // let equippable = event.sourceEntity.getComponent("equippable")
-            // let item = equippable.getEquipment(EquipmentSlot.Chest)
-            // Tool.logger(item.typeId)
-            
             system.run(()=>{
                 switch(event.id){
                     case "thlm:skin_add":

@@ -15,7 +15,7 @@
     },
     "wing_default:entity":{
       "+states":[
-            "Blending", "DisableCulling"
+            "Blending","DisableCulling"
         ]
     }
   }

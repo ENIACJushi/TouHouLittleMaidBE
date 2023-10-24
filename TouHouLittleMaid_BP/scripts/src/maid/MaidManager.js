@@ -9,7 +9,7 @@
  *  thlmm:<女仆id>
  *  thlmo:<主人生物id>
  */
-import { ItemStack, world, Entity,Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, EquipmentSlot } from "@minecraft/server";
+import { ItemStack, world, Entity,Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
@@ -166,27 +166,14 @@ export class MaidManager{
      */
     static onInteractEvent(event){
         let maid = event.entity;
-        
         // Search for owner
         let pl_id = EntityMaid.getOwnerID(maid);
-        if(pl_id !== undefined){
+        if(pl_id!==undefined){
             let pl = world.getEntity(pl_id);
-            if(pl !== undefined && Tool.pointInArea_3D(
-                pl.location.x, pl.location.y, pl.location.z,
-                maid.location.x - 8, maid.location.y - 8, maid.location.z - 8,
-                maid.location.x + 8, maid.location.y + 8, maid.location.z + 8 ))
-            {
-                    let equippable = maid.getComponent("equippable")
-                    let item = equippable.getEquipment(EquipmentSlot.Chest)
-                    Tool.logger(item.typeId)
-                    return
-        
-                    // Send form
-                    let form = new UI.MaidMenu(pl, event.entity);
-                    form.main();
-                    return true;
-            }
-            
+            // Send form
+            let form = new UI.MaidMenu(pl, event.entity);
+            form.main();
+            return true;
         }
         return false;
     }
