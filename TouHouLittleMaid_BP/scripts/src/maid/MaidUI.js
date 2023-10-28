@@ -83,7 +83,7 @@ export class MaidMenu {
         }
         
         form.show(this.player).then((response) => {
-            if(response.selection !== undefined){
+            if(response.selection !== null){
                 WorkType.set(this.maid, response.selection);
                 system.runTimeout(()=>{this.main()},2);
             }
@@ -99,7 +99,7 @@ export class MaidMenu {
         }
         
         form.show(this.player).then((response) => {
-            if(response.selection !== undefined){
+            if(response.selection !== null){
                 this.skinindexSelection(skinList[response.selection]);
             }
         });
@@ -114,7 +114,7 @@ export class MaidMenu {
         }
         
         form.show(this.player).then((response) => {
-            if(response.selection !== undefined){
+            if(response.selection !== null){
                 EntityMaid.setSkinPack(this.maid, pack["index"]);
                 EntityMaid.setSkinIndex(this.maid, response.selection);
             }
