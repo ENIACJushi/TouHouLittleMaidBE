@@ -69,8 +69,8 @@ export default class experiment {
  */
 function showForm(player){
     const form = new mcui.ActionFormData()
-        .title("标题")
-        .body("-3427383902188")
+        .title("/P 标题")
+        .body("正文")
         .button("ao")
         
     form.show(player).then((response) => {

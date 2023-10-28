@@ -8,7 +8,7 @@ import * as Tool from"./src/libs/scarletToolKit";
 import { itemShootManager } from "./src/danmaku/ItemShootManager";
 import { MaidManager } from "./src/maid/MaidManager";
 
-if(false){
+if(true){
     // World Initialize
     world.afterEvents.worldInitialize.subscribe((e) => {
         system.run(()=>{
@@ -39,7 +39,6 @@ class thlm {
             // Tool.logger(item.typeId)
             
             system.run(()=>{
-                Tool.logger(event.sourceEntity.id)
                 switch(event.id){
                     case "thlm:skin_add":
                         let infos = event.message.split(",");

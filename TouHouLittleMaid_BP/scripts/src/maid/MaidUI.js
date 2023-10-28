@@ -5,7 +5,6 @@ import { EntityMaid } from './EntityMaid';
 import {logger} from "../libs/scarletToolKit"
 import { MaidSkin } from './MaidSkin';
 
-
 export class MaidMenu {
     /**
      * @param {Player} player 
