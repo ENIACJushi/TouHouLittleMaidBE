@@ -325,11 +325,7 @@
           {
             "filters": {
               "all_of": [
-                {
-                  "test": "is_family",
-                  "subject": "other",
-                  "value": "monster"
-                }
+                {"test": "is_family","subject": "other","value": "monster"}
               ]
             },
             "max_dist": 20
