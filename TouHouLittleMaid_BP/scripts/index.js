@@ -1,4 +1,4 @@
-import { world, system, Enchantment, ItemEnchantsComponent } from "@minecraft/server"
+import { world, system, Enchantment, ItemEnchantsComponent, EquipmentSlot } from "@minecraft/server"
 import { altarStructure } from "./src/altar/AltarStructureHelper";
 import experiment from "./experiment"
 import PowerPoint from "./src/altar/PowerPoint"
@@ -8,7 +8,7 @@ import * as Tool from"./src/libs/scarletToolKit";
 import { itemShootManager } from "./src/danmaku/ItemShootManager";
 import { MaidManager } from "./src/maid/MaidManager";
 
-if(false){
+if(true){
     // World Initialize
     world.afterEvents.worldInitialize.subscribe((e) => {
         system.run(()=>{
@@ -31,8 +31,14 @@ class thlm {
     static main(){
         // Script Event
         system.afterEvents.scriptEventReceive.subscribe(event => {
+
+            // 装备栏测试
+            Tool.logger(event.message)
+            // let equippable = event.sourceEntity.getComponent("equippable")
+            // let item = equippable.getEquipment(EquipmentSlot.Chest)
+            // Tool.logger(item.typeId)
+            
             system.run(()=>{
-                Tool.logger(event.sourceEntity.id)
                 switch(event.id){
                     case "thlm:skin_add":
                         let infos = event.message.split(",");

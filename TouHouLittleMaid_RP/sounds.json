@@ -7,7 +7,7 @@
                "death"  : "mob.thlmm.maid.death",
                "hurt"   : "mob.thlmm.maid.hurt"
             },
-            "pitch" : [ 1.00, 1.20 ],
+            "pitch" : [ 0.80, 1.20 ],
             "volume" : 1.0
          }
       }

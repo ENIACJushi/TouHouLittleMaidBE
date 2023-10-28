@@ -23,6 +23,7 @@
         "environment:status" :{"type": "int", "client_sync": true, "default": 0 , "range": [0, 5]},
         "environment:daytime":{"type": "int", "client_sync": true, "default": -1, "range": [-1, 1]} // 为了在生成时发出声音，默认设为-1
         // *工作模式：variant
+
       }
     },
     "component_groups": {
@@ -293,17 +294,11 @@
           "lock_rider_rotation": 1
         }]
       },
-      "minecraft:equippable": {
-        "slots": [
-          {        
-            "slot": 0,
-            "item": "saddle",
-            "accepted_items": [ "saddle" ],
-            "on_equip": {"event": "minecraft:horse_saddled"},
-            "on_unequip": {"event": "minecraft:horse_unsaddled"}
-          }
-        ]
-      },// 装备，未完成
+      "minecraft:equipment": {
+        "table": "loot_tables/entities/zombie_equipment.json",
+        "slot_drop_chance": [{"drop_chance": 0,"slot": "slot.weapon.mainhand"}]
+      },
+      "minecraft:is_stackable": {},
       "minecraft:healable": {
         "items": [
           {"item": "cake", "heal_amount": 20}
@@ -319,16 +314,20 @@
         "must_reach": true,
         "must_see": true,
         "reselect_targets": true,
-        "within_radius": 20,
+        "within_radius": 32,
         "scan_interval": 10,
         "entity_types": [
           {
             "filters": {
               "all_of": [
-                {"test": "is_family","subject": "other","value": "monster"}
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "monster"
+                }
               ]
             },
-            "max_dist": 20
+            "max_dist": 25
           }
         ]
       },

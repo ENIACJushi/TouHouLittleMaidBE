@@ -1,0 +1,70 @@
+{
+  "namespace": "server_form",
+  "main_screen_content": {
+      "type": "panel",
+      "size": [
+          "100%",
+          "100%"
+      ],
+      "controls": [
+          {
+              "server_form_factory": {
+                  "type": "factory",
+                  "control_ids": {
+                      "long_form": "@server_form.form_selector",
+                      "custom_form": "@server_form.custom_form"
+                  }
+              }
+          }
+      ]
+  },
+  "form_selector": {
+      "type": "panel",
+      "anchor_from": "center",
+      "anchor_to": "center",
+      "controls": [
+          {
+              "main@form_type": {
+                  "$content": "thlm_menu.main"
+              }
+          },
+          {
+              "vanilla@vanilla_form": {}
+          }
+      ]
+  },
+  "form_type": {
+      "type": "panel",
+      "controls": [
+          {
+              "content@$content": {}
+          }
+      ],
+      "bindings": [
+          {
+              "binding_name": "#title_text"
+          },
+          {
+              "binding_type": "view",
+              "source_property_name": "(#title_text < $form_main_title)",
+              "target_property_name": "#visible"
+          }
+      ]
+  },
+  "vanilla_form@long_form": {
+      "bindings": [
+          {
+              "binding_name": "#title_text"
+          },
+          {
+              "binding_type": "view",
+              "source_property_name": "(not (#title_text < $form_main_title))",
+              "target_property_name": "#visible"
+          }
+      ]
+  },
+  "third_party_server_screen@common.base_screen": {
+      "$screen_content": "server_form.main_screen_content",
+      "button_mappings": []
+  }
+}

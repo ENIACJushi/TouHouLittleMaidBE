@@ -59,7 +59,21 @@ export class EntityMaid{
     }
     // 拾物模式
     static Pick = {
-        
+        getImg(is_open){
+            return is_open?"textures/gui/pick_activate.png":"textures/gui/pick_deactivate.png"
+        },
+        getLang(is_open){
+            return is_open?"gui.touhou_little_maid:button.pick.true.name":"gui.touhou_little_maid:button.pick.false.name"
+        }
+    }
+    // 骑乘模式
+    static Ride = {
+        getImg(is_open){
+            return is_open?"textures/gui/ride_activate.png":"textures/gui/ride_deactivate.png"
+        },
+        getLang(is_open){
+            return is_open?"gui.touhou_little_maid:button.ride.true.name":"gui.touhou_little_maid:button.ride.false.name"
+        }
     }
     ///// Core /////
     /**

@@ -14,7 +14,10 @@
       },
       "minecraft:hand_equipped": true,
       "minecraft:foil": true,
-      "minecraft:max_stack_size": 1
+      "minecraft:max_stack_size": 1,
+      "minecraft:wearable": {
+        "slot": "slot.chest"
+      }
     },
     "events": {}
   }
