@@ -13,7 +13,7 @@ export class MaidMenu {
     constructor(player, maid){
         this.player = player;
         this.maid = maid;
-        this.maid_name = maid.nameTag===""?{ translate: "entity.touhou_little_maid:maid.name"}:maid.nameTag;
+        this.maid_name = maid.nameTag===""?{ translate: "entity.touhou_little_maid:maid.name"}:maid.nameTag + "";
 
     }
     main(){
@@ -38,18 +38,25 @@ export class MaidMenu {
         }
         const form = new mcui.ActionFormData()
             .title(this.maid_name) // 女仆名，为空则使用默认标题
-            .body(`${health.currentValue.toFixed(0)}/${health.defaultValue}`)
+            .body("-3513283248127")
+            //.body(`${health.currentValue.toFixed(0)}/${health.defaultValue}`)
             .button({rawtext:[
                 {translate: "gui.touhou_little_maid:task.switch.name"},
                 {text: " | "},
                 {translate: WorkType.getLang(work_type)}]},
                 WorkType.getIMG(work_type)) // 切换工作模式 | 当前模式
             .button({ translate: EntityMaid.Home.getLang(home_mode)}, EntityMaid.Home.getImg(home_mode)) //home 模式
+            .button({ translate: EntityMaid.Pick.getLang(false)}, EntityMaid.Pick.getImg(false)) //pick 模式
+            .button({ translate: EntityMaid.Ride.getLang(false)}, EntityMaid.Ride.getImg(false)) //ride 模式
             .button(backpack_invisible?"显示背包":"隐藏背包")
             .button({rawtext:[
                 {text: "选择模型"},
                 {text: " | "},
                 skin_display]})
+            //workSelection
+            for(let i=0; i<WorkType.AMOUNT; i++){
+            form.button(WorkType.getLang(i), WorkType.getIMG(i));
+            }
 
         form.show(this.player).then((response) => {
             switch(response.selection){
@@ -68,6 +75,7 @@ export class MaidMenu {
                     this.skinpackSelection();
                     break;
                 default:
+                    WorkType.set(this.maid, response.selection - 6);
                     break;
             }
         });

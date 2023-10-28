@@ -1,0 +1,97 @@
+{
+    "namespace": "header",
+    "header": {
+        "$title|default": "title",
+        "$binding|default": "#title_text",
+        "$close_button_to_button_id": "button.exit_student",
+        "type": "image",
+        "size":["100%",22],
+        "texture": "textures/ui/Black",
+        "alpha": 0.0,
+        "anchor_from": "top_middle",
+        "anchor_to": "bottom_middle",
+        "controls": [
+            {
+                "title@$title": {}
+            }
+        ]
+    },
+    "title": {
+        "type": "label",
+        "text": "$binding",
+        "color":"$title_text_color",
+        "font_size": "normal",
+        "anchor_from": "center",
+        "anchor_to": "center",
+        "text_alignment": "left",
+        "offset": [
+            4,
+            2
+        ],
+        "size": [
+            "92.5%",
+            "default"
+        ],
+        "bindings": [
+            {
+                "binding_name": "$binding"
+            }
+        ],
+        "controls": [
+            {
+                "close@npc_interact.x_close_button": {
+                    "offset": [
+                        -5,
+                        -1
+                    ],
+                    "size": [
+                        "100%y",
+                        "100%"
+                    ],
+                    "anchor_from": "right_middle",
+                    "anchor_to": "right_middle",
+                    "$visibility_binding_name": "#visible",
+                    "controls": [
+                        {
+                            "default@common.close_button_panel": {
+                                "$close_button_texture": "textures/ui/close_button_hover"
+                            }
+                        },
+                        {
+                            "hover@common.close_button_panel": {
+                                "$close_button_texture": "textures/ui/close_button_hover"
+                            }
+                        },
+                        {
+                            "pressed@common.close_button_panel": {
+                                "$close_button_texture": "textures/ui/close_button_pressed"
+                            }
+                        }
+                    ],
+                    "button_mappings": [
+                        {
+                            "from_button_id": "button.menu_select",
+                            "to_button_id": "$close_button_to_button_id",
+                            "mapping_type": "pressed"
+                        },
+                        {
+                            "from_button_id": "button.menu_ok",
+                            "to_button_id": "$close_button_to_button_id",
+                            "mapping_type": "focused"
+                        },
+                        {
+                            "from_button_id": "button.menu_cancel",
+                            "to_button_id": "$close_button_to_button_id",
+                            "mapping_type": "global"
+                        },
+                        {
+                            "from_button_id": "button.menu_cancel",
+                            "to_button_id": "button.menu_exit",
+                            "mapping_type": "global"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
