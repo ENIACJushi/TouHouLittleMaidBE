@@ -97,16 +97,9 @@
           {
             "filters":{
               "any_of": [
-                {
-                  "test": "is_family",
-                  "subject": "other",
-                  "value": "player"
-                },
-                {
-                  "test": "is_family",
-                  "subject": "other",
-                  "value": "irongolem"
-                }
+                {"test": "is_family","subject": "other","value": "player"},
+                {"test": "is_family","subject": "other","value": "irongolem"},
+                {"test": "is_family","subject": "other","value": "maid"}
               ]
             },
             "max_dist": 16

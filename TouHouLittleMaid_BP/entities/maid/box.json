@@ -18,6 +18,7 @@
         "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } }
       },
       "components": {
+        
         "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
         "minecraft:collision_box": { "width": 1, "height": 1 },
         "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
@@ -27,6 +28,7 @@
           "has_collision": true,
           "has_gravity": true
         },
+        "minecraft:is_stackable": {"value": true},
         "minecraft:health": {
           "value": 10,
           "max": 10

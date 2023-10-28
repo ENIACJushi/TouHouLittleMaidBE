@@ -335,7 +335,7 @@ export class EntityMaid{
      * @returns {EntityHealthComponent}
      */
     static getHealthComponent(maid){
-        return this.maid.getComponent("health");
+        return maid.getComponent("health");
     }
 
     /**
