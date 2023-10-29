@@ -4,7 +4,7 @@ A bedrock-edition Add-On transplanted by Java mod: TouHou Little Maid. (https://
 This plugin is still in the development stage, only for development communication. Please do not load it in the world for play.
 
 ## Authors
-- Programmer: `ENIACJushi`
+- Programmer: `ENIACJushi`, `Tanya7z`
 
 ## Credits
 - TartaricAcid, Snownee, Succinum, Pajinyi, ZeniCrow, Tian_mi, Paulzzh, YurisCat: Made the [TouHou Little Maid Java Mod](https://github.com/TartaricAcid/TouhouLittleMaid)
