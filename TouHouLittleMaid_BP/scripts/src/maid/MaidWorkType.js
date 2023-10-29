@@ -1,5 +1,6 @@
 import { Entity, system } from "@minecraft/server";
 import { EntityMaid } from "./EntityMaid";
+import { logger } from "../libs/scarletToolKit"
 
 export class WorkType{
     static AMOUNT         = 14;  // 总数
@@ -90,7 +91,7 @@ export class WorkType{
      * @returns {WorkType|number}
      */
     static get(maid){
-        return maid.getComponent("minecraft:variant").value;
+        return maid.getProperty("thlm:work");
     }
     /**
      * 设置工作模式
@@ -100,10 +101,7 @@ export class WorkType{
     static set(maid, type){
         if(this.get(maid) !== type){
             maid.triggerEvent(`api:mode_quit_${this.getName(this.get(maid))}`);
-            
-            system.runTimeout(()=>{
-                maid.triggerEvent(`api:mode_${this.getName(type)}`);
-            }, 1);
+            maid.triggerEvent(`api:mode_${this.getName(type)}`);
         }
     }
     /**

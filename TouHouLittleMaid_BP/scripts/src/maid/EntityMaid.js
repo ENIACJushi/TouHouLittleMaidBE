@@ -59,6 +59,9 @@ export class EntityMaid{
     }
     // 拾物模式
     static Pick = {
+        switchMode(maid){
+            
+        },
         getImg(is_open){
             return is_open?"textures/gui/pick_activate.png":"textures/gui/pick_deactivate.png"
         },
@@ -68,11 +71,61 @@ export class EntityMaid{
     }
     // 骑乘模式
     static Ride = {
+        switchMode(maid){
+            
+        },
         getImg(is_open){
             return is_open?"textures/gui/ride_activate.png":"textures/gui/ride_deactivate.png"
         },
         getLang(is_open){
             return is_open?"gui.touhou_little_maid:button.ride.true.name":"gui.touhou_little_maid:button.ride.false.name"
+        }
+    }
+    // 生命值
+    static Health = {
+        // 特殊字符的起始位置
+        strOffset: 0xE600,
+        /**
+         * 获取健康实例
+         * @param {Entity} maid 
+         */
+        get(maid){
+            return maid.getComponent("health");
+        },
+        /**
+         * 将健康值（整数）转换为文本
+         * @param {Int} health
+         */
+        toStr(health){
+            let result = "";
+            let stack = Math.floor(health / 20);
+            let value = health % 20;
+            if(value===0) value=20;
+            for(let i = 10; i > 0;){
+                
+                if(value >= 2){
+                    value -= 2;
+                    result += this.fullStr();
+                }
+                else if(value === 1){
+                    value -= 1;
+                    result += this.halfStr();
+                }
+                else{
+                    result += this.emptyStr();
+                }
+                i--;
+            }
+            return result
+        },
+        emptyStr(){
+            return String.fromCodePoint(this.strOffset + 0x03);
+        },
+        halfStr(){
+            return String.fromCodePoint(this.strOffset + 0x04);
+        },
+        fullStr(){
+            return String.fromCodePoint(this.strOffset + 0x05);
         }
     }
     ///// Core /////

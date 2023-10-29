@@ -123,6 +123,19 @@ tile.touhou_little_maid:garage_kit.name=手办
 tile.touhou_little_maid:maid_beacon.name=神社庭灯
 
 
+gui.touhou_little_maid:button.home.true.name=Home 模式已开启
+gui.touhou_little_maid:button.home.false.name=Home 模式已关闭
+gui.touhou_little_maid:button.pick.true.name=拾取 模式已开启
+gui.touhou_little_maid:button.pick.false.name=拾取 模式已关闭
+gui.touhou_little_maid:button.ride.true.name=骑乘 模式已开启
+gui.touhou_little_maid:button.ride.false.name=骑乘 模式已关闭
+gui.touhou_little_maid:button.pickup.true.name=拾物模式已开启
+gui.touhou_little_maid:button.pickup.false.name=拾物模式已关闭
+gui.touhou_little_maid:button.backpack.true.name=显示背包
+gui.touhou_little_maid:button.backpack.false.name=隐藏背包
+gui.touhou_little_maid:button.home.desc.name=§7点击此按钮可以设置女仆是否跟随玩家
+gui.touhou_little_maid:button.skin.name=切换模型
+
 tooltips.touhou_little_maid:chair.place.desc.name=右击方块顶部进行放置。
 tooltips.touhou_little_maid:chair.destroy.desc.name=Shift 左击破坏它。
 tooltips.touhou_little_maid:chair.gui.desc.name=Shift 右击打开皮肤界面。
@@ -169,15 +182,7 @@ gui.touhou_little_maid:skin.text.version.name=版本：%s
 gui.touhou_little_maid:skin.text.date.name=日期：%s
 gui.touhou_little_maid:skin.button.close.name=关闭
 gui.touhou_little_maid:skin.tooltips.show_details.name=Shift 点击打开详情界面
-gui.touhou_little_maid:button.home.true.name=Home 模式已开启
-gui.touhou_little_maid:button.home.false.name=Home 模式已关闭
-gui.touhou_little_maid:button.pick.true.name=拾取 模式已开启
-gui.touhou_little_maid:button.pick.false.name=拾取 模式已关闭
-gui.touhou_little_maid:button.ride.true.name=骑乘 模式已开启
-gui.touhou_little_maid:button.ride.false.name=骑乘 模式已关闭
-gui.touhou_little_maid:button.home.desc.name=§7点击此按钮可以设置女仆是否跟随玩家
-gui.touhou_little_maid:button.pickup.true.name=拾物模式已开启
-gui.touhou_little_maid:button.pickup.false.name=拾物模式已关闭
+
 gui.touhou_little_maid:button.pickup.desc.name=§7点击此按钮可以设置女仆是否主动拾取掉落物
 gui.touhou_little_maid:button.maid_riding_set.true.name=女仆骑乘已开启
 gui.touhou_little_maid:button.maid_riding_set.false.name=女仆骑乘已关闭

@@ -4,6 +4,8 @@
     "description": {
       "identifier": "thlmm:maid", "is_spawnable": true, "is_summonable": true, "is_experimental": false,
       "properties": {
+        // 工作模式
+        "thlm:work" : {"type": "int", "default": 0, "range":[0, 20], "client_sync": true},
         // 模型包
         "thlm:skin_pack"  : {"type": "int", "default": 0, "range":[0, 99999], "client_sync": true},
         "thlm:skin_index" : {"type": "int", "default": 0, "range":[0, 99999], "client_sync": true},
@@ -22,8 +24,6 @@
         // 环境
         "environment:status" :{"type": "int", "client_sync": true, "default": 0 , "range": [0, 5]},
         "environment:daytime":{"type": "int", "client_sync": true, "default": -1, "range": [-1, 1]} // 为了在生成时发出声音，默认设为-1
-        // *工作模式：variant
-
       }
     },
     "component_groups": {
@@ -209,14 +209,12 @@
 
       ///// 工作模式 /////
       "mode:idle":{
-        "minecraft:variant": {"value": 0},
         "minecraft:behavior.panic": {
           "priority": 1,
           "speed_multiplier": 1.25
         }
       },
       "mode:attack":{
-        "minecraft:variant": {"value": 1},
         "minecraft:attack"                       : { "damage"  : 8 },
         "minecraft:behavior.melee_attack"        : { "priority": 5 },
         "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
@@ -294,11 +292,17 @@
           "lock_rider_rotation": 1
         }]
       },
-      "minecraft:equipment": {
-        "table": "loot_tables/entities/zombie_equipment.json",
-        "slot_drop_chance": [{"drop_chance": 0,"slot": "slot.weapon.mainhand"}]
-      },
-      "minecraft:is_stackable": {},
+      "minecraft:equippable": {
+        "slots": [
+          {        
+            "slot": 0,
+            "item": "saddle",
+            "accepted_items": [ "saddle" ],
+            "on_equip": {"event": "minecraft:horse_saddled"},
+            "on_unequip": {"event": "minecraft:horse_unsaddled"}
+          }
+        ]
+      },// 装备，未完成
       "minecraft:healable": {
         "items": [
           {"item": "cake", "heal_amount": 20}
@@ -314,20 +318,16 @@
         "must_reach": true,
         "must_see": true,
         "reselect_targets": true,
-        "within_radius": 32,
+        "within_radius": 20,
         "scan_interval": 10,
         "entity_types": [
           {
             "filters": {
               "all_of": [
-                {
-                  "test": "is_family",
-                  "subject": "other",
-                  "value": "monster"
-                }
+                {"test": "is_family","subject": "other","value": "monster"}
               ]
             },
-            "max_dist": 25
+            "max_dist": 20
           }
         ]
       },
@@ -374,10 +374,10 @@
           "component_groups": [
             "thlmm:maid_tame",
             "status:follow_on_tame",
-            "mode:idle",
             "sound:ambient"
           ]
-        }
+        },
+        "trigger": "api:mode_idle"
       },
 
       ///// 脚本事件 /////
@@ -401,9 +401,9 @@
         "run_command":{ "command": ["playsound mob.thlmm.maid.tamed @a ~~~"]}},
 
       // 工作模式
-      "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}}]},
+      "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}, "set_property":{"thlm:work": 0}}]},
       "api:mode_quit_idle":  {"sequence": [{"remove": {"component_groups": ["mode:idle"]}}]},
-      "api:mode_attack"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack"]}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
+      "api:mode_attack"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack"]}, "set_property":{"thlm:work": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
       "api:mode_quit_attack":{"sequence": [{"remove": {"component_groups": ["mode:attack"]}}]},
 
       // 背包类型

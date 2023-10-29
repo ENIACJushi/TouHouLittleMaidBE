@@ -211,6 +211,20 @@ export class MaidBackpack{
         if(type === this.default) return undefined;
         return `touhou_little_maid:maid_backpack_${this.type2Name(type)}`;
     }
+
+    /**
+     * 获取按钮名称
+     */
+    static getButtonLang(invisible){
+        return invisible?"gui.touhou_little_maid:button.backpack.true.name":"gui.touhou_little_maid:button.backpack.false.name"
+    }
+
+    /**
+     * 获取按钮图像
+     */
+    static getButtonImg(invisible){
+        return invisible?"textures/gui/maid_backpack_deactivate.png":"textures/gui/maid_backpack_activate.png"
+    }
     ///// SET /////
     /**
      * 设置类型

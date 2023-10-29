@@ -3,7 +3,6 @@ export class MaidSkin{
     static SkinList = [
         {"name": "touhou_little_maid", "index": 0, "length": 120}
     ]
-
     /**
      * 注册皮肤包
      * @param {string} name 皮肤包命名空间

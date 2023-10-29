@@ -25,6 +25,7 @@
       "controls": [
           {
               "main@form_type": {
+                  "$min": "",
                   "$content": "thlm_menu.main"
               }
           },
