@@ -28,8 +28,10 @@ export default class experiment {
         world.afterEvents.chatSend.subscribe(event=>{
             let player = event.sender;
             // 显示字符ASCII码
-            // Tool.logger('􀐏'.charCodeAt(1).toString(16));
-
+            // Tool.logger('􀐏'.charCodeAt(0).toString(16));
+            Tool.logger('一'.charCodeAt(0).toString(16));
+            Tool.logger(String.fromCodePoint(0x00008da3));
+            Tool.logger('\u{20BB7}');
             return;
             let msg = event.message;
             if(msg.length === 2){

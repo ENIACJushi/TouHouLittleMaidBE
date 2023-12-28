@@ -7,6 +7,8 @@ import { CustomSpellCardManger } from "./src/danmaku/CustomSpellCardManger";
 import * as Tool from"./src/libs/scarletToolKit";
 import { itemShootManager } from "./src/danmaku/ItemShootManager";
 import { MaidManager } from "./src/maid/MaidManager";
+import { Config } from "./src/controller/Config";
+import { MaidSkin } from "./src/maid/MaidSkin";
 
 if(true){
     // World Initialize
@@ -16,6 +18,7 @@ if(true){
             PowerPoint.init_dynamic_properties(e);
             Danmaku.init_dynamic_properties(e);
             MaidManager.init();
+            MaidSkin.initScoreboard();
         });
     });
 
@@ -32,14 +35,17 @@ class thlm {
         // Script Event
         system.afterEvents.scriptEventReceive.subscribe(event => {
             system.run(()=>{
-                Tool.logger(event.sourceEntity.id)
                 switch(event.id){
-                    case "thlm:skin_add":
-                        let infos = event.message.split(",");
-                        let name = infos[0];
-                        let index = parseInt(infos[1]);
-                        Tool.logger(`Name: ${name}, Index: ${index}`);
-
+                    case "thlm:skin_set":
+                        let strList = event.message.split(",");
+                        let numList = [];
+                        for(let str of strList){
+                            Tool.logger(str);
+                            numList.push(parseInt(str));
+                        }
+                        MaidSkin.setSkin(numList);
+                        
+                        Tool.logger(`Add skin: ${numList}`);
                         break;
                     case "thlm:skin_remove":
                         break;

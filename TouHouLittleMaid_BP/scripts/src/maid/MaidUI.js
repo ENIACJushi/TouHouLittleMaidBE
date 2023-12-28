@@ -42,19 +42,13 @@ class MaidMenuSimple {
         let backpack_invisible = EntityMaid.getBackPackInvisible(this.maid);
         let skin_pack_index = EntityMaid.getSkinPack(this.maid);
         let skin_index = EntityMaid.getSkinIndex(this.maid);
-        let skin_pack = MaidSkin.getPack(skin_pack_index)
         let skin_display;
         
         // 轮询测试
         // EntityMaid.setSkinIndex(this.maid, skin_index+1);
         // return;
 
-        if(skin_pack === undefined){
-            skin_display = {text: "无效"}
-        }
-        else{
-            skin_display = MaidSkin.getSkinDisplayName(skin_pack["name"], skin_index)
-        }
+        skin_display = MaidSkin.getSkinDisplayName(skin_pack_index, skin_index)
         const form = new mcui.ActionFormData()
             .title(this.maid_name) // 女仆名，为空则使用默认标题
             .body(`${health.currentValue.toFixed(0)}/${health.defaultValue}`)
@@ -113,27 +107,27 @@ class MaidMenuSimple {
         .body(`模型选择`);
         let skinList = MaidSkin.SkinList;
         for(let i=0; i < MaidSkin.length(); i++){
-            form.button(MaidSkin.getPackDisplayName(skinList[i]["name"]));
+            form.button(MaidSkin.getPackDisplayName(i));
         }
         
         form.show(this.player).then((response) => {
             if(response.selection !== undefined){
-                this.skinindexSelection(skinList[response.selection]);
+                this.skinindexSelection(response.selection);
             }
         });
     }
-    skinindexSelection(pack){
+    skinindexSelection(pack_index){
         const form = new mcui.ActionFormData()
-        .title(MaidSkin.getPackDisplayName(pack["name"])) // 女仆名，为空则使用默认标题
-        .body(MaidSkin.getAuthors(pack["name"]));
+        .title(MaidSkin.getPackDisplayName(pack_index)) // 女仆名，为空则使用默认标题
+        .body(MaidSkin.getAuthors(pack_index));
 
-        for(let i = 0; i < pack["length"]; i++){
-            form.button(MaidSkin.getSkinDisplayName(pack["name"], i));
+        for(let i = 0; i < MaidSkin.SkinList[pack_index]; i++){
+            form.button(MaidSkin.getSkinDisplayName(pack_index, i));
         }
         
         form.show(this.player).then((response) => {
             if(response.selection !== undefined){
-                EntityMaid.setSkinPack(this.maid, pack["index"]);
+                EntityMaid.setSkinPack(this.maid, pack_index);
                 EntityMaid.setSkinIndex(this.maid, response.selection);
             }
         });
@@ -160,22 +154,17 @@ class MaidMenuUI {
         let backpack_invisible = EntityMaid.getBackPackInvisible(this.maid);
         let skin_pack_index = EntityMaid.getSkinPack(this.maid);
         let skin_index = EntityMaid.getSkinIndex(this.maid);
-        let skin_pack = MaidSkin.getPack(skin_pack_index)
         let skin_display;
         
         ///// 生成字符串 /////
         /// 皮肤包字符
-        if(skin_pack === undefined){
-            skin_display = {text: "无效"}
-        }
-        else{
-            skin_display = MaidSkin.getSkinDisplayName(skin_pack["name"], skin_index)
-        }
+        skin_display = MaidSkin.getSkinDisplayName(skin_pack_index, skin_index);
         /// 女仆信息字符(rawtext array)
         let info_str = [];
         // 健康值
         let health_int = health.currentValue.toFixed(0);
         info_str.push({text: `${EntityMaid.Health.toStr(health_int)}  ${health_int}\n`});
+        info_str.push({text: "40/40"})
         // 护甲值
 
         // 模型名
@@ -221,27 +210,27 @@ class MaidMenuUI {
         .body(`模型选择`);
         let skinList = MaidSkin.SkinList;
         for(let i = 0; i < MaidSkin.length(); i++){
-            form.button(MaidSkin.getPackDisplayName(skinList[i]["name"]));
+            form.button(MaidSkin.getPackDisplayName(i));
         }
         
         form.show(this.player).then((response) => {
             if(response.selection !== undefined){
-                this.skinindexSelection(skinList[response.selection]);
+                this.skinindexSelection(response.selection);
             }
         });
     }
-    skinindexSelection(pack){
+    skinindexSelection(pack_id){
         const form = new mcui.ActionFormData()
-        .title(MaidSkin.getPackDisplayName(pack["name"])) // 女仆名，为空则使用默认标题
-        .body(MaidSkin.getAuthors(pack["name"]));
+        .title(MaidSkin.getPackDisplayName(pack_id)) // 女仆名，为空则使用默认标题
+        .body(MaidSkin.getAuthors(pack_id));
 
-        for(let i = 0; i < pack["length"]; i++){
-            form.button(MaidSkin.getSkinDisplayName(pack["name"], i));
+        for(let i = 0; i < MaidSkin.SkinList[pack_id]; i++){
+            form.button(MaidSkin.getSkinDisplayName(pack_id, i));
         }
         
         form.show(this.player).then((response) => {
             if(response.selection !== undefined){
-                EntityMaid.setSkinPack(this.maid, pack["index"]);
+                EntityMaid.setSkinPack(this.maid, pack_id);
                 EntityMaid.setSkinIndex(this.maid, response.selection);
             }
         });

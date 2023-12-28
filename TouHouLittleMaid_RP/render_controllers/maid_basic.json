@@ -16,6 +16,9 @@
 					]
 				}
 			},
+			"part_visibility": [
+				{ "blink": "!q.is_in_ui" }
+			],
 			"geometry": "Array.geos[q.property('thlm:skin_pack')==0?q.property('thlm:skin_index')+1:0]",
 			"materials": [
 				{"*": "Material.default"},
@@ -43,43 +46,13 @@
 					]
 				}
 			},
-			
 			"geometry": "Array.geos[q.property('thlm:backpack_type')]",
 			"materials": [
 				{ "*": "Material.default" }
 			],
 			"textures": [ "Array.skins[q.property('thlm:backpack_type')]" ],
 			"part_visibility": [
-				{ "*": "!q.property('thlm:backpack_invisible')" }
-			]
-		},
-		"controller.render.touhou_little_maid.maid_backpack": {
-			"arrays": {
-				"textures": {
-					"Array.skins": [
-						"Texture.default",
-						"Texture.small",
-						"Texture.middle",
-						"Texture.big"
-					]
-				},
-				"geometries": {
-					"Array.geos":[
-						"Geometry.default",
-						"Geometry.small",
-						"Geometry.middle",
-						"Geometry.big"
-					]
-				}
-			},
-			
-			"geometry": "Array.geos[query.variant]",
-			"materials": [
-				{ "*": "Material.default" }
-			],
-			"textures": [ "Array.skins[query.variant]" ],
-			"part_visibility": [
-				{ "*": "!query.is_baby && !query.is_riding" }
+				{ "*": "!q.is_in_ui && !q.property('thlm:backpack_invisible')" }
 			]
 		},
 		"controller.render.touhou_little_maid.maid.emoji": {
@@ -114,6 +87,35 @@
 					"1 / q.property('emoji:frame_count')"
 				]
 			}
+		},
+		"controller.render.touhou_little_maid.maid_backpack": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.default",
+						"Texture.small",
+						"Texture.middle",
+						"Texture.big"
+					]
+				},
+				"geometries": {
+					"Array.geos":[
+						"Geometry.default",
+						"Geometry.small",
+						"Geometry.middle",
+						"Geometry.big"
+					]
+				}
+			},
+			
+			"geometry": "Array.geos[query.variant]",
+			"materials": [
+				{ "*": "Material.default" }
+			],
+			"textures": [ "Array.skins[query.variant]" ],
+			"part_visibility": [
+				{ "*": "!query.is_baby && !query.is_riding" }
+			]
 		}
 	}
 }
