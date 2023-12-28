@@ -8,10 +8,7 @@
  home模式、跟随模式（用minecraft:is_baby标记）
  空闲模式、近战模式
  三种背包及合成配方、渲染、换包交互（手持背包shift右键）。
- 基本的模型包加载功能：
-    在模型包补充定义entity的模型与材质，注意前缀应该取不容易重复的，比如模型包的名称，然后修改render_controller
-    在主包-资源包的render_controller追加新定义的render_controller
-    在主包-行为包的scripts/data/skin_packs.js补充模型包的信息
+ 模型包加载
 
  声音：
     mob.thlmm.maid.death        自动触发
