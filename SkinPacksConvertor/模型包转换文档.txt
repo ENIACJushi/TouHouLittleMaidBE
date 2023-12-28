@@ -1,0 +1,56 @@
+<name> 命名空间，由文件夹 assets/<name> 指定
+#### 目录对应
+ Java 版模型包
+1√	pack.png	模型包图标
+2√	pack.mcmeta	模型包信息
+3√	assets/<name>/
+4		maid_model.json		模型信息
+5		models/			女仆模型
+6√		textures/entity	女仆贴图
+7√      textures/maid_icon.png  女仆图标
+8		lang/			语言文件
+
+
+ 基岩版模型包
+1-	pack_icon.icon			         模型包主图标，显示在世界资源包页面
+2√	manifest.json			         模型包信息，自动生成
+3	entity/maid.entity.json		   模型信息，整个资源包仅此一份，包含所有模型和材质的定义，对应 4
+4	render_controllers/maid.json	渲染方案，整个资源包仅此一份，但是其内部的定义是每个模型包一个，对应 4
+5	texts/				            语言文件，对应 8
+6	models/entity/<name>/         女仆模型，对应 5, "models/entity" 是固定的，其它文件夹无法被识别
+7√	textures/
+8√		<name>/entity			    女仆贴图，对应 6
+9√		thlm/maid_pack_<i>.png  	模型包图标，在选择模型时显示，对应 1
+
+
+1、模型包图标：改名并移动；
+2、模型包信息：这里包含的信息比较少，不会带到基岩版模型包中；
+4、
+5、转换格式后一并放入 models/entity/<name>/
+6、一并放入 textures/<name>/
+7、女仆图标：改名并移动；
+8、修改文件名后放入 lang/
+
+#### 语言文件
+ Java 版语言文件格式
+    maid_pack.<name>.name=xxx       模型包名称
+    maid_pack.<name>.desc=xxx       模型包描述
+    model.<name>.<model>.name=xxx   模型名称
+ 
+ 基岩版语言文件格式
+    maid_pack.<pack_id>.name=xxx
+    maid_pack.<pack_id>.desc=xxx
+    model.<name>.<model_id>.name=xxx
+ <pack_id> 是网页上显示的序号；
+ <model_id> 由 maid_model.json 中的先后顺序决定
+
+
+#### 导入方法
+1、导入资源包
+2、输入指令
+   /scriptevent thlm:set_pack 100,10,23
+      由 1 开始的模型包中模型的数量。网页会给出指令，并在资源包里生成一个文件。
+      按一个包占 4 位计算，512个包才会超出指令字符限制，所以不考虑包过多的情况。
+
+#### 已知问题
+   jojijoji-2.0.0 maid_model.json格式有问题，需要手动创建新文件，将字符复制过来后替换旧文件。
