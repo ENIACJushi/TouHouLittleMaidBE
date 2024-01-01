@@ -1,52 +1,98 @@
-item.touhou_little_maid:memorizable_gensokyo_1=记忆中的幻想乡 总览 
-me.total_chapter=1
+item.touhou_little_maid:memorizable_gensokyo_1=记忆中的幻想乡 总览
+
+me.total_chapter=2
+
 me.chapter1.page1.title=             §l总览§r
 me.chapter1.title.page=             §7(1/3)§r
 me.chapter1.page1.text=  一个与女仆和东方 Project 有关的模组。 感谢酒石酸菌和雪尼制作的java版TouhouLittleMaid。 感谢酒石酸菌、琥珀酸、帕金伊、天顶乌、天幂、Paulzzh、尤里的猫以及其他美工制作了如此优秀的模型和材质。 感谢 Little Maid Mob 的作者 Verclene。
-
 me.chapter1.page2.title=             §l目录§r
 me.chapter1.page2.text=  东方 Project____________3     女仆妖精_______________4     Power道具______________5     御币与弹幕_____________7     多方块祭坛_____________9
-
 
 me.chapter1.page3.title=§l东方Project§r
 me.chapter1.page3.text1=   东方 Project 是日本同人社团上海爱丽丝幻乐团制作的一系列同人作品，系列以清版弹幕射击游戏为主。
 me.chapter1.page3.text2=  Touhou 百科： https://en.touhouwiki.net/wiki/Touhou_Wiki
-
 
 me.c1.p4.ti=§l女仆妖精§r
 me.c1.p4.t1=   这个模组添加了一种怪物，怪物的掉落物是重要的合成材料。
 me.c1.p4.t2=       
 me.c1.p4.t3=  在任意群系的夜晚生成，会以弹幕攻击玩家。
 
-
 me.c1.p5.ti=§lPower 道具§r
 me.c1.p5.t1=   Power道具是本模组重要的资 源， 通过杀死女仆妖精来获取。 能够用于祭坛合成。
 me.c1.p5.t2=       
-
 me.c1.p6.t1=   也可以在沙漠神殿的箱子里找 到得点道具， 砸在地上可以爆出大 量P点。
 me.c1.p6.t2=   当你手持御币时， 在物品栏上 方就能看到Power值。 Power值最 大为5, 超过此数值不再增长。
-
 
 me.c1.p7.ti=§l御币与弹幕§r
 me.c1.p7.t1=   御币是一个普通的远程武器。可以射出弹幕。
 me.c1.p7.t2=                                                                               
-
 me.c1.p8.t1=   潜行状态下与任意方块交互，即可切换弹种。 同时会收到当前弹 种的提示。
 me.c1.p8.t2=   因技术限制， 由合成台制作的御 币需要先对方块使用一下才能激活。
-
 
 me.c1.p9.ti=§l多方块祭坛§r
 me.c1.p9.t1=   祭坛是本模组用于合成所必需的多方块结构，合成同时还需要玩家的power值。
 me.c1.p9.t2=       
-
 me.c1.p10.t1=   使用御币右击第四层中间偏左的红色羊毛正面，能够构建祭坛。
 me.c1.p10.t2=       
-
 me.c1.p11.t1=   你可以右击六个柱子的顶端来放置物品。在柱子下跳起捡回。当物品完全放置且Power值足够，祭坛就能触发合成。
 me.c1.p11.t2=   因为缺少Power而导致的合成中断，获取足够Power后重新放置任意材料可以触发合成。
 me.c1.p11.t3=   无需担心忘记取下材料，祭坛上的物品是不会自动消失的。
 
-item.touhou_little_maid:memorizable_gensokyo_2=记忆中的幻想乡 合成 
+item.touhou_little_maid:memorizable_gensokyo_2=记忆中的幻想乡 合成
+me.c2.p1.title=             §l合成§r
+me.c2.title.page=             §7(2/3)§r
+me.c2.p1.text=  
+me.c2.p1={"rawtext":[{"text":"\n"},{"translate":"me.c2.p1.title"},{"text":"\n"},{"translate":"me.c2.title.page"},{"text":"\n"},{"translate":"me.c2.p1.text"}]}
+
+me.c2.p2.title=             §l目录§r
+me.c2.p2.text=  §7因配方较多，目录将仅给出顺序。    §r御币（合成）   御币（修复）         女仆（生成）   女仆（复活）        背包         照相机            落雷
+m3.c2.p2={"rawtext":[{"text":"\n"},{"translate":"me.c2.p2.title"},{"text":"\n"},{"translate":"me.c2.p2.text"}]}
+
+me.c2.p3.ti=§l御币（合成）§r
+me.c2.p3.t1=   御币可以在祭坛以更低的代价合成。
+me.c2.p3.t2=                                                                                                §cP:0.15
+me.c2.p3={"rawtext":[{"text":"\n"},{"translate":"me.c2.p3.ti"},{"text":"\n"},{"translate":"me.c2.p3.t1"},{"text":"\n\n\n\n"},{"translate":"me.c2.p3.t2"}]}
+
+me.c2.p4.ti=§l御币（修复）§r
+me.c2.p4.t1=   御币无法被附魔经验修补，但可以消耗P点和纸回满耐久，这种修复没有惩罚。
+me.c2.p4.t2=                                                                                                §cP:0.10
+me.c2.p4={"rawtext":[{"text":"\n"},{"translate":"me.c2.p4.ti"},{"text":"\n"},{"translate":"me.c2.p4.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p4.t2"}]}
+
+me.c2.p5.ti=§l女仆（生成）§r
+me.c2.p5.t1= 
+me.c2.p5.t2=                                                                                                §cP:0.50
+m3.c2.p5={"rawtext":[{"text":"\n"},{"translate":"me.c2.p5.ti"},{"text":"\n"},{"translate":"me.c2.p5.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p5.t2"}]}
+
+me.c2.p6.ti=§l女仆（复活）§r
+me.c2.p6.t1=    
+me.c2.p6.t2=                                                                                                §cP:0.50
+me.c2.p6={"rawtext":[{"text":"\n"},{"translate":"me.c2.p6.ti"},{"text":"\n"},{"translate":"me.c2.p6.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p6.t2"}]}
+
+me.c2.p7.ti=§l背包（小）§r
+me.c2.p7.t1=    
+me.c2.p7.t2=                                                                                                §cP:0.10
+me.c2.p7={"rawtext":[{"text":"\n"},{"translate":"me.c2.p7.ti"},{"text":"\n"},{"translate":"me.c2.p7.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p7.t2"}]}
+
+me.c2.p8.ti=§l背包（中）§r
+me.c2.p8.t1=    
+me.c2.p8.t2=                                                                                                §cP:0.20
+me.c2.p8={"rawtext":[{"text":"\n"},{"translate":"me.c2.p8.ti"},{"text":"\n"},{"translate":"me.c2.p8.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p8.t2"}]}
+
+me.c2.p9.ti=§l背包（大）§r
+me.c2.p9.t1=    
+me.c2.p9.t2=                                                                                                §cP:0.30
+me.c2.p9={"rawtext":[{"text":"\n"},{"translate":"me.c2.p9.ti"},{"text":"\n"},{"translate":"me.c2.p9.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p9.t2"}]}
+
+me.c2.pa.ti=§l照相机§r
+me.c2.pa.t1=    
+me.c2.pa.t2=                                                                                                §cP:0.20
+me.c2.pa={"rawtext":[{"text":"\n"},{"translate":"me.c2.pa.ti"},{"text":"\n"},{"translate":"me.c2.pa.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pa.t2"}]}
+
+me.c2.pb.ti=§l落雷§r
+me.c2.pb.t1=    
+me.c2.pb.t2=                                                                                                §cP:0.20
+me.c2.pb={"rawtext":[{"text":"\n"},{"translate":"me.c2.pb.ti"},{"text":"\n"},{"translate":"me.c2.pb.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pb.t2"}]}
+
 item.touhou_little_maid:memorizable_gensokyo_3=记忆中的幻想乡 女仆 
 
 danmaku.pellet.name=§a点弹
@@ -375,8 +421,7 @@ patchouli.touhou_little_maid:book.entries.maid.maid_task.pages.1.text.name=点�
 patchouli.touhou_little_maid:book.entries.maid.mute_bauble.name.name=禁言饰品
 patchouli.touhou_little_maid:book.entries.maid.mute_bauble.pages.0.text.name=装备上此饰品后，女仆会变得十分安静。
 patchouli.touhou_little_maid:book.entries.maid.naming_eggs.name.name=命名彩蛋
-## patchouli.touhou_little_maid:book.entries.maid.naming_eggs.pages.0.text.name=特殊命名的女仆能够显示特殊模型，默认情况下，使用 $(#ff0000)=>玩家ID$() 命名的女仆能变成该 ID 对应的玩家皮肤模型。$(br2)女仆资源包也可以添加自定义的模型彩蛋，甚至是 SHA1 加密过的模型彩蛋。
-## patchouli.touhou_little_maid:book.entries.maid.naming_eggs.pages.1.text.name=命名为 $(#ff0000)=>Notch$() 的女仆模型。
+
 patchouli.touhou_little_maid:book.entries.maid.spawn_maid.name.name=生成女仆
 patchouli.touhou_little_maid:book.entries.maid.spawn_maid.pages.0.text.name=获取女仆的方式非常特殊，而且必须通过多方块祭坛才能获取。$(br2)因为合成表很有可能会在后续发生改变，所以请查询 JEI 的祭坛标签。$(br2)当在多方块祭坛中成功生成女仆后，你将会得到一个包装着女仆的蛋糕盒。
 patchouli.touhou_little_maid:book.entries.maid.spawn_maid.pages.1.text.name=蛋糕盒右击即可打开，你需要右击三次触发不同的打开阶段，最后蛋糕盒会消失。$(br2)你需要一块蛋糕才能驯服女仆。驯服的物品可在配置文件中进行更改，此处不再累述。$(br2)驯服的女仆和原版宠物行为几乎一致，你可以右击打开她的 GUI。
@@ -403,7 +448,7 @@ patchouli.touhou_little_maid:book.entries.other.chair.name.name=自定义坐垫
 patchouli.touhou_little_maid:book.entries.other.chair.pages.0.text.name=自定义坐垫是纯装饰向的物品，直接右击放置在地上，shift 左击能够打掉它。右击能够坐上，shift 右击可以打开切换坐垫样式的 GUI。
 patchouli.touhou_little_maid:book.entries.other.chair.pages.1.text.name=部分坐垫在女仆靠近时可以直接坐上，shift 右击女仆能够使其离开坐垫。$(br2)坐垫模型也可以完全自定义，也可通过资源包快捷添加自定义模型。
 patchouli.touhou_little_maid:book.entries.other.command.name.name=指令
-## patchouli.touhou_little_maid:book.entries.other.command.pages.0.text.name=$(#f00)/tlm$()：这是本模组提供的指令。$(br2)你可以通过它设置 P 点，女仆数量或者重载模型包。
+
 patchouli.touhou_little_maid:book.entries.other.extinguisher.name.name=灭火器
 patchouli.touhou_little_maid:book.entries.other.extinguisher.pages.0.text.name=配合女仆灭火模式进行使用的物品，玩家无法使用。
 patchouli.touhou_little_maid:book.entries.other.maid_bed.name.name=女仆床
@@ -413,31 +458,6 @@ patchouli.touhou_little_maid:book.entries.other.power_point.name.name=P 点
 patchouli.touhou_little_maid:book.entries.other.power_point.pages.0.text.name=右键丢出，能够掉落实体 P 点。$(br2)你可在地牢战利品箱内发现物品形态的 P 点。
 patchouli.touhou_little_maid:book.entries.other.camera_and_photo.name.name=相机与照片
 patchouli.touhou_little_maid:book.entries.other.camera_and_photo.pages.0.text.name=在跨维度或者远距离携带女仆是一个麻烦的事情，相机就是为此设计的。$(br2)只需要用相机对着自己的女仆拍摄就能将其变成照片，之后拿着照片对着方块右击又可以将其释放出来。
-patchouli.touhou_little_maid:book.entries.overview.gohei_and_danmaku.name.name=御币与弹幕
-patchouli.touhou_little_maid:book.entries.overview.gohei_and_danmaku.pages.0.text.name=御币是一个普通的近战武器。$(br2)手持御币的女仆，在弹幕模式下会发射弹幕。
-patchouli.touhou_little_maid:book.entries.overview.gohei_and_danmaku.pages.1.text.name=御币还是构建多方块祭坛的重要工具。
-patchouli.touhou_little_maid:book.entries.overview.multiblocks_altar.name.name=多方块祭坛
-patchouli.touhou_little_maid:book.entries.overview.multiblocks_altar.pages.0.text.name=祭坛是本模组用于合成所必需的多方块结构。$(br2)祭坛的合成表可以通过 JEI 获取，合成同时还需要玩家的$(l:overview/power_point)power 值$()。
-patchouli.touhou_little_maid:book.entries.overview.multiblocks_altar.pages.1.text.name=使用$(l:overview/gohei_and_danmaku)御币$()右击第四层中间偏左的红色羊毛正面，能够构建祭坛。
-patchouli.touhou_little_maid:book.entries.overview.multiblocks_altar.pages.2.title.name=多方块祭坛
-patchouli.touhou_little_maid:book.entries.overview.multiblocks_altar.pages.3.text.name=你可以右击六个橡木柱子的顶端来放置物品。通过空手 Shift 右击来移除物品。$(br2)当物品完全放置且玩家的 Power 值足够，祭坛就能触发合成。$(br2)因为缺少 Power 而导致的合成中断，在获取足够 Power 以后，再次右击可以重新触发合成。
-patchouli.touhou_little_maid:book.entries.overview.power_point.name.name=Power 道具
-## patchouli.touhou_little_maid:book.entries.overview.power_point.pages.0.text.name=Power 道具是本模组重要的资源，通过杀死$(l:overview/world_spawn#fairy)女仆妖精$()来获取。$(br2)能够用于$(l:overview/multiblocks_altar)祭坛$()合成。
-patchouli.touhou_little_maid:book.entries.overview.power_point.pages.1.text.name=当你手持$(l:overview/gohei_and_danmaku)御币$()时，在游戏屏幕的左上角就能看到 power 值。$(br2)Power 值最大为 5，超过此数值不再增长。
-patchouli.touhou_little_maid:book.entries.overview.what_is_touhou.name.name=东方 Project
-patchouli.touhou_little_maid:book.entries.overview.what_is_touhou.pages.0.text.name=东方 Project 是日本同人社团上海爱丽丝幻乐团制作的一系列同人作品，系列以清版弹幕射击游戏为主。
-patchouli.touhou_little_maid:book.entries.overview.what_is_touhou.pages.0.link_text.name=Touhou 百科
-patchouli.touhou_little_maid:book.entries.overview.world_spawn.name.name=世界生成
-patchouli.touhou_little_maid:book.entries.overview.world_spawn.pages.0.text.name=这个模组添加了一种怪物。$(br2)怪物的掉落物是重要的合成材料。$(br2)本模组敌对性生物的生成几率均可在配置文件中进行修改，设置为 0 时可以禁止这些怪物生成。
-patchouli.touhou_little_maid:book.entries.overview.world_spawn.pages.1.text.name=在任意群系的夜晚生成，会以飞行状态弹幕攻击玩家和女仆。
-patchouli.touhou_little_maid:book.entries.overview.make_custom_model.name.name=制作自定义模型
-patchouli.touhou_little_maid:book.entries.overview.make_custom_model.pages.0.text.name=制作一个自定义模型包非常简单，你只需要 Blockbech。 Blockbench 是一个免费开源的软件，而且非常易于上手。
-patchouli.touhou_little_maid:book.entries.overview.make_custom_model.pages.1.text.name=我特意设计了一个 Blockbench 插件用于制作模型包，访问下方链接学习如何安装此插件。
-patchouli.touhou_little_maid:book.entries.overview.make_custom_model.pages.1.link_text.name=打开链接
-patchouli.touhou_little_maid:book.entries.overview.download_custom_model.name.name=下载自定义模型
-patchouli.touhou_little_maid:book.entries.overview.download_custom_model.pages.1.text.name=你可以在女仆 GUI 下找到模型包下载按钮。
-patchouli.touhou_little_maid:book.entries.overview.download_custom_model.pages.2.text.name=点击即可打开下载界面，选择并下载你喜欢的模型包。$(br2)这些模型包全部由玩家制作。如果你也想发布自己的模型包，你可以点击下方链接加入我们的 Discord 群组来提交你的模型包。
-patchouli.touhou_little_maid.book.entries.overview.download_custom_model.pages.2.link_text=Discord 链接
 
 
 ##### 东方模型包 #####

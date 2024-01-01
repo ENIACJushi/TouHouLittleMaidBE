@@ -1,0 +1,66 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.touhou_little_maid.maid.beg": {
+			"loop": true,
+			"bones": {
+				"head": {
+					"rotation": [0, 0, "query.is_interested?6:0"],
+					"position": [0, "query.is_interested?-0.1:0", 0]
+				},
+				"hair": {
+					"rotation": [0, 0, "query.is_interested?-6:0"],
+					"position": [0, "query.is_interested?0.2:0", 0]
+				}
+			}
+		},
+		"animation.touhou_little_maid.maid.sit": {
+			"loop": true,
+			"bones": {
+				"body": {
+					"position": [0, -7, 0]
+				},
+				"armLeft": {
+					"rotation": [-50.60796, 20.86371, 14.12716],
+					"position": [0, -7, 0]
+				},
+				"LeftForeArm": {
+					"rotation": [-60.94031, 19.61291, -8.71337],
+					"position": [0, 0, 0]
+				},
+				"armRight": {
+					"rotation": [-53.54725, -27.24469, -9.67384],
+					"position": [0, -7, 0]
+				},
+				"RightForeArm": {
+					"rotation": [-47.5, 0, 0],
+					"position": [0, 0, 0]
+				},
+				"legLeft": {
+					"rotation": [-76.18803, -4.56361, -11.06107],
+					"position": [0, -7, 0]
+				},
+				"LeftLowerLeg": {
+					"rotation": [105, 0, 0],
+					"position": [0, 0, 0]
+				},
+				"LeftFoot": {
+					"rotation": [37.5, 0, 0],
+					"position": [0, 0, 0]
+				},
+				"legRight": {
+					"rotation": [-76.26839, 3.50905, 10.2682],
+					"position": [0, -7, 0]
+				},
+				"head": {
+					"rotation": [-7.5, 0, 0],
+					"position": [0, -7.3, 0]
+				},
+				"sittingRotationSkirt": {
+					"rotation": [-37.5, 0, 0],
+					"position": [0, 0.5, 0.8]
+				}
+			}
+		}
+	}
+}

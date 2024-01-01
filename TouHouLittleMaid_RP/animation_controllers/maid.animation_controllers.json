@@ -1,0 +1,27 @@
+{
+	"format_version" : "1.10.0",
+	"animation_controllers" : {
+		"controller.animation.touhou_little_maid.sitting" : {
+			"initial_state" : "default",
+			"states" : {
+				"default" : {
+					"transitions" : [
+						{
+							"sitting" : "query.is_sitting"
+						}
+					],
+					"blend_transition": 0.375
+				},
+				"sitting" : {
+					"animations" : [ "sit" ],
+					"transitions" : [
+						{
+							"default" : "!query.is_sitting"
+						}
+					],
+					"blend_transition": 0.375
+				}
+			}
+		}
+	}
+}

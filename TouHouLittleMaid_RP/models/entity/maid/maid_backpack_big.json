@@ -12,7 +12,12 @@
 			},
 			"bones": [
 				{
+					"name": "body",
+					"pivot": [0, 0, 0]
+				},
+				{
 					"name": "backpack",
+					"parent": "body",
 					"pivot": [0, 0, 0],
 					"cubes": [
 						{"origin": [-4.95, 10, 0], "size": [10, 5, 10], "uv": [88, 45], "mirror": true},

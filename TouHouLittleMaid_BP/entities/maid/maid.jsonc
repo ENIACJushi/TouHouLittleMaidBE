@@ -210,7 +210,7 @@
       ///// 工作模式 /////
       "mode:idle":{
         "minecraft:behavior.panic": {
-          "priority": 1,
+          "priority": 4,
           "speed_multiplier": 1.25
         }
       },
