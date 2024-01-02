@@ -96,12 +96,12 @@ export class MaidBackpack{
         // 设置关系
         if(maid!==undefined){
             MaidBackpack.setMaidID(backpack, maid.id);
-            let ownerID = EntityMaid.getOwnerID(maid);
+            let ownerID = EntityMaid.Owner.getID(maid);
             if(ownerID !== undefined){
                 MaidBackpack.setOwnerID(backpack, ownerID);
             }
 
-            EntityMaid.setBackpackID(maid, backpack.id);
+            EntityMaid.Backpack.setID(maid, backpack.id);
         }
         return backpack;
     }

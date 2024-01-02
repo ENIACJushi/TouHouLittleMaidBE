@@ -80,12 +80,18 @@ export class MaidSkin{
     /**
      * 获取皮肤包的描述
      * @param {number} id 
-     * @param {object}
      */
     static getPackDesc(id){
         return {translate: `maid_pack.${id}.desc`}
     }
-
+    /**
+     * 获取皮肤包的图标
+     * @param {number} id 
+     * @return {string} 图标路径
+     */
+    static getPackIcon(id){
+        return `textures/thlm/pack_pack_${id}.png`
+    }
     /** 
      * 由展示顺序获取皮肤包的所有数据
      * @param {number} index 展示顺序

@@ -1,6 +1,7 @@
 import { Player, world, system, Enchantment, ItemEnchantsComponent } from "@minecraft/server"
 import * as Tool from"./src/libs/scarletToolKit";
 import * as mcui from "@minecraft/server-ui"
+import { StrMaid } from "./src/maid/StrMaid";
 
 export default class experiment {
     static main(){
@@ -29,9 +30,25 @@ export default class experiment {
             let player = event.sender;
             // 显示字符ASCII码
             // Tool.logger('􀐏'.charCodeAt(0).toString(16));
-            Tool.logger('一'.charCodeAt(0).toString(16));
-            Tool.logger(String.fromCodePoint(0x00008da3));
-            Tool.logger('\u{20BB7}');
+            // Tool.logger('一'.charCodeAt(0).toString(16));
+            // Tool.logger(String.fromCodePoint(0x00008da3));
+            // Tool.logger('\u{20BB7}');
+            let info = ""
+            info = StrMaid.Owner.setID(info, "-987842477023");
+            info = StrMaid.Health.set(info, 9961, 65535)
+            info = StrMaid.Skin.set(info, 0, 10);
+            info = StrMaid.Work.set(info, 6);
+            info = StrMaid.backpackInvisibility.set(info, true);
+
+            Tool.logger(info);
+            Tool.logger(`OwnerID:${StrMaid.Owner.getId(info)}`);
+            let health = StrMaid.Health.get(info);
+            Tool.logger(`Health:${health.current},${health.max}`);
+            let skin = StrMaid.Skin.get(info);
+            Tool.logger(`Skin:${skin.pack},${skin.index}`);
+            Tool.logger(`Work:${StrMaid.Work.get(info)}`);
+            Tool.logger(`backpackInvisibility:${StrMaid.backpackInvisibility.get(info)}`);
+
             return;
             let msg = event.message;
             if(msg.length === 2){

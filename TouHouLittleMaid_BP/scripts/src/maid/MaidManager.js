@@ -15,6 +15,7 @@ import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
 import { MaidBackpack } from "./MaidBackpack";
 import { config } from '../../data/config'
+import { StrMaid } from "./StrMaid";
 
 const HOME_RADIUS=25;
 
@@ -39,7 +40,7 @@ export class MaidManager{
                 if(rider === undefined){
                     // 生成背包
                     var backpack = MaidBackpack.create(maid, MaidBackpack.default, maid.dimension, maid.location);
-                    EntityMaid.setBackpackID(maid, backpack.id);
+                    EntityMaid.Backpack.setID(maid, backpack.id);
 
                     // 背上背包   无效：rideable.addRider(backpack);
                     maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
@@ -55,7 +56,7 @@ export class MaidManager{
      */
     static onDeathEvent(event){
         let maid = event.entity;
-        let backpack = EntityMaid.getBackpackEntity(maid);
+        let backpack = EntityMaid.Backpack.getEntity(maid);
         let lore = EntityMaid.toLore(maid);
         let output_item = new ItemStack("touhou_little_maid:film", 1);
         output_item.setLore(lore);
@@ -97,7 +98,7 @@ export class MaidManager{
     static onSmartSlabRecycleEvent(event){
         let maid = event.entity;
         // 获取魂符物品
-        let owner = EntityMaid.getOwner(maid);
+        let owner = EntityMaid.Owner.get(maid);
         if(owner === undefined) return;
         let item = Tool.getPlayerMainHand(owner);
         if(item === undefined || item.typeId !== "touhou_little_maid:smart_slab_empty") return;
@@ -116,10 +117,22 @@ export class MaidManager{
 
     /**
      * 照片使用事件
+     * 当照片无 lore 或 使用者不为主人时，使用失败
      * @param {ItemDefinitionTriggeredBeforeEvent} event 
      */
     static photoOnUseEvent(event){
-        EntityMaid.fromItem(event.itemStack, event.source.dimension, event.source.location);
+        let lore = event.itemStack.getLore();
+        if(lore.length === 0) return; // 无lore
+        let str="";
+        for(let temp of lore){
+            str += temp;
+        }
+        if(StrMaid.Owner.getId(str) !== event.source.id){
+            // 使用者不是主人
+            return;
+        }
+
+        EntityMaid.fromStr(str, event.source.dimension, event.source.location);
         Tool.setPlayerMainHand(event.source);
     }
     /**
@@ -128,13 +141,22 @@ export class MaidManager{
      */
     static smartSlabOnUseEvent(event){
         let item = event.itemStack;
+        let lore = item.getLore();
         // 生成女仆
-        if(item.getLore().length === 0){
+        if(lore.length === 0){
             // 首次使用
             EntityMaid.spawnRandomMaid(event.source.dimension, event.source.location);
         }
         else{
-            EntityMaid.fromItem(event.itemStack, event.source.dimension, event.source.location);
+            let str="";
+            for(let temp of lore){
+                str += temp;
+            }
+            if(StrMaid.Owner.getId(str) !== event.source.id){
+                // 使用者不是主人
+                return;
+            }
+            EntityMaid.fromStr(str, event.source.dimension, event.source.location);
         }
         // 转换物品
         Tool.setPlayerMainHand(event.source, new ItemStack("touhou_little_maid:smart_slab_empty", 1));
@@ -153,10 +175,10 @@ export class MaidManager{
         // 寻主成功
         if(results.length == 1){
             let maid = event.entity;
-            let backpack = EntityMaid.getBackpackEntity(event.entity);
+            let backpack = EntityMaid.Backpack.getEntity(event.entity);
 
             maid.triggerEvent("api:follow_on_tame_over");
-            EntityMaid.setOwnerID(maid, results[0].id);
+            EntityMaid.Owner.setID(maid, results[0].id);
             MaidBackpack.setOwnerID(backpack, results[0].id);
         }
     }
@@ -167,7 +189,7 @@ export class MaidManager{
     static onInteractEvent(event){
         let maid = event.entity;
         // Search for owner
-        let pl_id = EntityMaid.getOwnerID(maid);
+        let pl_id = EntityMaid.Owner.getID(maid);
         if(pl_id!==undefined){
             let pl = world.getEntity(pl_id);
             // Send form
@@ -204,7 +226,7 @@ export class MaidManager{
      */
     static sitModeEvent(event){
         let maid = event.entity;
-        let bag = EntityMaid.getBackpackEntity(maid);
+        let bag = EntityMaid.Backpack.getEntity(maid);
         MaidBackpack.hide(bag);
     }
     /**
@@ -213,7 +235,7 @@ export class MaidManager{
      */
     static inventoryModeEvent(event){
         let maid = event.entity;
-        let bag = EntityMaid.getBackpackEntity(maid);
+        let bag = EntityMaid.Backpack.getEntity(maid);
         // bag.nameTag = maid.nameTag===""?"entity.touhou_little_maid:maid.name":maid.nameTag;
         MaidBackpack.show(bag);
     }
