@@ -148,6 +148,29 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'B', str);
         }
     }
+    // 拾物模式 P
+    static Pick = {
+        /**
+         * 获取模式
+         * @param {string} maidStr
+         * @returns {boolean|undefined}
+         */
+        get(maidStr){
+            let str = StrHelper.getValue(maidStr, 'P', 1);
+            if(str === undefined) return undefined;
+            return StrHelper.str2bool(str);
+        },
+        /**
+         * 设置模式
+         * @param {string} maidStr
+         * @param {boolean} value
+         * @returns {string} New Maid String
+         */
+        set(maidStr, value){
+            let str = StrHelper.bool2str(value);
+            return StrHelper.setValue(maidStr, 'P', str);
+        }
+    }
 }
 
 class StrHelper{

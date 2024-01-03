@@ -37,6 +37,7 @@ class MaidMenuSimple {
         let health    = EntityMaid.Health.getComponent(this.maid);
         let work_type = EntityMaid.Work.get(this.maid);
         let home_mode = EntityMaid.Home.getMode(this.maid);
+        let mode_pick = EntityMaid.Pick.get(this.maid);
         let backpack_invisible = EntityMaid.Backpack.getInvisible(this.maid);
         let skin_pack_index    = EntityMaid.Skin.getPack(this.maid);
         let skin_index         = EntityMaid.Skin.getIndex(this.maid);
@@ -57,6 +58,7 @@ class MaidMenuSimple {
                 EntityMaid.Work.getIMG(work_type)) // 切换工作模式 | 当前模式
             .button({ translate: EntityMaid.Home.getLang(home_mode)}, EntityMaid.Home.getImg(home_mode)) //home 模式
             .button(backpack_invisible?"显示背包":"隐藏背包", MaidBackpack.getButtonImg(backpack_invisible))
+            .button("拾物模式 | "+(mode_pick?"开":"关"), EntityMaid.Pick.getImg(mode_pick))
             .button({rawtext:[{text: "选择模型"},{text: " | "},skin_display]}, MaidSkin.getPackIcon(skin_pack_index))
 
         form.show(this.player).then((response) => {
@@ -73,6 +75,10 @@ class MaidMenuSimple {
                     // 这里不返回主菜单，直接退出
                     break;
                 case 3:
+                    EntityMaid.Pick.set(this.maid, !mode_pick);
+                    system.runTimeout(()=>{this.main()},1);
+                    break;
+                case 4:
                     this.skinpackSelection();
                     break;
                 default:

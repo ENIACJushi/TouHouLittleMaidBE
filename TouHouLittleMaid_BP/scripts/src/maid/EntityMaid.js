@@ -169,8 +169,21 @@ export class EntityMaid{
     }
     // 拾物模式
     static Pick = {
-        switchMode(maid){
-            
+        /**
+         * 设置模式
+         * @param {Entity} maid 
+         * @param {boolean} value
+         */
+        set(maid, value){
+            maid.triggerEvent(value?"api:mode_pick":"api:mode_quit_pick");
+        },
+        /**
+         * 获取模式
+         * @param {Entity} maid 
+         * @returns 
+         */
+        get(maid){
+            return maid.getComponent("minecraft:is_charged");
         },
         getImg(is_open){
             return is_open?"textures/gui/pick_activate.png":"textures/gui/pick_deactivate.png"
@@ -469,6 +482,8 @@ export class EntityMaid{
         maidStr = StrMaid.Skin.set(maidStr, this.Skin.getPack(maid),this.Skin.getIndex(maid))
         // 工作模式
         maidStr = StrMaid.Work.set(maidStr, this.Work.get(maid));
+        // 拾物模式
+        maidStr = StrMaid.Pick.set(maidStr, this.Pick.get(maid));
         // 背包是否隐藏
         maidStr = StrMaid.backpackInvisibility.set(maidStr, this.Backpack.getInvisible(maid));
         /**
@@ -542,7 +557,9 @@ export class EntityMaid{
         this.Skin.setPack(maid, skin.pack);
         this.Skin.setIndex(maid, skin.index);
         // 工作模式
-        
+        this.Work.set(maid, StrMaid.Work.get(maidStr));
+        // 拾物模式
+        this.Pick.set(maid, StrMaid.Pick.get(maidStr));
         // 背包是否隐藏
         this.Backpack.setInvisible(maid, StrMaid.backpackInvisibility.get(maidStr));
         return maid;
