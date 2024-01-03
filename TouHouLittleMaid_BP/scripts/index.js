@@ -164,15 +164,15 @@ class thlm {
                         // 女仆专用事件
                         case "m":
                             switch(event.id.substring(6)){
-                                case "d": MaidManager.onDeathEvent(event); break; // Death
-                                case "f": MaidManager.onTameFollowSuccess(event); break; // Follow on tamed
-                                case "h": MaidManager.returnHomeEvent(event); break; // Home
-                                case "i": MaidManager.inventoryModeEvent(event); break; // Inventory mode
-                                case "m": MaidManager.onInteractEvent(event); break; // Master interact
-                                case "p": MaidManager.onPhotoEvent(event); break; // Photo
-                                case "s": MaidManager.sitModeEvent(event); break; // Sit mode
-                                case "t": MaidManager.timerEvent(event); break; // Timer
-                                case "0": MaidManager.onSpawnEvent(event); break; // 0 Spawn
+                                case "d": MaidManager.onDeathEvent(event); break;        // d Death
+                                case "f": MaidManager.onTameFollowSuccess(event); break; // f Follow on tamed
+                                case "h": MaidManager.returnHomeEvent(event); break;     // h Home
+                                case "i": MaidManager.inventoryModeEvent(event); break;  // i Inventory mode
+                                case "m": MaidManager.onInteractEvent(event); break;     // m Master interact
+                                case "p": MaidManager.onPhotoEvent(event); break;        // p Photo
+                                case "s": MaidManager.sitModeEvent(event); break;        // s Sit mode
+                                case "t": MaidManager.timerEvent(event); break;          // t Timer
+                                case "0": MaidManager.onSpawnEvent(event); break;        // 0 Spawn
                                 case "1": MaidManager.onSmartSlabRecycleEvent(event); break;// 1 Smart slab
                                 default: break;
                             }

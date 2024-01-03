@@ -159,7 +159,7 @@
       
       ///// 背包类别 /////
       "backpack:default":{
-        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": false}
+        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": true}
       },
       "backpack:small":{
         "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 12, "private": true}
@@ -385,7 +385,8 @@
           "component_groups": [
             "thlmm:maid_wild",
             "environment:simple",
-            "sound:ambient_mute"
+            "sound:ambient_mute",
+            "backpack:default"
           ]
         },
         "trigger": "thlmm:0"
@@ -474,7 +475,7 @@
       "api:backpack_big"     :{ "add":{"component_groups":["backpack:big"    ]}, "set_property":{"thlm:backpack_type": 3}},
       "api:backpack_invisible"     :{ "set_property":{"thlm:backpack_invisible": true } },
       "api:backpack_quit_invisible":{ "set_property":{"thlm:backpack_invisible": false} },
-
+      
       ///// 环境变化 /////
       "environment:simple":{
         "set_property":{"environment:status": 0}

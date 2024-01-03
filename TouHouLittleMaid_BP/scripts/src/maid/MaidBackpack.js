@@ -227,7 +227,7 @@ export class MaidBackpack{
     }
     ///// SET /////
     /**
-     * 设置类型
+     * 设置类型 女仆自身容器的类型也会随之转换
      * @param {Entity} backpack 
      * @param {MaidBackpack} type
      * @returns {boolean}

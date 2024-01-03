@@ -242,6 +242,13 @@ export class MaidManager{
     static sitModeEvent(event){
         let maid = event.entity;
         let bag = EntityMaid.Backpack.getEntity(maid);
+        EntityMaid.dumpEntityBackpack(maid);// 转储
+        // 恢复先前的拾物模式
+        if(maid.getDynamicProperty("temp_pick")){
+            // 因为此时必定是关闭状态，所以只有先前为开时需要设置
+            EntityMaid.Pick.set(maid, true);
+        }
+
         MaidBackpack.hide(bag);
     }
     /**
@@ -251,6 +258,12 @@ export class MaidManager{
     static inventoryModeEvent(event){
         let maid = event.entity;
         let bag = EntityMaid.Backpack.getEntity(maid);
+
+        let pick = EntityMaid.Pick.get(maid);
+        maid.setDynamicProperty("temp_pick", pick);
+        if(pick) EntityMaid.Pick.set(maid, false);
+
+        EntityMaid.dumpMaidBackpack(maid);// 转储 女仆→背包实体
         // bag.nameTag = maid.nameTag===""?"entity.touhou_little_maid:maid.name":maid.nameTag;
         MaidBackpack.show(bag);
     }

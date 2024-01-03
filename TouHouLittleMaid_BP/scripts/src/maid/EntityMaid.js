@@ -11,9 +11,10 @@ export class EntityMaid{
      */
     static initDynamicProperties(event){
         let def = new DynamicPropertiesDefinition();
-        def.defineNumber("heal_step", 0);  // 治疗步数
+        def.defineNumber("heal_step", 0);          // 治疗步数
         def.defineVector("home", {x:0, y:0, z:0}); // 家位置
-        def.defineNumber("home_dim", 0);   // 家维度
+        def.defineNumber("home_dim", 0);           // 家维度
+        def.defineBoolean("temp_pick", false);     // 转储背包时临时记录拾取模式的属性
         event.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get("thlmm:maid"));
     }
     // 主人
@@ -180,10 +181,11 @@ export class EntityMaid{
         /**
          * 获取模式
          * @param {Entity} maid 
-         * @returns 
+         * @returns {boolean}
          */
         get(maid){
-            return maid.getComponent("minecraft:is_charged");
+            Tool.logger(maid.getComponent("minecraft:is_charged"))
+            return maid.getComponent("minecraft:is_charged")!==undefined;
         },
         getImg(is_open){
             return is_open?"textures/gui/pick_activate.png":"textures/gui/pick_deactivate.png"
@@ -460,6 +462,58 @@ export class EntityMaid{
             return maid.setProperty("thlm:backpack_invisible", value);
         }
     }
+    /**
+     * 将女仆背包的内容转移到实体背包
+     * 若实体背包内存在物品，则将其丢弃
+     * @param {Entity} maid 
+     * @returns 
+     */
+    static dumpMaidBackpack(maid){
+        let backpack = this.Backpack.getContainer(maid);
+        if(backpack === undefined) return false;
+        
+        let maidContainer = maid.getComponent("inventory").container;
+        for(let i = 0; i < maidContainer.size; i++){
+            let maidItem = maidContainer.getItem(i);
+            if(maidItem !== undefined){
+                // 若实体背包内存在物品，则将其丢弃
+                let backpackItem = backpack.getItem(i);
+                if(backpackItem !== undefined){
+                    maid.dimension.spawnItem(backpackItem, maid.location);
+                    backpack.setItem(i);
+                }
+                // 将女仆背包的内容转移到实体背包
+                backpack.setItem(i, maidItem);
+                maidContainer.setItem(i);
+            }
+        }
+        return true;
+    }
+    /**
+     * 将实体背包内容转移到女仆背包
+     * 若女仆背包内存在物品，则将其丢弃
+     * @param {Entity} maid
+     * @returns 
+     */
+    static dumpEntityBackpack(maid){
+        let backpack = this.Backpack.getContainer(maid);
+        if(backpack === undefined) return false;
+        
+        let maidContainer = maid.getComponent("inventory").container;
+        for(let i = 0; i < maidContainer.size; i++){
+            let backpackItem = backpack.getItem(i);
+            if(backpackItem !== undefined){
+                let maidItem = maidContainer.getItem(i);
+                if(maidItem !== undefined){
+                    maid.dimension.spawnItem(maidItem, maid.location);
+                    maidContainer.setItem(i);
+                }
+                maidContainer.setItem(i, backpackItem);
+                backpack.setItem(i);
+            }
+        }
+        return true;
+    }
     
     /// 字符化
     /**
@@ -616,41 +670,7 @@ export class EntityMaid{
         }
         return lore;
     }
-    
-    /**
-     * 将lore转为女仆  由照片、魂符放出的女仆不会回满血
-     * @param {string} lore
-     * @param {Dimension} dimension
-     * @param {Vector} location 
-     * @param {boolean} [set_health=false]
-     * @returns {Entity|undefined} maid
-     */
-    static fromLore(lore, dimension, location, set_health=false){
-        /**
-         * 解析lore
-         */
-        let str="";
-        for(let temp of lore){
-            str += temp;
-        }
-        return this.fromStr(str, dimension, location , set_health);
-    }
-    /**
-     * 将物品转为女仆
-     * @param {ItemStack} item
-     * @param {Dimension} dimension
-     * @param {Vector} location 
-     * @param {boolean} [set_health=false]
-     * @returns {Entity|undefined} maid
-     */
-    static fromItem(item, dimension, location, set_health=false){
-        let lore = item.getLore();
-        if(lore.length > 0){
-            return EntityMaid.fromLore(lore, dimension, location, set_health);
-        }
-        return undefined;
-    }
-    
+
     /// 其它
     /**
      * 播放声音

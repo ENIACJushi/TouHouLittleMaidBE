@@ -72,8 +72,7 @@
         },
         "minecraft:damage_sensor": {
           "triggers": [
-            { 
-              "cause": "all",
+            {
               "on_damage": {
                 "filters": {
                   "all_of": [
@@ -83,6 +82,10 @@
                 "event": "thlmb:g",
                 "target": "self"
               },
+              "deals_damage": false
+            },
+            {
+              "cause": "all",
               "deals_damage": false
             }
           ]
