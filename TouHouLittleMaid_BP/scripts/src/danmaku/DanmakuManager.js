@@ -12,6 +12,7 @@ import {DanmakuColor}  from "./DanmakuColor";
 import {DanmakuType}   from "./DanmakuType";
 import {EntityDanmaku} from "./EntityDanmaku";
 import {DanmakuShoot}  from "./DanmakuShoot";
+import { EntityMaid } from "../maid/EntityMaid";
 
 /**
  * 初始化动态属性
@@ -20,7 +21,7 @@ import {DanmakuShoot}  from "./DanmakuShoot";
 export function init_dynamic_properties(e){
     let def = new DynamicPropertiesDefinition();
     def.defineString("source", 15, "0"); // Entity id
-    def.defineNumber("damage", 6);
+    def.defineNumber("damage", 6); // 伤害
 
     for(let i=1; i<=DanmakuType.AMOUNT; i++){
         e.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get(DanmakuType.getEntityName(i)));
@@ -75,9 +76,12 @@ export function danmakuHitEntityEvent(ev){
     let hit_info = ev.getEntityHit()
     if(hit_info != null){
         // Get source entity by event or property
-        // let damageOptions = {"damagingProjectile": projectile}; // 弹射物
-        let damageOptions = {"cause" : EntityDamageCause.magic} // 魔法
+        // let damageOptions = {"damagingProjectile": projectile}; // 弹射物伤害
+        let damageOptions = {"cause" : EntityDamageCause.magic} // 魔法伤害
         let source = ev.source;
+        let target = hit_info.entity;
+        let danmaku = ev.projectile;
+
         if(source == undefined){
             // 没有原版框架下的攻击实体，则通过动态属性寻找
             let id = projectile.getDynamicProperty("source");
@@ -86,15 +90,28 @@ export function danmakuHitEntityEvent(ev){
             }
         }
         if(source != undefined) damageOptions["damagingEntity"] = source;
-        // Do not hit source
+        // 不伤害自己
         if(hit_info.entity.id == source.id){
             return;
         }
-        // Hit other entities
-        else{
-            hit_info.entity.applyDamage(projectile.getDynamicProperty("damage"), damageOptions);
-            projectile.triggerEvent("despawn");
+        // 不伤害自己的女仆
+        if(target.typeId==="thlmm:maid"){
+            if(EntityMaid.Owner.getID(target) === danmaku.getDynamicProperty("source")){
+                return;
+            }
         }
+        // 不伤害自己的坐骑
+        let rideable = target.getComponent("minecraft:rideable");
+        if(rideable !== undefined){
+            for(let entity of rideable.getRiders()){
+                if(entity.id === danmaku.getDynamicProperty("source")){
+                    return;
+                }
+            }
+        }
+        // 免伤失败，施加伤害
+        hit_info.entity.applyDamage(projectile.getDynamicProperty("damage"), damageOptions);
+        projectile.triggerEvent("despawn");
     }
 
 }
