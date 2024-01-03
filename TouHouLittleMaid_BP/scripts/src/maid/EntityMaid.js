@@ -1,10 +1,21 @@
-import { Entity,world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack } from "@minecraft/server";
+import { Entity, EntityTypes, world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack, DynamicPropertiesDefinition, WorldInitializeAfterEvent } from "@minecraft/server";
 import { MaidBackpack } from "./MaidBackpack";
 import * as Tool from "../libs/scarletToolKit"
 import { config } from '../../data/config'
 import { StrMaid } from "./StrMaid";
 
 export class EntityMaid{
+    /**
+     * 初始化动态属性
+     * @param {WorldInitializeAfterEvent} event 
+     */
+    static initDynamicProperties(event){
+        let def = new DynamicPropertiesDefinition();
+        def.defineNumber("heal_step", 0);  // 治疗步数
+        def.defineVector("home", {x:0, y:0, z:0}); // 家位置
+        def.defineNumber("home_dim", 0);   // 家维度
+        event.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get("thlmm:maid"));
+    }
     // 主人
     static Owner = {
         /**
@@ -350,21 +361,30 @@ export class EntityMaid{
          */
         setLocation(maid){
             let l = maid.location;
-            maid.setProperty("thlm:home_x", Math.ceil(l.x));
-            maid.setProperty("thlm:home_y", Math.ceil(l.y));
-            maid.setProperty("thlm:home_z", Math.ceil(l.z));
-            maid.setProperty("thlm:home_dim", Tool.dim_string2int(maid.dimension.id));
+            maid.setDynamicProperty("home", {x: Math.ceil(l.x), y:Math.ceil(l.y), z:Math.ceil(l.z)});
+            maid.setDynamicProperty("home_dim", Tool.dim_string2int(maid.dimension.id));
+            // maid.setProperty("thlm:home_x", Math.ceil(l.x));
+            // maid.setProperty("thlm:home_y", Math.ceil(l.y));
+            // maid.setProperty("thlm:home_z", Math.ceil(l.z));
+            // maid.setProperty("thlm:home_dim", Tool.dim_string2int(maid.dimension.id));
         },
         /**
          * 获取家的位置
          * @param {Entity} maid 
-         * @returns {number[]}
+         * @returns {number[]|undefined}
          */
         getLocation(maid){
-            return [maid.getProperty("thlm:home_x"), 
-                    maid.getProperty("thlm:home_y"),
-                    maid.getProperty("thlm:home_z"),
-                    Tool.dim_int2string(maid.getProperty("thlm:home_dim"))];
+            // let x = maid.getProperty("thlm:home_x");
+            // let y = maid.getProperty("thlm:home_y")
+            // let z = maid.getProperty("thlm:home_z");
+            // let dim = maid.getProperty("thlm:home_dim");
+            let location = maid.getDynamicProperty("home");
+            let x = location.x;
+            let y = location.y;
+            let z = location.z;
+            let dim = maid.getDynamicProperty("home_dim");
+            if(x===0 && y===0 && z===0 && dim===0) return undefined;
+            return [x, y, z, Tool.dim_int2string(maid.getProperty("thlm:home_dim"))];
         }
     }    
     // 背包 只记录是否可见

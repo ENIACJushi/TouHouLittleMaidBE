@@ -192,7 +192,7 @@ class StrHelper{
      */
     static int2str(num){
         let high8 = Math.floor(num / 0x100)
-        let low8 = num % 0x100
+        let low8 = Math.floor(num % 0x100)
         return String.fromCodePoint(0xA000 + high8) + String.fromCodePoint(0xA000 + low8);
     }
     /**

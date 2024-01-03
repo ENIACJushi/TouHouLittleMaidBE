@@ -9,16 +9,21 @@ import { itemShootManager } from "./src/danmaku/ItemShootManager";
 import { MaidManager } from "./src/maid/MaidManager";
 import { Config } from "./src/controller/Config";
 import { MaidSkin } from "./src/maid/MaidSkin";
+import { EntityMaid } from "./src/maid/EntityMaid";
 
 if(true){
     // World Initialize
     world.afterEvents.worldInitialize.subscribe((e) => {
         system.run(()=>{
             PowerPoint.init_scoreboard_world();
+
             PowerPoint.init_dynamic_properties(e);
             Danmaku.init_dynamic_properties(e);
+            EntityMaid.initDynamicProperties(e);
+            
             MaidManager.init();
             MaidSkin.initScoreboard();
+            
         });
     });
 
@@ -166,6 +171,7 @@ class thlm {
                                 case "m": MaidManager.onInteractEvent(event); break; // Master interact
                                 case "p": MaidManager.onPhotoEvent(event); break; // Photo
                                 case "s": MaidManager.sitModeEvent(event); break; // Sit mode
+                                case "t": MaidManager.timerEvent(event); break; // Timer
                                 case "0": MaidManager.onSpawnEvent(event); break; // 0 Spawn
                                 case "1": MaidManager.onSmartSlabRecycleEvent(event); break;// 1 Smart slab
                                 default: break;

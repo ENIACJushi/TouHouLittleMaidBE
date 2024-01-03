@@ -9,7 +9,7 @@
  *  thlmm:<女仆id>
  *  thlmo:<主人生物id>
  */
-import { ItemStack, world, Entity,Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system } from "@minecraft/server";
+import { ItemStack, world, Entity,Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, System } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
@@ -132,7 +132,8 @@ export class MaidManager{
             return;
         }
 
-        EntityMaid.fromStr(str, event.source.dimension, event.source.location);
+        let maid = EntityMaid.fromStr(str, event.source.dimension, event.source.location);
+        maid.triggerEvent("api:reborn");
         Tool.setPlayerMainHand(event.source);
     }
     /**
@@ -156,7 +157,8 @@ export class MaidManager{
                 // 使用者不是主人
                 return;
             }
-            EntityMaid.fromStr(str, event.source.dimension, event.source.location);
+            let maid = EntityMaid.fromStr(str, event.source.dimension, event.source.location);
+            maid.triggerEvent("api:reborn");
         }
         // 转换物品
         Tool.setPlayerMainHand(event.source, new ItemStack("touhou_little_maid:smart_slab_empty", 1));
@@ -165,7 +167,8 @@ export class MaidManager{
      * 女仆驯服寻主事件
      * 因为 1.没有实体交互事件 2.实体触发器事件没有发动者 3.脚本无法获取主人 4.若与实体交互成功，则物品使用事件不会触发
      * 所以 让女仆自行紧跟主人并扫描，直到脚本获取到主人
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * 对于曾经有主人的女仆，当跟随到的主人与记录不符时会重新回到重生时的野生状态
+     * @param {DataDrivenEntityTriggerBeforeEvent} event
      */
     static onTameFollowSuccess(event){
         const results = event.entity.dimension.getPlayers({
@@ -175,11 +178,21 @@ export class MaidManager{
         // 寻主成功
         if(results.length == 1){
             let maid = event.entity;
-            let backpack = EntityMaid.Backpack.getEntity(event.entity);
-
-            maid.triggerEvent("api:follow_on_tame_over");
-            EntityMaid.Owner.setID(maid, results[0].id);
-            MaidBackpack.setOwnerID(backpack, results[0].id);
+            let player = results[0];
+            if(EntityMaid.Owner.getID(maid)===undefined || EntityMaid.Owner.getID(maid)===results[0].id){
+                let backpack = EntityMaid.Backpack.getEntity(event.entity);
+                maid.triggerEvent("api:follow_on_tame_over");
+                EntityMaid.Owner.setID(maid, player.id);
+                MaidBackpack.setOwnerID(backpack, player.id);
+            }
+            else{
+                // 跟随到的主人与记录不符
+                maid.triggerEvent("api:follow_on_tame_over_backreborn");
+            }
+            // 给予玩家一个苹果
+            let apple = new ItemStack("minecraft:apple", 1);
+            apple.nameTag="§cApple!"
+            player.dimension.spawnItem(apple, player.location);
         }
     }
     /**
@@ -207,6 +220,8 @@ export class MaidManager{
         // 比较维度
         let maid = event.entity;
         let home_location = EntityMaid.Home.getLocation(maid);
+        if(home_location===undefined) return; // 没有家，不回
+        Tool.logger(`${home_location[0]}, ${home_location[1]}, ${home_location[2]}, ${home_location[3]}`)
         let in_home = (maid.dimension.id===home_location[3]);
         if(in_home){
             // 计算范围
@@ -238,6 +253,28 @@ export class MaidManager{
         let bag = EntityMaid.Backpack.getEntity(maid);
         // bag.nameTag = maid.nameTag===""?"entity.touhou_little_maid:maid.name":maid.nameTag;
         MaidBackpack.show(bag);
+    }
+    /**
+     * 定时事件
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     */
+    static timerEvent(event){
+        let maid = event.entity;
+        // 2步一次回血
+        let healStep = maid.getDynamicProperty("heal_step");
+        if(healStep >= 1){
+            let healthComponent = EntityMaid.Health.getComponent(maid);
+            if(healthComponent.currentValue < healthComponent.defaultValue){
+                // 回血量 2~5
+                healthComponent.setCurrentValue(
+                    Math.min(healthComponent.defaultValue,
+                    healthComponent.currentValue + Tool.getRandomInteger(2, 5)));
+            }
+            maid.setDynamicProperty("heal_step", 0);
+        }
+        else{
+            maid.setDynamicProperty("heal_step", healStep+1);
+        }
     }
     /**
      * 开盒，生成一只随机女仆

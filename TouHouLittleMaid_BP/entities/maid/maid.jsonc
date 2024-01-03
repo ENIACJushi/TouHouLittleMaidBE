@@ -40,6 +40,17 @@
           }
         }
       },
+      "thlmm:reborn": {
+        "minecraft:behavior.panic": { "priority": 1, "speed_multiplier": 1.25 },
+        "minecraft:tameable": {
+          "probability": 1,
+          "tame_items":["apple", "cake"],
+          "tame_event": {
+            "event": "on_tamed",
+            "target": "self"
+          }
+        }
+      },
       "thlmm:maid_tame": {
         "minecraft:sittable": {},
         "minecraft:is_tamed": {
@@ -146,7 +157,6 @@
         }
       },
       
-
       ///// 背包类别 /////
       "backpack:default":{
         "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": true}
@@ -164,6 +174,8 @@
       ///// 跟随类别 /////
       // 拐走后跟随
       "status:follow_on_tame":{
+        "minecraft:is_tamed": {
+        },
         "minecraft:behavior.follow_owner": {
           "priority": 0,
           "speed_multiplier": 1.0,
@@ -196,15 +208,7 @@
       },
       // 守家模式
       "status:home":{
-        "minecraft:is_baby": {},
-        "minecraft:timer": {
-          "time": 3,
-          "looping": true,
-          "time_down_event": {
-            "event": "thlmm:h",
-            "target": "self"
-          }
-        }
+        "minecraft:is_baby": {}
       },
 
       ///// 工作模式 /////
@@ -261,6 +265,14 @@
       }
     },
     "components": {
+      "minecraft:timer": {
+        "time": 3,
+        "looping": true,
+        "time_down_event": {
+          "event": "thlmm:t",
+          "target": "self"
+        }
+      },
       ///// 基础属性 /////
       "minecraft:health"       : { "value": 40, "max": 40 },
       "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
@@ -363,6 +375,7 @@
         },
         "trigger": "thlmm:0"
       },
+      
       "despawn":{ "add": { "component_groups": [ "despawn" ] } },
       "on_tamed": {
         "remove": {
@@ -372,15 +385,33 @@
         },
         "add": {
           "component_groups": [
-            "thlmm:maid_tame",
+            // "thlmm:maid_tame",
             "status:follow_on_tame",
             "sound:ambient"
           ]
+        }
+      },
+      "on_tamed_reborn": {
+        "remove": {
+          "component_groups": [
+            "thlmm:reborn"
+          ]
         },
-        "trigger": "api:mode_idle"
+        "add": {
+          "component_groups": [
+            // "thlmm:maid_tame",
+            "status:follow_on_tame",
+            "sound:ambient"
+          ]
+        }
       },
 
       ///// 脚本事件 /////
+      "thlmm:t" :{
+        "sequence": [
+          { "filters": { "test": "has_component", "subject": "self", "operator": "==", "value": "minecraft:is_baby" }, "trigger": "thlmm:h" } // 回家
+        ]
+      },// timer 每3秒一次的定时事件 
       "thlmm:d" :{}, // Death
       "thlmm:f" :{}, // Follow on tamed
       "thlmm:h" :{}, // Home
@@ -392,13 +423,24 @@
       "thlmm:1" :{}, // Smart slab
 
       ///// 脚本接口 /////
+      // 曾有主人的生成
+      "api:reborn":{
+        "add": { "component_groups": [ "thlmm:reborn" ] },
+        "remove": { "component_groups": [ "thlmm:maid_wild" ] }
+      },
       // 跟随类型
       "api:status_follow"  :{"add"   : {"component_groups": ["status:follow_standard"]}, "remove": {"component_groups": ["status:home"]}},
       "api:status_home"    :{"add"   : {"component_groups": ["status:home"]}, "remove": {"component_groups": ["status:follow_standard"]}},
-      "api:follow_on_tame_over":{ 
-        "add": {"component_groups": ["status:follow_standard", "thlmm:maid_tame_sit"]}, 
+      "api:follow_on_tame_over":{
+        "add": {"component_groups": [ "thlmm:maid_tame", "status:follow_standard", "thlmm:maid_tame_sit"]}, 
         "remove": {"component_groups": ["status:follow_on_tame"]},
-        "run_command":{ "command": ["playsound mob.thlmm.maid.tamed @a ~~~"]}},
+        "trigger": "api:mode_idle",
+        "run_command":{ "command": ["playsound mob.thlmm.maid.tamed @a ~~~"]}
+      },
+      "api:follow_on_tame_over_backreborn":{
+        "add": { "component_groups": [ "thlmm:maid_wild" ] },
+        "remove": {"component_groups": ["status:follow_on_tame"]}
+      },
 
       // 工作模式
       "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}, "set_property":{"thlm:work": 0}}]},
