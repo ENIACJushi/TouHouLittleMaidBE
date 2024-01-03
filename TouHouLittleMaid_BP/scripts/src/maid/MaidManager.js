@@ -16,6 +16,10 @@ import { EntityMaid } from './EntityMaid';
 import { MaidBackpack } from "./MaidBackpack";
 import { config } from '../../data/config'
 import { StrMaid } from "./StrMaid";
+import * as Vec from "../libs/vector3d"
+import {DanmakuShoot}  from "../danmaku/DanmakuShoot";
+import {DanmakuColor}  from "../danmaku/DanmakuColor";
+import {DanmakuType}   from "../danmaku/DanmakuType";
 
 const HOME_RADIUS=25;
 
@@ -349,6 +353,37 @@ export class MaidManager{
         // 返还旧背包
         if(typeOld !== MaidBackpack.default){
             dimension.spawnItem(new ItemStack(MaidBackpack.type2ItemName(typeOld), 1), location);
+        }
+    }
+    /**
+     * 弹幕攻击
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     */
+    static danmakuAttack(event){
+        const AIMED_SHOT_PROBABILITY = 0.8; //java 0.9
+        let maid = event.entity;
+        let target = maid.target
+        if(target != undefined){
+            let distanceFactor = Vec.length([
+                maid.location.x - maid.target.location.x,
+                maid.location.y - maid.target.location.y,
+                maid.location.z - maid.target.location.z,
+            ]) / 8;
+
+            if (Math.random() <= AIMED_SHOT_PROBABILITY) {
+                DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,0.5,0])
+                        .setTarget(maid.target).setRandomColor().setRandomType()
+                        .setDamage(distanceFactor + 6).setGravity(0)
+                        .setVelocity(0.5 * (distanceFactor + 1))
+                        .setInaccuracy(0.05).aimedShot();
+            } else {
+                DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,0.5,0])
+                        .setTarget(maid.target).setRandomColor().setRandomType()
+                        .setDamage(distanceFactor + 6.5).setGravity(0)
+                        .setVelocity(0.5 * (distanceFactor + 1))
+                        .setInaccuracy(0.02).setFanNum(3).setYawTotal(Math.PI / 6)
+                        .fanShapedShot();
+            }
         }
     }
 }

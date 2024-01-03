@@ -217,14 +217,35 @@
           "priority": 4,
           "speed_multiplier": 1.25
         }
-      },
+      },// 空闲
       "mode:attack":{
         "minecraft:attack"                       : { "damage"  : 8 },
         "minecraft:behavior.melee_attack"        : { "priority": 5 },
         "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
         "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
-      },
-
+      },// 近战
+      "mode:danmaku_attack":{
+        "minecraft:behavior.ranged_attack": {
+          "priority": 5,
+          "attack_interval_min": 1.0,
+          "attack_interval_max": 3.0,
+          "attack_radius": 25.0
+        },
+        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
+        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
+      },// 弹幕攻击
+      "mode:farm":{
+        "minecraft:behavior.harvest_farm_block": {
+          "priority": 7,
+          "search_cooldown_max_seconds": 2,
+          "search_height":5,
+          "search_range": 20
+        },
+        "minecraft:behavior.fertilize_farm_block": {
+          "priority": 8,
+          "search_cooldown_max_seconds": 2
+        }
+      },// 农耕
       ///// 拾物模式 /////
       "mode:pick":{
         "minecraft:is_charged": {},
@@ -425,9 +446,13 @@
       ///// 脚本事件 /////
       "thlmm:t" :{
         "sequence": [
-          { "filters": { "test": "has_component", "subject": "self", "operator": "==", "value": "minecraft:is_baby" }, "trigger": "thlmm:h" } // 回家
+          // 回家
+          { "filters": { "test": "has_component", "subject": "self", "operator": "==", "value": "minecraft:is_baby" }, "trigger": "thlmm:h" },
+          // 弹幕攻击
+          { "filters": {"test": "int_property", "value": 2, "operator":"==", "domain": "thlm:work"}, "trigger": "thlmm:a"}
         ]
       },// timer 每3秒一次的定时事件 
+      "thlmm:a": {}, // Danmaku Attack
       "thlmm:d" :{}, // Death
       "thlmm:f" :{}, // Follow on tamed
       "thlmm:h" :{}, // Home
@@ -463,7 +488,10 @@
       "api:mode_quit_idle":  {"sequence": [{"remove": {"component_groups": ["mode:idle"]}}]},
       "api:mode_attack"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack"]}, "set_property":{"thlm:work": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
       "api:mode_quit_attack":{"sequence": [{"remove": {"component_groups": ["mode:attack"]}}]},
-      
+      "api:mode_danmaku_attack"       :{"sequence": [{"add"   : {"component_groups": ["mode:danmaku_attack"]}, "set_property":{"thlm:work": 2}}]},
+      "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack"]}}]},
+      "api:mode_farm"       :{"sequence": [{"add"   : {"component_groups": ["mode:farm"]}, "set_property":{"thlm:work": 3}}]},
+      "api:mode_quit_farm"  :{"sequence": [{"remove": {"component_groups": ["mode:farm"]}}]},
       // 拾物模式
       "api:mode_pick"     :{ "add"    : {"component_groups": ["mode:pick"] } },
       "api:mode_quit_pick":{ "remove" : {"component_groups": ["mode:pick"] } },

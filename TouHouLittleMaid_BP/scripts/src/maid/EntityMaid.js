@@ -208,32 +208,34 @@ export class EntityMaid{
     }
     // 工作模式
     static Work = {
-        AMOUNT         : 2,  // 总数
-    
+        AMOUNT         : 4,  // 总数（包含空闲）
+        
         idle           : 0,  // 空闲
         attack         : 1,  // 攻击
-        ranged_attack  : 2,  // 弓兵
-        danmaku_attack : 3,  // 弹幕攻击
-        farm           : 4,  // 农场
-        sugar_cane     : 5,  // 甘蔗
-        melon          : 6,  // 瓜类
-        cocoa          : 7,  // 可可
-        grass          : 8,  // 花草
-        snow           : 9,  // 清雪
-        feed           : 10, // 喂食
-        shears         : 11, // 剪刀
-        milk           : 12, // 牛奶
-        torch          : 13, // 火把
-        feed_animal    : 14, // 繁殖动物
-        extinguishing  : 15, // 灭火
-    
+        danmaku_attack : 2,  // 弹幕攻击
+        farm           : 3,  // 农场
+
+
+        sugar_cane     : 4,  // 甘蔗
+        melon          : 5,  // 瓜类
+        cocoa          : 6,  // 可可
+        grass          : 7,  // 花草
+        snow           : 8,  // 清雪
+        feed           : 9, // 喂食
+        shears         : 10, // 剪刀
+        milk           : 11, // 牛奶
+        torch          : 12, // 火把
+        feed_animal    : 13, // 繁殖动物
+        extinguishing  : 14, // 灭火
+        
+        ranged_attack  : 15,
         NAME_LIST:[
             "idle",
             "attack",
-            "ranged_attack",
-            "danmaku_attack", 
-            "phantom_killer",
+            "danmaku_attack",
             "farm",
+
+
             "sugar_cane",
             "melon",
             "cocoa",          
@@ -244,16 +246,17 @@ export class EntityMaid{
             "milk",
             "torch",
             "feed_animal",
-            "extinguishing"
+            "extinguishing",
+            "ranged_attack"
         ],
         // 切换到模式时的音效(现在已经转移到行为包内播放)
         SOUND_LIS:[
             undefined,
             "mob.thlmm.maid.attack",
             "mob.thlmm.maid.attack",
-            "mob.thlmm.maid.attack", 
-            "mob.thlmm.maid.attack",
             undefined,
+
+
             undefined,
             undefined,
             undefined,          
@@ -270,10 +273,10 @@ export class EntityMaid{
         IMG_LIST:[
             "textures/items/feather.png",
             "textures/items/diamond_sword.png",
-            "textures/items/bow_standby.png",
             "textures/items/hakurei_gohei.png",
-            "textures/items/phantom_membrane.png",
             "textures/items/iron_hoe.png",
+
+
             "textures/items/reeds.png",
             "textures/items/melon.png",
             "textures/items/dye_powder_brown.png",
@@ -284,7 +287,9 @@ export class EntityMaid{
             "textures/items/bucket_milk.png",
             "textures/items/torch_on.png",
             "textures/items/wheat.png",
-            "textures/items/extinguisher.png"
+            "textures/items/extinguisher.png",
+
+            "textures/items/bow_standby.png"
         ],
     
         /**
