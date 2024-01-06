@@ -15,6 +15,11 @@
       "geometry": "Array.geos[query.variant]",
       "materials": [ { "*": "Material.default" } ],
       "textures": [ "Texture.default" ]
+    },
+    "controller.render.touhou_little_maid.altar_item": {
+      "geometry": "Geometry.default",
+      "materials": [ { "*": "Material.default" } ],
+      "textures": [ "Texture.default" ]
     }
   }
 }

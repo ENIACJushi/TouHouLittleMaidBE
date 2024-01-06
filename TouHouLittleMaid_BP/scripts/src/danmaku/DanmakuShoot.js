@@ -41,6 +41,9 @@ export class DanmakuShoot{
         this.fanNum   = 3;
         this.axisRotation  = 0; // 中轴绕发射向量的旋转角度（先转）
         this.directionRotation = 0; // 发射向量绕旋转向量旋转的角度（后转）
+
+        // 女仆专用
+        this.ownerID = undefined;
     }
     static create(){
         return new DanmakuShoot();
@@ -99,6 +102,9 @@ export class DanmakuShoot{
         let danmaku = new EntityDanmaku(this.world, this.thrower)
                 .setDamage(this.damage).setGravityVelocity(this.gravity)
                 .setDanmakuType(this.type).setColor(this.color);
+        // 设置主人
+        if(this.ownerID!==undefined){ danmaku.setOwnerID(this.ownerID); }
+        
         let v = this.calculateVelocity(danmaku);
         if(!v) return false;
 
@@ -115,6 +121,8 @@ export class DanmakuShoot{
         let danmaku = new EntityDanmaku(this.world, this.thrower)
                 .setDamage(this.damage).setGravityVelocity(this.gravity)
                 .setDanmakuType(this.type).setColor(this.color);
+        // 设置主人
+        if(this.ownerID!==undefined){ danmaku.setOwnerID(this.ownerID); }
         let v = this.calculateVelocity(danmaku);
         if(!v) return false;
         v = Vec.normalize(v);
@@ -323,6 +331,14 @@ export class DanmakuShoot{
      */
     setAxisRotation_direction(raduis){
         this.directionRotation = raduis;
+        return this;
+    }
+    /**
+     * 设置主人id(女仆专用)
+     * @param {string} id 
+     */
+    setOwnerID(id){
+        this.ownerID=id;
         return this;
     }
 }

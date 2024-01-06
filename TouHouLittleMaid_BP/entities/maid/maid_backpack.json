@@ -90,11 +90,7 @@
             }
           ]
         }
-      },
-
-      "emoji:0":{"minecraft:skin_id": {"value": 0}},
-      "emoji:1":{"minecraft:skin_id": {"value": 1}}
-
+      }
     },
     "components": {
       "minecraft:nameable": {
@@ -200,12 +196,7 @@
             "add": { "component_groups": [ "type:big_private"]}
           }
         ]
-      },
-
-      "emoji:0"     : {"add"   : { "component_groups": [ "emoji:0" ] }},
-      "emoji_quit:0": {"remove": { "component_groups": [ "emoji:0" ] }},
-      "emoji:1"     : {"add"   : { "component_groups": [ "emoji:1" ] }},
-      "emoji_quit:1": {"remove": { "component_groups": [ "emoji:1" ] }}
+      }
     }
   }
 }

@@ -18,9 +18,7 @@
         // "thlm:home_z"  :{"type": "int", "client_sync": false, "default": 0, "range": [-2147483648, 2147483647]},
         // "thlm:home_dim":{"type": "int", "client_sync": false, "default": 0, "range": [0, 2]},
         // 表情
-        "emoji:index"             :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
-        "emoji:frames_per_second" :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
-        "emoji:frame_count"       :{"type": "float", "client_sync": true, "default": 1.0, "range": [0.0, 99999.0]},
+        "thlm:emote"             :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
         // 环境
         "environment:status" :{"type": "int", "client_sync": true, "default": 0 , "range": [0, 5]},
         "environment:daytime":{"type": "int", "client_sync": true, "default": -1, "range": [-1, 1]} // 为了在生成时发出声音，默认设为-1
@@ -238,6 +236,7 @@
         "minecraft:behavior.harvest_farm_block": {
           "priority": 7,
           "search_cooldown_max_seconds": 2,
+          "search_count": 5,
           "search_height":5,
           "search_range": 20
         },
@@ -255,9 +254,6 @@
           "goal_radius": 2,
           "speed_multiplier": 0.5,
           "can_pickup_to_hand_or_equipment": false
-        },
-        "minecraft:shareables":{
-          "all_items": true
         }
       },
 

@@ -14,8 +14,8 @@
         },
         "minecraft:hand_equipped": true,
         "minecraft:foil": true,
-        "minecraft:on_use": {
-          "on_use": {
+        "minecraft:on_use_on": {
+          "on_use_on": {
             "event": "thlm:ss"
           }
         },

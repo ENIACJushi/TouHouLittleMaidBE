@@ -1,6 +1,28 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
+		"animation.touhou_little_maid.maid.backpack_offset":{
+			"loop":true,
+			"bones": {
+				"backpack" : {
+					"position" : [ 0, 8, 4 ]
+				}
+			}
+		},
+		"animation.touhou_little_maid.emote": {
+			"loop": true,
+			"bones": {
+			  "emote": {
+				"rotation": [
+				  0,
+				  "query.camera_rotation(1) - q.body_y_rotation",
+				  0
+				],
+				"position":[0, 28, 0]
+			  }
+			}
+		},
+
 		"animation.touhou_little_maid.maid.beg": {
 			"loop": true,
 			"bones": {
@@ -59,6 +81,10 @@
 				"sittingRotationSkirt": {
 					"rotation": [-37.5, 0, 0],
 					"position": [0, 0.5, 0.8]
+				},
+
+				"robe": {
+					"position": [0, -7, 0]
 				}
 			}
 		}

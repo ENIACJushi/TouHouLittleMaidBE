@@ -1,6 +1,44 @@
 {
 	"format_version": "1.8.0",
 	"render_controllers": {
+		"controller.render.touhou_little_maid.box": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.box_0",
+						"Texture.box_1",
+						"Texture.box_2",
+						"Texture.box_3",
+						"Texture.box_4",
+						"Texture.box_5",
+						"Texture.box_6"
+					]
+				}
+			},
+			"geometry": "Geometry.default",
+			"materials": [
+				{"*": "Material.default"}
+			],
+			"textures": [ "Array.skins[query.variant]" ],
+			"uv_anim": {
+				"offset": [
+					0.0,
+					0.0
+				],
+				"scale": [
+					1.0,
+					1.0
+				]
+			},
+			"overlay_color": {
+				"r": 0.0,
+				"g": 0.0,
+				"b": 0.0,
+				"a": 0.0
+			}
+		},
+
+
 		"controller.render.touhou_little_maid.maid_basic": {
 			"arrays": {
 				"textures": {
@@ -26,6 +64,37 @@
 				{"wingRight": "Material.wing"}
 			],
 			"textures": [ "Array.skins[q.property('thlm:skin_pack')==0?q.property('thlm:skin_index')+1:0]" ]
+		},
+
+
+		"controller.render.touhou_little_maid.maid_backpack": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.default",
+						"Texture.small",
+						"Texture.middle",
+						"Texture.big"
+					]
+				},
+				"geometries": {
+					"Array.geos":[
+						"Geometry.default",
+						"Geometry.small",
+						"Geometry.middle",
+						"Geometry.big"
+					]
+				}
+			},
+			
+			"geometry": "Array.geos[query.variant]",
+			"materials": [
+				{ "*": "Material.default" }
+			],
+			"textures": [ "Array.skins[query.variant]" ],
+			"part_visibility": [
+				{ "*": "!query.is_baby && !query.is_riding" }
+			]
 		},
 		"controller.render.touhou_little_maid.maid.maid_backpack": {
 			"arrays": {
@@ -55,67 +124,40 @@
 				{ "*": "!q.is_in_ui && !q.property('thlm:backpack_invisible')" }
 			]
 		},
-		"controller.render.touhou_little_maid.maid.emoji": {
+
+
+		"controller.render.touhou_little_maid.maid.emote": {
 			"arrays": {
 				"textures": {
 					"Array.skins": [
-						"Texture.e0", "Texture.e1", "Texture.e2", "Texture.e3", "Texture.e4", "Texture.e5", "Texture.e6", "Texture.e7", "Texture.e8", "Texture.e9"
+						"Texture.e0", "Texture.e1", "Texture.e2", "Texture.e3", "Texture.e4", "Texture.e5", "Texture.e6"
 					]
 				},
 				"geometries": {
 					"Array.geos":[
-						"Geometry.e0", "Geometry.e1", "Geometry.e2", "Geometry.e3", "Geometry.e4", "Geometry.e5", "Geometry.e6", "Geometry.e7", "Geometry.e8", "Geometry.e9"
+						"Geometry.e0", "Geometry.e1", "Geometry.e2", "Geometry.e3", "Geometry.e4", "Geometry.e5", "Geometry.e6"
 					]
 				}
 			},
 			
-			"geometry": "Array.geos[q.property('emoji:index')]",
+			"geometry": "Array.geos[v.emote_index]",
 			"materials": [
 				{ "*": "Material.default" }
 			],
-			"textures": [ "Array.skins[q.property('emoji:index')]" ],
+			"textures": [ "Array.skins[v.emote_index]" ],
 			"part_visibility": [
 				{ "*": true }
 			],
 			"uv_anim": {
 				"offset": [
 					0.0,
-					"math.mod(math.floor(query.life_time * q.property('emoji:frames_per_second')), q.property('emoji:frame_count')) / q.property('emoji:frame_count')"
+					"math.mod(math.floor(query.life_time * v.emote_speed), v.emote_frame) / v.emote_frame"
 				],
 				"scale": [
 					1.0,
-					"1 / q.property('emoji:frame_count')"
+					"1 / v.emote_frame"
 				]
 			}
-		},
-		"controller.render.touhou_little_maid.maid_backpack": {
-			"arrays": {
-				"textures": {
-					"Array.skins": [
-						"Texture.default",
-						"Texture.small",
-						"Texture.middle",
-						"Texture.big"
-					]
-				},
-				"geometries": {
-					"Array.geos":[
-						"Geometry.default",
-						"Geometry.small",
-						"Geometry.middle",
-						"Geometry.big"
-					]
-				}
-			},
-			
-			"geometry": "Array.geos[query.variant]",
-			"materials": [
-				{ "*": "Material.default" }
-			],
-			"textures": [ "Array.skins[query.variant]" ],
-			"part_visibility": [
-				{ "*": "!query.is_baby && !query.is_riding" }
-			]
 		}
 	}
 }

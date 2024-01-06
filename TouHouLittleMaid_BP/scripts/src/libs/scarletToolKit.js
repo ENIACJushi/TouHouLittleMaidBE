@@ -187,6 +187,29 @@ export function delTagData(entity, prefix){
     }
     return false;
 }
+
+/**
+ * 将纯净字符串转为隐形lore字符串
+ * @param {string} str 
+ */
+export function pureStr2Lore(strPure){
+    let strLore = "";
+    for(let i=0; i<strPure.length; i++){
+        strLore += '§' + strPure[i];
+    }
+    return strLore;
+}
+/**
+ * 将隐形lore字符串转为纯净字符串
+ * @param {string} str 
+ */
+export function loreStr2Pure(strPure){
+    let strLore = "";
+    for(let i=1; i<strPure.length; i+=2){
+        strLore += strPure[i];
+    }
+    return strLore;
+}
 ////////// Command //////////
 /**
  * 

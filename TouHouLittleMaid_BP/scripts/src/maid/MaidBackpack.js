@@ -90,7 +90,6 @@ export class MaidBackpack{
         backpack.triggerEvent(`api:${this.type2Name(type)}`);
         
         // 设置默认状态
-        backpack.triggerEvent(`emoji:0`); // 表情0
         backpack.triggerEvent(`api:hide`);// 隐藏
 
         // 设置关系
@@ -191,17 +190,6 @@ export class MaidBackpack{
         return undefined;
     }
     
-    /**
-     * 获取表情
-     * @param {Entity} backpack
-     */
-    static getEmoji(backpack){
-        let component = backpack.getComponent("skin_id");
-        if(component === undefined){
-            return undefined;
-        }
-        return component.value;
-    }
     /**
      * 获取类型对应物品的名称
      * @param {string} type
@@ -305,19 +293,6 @@ export class MaidBackpack{
      */
     static show(backpack){
         backpack.triggerEvent("api:show");
-    }
-    /**
-     * 设置表情
-     * TODO: value不是read-only，看看能不能直接设
-     * @param {Entity} backpack
-     */
-    static setEmoji(backpack, emoji){
-        let old = this.getEmoji(backpack);
-        if(old !== undefined){
-            backpack.triggerEvent(`emoji_quit:${emoji}`);
-        }
-        backpack.triggerEvent(`emoji:${emoji}`);
-
     }
     /**
      * 设置主人ID

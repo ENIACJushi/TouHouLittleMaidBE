@@ -3,6 +3,7 @@ import { MaidBackpack } from "./MaidBackpack";
 import * as Tool from "../libs/scarletToolKit"
 import { config } from '../../data/config'
 import { StrMaid } from "./StrMaid";
+import { emote } from "../../data/emote";
 
 export class EntityMaid{
     /**
@@ -184,7 +185,6 @@ export class EntityMaid{
          * @returns {boolean}
          */
         get(maid){
-            Tool.logger(maid.getComponent("minecraft:is_charged"))
             return maid.getComponent("minecraft:is_charged")!==undefined;
         },
         getImg(is_open){
@@ -418,6 +418,33 @@ export class EntityMaid{
             return Tool.getTagData(maid, "thlmb:");
         },
         /**
+         * 设置背包id
+         * @param {Entity} maid 
+         * @param {string} id 
+         */
+        setID(maid, id){
+            Tool.delTagData(maid, "thlmb:");
+            Tool.setTagData(maid, "thlmb:", id);
+        },
+
+        /**
+         * 获取背包是否隐藏
+         * @param {Entity} maid 
+         * @returns {boolean}
+         */
+        getInvisible(maid){
+            return maid.getProperty("thlm:backpack_invisible");
+        },
+        /**
+         * 设置背包是否隐藏
+         * @param {Entity} maid
+         * @param {boolean} target
+         */
+        setInvisible(maid, value){
+            return maid.setProperty("thlm:backpack_invisible", value);
+        },
+
+        /**
          * 获取背包实体
          * @param {Entity} maid 
          * @returns {Entity|undefined}
@@ -442,30 +469,51 @@ export class EntityMaid{
             return undefined;
         },
         /**
-         * 获取背包是否隐藏
-         * @param {Entity} maid 
-         * @returns {boolean}
-         */
-        getInvisible(maid){
-            return maid.getProperty("thlm:backpack_invisible");
-        },
-        /**
-         * 设置背包id
-         * @param {Entity} maid 
-         * @param {string} id 
-         */
-        setID(maid, id){
-            Tool.delTagData(maid, "thlmb:");
-            Tool.setTagData(maid, "thlmb:", id);
-        },
-        /**
-         * 设置背包是否隐藏
+         * 获取背包类型（大小）
          * @param {Entity} maid
-         * @param {boolean} target
+         * @returns {number} 0~3 
          */
-        setInvisible(maid, value){
-            return maid.setProperty("thlm:backpack_invisible", value);
+        getType(maid){
+            return maid.getProperty("thlm:backpack_type");
         }
+    }
+    // 表情
+    static Emote = {
+        timeout:undefined,
+        /**
+         * 获取当前表情ID
+         * @param {Entity} maid 
+         * @returns {number}
+         */
+        get(maid){
+            return maid.getProperty("thlm:emote");
+        },
+        /**
+         * 设置表情ID
+         * @param {Entity} maid 
+         * @param {number} index 
+         */
+        set(maid, index){
+            if(this.timeout !== undefined){
+                system.clearRun(this.timeout);
+                this.timeout=undefined;
+            }
+            let value = index;
+            if(emote[index] !== undefined){
+                value += 1000*emote[index][0];
+                value += 1000000*emote[index][1];
+                this.timeout = system.runTimeout(()=>{
+                    this.set(maid, 0);
+                }, emote[index][2]);
+            }
+            maid.setProperty("thlm:emote", value);
+        },
+        // 背包 起始位置1
+        backpack(maid){
+            this.set(maid, 1 + EntityMaid.Backpack.getType(maid));
+        },
+        apple(maid){ this.set(maid, 5); }, // 苹果 5
+        cake (maid){ this.set(maid, 6); } // 蛋糕 6
     }
     /**
      * 将女仆背包的内容转移到实体背包
@@ -545,6 +593,11 @@ export class EntityMaid{
         maidStr = StrMaid.Pick.set(maidStr, this.Pick.get(maid));
         // 背包是否隐藏
         maidStr = StrMaid.backpackInvisibility.set(maidStr, this.Backpack.getInvisible(maid));
+
+        // 名称 最后设置
+        if(maid.nameTag!==""){
+            maidStr = StrMaid.Name.set(maidStr, maid.nameTag);
+        }
         /**
          * 打包背包
          * 正常情况不会为空，以防万一假设可为空
@@ -621,6 +674,12 @@ export class EntityMaid{
         this.Pick.set(maid, StrMaid.Pick.get(maidStr));
         // 背包是否隐藏
         this.Backpack.setInvisible(maid, StrMaid.backpackInvisibility.get(maidStr));
+
+        // 名称
+        let name = StrMaid.Name.get(maidStr);
+        if(name!==undefined){ maid.nameTag = name }
+        
+
         return maid;
 
         /**
@@ -661,15 +720,18 @@ export class EntityMaid{
      * @returns {string} lore
      */
     static toLore(maid){
-        let str = this.toStr(maid);
+        let strPure = this.toStr(maid);
+        Tool.logger(strPure)
+        let strLore = Tool.pureStr2Lore(strPure);
+
         let lore =[];
         while(true){
-            if(str.length > 50){
-                lore.push(str.slice(0, 50));
-                str = str.slice(50);
+            if(strLore.length > 50){
+                lore.push(strLore.slice(0, 50));
+                strLore = strLore.slice(50);
             }
             else{
-                lore.push(str);
+                lore.push(strLore);
                 break;
             }
         }

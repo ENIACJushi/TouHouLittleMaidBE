@@ -19,13 +19,18 @@ import { EntityMaid } from "../maid/EntityMaid";
  * @param {WorldInitializeAfterEvent} e 
  */
 export function init_dynamic_properties(e){
-    let def = new DynamicPropertiesDefinition();
-    def.defineString("source", 15, "0"); // Entity id
-    def.defineNumber("damage", 6); // 伤害
-
-    for(let i=1; i<=DanmakuType.AMOUNT; i++){
-        e.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get(DanmakuType.getEntityName(i)));
+    // 弹幕属性
+    {
+        let def = new DynamicPropertiesDefinition();
+        def.defineString("source", 15, "0"); // Entity id
+        def.defineNumber("damage", 6 ); // 伤害
+        def.defineString("owner" , 15); // 主人，女仆弹幕专用
+    
+        for(let i=1; i<=DanmakuType.AMOUNT; i++){
+            e.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get(DanmakuType.getEntityName(i)));
+        }
     }
+    
 }
 
 /**
@@ -91,13 +96,31 @@ export function danmakuHitEntityEvent(ev){
         }
         if(source != undefined) damageOptions["damagingEntity"] = source;
         // 不伤害自己
-        if(hit_info.entity.id == source.id){
-            return;
-        }
-        // 不伤害自己的女仆
-        if(target.typeId==="thlmm:maid"){
-            if(EntityMaid.Owner.getID(target) === danmaku.getDynamicProperty("source")){
+        if(hit_info.entity.id == source.id){ return; }
+        // 玩家受击
+        if(target.typeId==="minecraft:player"){
+            // 女仆不伤害主人
+            let ownerID = danmaku.getDynamicProperty("owner");
+            if(ownerID!==undefined && ownerID===target.id){
                 return;
+            }
+        }
+        // 女仆受击
+        else if(target.typeId==="thlmm:maid"){
+            let targetOwnerID = EntityMaid.Owner.getID(target); // 目标的主人
+            if(targetOwnerID !== undefined){
+                // 主人不伤害自己的女仆
+                if(targetOwnerID === danmaku.getDynamicProperty("source")){
+                    return;
+                }
+                // 女仆不伤害相同主人的女仆
+                
+                Tool.logger(targetOwnerID);
+                let sourceOwnerID = danmaku.getDynamicProperty("owner");
+                Tool.logger(sourceOwnerID);
+                if(sourceOwnerID!==undefined && sourceOwnerID === targetOwnerID){
+                    return;
+                }
             }
         }
         // 不伤害自己的坐骑

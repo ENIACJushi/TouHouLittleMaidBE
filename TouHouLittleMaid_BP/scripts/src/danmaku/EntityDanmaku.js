@@ -28,6 +28,8 @@ export class EntityDanmaku{
         this.type   = DanmakuType.RANDOM;
 
         this.ticks_existed = 0;
+
+        this.ownerID=undefined;
     }
     /**
      * 以基岩版原生方式，指定三维动量发射弹幕
@@ -66,6 +68,8 @@ export class EntityDanmaku{
         // Set damage
         danmaku.setDynamicProperty("damage", this.damage);
 
+        // Set owner
+        if(this.ownerID !== undefined){ danmaku.setDynamicProperty("owner", this.ownerID); }
         // Set velocity
         //  Calculate direct vector
         let bedrock_velocity = velocity;
@@ -136,7 +140,8 @@ export class EntityDanmaku{
         }
         // Set damage
         danmaku.setDynamicProperty("damage", this.damage);
-
+        // Set owner
+        if(this.ownerID !== undefined){ danmaku.setDynamicProperty("owner", this.ownerID); }
         // Set velocity
         //  Calculate direct vector
         let bedrock_velocity;
@@ -267,6 +272,15 @@ export class EntityDanmaku{
      */
     setTicksExisted(tick){
         this.ticks_existed = tick;
+        return this;
+    }
+
+    /**
+     * 设置主人id(女仆专用)
+     * @param {string} id 
+     */
+    setOwnerID(id){
+        this.ownerID=id;
         return this;
     }
 }

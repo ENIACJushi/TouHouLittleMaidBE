@@ -127,16 +127,19 @@ export class MaidManager{
     static photoOnUseEvent(event){
         let lore = event.itemStack.getLore();
         if(lore.length === 0) return; // 无lore
-        let str="";
+        let strLore="";
         for(let temp of lore){
-            str += temp;
+            strLore += temp;
         }
-        if(StrMaid.Owner.getId(str) !== event.source.id){
+        
+        let strPure = Tool.loreStr2Pure(strLore);
+
+        if(StrMaid.Owner.getId(strPure) !== event.source.id){
             // 使用者不是主人
             return;
         }
 
-        let maid = EntityMaid.fromStr(str, event.source.dimension, event.source.location);
+        let maid = EntityMaid.fromStr(strPure, event.source.dimension, event.source.location);
         maid.triggerEvent("api:reborn");
         Tool.setPlayerMainHand(event.source);
     }
@@ -157,6 +160,9 @@ export class MaidManager{
             for(let temp of lore){
                 str += temp;
             }
+
+            str = Tool.loreStr2Pure(str);
+
             if(StrMaid.Owner.getId(str) !== event.source.id){
                 // 使用者不是主人
                 return;
@@ -225,7 +231,6 @@ export class MaidManager{
         let maid = event.entity;
         let home_location = EntityMaid.Home.getLocation(maid);
         if(home_location===undefined) return; // 没有家，不回
-        Tool.logger(`${home_location[0]}, ${home_location[1]}, ${home_location[2]}, ${home_location[3]}`)
         let in_home = (maid.dimension.id===home_location[3]);
         if(in_home){
             // 计算范围
@@ -252,7 +257,7 @@ export class MaidManager{
             // 因为此时必定是关闭状态，所以只有先前为开时需要设置
             EntityMaid.Pick.set(maid, true);
         }
-
+        EntityMaid.Emote.set(maid, 0);
         MaidBackpack.hide(bag);
     }
     /**
@@ -268,6 +273,7 @@ export class MaidManager{
         if(pick) EntityMaid.Pick.set(maid, false);
 
         EntityMaid.dumpMaidBackpack(maid);// 转储 女仆→背包实体
+        EntityMaid.Emote.backpack(maid);
         // bag.nameTag = maid.nameTag===""?"entity.touhou_little_maid:maid.name":maid.nameTag;
         MaidBackpack.show(bag);
     }
@@ -350,6 +356,8 @@ export class MaidManager{
         }
         // 升级
         MaidBackpack.setType(backpack, typeNew);
+        system.runTimeout(()=>{EntityMaid.Emote.backpack(MaidBackpack.getMaid(backpack));},1)
+        
         // 返还旧背包
         if(typeOld !== MaidBackpack.default){
             dimension.spawnItem(new ItemStack(MaidBackpack.type2ItemName(typeOld), 1), location);
@@ -364,20 +372,24 @@ export class MaidManager{
         let maid = event.entity;
         let target = maid.target
         if(target != undefined){
-            let distanceFactor = Vec.length([
+            let distance = Vec.length([
                 maid.location.x - maid.target.location.x,
                 maid.location.y - maid.target.location.y,
                 maid.location.z - maid.target.location.z,
-            ]) / 8;
+            ]);
+            let distanceFactor = distance / 8;
+            let yOffset = distance < 10 ? 0 : 0.5; // 若距离很近，向目标坐标直接发射，若很远，向上偏移一些发射避免直接打到地上
 
             if (Math.random() <= AIMED_SHOT_PROBABILITY) {
-                DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,0.5,0])
+                DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
+                        .setOwnerID(EntityMaid.Owner.getID(maid))
                         .setTarget(maid.target).setRandomColor().setRandomType()
                         .setDamage(distanceFactor + 6).setGravity(0)
                         .setVelocity(0.5 * (distanceFactor + 1))
                         .setInaccuracy(0.05).aimedShot();
             } else {
-                DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,0.5,0])
+                DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
+                        .setOwnerID(EntityMaid.Owner.getID(maid))
                         .setTarget(maid.target).setRandomColor().setRandomType()
                         .setDamage(distanceFactor + 6.5).setGravity(0)
                         .setVelocity(0.5 * (distanceFactor + 1))

@@ -42,14 +42,6 @@
 					"rotation" : [ "variable.tcos0 * 1.4", 0.0, 0.0 ]
 				}
 			}
-		},
-		"animation.touhou_little_maid.basic.backpack_offset":{
-			"loop":true,
-			"bones": {
-				"backpack" : {
-					"position" : [ 0, 8, 4 ]
-				}
-			}
 		}
 	}
 }

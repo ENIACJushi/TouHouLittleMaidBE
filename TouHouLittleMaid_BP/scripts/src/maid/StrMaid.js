@@ -24,7 +24,7 @@
 import * as Tool from "../libs/scarletToolKit"
 
 export class StrMaid{
-    // 主人 O
+    // O 主人 可为空
     static Owner = {
         /**
          * 获取字符串包含的主人ID
@@ -48,7 +48,7 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'O', strID);
         }
     }
-    // 生命值 H 左2当前值 右2最大值
+    // H 生命值 左2当前值 右2最大值
     static Health = {
         /**
          * 获取生命值 
@@ -75,7 +75,7 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'H', str);
         }
     }
-    // 皮肤 S左2包 右2索引
+    // S 皮肤 左2包 右2索引
     static Skin = {
         /**
          * 获取皮肤
@@ -102,7 +102,7 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'S', str);
         }
     }
-    // 工作模式 W
+    // W 工作模式
     static Work = {
         /**
          * 获取工作模式
@@ -125,7 +125,7 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'W', str);
         }
     }
-    // 背包是否隐藏 B
+    // B 背包是否隐藏
     static backpackInvisibility = {
         /**
          * 获取是否隐藏
@@ -148,7 +148,7 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'B', str);
         }
     }
-    // 拾物模式 P
+    // P 拾物模式
     static Pick = {
         /**
          * 获取模式
@@ -171,6 +171,29 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'P', str);
         }
     }
+    // N 名称 因其内部含有普通字符，放在最后记录  因为有名称的女仆一定有主人，无需考虑主人为空时会搜到这里的字符串
+    static Name = {
+        /**
+         * 获取名称
+         * @param {string} maidStr
+         * @returns {string|undefined}
+         */
+        get(maidStr){
+            let str = StrHelper.getValue(maidStr, 'N', undefined);
+            if(str === undefined) return undefined;
+            return str;
+        },
+        /**
+         * 设置名称
+         * @param {string} maidStr
+         * @param {string} value
+         * @returns {string} New Maid String
+         */
+        set(maidStr, value){
+            Tool.logger(StrHelper.setValue(maidStr, 'N', value))
+            return StrHelper.setValue(maidStr, 'N', value);
+        }
+    }
 }
 
 class StrHelper{
@@ -178,13 +201,13 @@ class StrHelper{
      * 由key搜索值
      * @param {string} str 
      * @param {Char} key 键名
-     * @param {number} length 数据长度
+     * @param {number} length 数据长度 为undefined代表一直截到末尾
      * @returns {undefined|string} 字符表示的数据
      */
     static getValue(str, key, length){
         let start = str.search(key);
         if(start === -1) return undefined;
-        return str.slice(start+1, start+1+length);
+        return str.slice(start+1, length===undefined?undefined:start+1+length);
     }
     /**
      * 由key value设置值
