@@ -7,7 +7,7 @@ import { CustomSpellCardManger } from "./src/danmaku/CustomSpellCardManger";
 import * as Tool from"./src/libs/scarletToolKit";
 import { itemShootManager } from "./src/danmaku/ItemShootManager";
 import { MaidManager } from "./src/maid/MaidManager";
-import { Config } from "./src/controller/Config";
+import { ConfigHelper } from "./src/controller/Config";
 import { MaidSkin } from "./src/maid/MaidSkin";
 import { EntityMaid } from "./src/maid/EntityMaid";
 
@@ -15,6 +15,7 @@ if(true){
     // World Initialize
     world.afterEvents.worldInitialize.subscribe((e) => {
         system.run(()=>{
+            ConfigHelper.init();
             PowerPoint.init_scoreboard_world();
 
             PowerPoint.init_dynamic_properties(e);
@@ -37,11 +38,46 @@ else{
 world.sendMessage("§e[Touhou Little Maid] Addon Loaded!");
 class thlm {
     static main(){
+
+        var total = 0;
+        var count = 0;
+        var max = 0;
+        var min = 999;
+        var start = 0; // ms
+        world.afterEvents.entityHurt.subscribe(event => {
+            //// 伤害信息 ////
+            let source = event.damageSource.damagingEntity;
+            if(source===undefined) source = "?"
+            else source = source.typeId
+            Tool.logger(` ${source} -> ${event.hurtEntity.typeId}: ${event.damage.toFixed(2)}`);
+
+            //// 伤害统计 ////
+            if(event.damage<0)return; // 排除治疗
+            count++;
+            total+=event.damage;
+
+            // 平均
+            let time = new Date().getTime();  
+            let average1 = total/count; // 每次伤害
+            let average2 = 0; // dps
+            if(start===0){
+                start = time;
+            }
+            else{
+                average2 = total/(time-start)*1000;
+            }
+            // 极值
+            max = Math.max(max, event.damage);
+            min = Math.min(min, event.damage);
+            Tool.logger(` Hit: ${count.toFixed(2)} | MIN: ${min.toFixed(2)} | MAX:${max.toFixed(2)} | DPH :${average1.toFixed(2)} | DPS: ${average2.toFixed(2)}`)
+
+            
+        });
         // Script Event
         system.afterEvents.scriptEventReceive.subscribe(event => {
             system.run(()=>{
                 switch(event.id){
-                    case "thlm:skin_set":
+                    case "thlm:skin_set":{ // scriptevent thlm:skin_set 6,19,20
                         let strList = event.message.split(",");
                         let numList = [];
                         for(let str of strList){
@@ -51,7 +87,31 @@ class thlm {
                         MaidSkin.setSkin(numList);
                         
                         Tool.logger(`Add skin: ${numList}`);
-                        break;
+                    }; break;
+                    case "thlm:config":{ // scriptevent thlm:config danmaku_damage:600
+                        try{
+                            let strList = event.message.split(":");
+                            if(strList.length===1){
+                                switch(event.message){
+                                    case "show":
+                                        if(event.sourceEntity !== undefined){
+                                            event.sourceEntity.runCommand(`tellraw @s {"rawtext":[{"text": "${ConfigHelper.tostring()}"}]}`);
+                                        }
+                                        
+                                        break;
+                                    default: Tool.logger("Unknown config command."); break;
+                                }
+                            }
+                            else{
+                                let value = parseInt(strList[1])
+                                ConfigHelper.set(strList[0], value)
+                                Tool.logger(`Config set: ${strList[0]} - ${value}`);
+                            }
+                        }
+                        catch{
+                            Tool.logger("Invalid config command.");
+                        }
+                    }; break;
                     case "thlm:skin_remove":
                         break;
                     case "thlm:skin_list":
@@ -163,12 +223,13 @@ class thlm {
                             }; break;
                         // 女仆专用事件
                         case "m":
-                            switch(event.id.substring(6)){
+                            switch(event.id.substring(6, 7)){
                                 case "a": MaidManager.danmakuAttack(event);       break; // a Danmaku Attack
                                 case "d": MaidManager.onDeathEvent(event);        break; // d Death
                                 case "f": MaidManager.onTameFollowSuccess(event); break; // f Follow on tamed
                                 case "h": MaidManager.returnHomeEvent(event);     break; // h Home
                                 case "i": MaidManager.inventoryModeEvent(event);  break; // i Inventory mode
+                                case "l": MaidManager.setLevelEvent(event);       break; // l Level
                                 case "m": MaidManager.onInteractEvent(event);     break; // m Master interact
                                 case "p": MaidManager.onPhotoEvent(event);        break; // p Photo
                                 case "s": MaidManager.sitModeEvent(event);        break; // s Sit mode

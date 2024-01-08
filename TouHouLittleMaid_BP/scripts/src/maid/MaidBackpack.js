@@ -1,5 +1,5 @@
 import { system, Entity,world,Vector,Dimension,Container, ItemStack } from "@minecraft/server";
-import { config } from '../../data/config'
+import { config } from "../controller/Config"
 import * as Tool from "../libs/scarletToolKit"
 import { EntityMaid } from "./EntityMaid";
 
@@ -23,7 +23,7 @@ export class MaidBackpack{
          * 初始化, 放在世界生成事件后
          */
         init(){
-            if(config.Maid.death_bag === false){
+            if(config["maid_death_bag"] === false){
                 var intervalID = system.runInterval(()=>{
                     let players = world.getAllPlayers()
                     let playerAmount = players.length;

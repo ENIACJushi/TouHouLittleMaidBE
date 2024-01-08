@@ -147,7 +147,14 @@ export class AltarCraftHelper{
                 case "touhou_little_maid:maid":
                     for(let source_item of itemStacks){
                         if(this.isItemMatchDefine(source_item, output.copy["ingredient"])){
-                            EntityMaid.fromItem(source_item, dimension, location);
+                            let lore = source_item.getLore();
+                            if(lore.length === 0) return false; // 无lore
+                            let strLore="";
+                            for(let temp of lore){
+                                strLore += temp;
+                            }
+                            let strPure = Tool.loreStr2Pure(strLore);
+                            EntityMaid.fromStr(strPure, dimension, location, false);
                             return true;
                         }
                     }

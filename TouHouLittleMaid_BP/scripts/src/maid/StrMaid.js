@@ -24,6 +24,29 @@
 import * as Tool from "../libs/scarletToolKit"
 
 export class StrMaid{
+    // L 等级
+    static Level = {
+        /**
+         * 获取等级
+         * @param {string} maidStr
+         * @returns {number|undefined}
+         */
+        get(maidStr){
+            let str = StrHelper.getValue(maidStr, 'L', 1);
+            if(str === undefined) return undefined;
+            return StrHelper.str2short(str);
+        },
+        /**
+         * 设置等级
+         * @param {string} maidStr
+         * @param {number} index
+         * @returns {string} New Maid String
+         */
+        set(maidStr, index){
+            let str = StrHelper.short2str(index);
+            return StrHelper.setValue(maidStr, 'L', str);
+        }
+    }
     // O 主人 可为空
     static Owner = {
         /**
@@ -51,7 +74,7 @@ export class StrMaid{
     // H 生命值 左2当前值 右2最大值
     static Health = {
         /**
-         * 获取生命值 
+         * 获取生命值  {current:1, max:1}
          * @param {string} maidStr
          * @returns {object|undefined} {current:1, max:1}
          */
@@ -251,6 +274,25 @@ class StrHelper{
         let low8 = str.charCodeAt(1) - 0xA000
         return high8*0x100 + low8;
     }
+
+    /**
+     * 将整数(0~4,095)转为 1 位字符
+     * 为了避开特殊字符，选定特定范围的字符作为存储用字符
+     * @param {Int16} num 整数 0 ~ 4095
+     * @returns {string} 1位字符
+     */
+    static short2str(num){
+        return String.fromCodePoint(0xA000 + num);
+    }
+    /**
+     * 将两位字符转为短整型
+     * @param {string} str 1位字符
+     * @returns {Int16} 短整型
+     */
+    static str2short(str){
+        return str.charCodeAt(0) - 0xA000;
+    }
+
     /**
      * 将正整数转为 5 位字符
      * @param {Int} num 位正整数

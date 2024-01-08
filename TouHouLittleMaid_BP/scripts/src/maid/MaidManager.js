@@ -14,7 +14,7 @@ import * as Tool from "../libs/scarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
 import { MaidBackpack } from "./MaidBackpack";
-import { config } from '../../data/config'
+import { config } from "../controller/Config"
 import { StrMaid } from "./StrMaid";
 import * as Vec from "../libs/vector3d"
 import {DanmakuShoot}  from "../danmaku/DanmakuShoot";
@@ -66,7 +66,7 @@ export class MaidManager{
         output_item.setLore(lore);
         
         // 导出胶片物品
-        if(config.Maid.death_bag){
+        if(config["maid_death_bag"]){
             if(MaidBackpack.getType(backpack) !== MaidBackpack.default){
                 let container = MaidBackpack.getContainer(backpack);
                 if(container.emptySlotsCount > 0){
@@ -139,7 +139,7 @@ export class MaidManager{
             return;
         }
 
-        let maid = EntityMaid.fromStr(strPure, event.source.dimension, event.source.location);
+        let maid = EntityMaid.fromStr(strPure, event.source.dimension, event.source.location, true);
         maid.triggerEvent("api:reborn");
         Tool.setPlayerMainHand(event.source);
     }
@@ -167,7 +167,7 @@ export class MaidManager{
                 // 使用者不是主人
                 return;
             }
-            let maid = EntityMaid.fromStr(str, event.source.dimension, event.source.location);
+            let maid = EntityMaid.fromStr(str, event.source.dimension, event.source.location, true);
             maid.triggerEvent("api:reborn");
         }
         // 转换物品
@@ -191,12 +191,16 @@ export class MaidManager{
             let player = results[0];
             if(EntityMaid.Owner.getID(maid)===undefined || EntityMaid.Owner.getID(maid)===results[0].id){
                 let backpack = EntityMaid.Backpack.getEntity(event.entity);
+                // 添加组件
                 maid.triggerEvent("api:follow_on_tame_over");
+                EntityMaid.Level.eventTamed(maid);
+
+                // 设置主人
                 EntityMaid.Owner.setID(maid, player.id);
                 MaidBackpack.setOwnerID(backpack, player.id);
             }
             else{
-                // 跟随到的主人与记录不符
+                // 跟随到的主人与记录不符 回到未驯服状态
                 maid.triggerEvent("api:follow_on_tame_over_backreborn");
             }
             // 给予玩家一个苹果
@@ -288,10 +292,11 @@ export class MaidManager{
         if(healStep >= 1){
             let healthComponent = EntityMaid.Health.getComponent(maid);
             if(healthComponent.currentValue < healthComponent.defaultValue){
-                // 回血量 2~5
+                // 回血
+                let healAmount = EntityMaid.Level.getProperty(maid, "heal");
                 healthComponent.setCurrentValue(
                     Math.min(healthComponent.defaultValue,
-                    healthComponent.currentValue + Tool.getRandomInteger(2, 5)));
+                    healthComponent.currentValue + Tool.getRandomInteger(healAmount[0], healAmount[1])));
             }
             maid.setDynamicProperty("heal_step", 0);
         }
@@ -377,6 +382,7 @@ export class MaidManager{
                 maid.location.y - maid.target.location.y,
                 maid.location.z - maid.target.location.z,
             ]);
+            let basicDamage = EntityMaid.Level.getProperty(maid, "danmaku");
             let distanceFactor = distance / 8;
             let yOffset = distance < 10 ? 0 : 0.5; // 若距离很近，向目标坐标直接发射，若很远，向上偏移一些发射避免直接打到地上
 
@@ -384,19 +390,28 @@ export class MaidManager{
                 DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
                         .setOwnerID(EntityMaid.Owner.getID(maid))
                         .setTarget(maid.target).setRandomColor().setRandomType()
-                        .setDamage(distanceFactor + 6).setGravity(0)
+                        .setDamage((distanceFactor + basicDamage)*(config["maid_damage"]/100)).setGravity(0)
                         .setVelocity(0.5 * (distanceFactor + 1))
                         .setInaccuracy(0.05).aimedShot();
             } else {
                 DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
                         .setOwnerID(EntityMaid.Owner.getID(maid))
                         .setTarget(maid.target).setRandomColor().setRandomType()
-                        .setDamage(distanceFactor + 6.5).setGravity(0)
+                        .setDamage((distanceFactor + basicDamage + 0.5)*(config["maid_damage"]/100)).setGravity(0)
                         .setVelocity(0.5 * (distanceFactor + 1))
                         .setInaccuracy(0.02).setFanNum(3).setYawTotal(Math.PI / 6)
                         .fanShapedShot();
             }
         }
+    }
+    /**
+     * 等级设置
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     */
+    static setLevelEvent(event){
+        let maid = event.entity;
+        let level = parseInt(event.id.substring(7));
+        EntityMaid.Level.set(maid, level);
     }
 }
 

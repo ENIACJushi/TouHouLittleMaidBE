@@ -11,7 +11,7 @@ import { MaidBackpack } from './MaidBackpack';
  * @param {Entity} maid 
  */
 export function MainMenu(player, maid){
-    if(config.UI === true){
+    if(config["ui_enable"] === true){
         let form = new MaidMenuUI(player, maid);
         form.main();
     }

@@ -53,24 +53,6 @@
         "minecraft:sittable": {},
         "minecraft:is_tamed": {
         },
-        "minecraft:damage_sensor": { 
-          "triggers": [
-            {
-              "cause": "attack",
-              "on_damage": {
-                "filters": {
-                  "all_of": [
-                    {"test": "is_family","subject": "damager","value": "player"},
-                    {"test": "is_owner","subject": "damager","value": true}
-                  ]
-                },
-                "event": "thlmm:m",
-                "target": "self"
-              },
-              "deals_damage": false
-            }
-          ]
-        },
         "minecraft:interact": {
           "interactions": [
             {
@@ -154,7 +136,56 @@
           "event": "thlmm:s"
         }
       },
+      ///// 等级属性 /////
+      // tame 在驯服成功后添加  basic 在生成时添加
+      "thlmm:lv1_tame": {
+        "minecraft:damage_sensor": {
+          "triggers": [
+            { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"test": "is_owner","subject": "damager","value": true} }},
+            { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } },
+            { "cause": "all", "damage_multiplier": 0.9 }
+          ]
+        }
+      },
+      "thlmm:lv1_basic":{
+        "minecraft:movement": { "value": 0.3 },
+        "minecraft:attack": {"damage": 8 },
+        "minecraft:health": {"value": 40, "max": 40 },
+        "minecraft:knockback_resistance": { "value": 0.1 }
+      },
       
+      "thlmm:lv2_tame": {
+        "minecraft:damage_sensor": {
+          "triggers": [
+            { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"test": "is_owner","subject": "damager","value": true} }},
+            { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } },
+            { "cause": "all", "damage_multiplier": 0.80 }
+          ]
+        }
+      },
+      "thlmm:lv2_basic":{
+        "minecraft:movement": { "value": 0.32 },
+        "minecraft:attack": { "damage"  : 10 },
+        "minecraft:health": { "value": 60, "max": 60 },
+        "minecraft:knockback_resistance": { "value": 0.2 }
+      },
+      
+      "thlmm:lv3_tame": {
+        "minecraft:damage_sensor": {
+          "triggers": [
+            { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"test": "is_owner","subject": "damager","value": true} }},
+            { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } },
+            { "cause": "all", "damage_multiplier": 0.65 }
+          ]
+        }
+      },
+      "thlmm:lv3_basic":{
+        "minecraft:movement": { "value": 0.35 },
+        "minecraft:attack": { "damage"  : 16},
+        "minecraft:health": { "value": 80, "max": 80 },
+        "minecraft:knockback_resistance": { "value": 0.4 }
+      },
+
       ///// 背包类别 /////
       "backpack:default":{
         "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": true}
@@ -217,11 +248,12 @@
         }
       },// 空闲
       "mode:attack":{
-        "minecraft:attack"                       : { "damage"  : 8 },
         "minecraft:behavior.melee_attack"        : { "priority": 5 },
+        
         "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
         "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
       },// 近战
+
       "mode:danmaku_attack":{
         "minecraft:behavior.ranged_attack": {
           "priority": 5,
@@ -358,7 +390,7 @@
       ///// AI属性 /////
       // 索敌
       "minecraft:behavior.nearest_attackable_target": {
-        "priority": 6,
+        "priority": 4,
         "must_reach": true,
         "must_see": true,
         "reselect_targets": true,
@@ -375,7 +407,7 @@
           }
         ]
       },
-      "minecraft:behavior.hurt_by_target": { "priority": 4 },
+      "minecraft:behavior.hurt_by_target": { "priority": 6 },
 
       // 基本移动
       "minecraft:navigation.walk": { "can_path_over_water": true, "avoid_damage_blocks": true },
@@ -403,7 +435,8 @@
             "thlmm:maid_wild",
             "environment:simple",
             "sound:ambient_mute",
-            "backpack:default"
+            "backpack:default",
+            "thlmm:lv1_basic"
           ]
         },
         "trigger": "thlmm:0"
@@ -418,7 +451,6 @@
         },
         "add": {
           "component_groups": [
-            // "thlmm:maid_tame",
             "status:follow_on_tame",
             "sound:ambient"
           ]
@@ -432,7 +464,6 @@
         },
         "add": {
           "component_groups": [
-            // "thlmm:maid_tame",
             "status:follow_on_tame",
             "sound:ambient"
           ]
@@ -453,6 +484,7 @@
       "thlmm:f" :{}, // Follow on tamed
       "thlmm:h" :{}, // Home
       "thlmm:i" :{ "remove": {"component_groups": ["thlmm:maid_tame_sit"]}, "add": {"component_groups": ["thlmm:maid_tame_inventory"]} },
+      "thlmm:l1" :{}, "thlmm:l2" :{}, "thlmm:l3" :{}, "thlmm:l4" :{}, "thlmm:l5" :{}, "thlmm:l6" :{}, // Level 1~6
       "thlmm:m" :{}, // Master interact
       "thlmm:p" :{}, // Photo
       "thlmm:s" :{ "add": {"component_groups": ["thlmm:maid_tame_sit"]}, "remove": {"component_groups": ["thlmm:maid_tame_inventory"]} },
@@ -479,12 +511,20 @@
         "remove": {"component_groups": ["status:follow_on_tame"]}
       },
 
+      // 等级
+      "api:lv_1_basic" : {"add": { "component_groups": [ "thlmm:lv1_basic" ] }}, "api:lv_1_basic_quit" : {"remove": { "component_groups": [ "thlmm:lv1_basic" ] }},
+      "api:lv_1_tame"  : {"add": { "component_groups": [ "thlmm:lv1_tame"  ] }}, "api:lv_1_tame_quit"  : {"remove": { "component_groups": [ "thlmm:lv1_tame"  ] }},
+      "api:lv_2_basic" : {"add": { "component_groups": [ "thlmm:lv2_basic" ] }}, "api:lv_2_basic_quit" : {"remove": { "component_groups": [ "thlmm:lv2_basic" ] }},
+      "api:lv_2_tame"  : {"add": { "component_groups": [ "thlmm:lv2_tame"  ] }}, "api:lv_2_tame_quit"  : {"remove": { "component_groups": [ "thlmm:lv2_tame"  ] }},
+      "api:lv_3_basic" : {"add": { "component_groups": [ "thlmm:lv3_basic" ] }}, "api:lv_3_basic_quit" : {"remove": { "component_groups": [ "thlmm:lv3_basic" ] }},
+      "api:lv_3_tame"  : {"add": { "component_groups": [ "thlmm:lv3_tame"  ] }}, "api:lv_3_tame_quit"  : {"remove": { "component_groups": [ "thlmm:lv3_tame"  ] }},
+
       // 工作模式
       "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}, "set_property":{"thlm:work": 0}}]},
       "api:mode_quit_idle":  {"sequence": [{"remove": {"component_groups": ["mode:idle"]}}]},
-      "api:mode_attack"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack"]}, "set_property":{"thlm:work": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
+      "api:mode_attack"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack"]}, "set_property":{"thlm:work": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
       "api:mode_quit_attack":{"sequence": [{"remove": {"component_groups": ["mode:attack"]}}]},
-      "api:mode_danmaku_attack"       :{"sequence": [{"add"   : {"component_groups": ["mode:danmaku_attack"]}, "set_property":{"thlm:work": 2}}]},
+      "api:mode_danmaku_attack"       :{"sequence": [{"add"   : {"component_groups": ["mode:danmaku_attack"]}, "set_property":{"thlm:work": 2}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
       "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack"]}}]},
       "api:mode_farm"       :{"sequence": [{"add"   : {"component_groups": ["mode:farm"]}, "set_property":{"thlm:work": 3}}]},
       "api:mode_quit_farm"  :{"sequence": [{"remove": {"component_groups": ["mode:farm"]}}]},

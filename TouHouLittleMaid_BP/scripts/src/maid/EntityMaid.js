@@ -1,7 +1,7 @@
 import { Entity, EntityTypes, world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack, DynamicPropertiesDefinition, WorldInitializeAfterEvent } from "@minecraft/server";
 import { MaidBackpack } from "./MaidBackpack";
 import * as Tool from "../libs/scarletToolKit"
-import { config } from '../../data/config'
+import { config } from "../controller/Config"
 import { StrMaid } from "./StrMaid";
 import { emote } from "../../data/emote";
 
@@ -16,7 +16,79 @@ export class EntityMaid{
         def.defineVector("home", {x:0, y:0, z:0}); // 家位置
         def.defineNumber("home_dim", 0);           // 家维度
         def.defineBoolean("temp_pick", false);     // 转储背包时临时记录拾取模式的属性
+        def.defineNumber("level", 1);              // 等级
         event.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get("thlmm:maid"));
+    }
+    // 等级
+    static Level = {
+        properties:[
+            {// lv.1
+                "danmaku": 12,    // 弹幕伤害
+                "heal"   : [2, 5] // 单次回血量（3秒一次）
+            },
+            {// lv.2
+                "danmaku": 18,    // 弹幕伤害
+                "heal"   : [3, 6] // 单次回血量（3秒一次）
+            },
+            {// lv.3
+                "danmaku": 24,    // 弹幕伤害
+                "heal"   : [5, 8] // 单次回血量（3秒一次）
+            }
+        ],
+        /**
+         * 获取等级
+         * @param {Entity} maid
+         * @returns {number}
+         */
+        get(maid){
+            return maid.getDynamicProperty("level");
+        },
+        /**
+         * 设置等级
+         * @param {Entity} maid
+         * @param {number} level
+         */
+        set(maid, level){
+            Tool.logger(level);
+            
+            let oldLevel = this.get(maid);
+            maid.triggerEvent(`api:lv_${oldLevel}_basic_quit`);
+            if(maid.getComponent("minecraft:is_tamed") !== undefined){
+                maid.triggerEvent(`api:lv_${oldLevel}_tame_quit`);
+            }
+
+            system.runTimeout(()=>{
+                this.eventBasic(maid, level);
+                if(maid.getComponent("minecraft:is_tamed") !== undefined){
+                    this.eventTamed(maid, level);
+                }
+            },1)
+            
+            maid.setDynamicProperty("level", level);
+        },
+        /**
+         * 触发基础事件
+         * @param {Entity} maid
+         */
+        eventBasic(maid){
+            maid.triggerEvent(`api:lv_${this.get(maid)}_basic`);
+        },
+        /**
+         * 触发驯服事件
+         * @param {Entity} maid
+         */
+        eventTamed(maid){
+            maid.triggerEvent(`api:lv_${this.get(maid)}_tame`);
+        },
+        /**
+         * 属性值获取
+         * @param {Entity} maid 
+         * @param {string} key danmaku | heal
+         * @returns {number | Array}
+         */
+        getProperty(maid, key){
+            return this.properties[this.get(maid)-1][key];
+        }
     }
     // 主人
     static Owner = {
@@ -582,6 +654,8 @@ export class EntityMaid{
         if(o_id !== undefined){
             maidStr = StrMaid.Owner.setID(maidStr, o_id);
         }
+        // 等级
+        maidStr = StrMaid.Level.set(maidStr, this.Level.get(maid));
         // 生命值
         let health = maid.getComponent("health");
         maidStr = StrMaid.Health.set(maidStr, health.currentValue, health.defaultValue);
@@ -613,7 +687,7 @@ export class EntityMaid{
                 // lore→实体时，靠是否有infos.bi判断用的是哪种保存方法，身上背的背包都会保留
                 let deathBagSuccess = false;
                 // (弃用)将物品转移到常加载区域, 若区块加载器不存在则会失败，转而使用原地生成法
-                if(config.Maid.death_bag === false){
+                if(config["maid_death_bag"] === false){
                     let loader = MaidBackpack.loader.get();
                     if(loader !== undefined){
                         // 在地底创建新背包(隐形)
@@ -659,11 +733,17 @@ export class EntityMaid{
         /// 生成女仆 ///
         var maid = dimension.spawnEntity("thlmm:maid", location);
         /// 设置状态 ///
-        // 主人ID 可为空
+        // 等级
+        this.Level.set(maid, StrMaid.Level.get(maidStr));
+        // 主人ID  可为空
         let ownerID = StrMaid.Owner.getId(maidStr);
         if(ownerID !== undefined) this.Owner.setID(maid, ownerID);
-        // 生命值
-        if(set_health) this.Health.set(maid, StrMaid.Health.get(maidStr));
+        // 生命值  延时设置，等待 level 调血
+        if(set_health){
+            system.runTimeout(()=>{
+                this.Health.set(maid, StrMaid.Health.get(maidStr).current);
+            }, 2);
+        }
         // 皮肤
         let skin = StrMaid.Skin.get(maidStr);
         this.Skin.setPack(maid, skin.pack);
@@ -721,7 +801,6 @@ export class EntityMaid{
      */
     static toLore(maid){
         let strPure = this.toStr(maid);
-        Tool.logger(strPure)
         let strLore = Tool.pureStr2Lore(strPure);
 
         let lore =[];

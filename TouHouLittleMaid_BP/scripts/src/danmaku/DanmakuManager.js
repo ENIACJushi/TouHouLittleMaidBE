@@ -13,6 +13,7 @@ import {DanmakuType}   from "./DanmakuType";
 import {EntityDanmaku} from "./EntityDanmaku";
 import {DanmakuShoot}  from "./DanmakuShoot";
 import { EntityMaid } from "../maid/EntityMaid";
+import { config } from "../controller/Config";
 
 /**
  * 初始化动态属性
@@ -23,7 +24,7 @@ export function init_dynamic_properties(e){
     {
         let def = new DynamicPropertiesDefinition();
         def.defineString("source", 15, "0"); // Entity id
-        def.defineNumber("damage", 6 ); // 伤害
+        def.defineNumber("damage", config["danmaku_damage"] ); // 伤害
         def.defineString("owner" , 15); // 主人，女仆弹幕专用
     
         for(let i=1; i<=DanmakuType.AMOUNT; i++){
@@ -110,14 +111,16 @@ export function danmakuHitEntityEvent(ev){
             let targetOwnerID = EntityMaid.Owner.getID(target); // 目标的主人
             if(targetOwnerID !== undefined){
                 // 主人不伤害自己的女仆
+                // 脚本发射
                 if(targetOwnerID === danmaku.getDynamicProperty("source")){
                     return;
                 }
+                // 御币发射
+                if(source.id !== undefined && targetOwnerID === source.id){
+                    return;
+                }
                 // 女仆不伤害相同主人的女仆
-                
-                Tool.logger(targetOwnerID);
                 let sourceOwnerID = danmaku.getDynamicProperty("owner");
-                Tool.logger(sourceOwnerID);
                 if(sourceOwnerID!==undefined && sourceOwnerID === targetOwnerID){
                     return;
                 }
@@ -239,13 +242,13 @@ export function fairy_shoot(fairy){
         if (Math.random() <= AIMED_SHOT_PROBABILITY) {
             DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
                     .setTarget(fairy.target).setRandomColor().setRandomType()
-                    .setDamage(distanceFactor + 1).setGravity(0)
+                    .setDamage()((config["fairy_damage"]/100)*(distanceFactor + 1)).setGravity(0)
                     .setVelocity(0.2 * (distanceFactor + 1))
                     .setInaccuracy(0.05).aimedShot();
         } else {
             DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
                     .setTarget(fairy.target).setRandomColor().setRandomType()
-                    .setDamage(distanceFactor + 1.5).setGravity(0)
+                    .setDamage((config["fairy_damage"]/100)*(distanceFactor + 1.5)).setGravity(0)
                     .setVelocity(0.2 * (distanceFactor + 1))
                     .setInaccuracy(0.02).setFanNum(3).setYawTotal(Math.PI / 6)
                     .fanShapedShot();
