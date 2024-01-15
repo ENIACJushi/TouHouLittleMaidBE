@@ -1,0 +1,74 @@
+{
+	"format_version": "1.17.0",
+	"minecraft:block": {
+		"description": {
+			"identifier": "touhou_little_maid:gold_microwaver",
+			"register_to_creative_menu": false,
+			"properties": {
+				"thlm:door": [true, false],
+				"thlm:item": [0, 1],
+				"thlm:status": [true, false],
+				"thlm:direction":[0,1,2,3,4]
+			}
+		},
+		"permutations": [
+			{
+				"condition": "query.block_property('thlm:direction') == 1",
+				"components": {
+					"minecraft:transformation": { "rotation": [ 0, 0, 0 ] }
+				}
+			},
+			{
+				"condition": "query.block_property('thlm:direction') == 2",
+				"components": {
+					"minecraft:transformation": { "rotation": [ 0, 270, 0 ] }
+				}
+			},
+			{
+				"condition": "query.block_property('thlm:direction') == 3",
+				"components": {
+					"minecraft:transformation": { "rotation": [ 0, 180, 0 ] }
+				}
+			},
+			{
+				"condition": "query.block_property('thlm:direction') == 4",
+				"components": {
+					"minecraft:transformation": { "rotation": [ 0, 90, 0 ] }
+				}
+			},
+			{
+				"condition": "query.block_property('thlm:status')||query.block_property('thlm:door')",
+				"components": {
+					"minecraft:light_emission": 10
+				}
+			}
+		],
+		"components": {
+            "minecraft:destructible_by_mining": { "seconds_to_destroy": 0.5 },
+			"minecraft:light_dampening": 0,
+            "minecraft:destructible_by_explosion": { "explosion_resistance": 0.25 },
+            "minecraft:map_color": "#FFD700",
+			"minecraft:geometry": "geometry.touhou_little_maid.gold_microwaver_place",
+			"minecraft:material_instances": { "*": { "texture": "gold_microwaver", "render_method": "opaque" } },
+            "minecraft:loot": "loot_tables/blocks/gold_microwaver.json",
+			"minecraft:collision_box": { "origin": [ -8.0, 0.0, -7.0 ], "size": [ 16.0, 11.0, 13.0 ] },
+            "minecraft:selection_box": { "origin": [ -8.0, 0.0, -7.0 ], "size": [ 16.0, 11.0, 13.0 ] },
+			
+			"minecraft:on_player_destroyed":{
+                "event" : "thlm:destory",
+                "target": "self"
+            },
+			"minecraft:on_placed": {"event": "thlm:place", "target": "self"},
+			"minecraft:on_interact": {"event": "interact", "target": "self"}
+        },
+		"events": {
+			"thlm:destory":{
+				"run_command": { "command": [ "event entity @e[type=touhou_little_maid:gold_microwaver,c=1,r=0.5] thlm:md" ] }
+			},
+			"thlm:place":{
+				
+			},
+			"interact":{}
+		}
+	}
+}

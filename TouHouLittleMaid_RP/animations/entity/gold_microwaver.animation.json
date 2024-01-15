@@ -1,0 +1,44 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.touhou_little_maid.gold_microwaver.door_open": {
+			"loop": true,
+			"bones": {
+				"door": {
+					"rotation": [0, 120, 0]
+				}
+			}
+		},
+		"animation.touhou_little_maid.gold_microwaver.basic": {
+			"loop": true,
+			"bones": {
+				"head": {
+					"scale": 0.25
+				},
+				"light": {
+					"scale": [1, "math.min(1, q.property('thlm:progress'))", 1]
+				},
+				"root": {
+					"rotation": [0, "query.variant*90", 0],
+					"position": [0, -0.1, 0]
+				},
+				"item_float": {
+					"scale": 0.5,
+					"rotation": [0, "q.life_time*20", 0],
+					"position": [0, "math.cos(q.life_time * 75) * 1+0.5", 0]
+				},
+				"item_flat": {
+					"scale": 0.5
+				}
+			}
+		},
+		"animation.touhou_little_maid.gold_microwaver.rotate": {
+			"loop": true,
+			"bones": {
+				"plate": {
+					"rotation": [0, "v.plate_rotate", 0]
+				}
+			}
+		}
+	}
+}

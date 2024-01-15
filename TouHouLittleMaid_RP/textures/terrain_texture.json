@@ -4,11 +4,9 @@
   "padding": 8,
   "num_mip_levels": 4,
   "texture_data": {
-    "altar_torii_block" : {
-      "textures" : "textures/blocks/altar_torii_block"
-    },
-    "altar_log_block" : {
-      "textures" : "textures/blocks/altar_log_block"
-   }
+    "altar_torii_block" : { "textures" : "textures/blocks/altar_torii_block" },
+    "altar_log_block" : { "textures" : "textures/blocks/altar_log_block" },
+    "gold_microwaver":{ "textures" : "textures/entity/gold_microwaver" },
+    "warden_skull": {"textures": "textures/entity/warden/warden"}
   }
 }

@@ -1,0 +1,36 @@
+{
+	"format_version": "1.12.10",
+	"minecraft:recipe_shaped": {
+		"description": {
+			"identifier": "touhou_little_maid:dragon_skull"
+		},
+		"tags": [ "crafting_table" ],
+		"pattern": [
+			"LRL",
+			"ASA",
+			"LFL"
+		],
+		"key": {
+			"L": {
+				"item": "minecraft:lapis_lazuli"
+			},
+			"A": {
+				"item": "minecraft:amethyst_shard"
+			},
+			"F":{
+				"item": "minecraft:chorus_flower"
+			},
+			"R":{
+				"item": "minecraft:lightning_rod"
+			},
+			"S":{
+				"item": "minecraft:skull",
+				"data": 5
+			}
+		},
+		"result": {
+			"item": "touhou_little_maid:dragon_skull",
+			"count": 1
+		}
+	}
+}

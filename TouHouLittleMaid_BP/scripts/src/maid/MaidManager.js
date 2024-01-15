@@ -9,7 +9,7 @@
  *  thlmm:<女仆id>
  *  thlmo:<主人生物id>
  */
-import { ItemStack, world, Entity,Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, System } from "@minecraft/server";
+import { ItemStack, world, Entity,Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, System, EntityDieAfterEvent } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
@@ -412,6 +412,16 @@ export class MaidManager{
         let maid = event.entity;
         let level = parseInt(event.id.substring(7));
         EntityMaid.Level.set(maid, level);
+    }
+    /**
+     * 女仆击杀
+     * 调用此事件时 event.damageSource.damagingEntity 必定存在且为女仆
+     * @param {EntityDieAfterEvent} event 
+     */
+    static killEvent(event){
+        let maid = event.damageSource.damagingEntity;
+        let oldAmount = EntityMaid.Kill.get(maid);
+        EntityMaid.Kill.set(maid, oldAmount+1);
     }
 }
 

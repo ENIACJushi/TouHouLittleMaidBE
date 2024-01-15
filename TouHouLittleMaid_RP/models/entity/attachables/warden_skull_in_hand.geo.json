@@ -1,0 +1,32 @@
+{
+	"format_version": "1.16.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.touhou_little_maid.warden_skull_in_hand",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 4,
+				"visible_bounds_height": 5.5,
+				"visible_bounds_offset": [0, 2.25, 0]
+			},
+			"bones": [
+				{
+					"name": "rightItem",
+					"pivot": [0, 0, 0],
+					"binding": "'rightitem'"
+				},
+				{
+					"name": "item",
+					"parent": "rightItem",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-4, 0, -2.5], "size": [8, 8, 5], "uv": [0, 16]},
+						{"origin": [-9, 4.5, 0], "size": [5, 5, 0], "uv": [29, 19]},
+						{"origin": [4, 4.5, 0], "size": [5, 5, 0], "uv": [29, 3]}
+					]
+				}
+			]
+		}
+	]
+}

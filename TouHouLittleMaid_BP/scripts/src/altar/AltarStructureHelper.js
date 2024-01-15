@@ -132,7 +132,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
     }
     /**
      * 
-     * @param {Vector3} blockLocation 
+     * @param {Vector} blockLocation 
      * @param {Player} player 
      * @param {ItemStack} item 
      */

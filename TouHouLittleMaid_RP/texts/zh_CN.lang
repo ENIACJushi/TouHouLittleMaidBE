@@ -10,6 +10,11 @@ item.touhou_little_maid:maid_backpack_small=小背包
 item.touhou_little_maid:maid_backpack_middle=中背包
 item.touhou_little_maid:maid_backpack_big=大背包
 
+item.touhou_little_maid:gold_microwaver=§6黄金微波炉
+item.touhou_little_maid:dragon_skull=龙头(待微波)
+item.touhou_little_maid:magic_powder=§5神秘尘
+item.touhou_little_maid:warden_skull=循声守卫头颅
+
 ##### 实体 #####
 entity.touhou_little_maid:chair.name=椅子
 entity.touhou_little_maid:maid.name=小女仆

@@ -1,0 +1,79 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "touhou_little_maid:gold_microwaver",
+      "materials": {
+        "default": "wing_default",
+        "solid": "warden"
+      },
+      "textures" : {
+        "default": "textures/entity/gold_microwaver.png",
+
+
+        "void": "textures/entity/void",
+        "skull5": "textures/entity/dragon_skull",
+        "chicken":  "textures/items/chicken_raw",
+        "porkchop":  "textures/items/porkchop_raw",
+        "beef":  "textures/items/beef_raw",
+        "mutton":  "textures/items/mutton_raw",
+        "rabbit":  "textures/items/rabbit_raw",
+        "cod":  "textures/items/fish_raw",
+        "salmon":  "textures/items/fish_salmon_raw",
+        "potato":  "textures/items/potato",
+        "kelp":  "textures/items/kelp",
+        "chorus_fruit":  "textures/items/chorus_fruit",
+
+        "magic_powder": "textures/items/microwaver/magic_powder",
+        "chicken_cooked": "textures/items/chicken_cooked",
+        "cooked_porkchop":  "textures/items/porkchop_cooked",
+        "cooked_beef":  "textures/items/beef_cooked",
+        "cooked_mutton":  "textures/items/mutton_cooked",
+        "cooked_rabbit":  "textures/items/rabbit_cooked",
+        "cooked_cod":  "textures/items/fish_cooked",
+        "cooked_salmon":  "textures/items/fish_salmon_cooked",
+        "baked_potato":  "textures/items/potato_baked",
+        "dried_kelp":  "textures/items/dried_kelp",
+        "popped_chorus_fruit":  "textures/items/chorus_fruit_popped"
+
+
+      },
+      "geometry":  {
+        "default": "geometry.touhou_little_maid.gold_microwaver",
+        "plate": "geometry.touhou_little_maid.gold_microwaver_plate",
+
+
+        "void": "geometry.touhou_little_maid.void",
+        "skull5": "geometry.touhou_little_maid.microwaver_skull5",
+        "item_flat": "geometry.touhou_little_maid.microwaver_item_flat",
+        "item_float": "geometry.touhou_little_maid.microwaver_item_float"
+
+      },
+      "animations": {
+        "basic": "animation.touhou_little_maid.gold_microwaver.basic",
+        "door_open": "animation.touhou_little_maid.gold_microwaver.door_open",
+        "controller_door_open": "controller.animation.touhou_little_maid.gold_micorwaver.door_open",
+        "rotate": "animation.touhou_little_maid.gold_microwaver.rotate"
+      },
+      "scripts": {
+        "initialize": [
+          "v.plate_rotate=0;"
+        ],
+        "pre_animation": [
+          "v.plate_rotate=v.plate_rotate+(q.property('thlm:status')?0.6:0);"
+        ],
+        "animate": [
+          "basic",
+          "controller_door_open",
+          "rotate"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.touhou_little_maid.gold_microwaver",
+        "controller.render.touhou_little_maid.gold_microwaver_plate",
+        "controller.render.touhou_little_maid.microwaver_material",
+        "controller.render.touhou_little_maid.microwaver_result"
+    ]
+    }
+  }
+}

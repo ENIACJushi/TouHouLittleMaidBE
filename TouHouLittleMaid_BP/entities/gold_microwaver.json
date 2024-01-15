@@ -1,0 +1,84 @@
+{
+  "format_version": "1.18.10",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "touhou_little_maid:gold_microwaver",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "properties":{
+        "thlm:item"       : {"type": "int"  , "default": 0    , "range":[0, 999]       , "client_sync": true},
+        "thlm:progress"   : {"type": "float", "default": 0.0  , "range":[0.0, 1.0]     , "client_sync": true},
+        "thlm:time"       : {"type": "int"  , "default": 0    , "range":[0, 2147483647], "client_sync": true},
+        "thlm:total_time" : {"type": "int"  , "default": 180  , "range":[0, 2147483647], "client_sync": true},
+        "thlm:amount"     : {"type": "int"  , "default": 0    , "range":[0, 2147483647], "client_sync": true},
+        "thlm:status"     : {"type": "bool" , "default": false, "client_sync": true}
+      }
+    },
+    
+    "component_groups": {
+      "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
+      "north":{"minecraft:variant": { "value": 0 }},
+      "east": {"minecraft:variant": { "value": 1 }},
+      "south":{"minecraft:variant": { "value": 2 }},
+      "west": {"minecraft:variant": { "value": 3 }},
+      "thlm:door_open":{
+        "minecraft:is_baby": {}
+      },
+      "activated":{
+        "minecraft:timer": {
+          "looping": true,
+          "time": 1,
+          "time_down_event": {
+            "event": "step"
+          }
+        }
+      }
+    },
+    "components": {
+      "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+      "minecraft:collision_box": { "width": 0, "height": 0 },
+      "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+      "minecraft:persistent": {},
+      "minecraft:knockback_resistance": { "value": 1.0 }
+    },
+    "events": {
+      "thlmw:d":{ "add": { "component_groups": [ "despawn" ] } },
+      "thlmw:f":{},
+      "thlmw:i":{},
+      "thlmw:s":{},
+      "step":{
+        "sequence": [
+          {
+            "filters": { "test": "float_property", "domain": "thlm:progress", "value": 1, "operator":"<"},
+            "set_property": {
+              "thlm:time": "q.property('thlm:time')+1",
+              "thlm:progress": "q.property('thlm:time')/q.property('thlm:total_time')"
+            }
+          },
+          {
+            "filters": { "test": "float_property", "domain": "thlm:progress", "value": 1, "operator":">="},
+            "remove": { "component_groups": [ "activated" ] }, "set_property": { "thlm:status": false },
+            "trigger": "thlmw:f"
+          }
+        ]
+      },
+      
+      "South":{ "add": { "component_groups": [ "south"] } },
+      "East" :{ "add": { "component_groups": [ "east"] } },
+      "North":{ "add": { "component_groups": [ "north"] } },
+      "West" :{ "add": { "component_groups": [ "west"] } },
+
+      "door_open":{"add": { "component_groups": [ "thlm:door_open" ] }},
+      "door_close":{"remove": { "component_groups": [ "thlm:door_open" ] }},
+
+      "activate":{ "add": { "component_groups": [ "activated" ] }, "set_property": { "thlm:status": true } },
+      "deactivate":{ "remove": { "component_groups": [ "activated" ] }, "set_property": { "thlm:status": false } },
+
+      "item_skull5":{"set_property": { "thlm:item": 1 }},
+
+      "check":{
+        "run_command": { "command": [ "execute as @s at @s unless block ~~~ touhou_little_maid:gold_microwaver run event entity @s thlmw:d" ] }
+      }
+    }
+  }
+}

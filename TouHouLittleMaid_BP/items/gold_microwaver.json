@@ -1,0 +1,23 @@
+{
+  "format_version": "1.18.0",
+  "minecraft:item": {
+    "description": {
+      "category": "Equipment",
+      "identifier": "touhou_little_maid:gold_microwaver_item"
+    },
+    "components": {
+      "minecraft:icon": {
+        "texture": "touhou_little_maid.gold_microwaver"
+      },
+      "minecraft:display_name": {
+        "value": "item.touhou_little_maid:gold_microwaver"
+      },
+      "minecraft:block_placer": {
+        "block": "touhou_little_maid:gold_microwaver",
+        "use_on": []
+      },
+      "minecraft:hand_equipped": true
+    },
+    "events": {}
+  }
+}

@@ -21,6 +21,12 @@
     "touhou_little_maid.smart_slab_has_maid":{"textures":"textures/items/smart_slab_has_maid"},
     "touhou_little_maid.maid_backpack_small":{"textures":"textures/items/maid_backpack_small"},
     "touhou_little_maid.maid_backpack_middle":{"textures":"textures/items/maid_backpack_middle"},
-    "touhou_little_maid.maid_backpack_big":{"textures":"textures/items/maid_backpack_big"}
+    "touhou_little_maid.maid_backpack_big":{"textures":"textures/items/maid_backpack_big"},
+
+    "touhou_little_maid.gold_microwaver":{"textures":"textures/items/microwaver/gold_microwaver"},
+    "touhou_little_maid.dragon_skull":{"textures":"textures/items/microwaver/dragon_skull"},
+    "touhou_little_maid.magic_powder":{"textures":"textures/items/microwaver/magic_powder"},
+    "touhou_little_maid.warden_skull": {"textures":"textures/items/warden_skull"}
+    
   }
 }

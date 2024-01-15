@@ -1,0 +1,97 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.touhou_little_maid.gold_microwaver": {
+      "geometry": "Geometry.default",
+      "materials": [ { "*": "Material.default" } ],
+      "textures": [ "Texture.default" ]
+    },
+    "controller.render.touhou_little_maid.gold_microwaver_plate":{
+      "geometry": "Geometry.plate",
+      "materials": [ { "*": "Material.default" } ],
+      "textures": [ "Texture.default" ]
+    },
+    "controller.render.touhou_little_maid.microwaver_material":{
+      "arrays": {
+        "geometries": {
+          "Array.geos": [
+            "Geometry.void",
+            "Geometry.skull5",
+
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat"
+          ]
+        },
+        "textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.skull5",
+
+            "Texture.chicken",
+            "Texture.porkchop",
+            "Texture.beef",
+            "Texture.mutton",
+            "Texture.rabbit",
+            "Texture.cod",
+            "Texture.salmon",
+            "Texture.potato",
+            "Texture.kelp",
+            "Texture.chorus_fruit"
+					]
+				}
+      },
+      "geometry": "Array.geos[query.property('thlm:progress')<1?query.property('thlm:item'):0]",
+      "materials": [ { "*": "Material.solid" } ],
+      "textures": [ "Array.skins[query.property('thlm:progress')<1?query.property('thlm:item'):0]"]
+    },
+    "controller.render.touhou_little_maid.microwaver_result":{
+      "arrays": {
+        "geometries": {
+          "Array.geos": [
+            "Geometry.void",
+            "Geometry.item_float",
+
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat",
+            "Geometry.item_flat"
+          ]
+        },
+        "textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.magic_powder",
+
+            "Texture.chicken_cooked",
+            "Texture.cooked_porkchop",
+            "Texture.cooked_beef",
+            "Texture.cooked_mutton",
+            "Texture.cooked_rabbit",
+            "Texture.cooked_cod",
+            "Texture.cooked_salmon",
+            "Texture.baked_potato",
+            "Texture.dried_kelp",
+            "Texture.popped_chorus_fruit"
+					]
+				}
+      },
+      "geometry": "Array.geos[query.property('thlm:progress')<1?0:query.property('thlm:item')]",
+      "materials": [ { "*": "Material.solid" } ],
+      "textures": [ "Array.skins[query.property('thlm:progress')<1?0:query.property('thlm:item')]" ]
+    }
+  }
+}

@@ -266,13 +266,15 @@
         { "wingRight": "Material.wing_default" },
         { "wingRightUp": "Material.wing_default" },
         { "wingRightDown": "Material.wing_default" },
+        { "sinFloat": "Material.wing_default"},
 
         { "wingLeft_": "Material.wind_solid" },
         { "wingLeftUp_": "Material.wind_solid" },
         { "wingLeftDown_": "Material.wind_solid" },
         { "wingRight_": "Material.wind_solid" },
         { "wingRightUp_": "Material.wind_solid" },
-        { "wingRightDown_": "Material.wind_solid" }
+        { "wingRightDown_": "Material.wind_solid" },
+        { "sinFloat_": "Material.wind_solid"}
       ],
       "textures": [
         "Array.skins[q.property('thlm:skin_pack')==0?q.property('thlm:skin_index')+1:0]"

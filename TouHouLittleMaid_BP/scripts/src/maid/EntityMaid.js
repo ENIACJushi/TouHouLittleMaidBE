@@ -17,6 +17,7 @@ export class EntityMaid{
         def.defineNumber("home_dim", 0);           // 家维度
         def.defineBoolean("temp_pick", false);     // 转储背包时临时记录拾取模式的属性
         def.defineNumber("level", 1);              // 等级
+        def.defineNumber("kill", 0);               // 杀敌数
         event.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get("thlmm:maid"));
     }
     // 等级
@@ -203,6 +204,24 @@ export class EntityMaid{
         emptyStr(){ return String.fromCodePoint(this.strOffset + 0x03); },
         halfStr(){ return String.fromCodePoint(this.strOffset + 0x04); },
         fullStr(){ return String.fromCodePoint(this.strOffset + 0x05); }
+    }
+    static Kill = {
+        /**
+         * 获取杀敌数
+         * @param {Entity} maid 
+         * @returns {number}
+         */
+        get(maid){
+            return maid.getDynamicProperty("kill");
+        },
+        /**
+         * 设置杀敌数
+         * @param {Entity} maid 
+         * @param {number} amount
+         */
+        set(maid, amount){
+            maid.setDynamicProperty("kill", amount);
+        }
     }
     // 皮肤
     static Skin = {
@@ -656,6 +675,8 @@ export class EntityMaid{
         }
         // 等级
         maidStr = StrMaid.Level.set(maidStr, this.Level.get(maid));
+        // 杀敌数
+        maidStr = StrMaid.Kill.set(maidStr, this.Kill.get(maid));
         // 生命值
         let health = maid.getComponent("health");
         maidStr = StrMaid.Health.set(maidStr, health.currentValue, health.defaultValue);
@@ -735,6 +756,8 @@ export class EntityMaid{
         /// 设置状态 ///
         // 等级
         this.Level.set(maid, StrMaid.Level.get(maidStr));
+        // 杀敌数
+        this.Kill.set(maid, StrMaid.Kill.get(maidStr));
         // 主人ID  可为空
         let ownerID = StrMaid.Owner.getId(maidStr);
         if(ownerID !== undefined) this.Owner.setID(maid, ownerID);

@@ -1,0 +1,35 @@
+{
+	"format_version": "1.12.10",
+	"minecraft:recipe_shaped": {
+		"description": {
+			"identifier": "touhou_little_maid:gold_microwaver_item"
+		},
+		"tags": [ "crafting_table" ],
+		"pattern": [
+			" B ",
+			"PGP",
+			"IEI"
+		],
+		"key": {
+			"B": {
+				"item": "minecraft:bell"
+			},
+			"P": {
+				"item": "minecraft:blaze_powder"
+			},
+			"G": {
+				"item": "minecraft:yellow_stained_glass"
+			},
+			"I":{
+				"item": "minecraft:gold_ingot"
+			},
+			"E":{
+				"item": "minecraft:end_crystal"
+			}
+		},
+		"result": {
+			"item": "touhou_little_maid:gold_microwaver_item",
+			"count": 1
+		}
+	}
+}

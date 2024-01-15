@@ -1,0 +1,27 @@
+{
+	"format_version" : "1.10.0",
+	"animation_controllers" : {
+		"controller.animation.touhou_little_maid.gold_micorwaver.door_open" : {
+			"initial_state" : "default",
+			"states" : {
+				"default" : {
+					"transitions" : [
+						{
+							"open" : "query.is_baby"
+						}
+					],
+					"blend_transition": 0.8
+				},
+				"open" : {
+					"animations" : [ "door_open" ],
+					"transitions" : [
+						{
+							"default" : "!query.is_baby"
+						}
+					],
+					"blend_transition": 0.8
+				}
+			}
+		}
+	}
+}

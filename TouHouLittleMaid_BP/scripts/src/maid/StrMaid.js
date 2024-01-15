@@ -24,6 +24,7 @@
 import * as Tool from "../libs/scarletToolKit"
 
 export class StrMaid{
+    // L O H S W B P N K
     // L 等级
     static Level = {
         /**
@@ -45,6 +46,28 @@ export class StrMaid{
         set(maidStr, index){
             let str = StrHelper.short2str(index);
             return StrHelper.setValue(maidStr, 'L', str);
+        }
+    }
+    static Kill = {
+        /**
+         * 获取杀敌数
+         * @param {string} maidStr
+         * @returns {number|undefined}
+         */
+        get(maidStr){
+            let str = StrHelper.getValue(maidStr, 'K', 2);
+            if(str === undefined) return undefined;
+            return StrHelper.str2int(str.slice(0, 2));
+        },
+        /**
+         * 设置杀敌数
+         * @param {string} maidStr
+         * @param {number} amount
+         * @returns {string} New Maid String
+         */
+        set(maidStr, amount){
+            let str = StrHelper.int2str(amount);
+            return StrHelper.setValue(maidStr, 'K', str);
         }
     }
     // O 主人 可为空
