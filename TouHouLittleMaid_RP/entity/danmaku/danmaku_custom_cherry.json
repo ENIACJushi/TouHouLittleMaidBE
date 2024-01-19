@@ -1,0 +1,43 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "thlmc:danmaku_custom_cherry",
+      "min_engine_version": "1.8.0",
+      "materials": {
+        "default": "danmaku_blending"
+      },
+      "textures": {
+        "default": "textures/entity/void"
+      },
+      "geometry": {
+        "default": "geometry.danmaku_custom_cherry"
+      },
+      "particle_effects": {
+        "cherry_particle": "touhou_little_maid:cherry_leaves_particle"
+      },
+      "animations": {
+        "cherry_particle": "animation.touhou_little_maid.danmaku.cherry_particle",
+        "cherry": "animation.touhou_little_maid.danmaku.cherry",
+        "life":"animation.touhou_little_maid.danmaku.life",
+        "cherry_controller":"controller.animation.touhou_little_maid.danmaku_cherry"
+      },
+      "scripts": {
+        "initialize": [
+          "variable.speed=0;"
+        ],
+        "pre_animation": [
+          "variable.speed=(variable.speed==0)?(q.ground_speed):(variable.speed);",
+          "v.distance=q.property('thlm:distance');"
+        ],
+        "animate": [
+          "cherry_controller",
+          "life"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.touhou_little_maid.default"
+      ]
+    }
+  }
+}

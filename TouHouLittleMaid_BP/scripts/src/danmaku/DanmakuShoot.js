@@ -139,15 +139,23 @@ export class DanmakuShoot{
             // 旋转轴与发射向量垂直，且二者所在平面与水平面垂直
             // 即与两向量垂直的向量（平面的法向量）与水平面平行（y=0）
             // 由点积，设该法向量为（1，0，-x1/z1）
-            yawAxis = [1,
-                -( v[0] + (v[2]*v[2])/v[0] ) / v[1],
-                v[2]/v[0]]
+            if(v[0]===0){
+                yawAxis = [0, -v[1], v[2]]
+            }
+            else{
+                yawAxis = [1,
+                    -( v[0] + (v[2]*v[2])/v[0] ) / v[1],
+                    v[2]/v[0]]
+            }
         }
+        
         yawAxis = Vec.normalize(yawAxis)
+        
         // 绕发射向量旋转旋转向量
         if(this.axisRotation!=0){
             yawAxis = Vec.rotate_axis(yawAxis, v, this.axisRotation);
         }
+        
         // 绕发射和中轴所在平面的法向量旋转发射向量
         if(this.directionRotation!=0){
             v = Vec.rotate_axis(v, [1,0,-v[0]/v[2]], this.directionRotation);
@@ -156,7 +164,6 @@ export class DanmakuShoot{
         for (let i = 1; i <= this.fanNum; i++) {
             let v1 = Vec.rotate_axis(v, yawAxis, yaw);
             yaw = yaw + addYaw;
-
             danmaku.shoot(v1[0], v1[1], v1[2], this.velocity, this.inaccuracy);
         }
         return true;

@@ -5,7 +5,7 @@ export const tagDefines = {
     "forge:rods/wooden": [
         {"item": "minecraft:stick"}
     ],
-    "thlm:gohei":[
+    "thlm:gohei_lv1":[
         {"item": "touhou_little_maid:hakurei_gohei_pellet"},
         {"item": "touhou_little_maid:hakurei_gohei_orbs"},
         {"item": "touhou_little_maid:hakurei_gohei_ball"},
@@ -16,5 +16,9 @@ export const tagDefines = {
         {"item": "touhou_little_maid:hakurei_gohei_star"},
         {"item": "touhou_little_maid:hakurei_gohei_big_star"},
         {"item": "touhou_little_maid:hakurei_gohei_glowey_ball"}
+    ],
+    "thlm:gohei":[
+        {"tag": "thlm:gohei_lv1"},
+        {"item": "touhou_little_maid:gohei_cherry"}
     ]
 }

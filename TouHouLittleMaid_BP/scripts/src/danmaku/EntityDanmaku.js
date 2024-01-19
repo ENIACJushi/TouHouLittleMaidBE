@@ -62,6 +62,7 @@ export class EntityDanmaku{
         // Set color
         danmaku.triggerEvent(DanmakuColor.getTriggerEvent(this.color));
         // Set source
+        
         if(this.thrower !== false){
             danmaku.setDynamicProperty("source", this.thrower.id);
         }
@@ -135,8 +136,10 @@ export class EntityDanmaku{
         // Set color
         danmaku.triggerEvent(DanmakuColor.getTriggerEvent(this.color));
         // Set source
+        
         if(this.thrower !== false){
             danmaku.setDynamicProperty("source", this.thrower.id);
+            
         }
         // Set damage
         danmaku.setDynamicProperty("damage", this.damage);

@@ -1,0 +1,53 @@
+{
+  "format_version": "1.18.0",
+  "minecraft:item": {
+    "description": {
+      "category": "Equipment",
+      "identifier": "touhou_little_maid:gohei_cherry"
+    },
+    "components": {
+      "minecraft:icon": {
+        "texture": "touhou_little_maid.hakurei_gohei"
+      },
+      "minecraft:hand_equipped": true,
+      "minecraft:enchantable":{
+        "slot": "elytra", "value": 15
+      },
+      "minecraft:cooldown": {
+        "category": "gohei_cherry",
+        "duration": 0.01
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": ["minecraft:paper"],
+            "repair_amount": 32
+          }
+        ]
+      },
+      "minecraft:durability": {
+        "damage_chance": {
+          "min": 10,
+          "max": 50
+        },
+        "max_durability": 300
+      },
+      "minecraft:on_use": {
+        "on_use": {
+          "event": "thlm:is" ,
+          "target": "self"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "item.touhou_little_maid:gohei_cherry"
+      },
+      "minecraft:max_stack_size": 1
+    },
+    "events": {
+      "thlm:is": {
+        "swing": {},
+        "damage": {"amount": 1,"type": "magic"}
+      }
+    }
+  }
+}

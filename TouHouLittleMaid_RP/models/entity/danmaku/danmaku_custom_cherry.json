@@ -1,0 +1,39 @@
+{
+	"format_version": "1.16.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.danmaku_custom_cherry",
+				"texture_width": 416,
+				"texture_height": 64,
+				"visible_bounds_width": 5,
+				"visible_bounds_height": 5,
+				"visible_bounds_offset": [0, 0.5, 0]
+			},
+			"bones": [
+				{
+					"name": "danmaku",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "cherry",
+					"parent": "danmaku",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "cherry_locator",
+					"parent": "cherry",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "bone",
+					"parent": "cherry_locator",
+					"pivot": [0, 0, 0],
+					"locators": {
+						"cherry_particle": [0, 0, 0]
+					}
+				}
+			]
+		}
+	]
+}

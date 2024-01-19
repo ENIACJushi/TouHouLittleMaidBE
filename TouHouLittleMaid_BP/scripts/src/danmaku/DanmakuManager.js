@@ -14,6 +14,8 @@ import {EntityDanmaku} from "./EntityDanmaku";
 import {DanmakuShoot}  from "./DanmakuShoot";
 import { EntityMaid } from "../maid/EntityMaid";
 import { config } from "../controller/Config";
+import { GoheiCherry } from "./item/GoheiCherry";
+import { DanmakuInterface } from "./DanmakuInterface";
 
 /**
  * 初始化动态属性
@@ -26,10 +28,15 @@ export function init_dynamic_properties(e){
         def.defineString("source", 15, "0"); // Entity id
         def.defineNumber("damage", config["danmaku_damage"] ); // 伤害
         def.defineString("owner" , 15); // 主人，女仆弹幕专用
+        def.defineNumber("piercing", 1);// 穿透力  最多可以攻击一条线上的几个实体
     
+        // 注册默认弹幕
         for(let i=1; i<=DanmakuType.AMOUNT; i++){
             e.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get(DanmakuType.getEntityName(i)));
         }
+        // 注册自定义弹幕
+        e.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get("thlmc:danmaku_custom_cherry"));
+        
     }
     
 }
@@ -73,73 +80,55 @@ function danmakuHitEvent(ev){
     }
 }
 
+// 记录正在删除的弹幕
+var despawningDanmaku = {
+
+}
 /**
  * 弹幕击中实体
  * @param {ProjectileHitEntityAfterEvent} ev 
  */
 export function danmakuHitEntityEvent(ev){
-    let projectile = ev.projectile;
-    let hit_info = ev.getEntityHit()
-    if(hit_info != null){
-        // Get source entity by event or property
-        // let damageOptions = {"damagingProjectile": projectile}; // 弹射物伤害
-        let damageOptions = {"cause" : EntityDamageCause.magic} // 魔法伤害
-        let source = ev.source;
-        let target = hit_info.entity;
-        let danmaku = ev.projectile;
+    system.runTimeout(()=>{
+        // 收集信息
+        var danmaku = ev.projectile;
+        if(danmaku===undefined || despawningDanmaku[danmaku.id]) return;
+        var hit_info = ev.getEntityHit()
+        if(hit_info === null) return;
+        // Tool.logger(`${danmaku.location.x}, ${danmaku.location.y}, ${danmaku.location.z}`)
+        // 施加伤害
+        if(!DanmakuInterface.applyDamage(ev.source, danmaku, hit_info.entity))
+            return;
 
-        if(source == undefined){
-            // 没有原版框架下的攻击实体，则通过动态属性寻找
-            let id = projectile.getDynamicProperty("source");
-            if(id != "0"){
-                source =  world.getEntity(id);
-            }
-        }
-        if(source != undefined) damageOptions["damagingEntity"] = source;
-        // 不伤害自己
-        if(hit_info.entity.id == source.id){ return; }
-        // 玩家受击
-        if(target.typeId==="minecraft:player"){
-            // 女仆不伤害主人
-            let ownerID = danmaku.getDynamicProperty("owner");
-            if(ownerID!==undefined && ownerID===target.id){
-                return;
-            }
-        }
-        // 女仆受击
-        else if(target.typeId==="thlmm:maid"){
-            let targetOwnerID = EntityMaid.Owner.getID(target); // 目标的主人
-            if(targetOwnerID !== undefined){
-                // 主人不伤害自己的女仆
-                // 脚本发射
-                if(targetOwnerID === danmaku.getDynamicProperty("source")){
-                    return;
-                }
-                // 御币发射
-                if(source.id !== undefined && targetOwnerID === source.id){
-                    return;
-                }
-                // 女仆不伤害相同主人的女仆
-                let sourceOwnerID = danmaku.getDynamicProperty("owner");
-                if(sourceOwnerID!==undefined && sourceOwnerID === targetOwnerID){
-                    return;
-                }
-            }
-        }
-        // 不伤害自己的坐骑
-        let rideable = target.getComponent("minecraft:rideable");
-        if(rideable !== undefined){
-            for(let entity of rideable.getRiders()){
-                if(entity.id === danmaku.getDynamicProperty("source")){
-                    return;
-                }
-            }
-        }
-        // 免伤失败，施加伤害
-        hit_info.entity.applyDamage(projectile.getDynamicProperty("damage"), damageOptions);
-        projectile.triggerEvent("despawn");
-    }
+        // 计算穿透次数
+        let piercing = danmaku.getDynamicProperty("piercing");
+        piercing--;
+        if(piercing <= 0){
+            // 销毁弹幕
+            danmaku.triggerEvent("despawn");
+            var id = danmaku.id;
+            despawningDanmaku[id]=true;
+            system.runTimeout(()=>{ delete despawningDanmaku[id] },2);
 
+            // 销毁子弹幕
+            let forks = DanmakuInterface.getForks(danmaku.id);
+            if(forks !== undefined){
+                for(let id of forks){
+                    let forkDanmaku = world.getEntity(id);
+                    if(forkDanmaku !== undefined){
+                        forkDanmaku.triggerEvent("despawn");
+                        despawningDanmaku[id]=true;
+                        system.runTimeout(()=>{ delete despawningDanmaku[id]; },4);
+                    }
+                }
+                DanmakuInterface.clearForks(danmaku.id);
+            }
+        }
+        else{
+            danmaku.setDynamicProperty("piercing", piercing);
+        }
+    },1);
+    
 }
 
 /**
@@ -148,9 +137,32 @@ export function danmakuHitEntityEvent(ev){
  */
 export function danmakuHitBlockEvent(ev){
     let projectile = ev.projectile;
+    if(despawningDanmaku[projectile.id]) return;
+    
+    // 销毁弹幕
+    var id = projectile.id;
+    despawningDanmaku[id]=true;
     projectile.triggerEvent("despawn");
+    system.runTimeout(()=>{ delete despawningDanmaku[id]; },4);
+
+    // 销毁子弹幕
+    let forks = DanmakuInterface.getForks(projectile.id);
+    if(forks !== undefined){
+        for(let id of forks){
+            let forkDanmaku = world.getEntity(id);
+            if(forkDanmaku !== undefined){
+                forkDanmaku.triggerEvent("despawn");
+                despawningDanmaku[id]=true;
+                system.runTimeout(()=>{ delete despawningDanmaku[id]; },4);
+            }
+        }
+        DanmakuInterface.clearForks(projectile.id);
+    }
+    
     return;
 }
+
+
 
 //////// Gohei ////////
 const GoheiSequence = Object.freeze([
@@ -240,9 +252,9 @@ export function fairy_shoot(fairy){
         //     .setFanNum(3).setYawTotal(Math.PI / 6)
         //     .fanShapedShot();
         if (Math.random() <= AIMED_SHOT_PROBABILITY) {
-            DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
-                    .setTarget(fairy.target).setRandomColor().setRandomType()
-                    .setDamage()((config["fairy_damage"]/100)*(distanceFactor + 1)).setGravity(0)
+            let temp = DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet([0,1,0])
+                    .setTargetOffSet([0,1,0]).setTarget(fairy.target).setRandomColor().setRandomType()
+                    .setDamage((config["fairy_damage"]/100)*(distanceFactor + 1)).setGravity(0)
                     .setVelocity(0.2 * (distanceFactor + 1))
                     .setInaccuracy(0.05).aimedShot();
         } else {
@@ -328,6 +340,17 @@ export function debug_shoot(entity){
                     }, i+10);
                 }
             }break;
+            case 4:{// 樱花束
+                
+                for(let i2=0;i2<10;i2++){
+                    system.runTimeout(()=>{
+                        for(let i=0;i<5;i++){
+                            GoheiCherry.shoot(entity, undefined);
+                        }
+                    },i2)
+                }
+                
+            };break;
             default:
                 // 默认弹幕（妖精女仆）
                 fairy_shoot(entity);

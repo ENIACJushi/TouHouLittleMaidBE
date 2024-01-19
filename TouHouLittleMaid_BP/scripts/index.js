@@ -331,28 +331,6 @@ class thlm {
         });
         
         //// Projectile ////
-        // Hit Entity
-        world.afterEvents.projectileHitEntity.subscribe(event =>{
-            system.run(()=>{
-                var projectile = event.projectile;
-                if(projectile !== undefined){
-                    // 弹幕可能正在释放，无法获取typeId
-                    try{
-                        var typeId = event.projectile.typeId;
-                        if(typeId !== undefined){
-                            if(typeId.substring(0, 6) == "thlmd:"){
-                                Danmaku.danmakuHitEntityEvent(event);
-                            }
-                            else if(typeId == "touhou_little_maid:power_point"){
-                                PowerPoint.powerpoint_hit(projectile, event.dimension);
-                            }
-                        }
-                    }
-                    catch{}
-                }
-            });
-        });
-        
         // Hit Block
         world.afterEvents.projectileHitBlock.subscribe(event=>{
             system.run(()=>{
@@ -374,7 +352,27 @@ class thlm {
                 }
             });
         });
-
+        // Hit Entity
+        world.afterEvents.projectileHitEntity.subscribe(event =>{
+            system.run(()=>{
+                var projectile = event.projectile;
+                if(projectile !== undefined){
+                    // 弹幕可能正在释放，无法获取typeId
+                    try{
+                        var typeId = event.projectile.typeId;
+                        if(typeId !== undefined){
+                            if(typeId.substring(0, 6) == "thlmd:"){
+                                Danmaku.danmakuHitEntityEvent(event);
+                            }
+                            else if(typeId == "touhou_little_maid:power_point"){
+                                PowerPoint.powerpoint_hit(projectile, event.dimension);
+                            }
+                        }
+                    }
+                    catch{}
+                }
+            });
+        });
         // Power Point Scan
         system.runInterval(()=>{ PowerPoint.scan_tick(); }, 5);
     }

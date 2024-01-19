@@ -1,0 +1,61 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.touhou_little_maid.camera_rot_by_danmaku": {
+			"loop": true,
+			"bones": {
+				"danmaku": {
+					"rotation": ["query.camera_rotation(0)", "query.camera_rotation(1)", 0]
+				}
+			}
+		},
+		"animation.touhou_little_maid.danmaku.star_rotate": {
+			"loop": true,
+			"bones": {
+				"star": {
+					"rotation": [0, 0, "q.life_time*v.speed*23"]
+				}
+			}
+		},
+		"animation.touhou_little_maid.danmaku.cherry_particle": {
+			"loop": true,
+			"animation_length": 1000,
+			"bones": {
+				"cherry_locator": {
+					"rotation": {
+						"0.0":["q.property('thlm:r_x')", "q.property('thlm:r_y')", "q.property('thlm:r_z')"]
+					}
+				}
+			},
+			"particle_effects": {
+				"0.0": {
+					"effect": "cherry_particle",
+					"locator": "cherry_particle"
+				}
+			}
+		},
+		"animation.touhou_little_maid.danmaku.cherry": {
+			"loop": true,
+			"bones": {
+				"cherry_locator": {
+					"rotation": ["q.property('thlm:r_x')", "q.property('thlm:r_y')", "q.property('thlm:r_z')"]
+				}
+			}
+		},
+		"animation.touhou_little_maid.danmaku.arrow": {
+			"loop": true,
+			"bones": {
+				"body": {
+					"rotation": ["variable.shake_power - query.target_x_rotation", "-query.target_y_rotation", 0],
+					"scale": [0.7, 0.7, 0.9]
+				}
+			},
+			"particle_effects": {
+				"0.0": {
+					"effect": "cherry_particle",
+					"locator": "cherry_particle"
+				}
+			}
+		}
+	}
+}

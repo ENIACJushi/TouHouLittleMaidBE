@@ -10,7 +10,7 @@
     "component_groups": {
       "minecraft:ranged_attack": {
         "minecraft:timer":{
-          "time": [1.5, 3],
+          "time": [3, 4],
           "looping": true,
           "time_down_event": {
             "event": "thlm:ddb",

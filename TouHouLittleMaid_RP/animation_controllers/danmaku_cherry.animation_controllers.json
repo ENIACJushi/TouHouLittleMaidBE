@@ -1,0 +1,23 @@
+{
+	"format_version" : "1.10.0",
+	"animation_controllers" : {
+		"controller.animation.touhou_little_maid.danmaku_cherry" : {
+			"initial_state" : "default",
+			"states" : {
+				"default" : {
+					"animations" : [ "cherry" ],
+					"transitions" : [
+						{
+							"particle" : "query.property('thlm:enable')"
+						}
+					],
+					"blend_transition": 0
+				},
+				"particle" : {
+					"animations" : [ "cherry_particle" ],
+					"blend_transition": 0
+				}
+			}
+		}
+	}
+}

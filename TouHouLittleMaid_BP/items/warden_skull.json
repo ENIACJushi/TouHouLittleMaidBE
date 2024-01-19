@@ -2,7 +2,8 @@
   "format_version": "1.18.0",
   "minecraft:item": {
     "description": {
-      "identifier": "touhou_little_maid:warden_skull"
+      "identifier": "touhou_little_maid:warden_skull",
+      "category": "Equipment"
     },
     "components": {
       "minecraft:icon": { "texture": "touhou_little_maid.warden_skull"  },
