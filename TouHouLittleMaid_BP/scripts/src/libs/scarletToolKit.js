@@ -234,6 +234,9 @@ export function title_player_actionbar(name, text){
 export function title_player_actionbar_translate(name, text){
     world.getDimension("overworld").runCommand(`titleraw ${playerCMDName(name)} actionbar {"rawtext":[{"translate":"${text}"}]}`);
 }
+export function title_player_actionbar_object(name, object){
+    world.getDimension("overworld").runCommand(`titleraw ${playerCMDName(name)} actionbar ${JSON.stringify(object)}`);
+}
 
 
 ////////// Experiment //////////

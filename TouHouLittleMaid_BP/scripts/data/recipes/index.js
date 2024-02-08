@@ -13,6 +13,7 @@ import {recipe as reborn_maid} from "./spawn/reborn_maid"
 // Bedrock feature
 import {recipe as repair_hakurei_gohei} from "./bedrock/repair_hakurei_gohei"
 import {recipe as gohei_cherry} from "./bedrock/gohei_cherry"
+import {recipe as maid_upgrade} from "./bedrock/upgrade_1"
 
 // NOT ADDED
 import {recipe as craft_chisel} from "./craft/craft_chisel"
@@ -39,6 +40,7 @@ export const recipeList = [
     
     repair_hakurei_gohei,
     gohei_cherry,
+    maid_upgrade,
 
     reborn_maid,
     craft_camera,

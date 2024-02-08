@@ -3,7 +3,7 @@
   "minecraft:item": {
     "description": {
       "category": "Equipment",
-      "identifier": "touhou_little_maid:gohei_cherry"
+      "identifier": "touhou_little_maid:hakurei_gohei_cherry"
     },
     "components": {
       "minecraft:icon": {
@@ -15,7 +15,7 @@
       },
       "minecraft:cooldown": {
         "category": "gohei_cherry",
-        "duration": 0.01
+        "duration": 1
       },
       "minecraft:repairable": {
         "repair_items": [
@@ -39,7 +39,7 @@
         }
       },
       "minecraft:display_name": {
-        "value": "item.touhou_little_maid:gohei_cherry"
+        "value": "item.touhou_little_maid:hakurei_gohei_cherry"
       },
       "minecraft:max_stack_size": 1
     },

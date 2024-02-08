@@ -23,7 +23,7 @@
 			"bones": {
 				"cherry_locator": {
 					"rotation": {
-						"0.0":["q.property('thlm:r_x')", "q.property('thlm:r_y')", "q.property('thlm:r_z')"]
+						"0.0": ["q.property('thlm:r_x')", "q.property('thlm:r_y')", "q.property('thlm:r_z')"]
 					}
 				}
 			},

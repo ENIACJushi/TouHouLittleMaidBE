@@ -40,7 +40,7 @@
         "repair_items": [
           {
             "items": ["minecraft:paper"],
-            "repair_amount": 32
+            "repair_amount": 110
           }
         ]
       },

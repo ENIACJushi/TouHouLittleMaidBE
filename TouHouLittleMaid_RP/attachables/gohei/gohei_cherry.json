@@ -2,7 +2,7 @@
   "format_version": "1.10.0",
   "minecraft:attachable": {
     "description": {
-      "identifier": "touhou_little_maid:gohei_cherry",
+      "identifier": "touhou_little_maid:hakurei_gohei_cherry",
       "materials": {
         "default": "entity_alphatest",
         "enchanted": "entity_alphatest_glint",

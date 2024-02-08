@@ -19,6 +19,6 @@ export const tagDefines = {
     ],
     "thlm:gohei":[
         {"tag": "thlm:gohei_lv1"},
-        {"item": "touhou_little_maid:gohei_cherry"}
+        {"item": "touhou_little_maid:hakurei_gohei_cherry"}
     ]
 }

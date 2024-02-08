@@ -14,7 +14,7 @@ item.touhou_little_maid:photo=照片
 item.touhou_little_maid:film=胶片
 item.touhou_little_maid:smart_slab=魂符
 
-item.touhou_little_maid:gohei_cherry=樱之御币
+item.touhou_little_maid:hakurei_gohei_cherry=樱之御币
 item.touhou_little_maid:hakurei_gohei=博丽的御币
 item.touhou_little_maid:hakurei_gohei_crafting_table=博丽的御币(未激活)
 item.touhou_little_maid:power_point=P 点
@@ -36,6 +36,21 @@ entity.touhou_little_maid:danmaku.name=弹幕
 entity.touhou_little_maid:box.name=蛋糕盒
 entity.touhou_little_maid:throw_power_point.name=P 点
 entity.touhou_little_maid:debug_fairy.name=弹幕测试妖精女仆
+
+##### 提示 #####
+message.touhou_little_maid:hakurei_gohei.switch=切换弹种： 
+message.touhou_little_maid:altar.not_enough_power.name=你没有足够多的 P 点
+message.touhou_little_maid.altar.upgrade.notfound=没有找到符合等级条件的女仆
+message.touhou_little_maid.altar.upgrade.kill=女仆杀敌数不够
+message.touhou_little_maid.altar.upgrade.success=升级成功！
+
+message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止
+message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
+message.touhou_little_maid:owner_maid_num.can_not_add.name=你无法再驯服女仆，你已经达到了上限（%d/%d）
+message.touhou_little_maid:photo.not_suitable_for_place_maid.name=这该死的地方不能放置女仆
+message.touhou_little_maid:photo.have_no_nbt_data.name=这该死的照片没有 NBT 数据
+message.touhou_little_maid:chisel.hit_block_error.name=请右击粘土块
+message.touhou_little_maid:chisel.offhand_not_photo.name=请副手持有一张女仆照片
 
 ##### 其它 #####
 action.interact.camera=照相
@@ -573,15 +588,7 @@ gui.touhou_little_maid:model_gui.easter_egg.encrypt.name=这是一个加密的�
 gui.touhou_little_maid:model_gui.easter_egg.normal.name=这是一个普通的命名彩蛋
 gui.touhou_little_maid:left_panel.title=工作模式
 
-message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止
-message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
-message.touhou_little_maid:altar.not_enough_power.name=你没有足够多的 P 点
-message.touhou_little_maid:owner_maid_num.can_not_add.name=你无法再驯服女仆，你已经达到了上限（%d/%d）
-message.touhou_little_maid:photo.not_suitable_for_place_maid.name=这该死的地方不能放置女仆
-message.touhou_little_maid:photo.have_no_nbt_data.name=这该死的照片没有 NBT 数据
-message.touhou_little_maid:chisel.hit_block_error.name=请右击粘土块
-message.touhou_little_maid:chisel.offhand_not_photo.name=请副手持有一张女仆照片
-message.touhou_little_maid:hakurei_gohei.switch=切换弹种： 
+
 
 commands.touhou_little_maid:pack.reload.info.name=所有的模型包已经重载！
 commands.touhou_little_maid:power.handle.info.name=修改了 %d 位玩家的 P 点

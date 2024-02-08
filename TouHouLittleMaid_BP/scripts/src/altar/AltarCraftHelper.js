@@ -41,7 +41,7 @@ export class AltarCraftHelper{
                 if(this.matchRecipe(itemStacks, recipe["ingredients"])){
                     let after_power = power - Math.floor(recipe["power"]*100);
                     if(after_power >= 0){
-                        if(this.summonOutput(outputDimension, outputLocation, recipe.output, itemStacks)){
+                        if(this.summonOutput(outputDimension, outputLocation, recipe.output, itemStacks, player)){
                             PowerPoint.set_power_number(player.name, after_power);
                             return true;
                         }
@@ -111,7 +111,7 @@ export class AltarCraftHelper{
      * @param {*} itemStacks 
      * @returns 
      */
-    summonOutput(dimension, location, output, itemStacks){
+    summonOutput(dimension, location, output, itemStacks, player){
         try{
             switch(output.type){
                 // 生成物品
@@ -158,6 +158,43 @@ export class AltarCraftHelper{
                             return true;
                         }
                     }
+                    break;
+                // 升级女仆
+                case "touhou_little_maid:maid_upgrade":
+                    // 获取信息
+                    let level = output["level"] - 1; // 目标女仆的等级
+                    // 获取魔法阵内符合等级的女仆
+                    let maids = dimension.getEntities({
+                        "location": location,
+                        "maxDistance": 2,
+                        "type": "thlmm:maid"
+                    });
+                    let target = undefined;
+                    for(let maid of maids){
+                        if(EntityMaid.Level.get(maid) === level){
+                            target = maid;
+                            break;
+                        }
+                    }
+                    if(target === undefined){
+                        Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid.altar.upgrade.notfound");
+                        return false;
+                    }
+
+                    // 获取杀敌数
+                    if(EntityMaid.Kill.get(target) < output["kills"]){
+                        Tool.title_player_actionbar_object(player.name, 
+                            {"rawtext":[{"translate":"message.touhou_little_maid.altar.upgrade.kill"},
+                            {"text":`(${EntityMaid.Kill.get(target)}/${output["kills"]})`}]}
+                        );
+                        return false;
+                    }
+
+                    // 升级
+                    EntityMaid.Work.set(target, 0); // 重置工作模式
+                    EntityMaid.Level.set(target, level+1); // 升级
+                    EntityMaid.Kill.set(target, 0); // 重置计数器
+                    Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid.altar.upgrade.success");
                     break;
                 // 生成实体
                 default:

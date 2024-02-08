@@ -34,6 +34,7 @@ if(true){
     }, 20);
 }
 else{
+    Tool.logger("§e[Touhou Little Maid] 现在是实验模式。")
     experiment.main();
 }
 world.sendMessage("§e[Touhou Little Maid] Addon Loaded!");

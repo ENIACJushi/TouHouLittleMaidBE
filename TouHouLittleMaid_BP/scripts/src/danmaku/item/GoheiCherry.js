@@ -6,7 +6,7 @@ import * as VectorMC from "../../libs/VectorMC";
 
 const PI = 180/Math.PI
 export const GoheiCherry = {
-    id : "touhou_little_maid:gohei_cherry",
+    id : "touhou_little_maid:hakurei_gohei_cherry",
     /**
      * @param {Entity} entity
      * @param {ItemStack} item

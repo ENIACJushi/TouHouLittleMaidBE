@@ -24,12 +24,12 @@ export class EntityMaid{
     static Level = {
         properties:[
             {// lv.1
-                "danmaku": 12,    // 弹幕伤害
-                "heal"   : [2, 5] // 单次回血量（3秒一次）
+                "danmaku": 15,    // 弹幕伤害
+                "heal"   : [3, 6] // 单次回血量（3秒一次）
             },
             {// lv.2
-                "danmaku": 18,    // 弹幕伤害
-                "heal"   : [3, 6] // 单次回血量（3秒一次）
+                "danmaku": 24,    // 弹幕伤害
+                "heal"   : [5, 8] // 单次回血量（3秒一次）
             },
             {// lv.3
                 "danmaku": 24,    // 弹幕伤害
@@ -397,10 +397,8 @@ export class EntityMaid{
          * @param {number} type
          */
         set(maid, type){
-            if(this.get(maid) !== type){
-                maid.triggerEvent(`api:mode_quit_${this.getName(this.get(maid))}`);
-                maid.triggerEvent(`api:mode_${this.getName(type)}`);
-            }
+            maid.triggerEvent(this.getEventName(maid, type, true));
+            maid.triggerEvent(this.getEventName(maid, type, false));
         },
         /**
          * 获取名称
@@ -409,6 +407,21 @@ export class EntityMaid{
          */
         getName(type){
             return this.NAME_LIST[type];
+        },
+        /**
+         * 获取事件名称
+         */
+        getEventName(maid, type, quit){
+            // 拼接基础字符串
+            let result = "api:mode_";
+            if(quit) result += "quit_";
+            result += this.getName(type);
+            
+            // 受等级影响的类型
+            if(type === this.farm){
+                result += `lv_${EntityMaid.Level.get(maid)}`;
+            }
+            return result;
         },
         /**
          * 获取语言文件字符串

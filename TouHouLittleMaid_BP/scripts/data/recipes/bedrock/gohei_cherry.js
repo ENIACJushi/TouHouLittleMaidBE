@@ -4,7 +4,7 @@ export const recipe = {
     "type": "minecraft:item",
     "nbt": {
       "Item": {
-        "id": "touhou_little_maid:gohei_cherry",
+        "id": "touhou_little_maid:hakurei_gohei_cherry",
         "Count": 1,
         "tag": {
           "Damage": 0

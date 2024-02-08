@@ -16,7 +16,7 @@ import { EntityMaid } from "../maid/EntityMaid";
 import { config } from "../controller/Config";
 import { GoheiCherry } from "./item/GoheiCherry";
 import { DanmakuInterface } from "./DanmakuInterface";
-
+import * as VectorMC from "../libs/VectorMC"
 /**
  * 初始化动态属性
  * @param {WorldInitializeAfterEvent} e 
@@ -267,6 +267,9 @@ export function fairy_shoot(fairy){
         }
     }
 }
+var laserRadius = 0;
+var laserStep = 0.1;
+var laserIsShooting = false;
 /**
  * 测试妖精女仆攻击
  * @param {Entity} entity 
@@ -350,6 +353,44 @@ export function debug_shoot(entity){
                     },i2)
                 }
                 
+            };break;
+            case 5:{// 激光
+                var danmakuShoot =DanmakuShoot.create().setWorld(entity.dimension)
+                    .setThrower(entity).setTarget(target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
+                    .setColor(DanmakuColor.RED).setType(DanmakuType.GLOWEY_BALL)
+                    .setDamage(0).setGravity(0)
+                    .setVelocity(0.1);
+                
+                for(let i2=0; i2<80; i2++){
+                    system.runTimeout(()=>{
+                        danmakuShoot.aimedShot()
+                        danmakuShoot.aimedShot()
+                    },i2)
+                }
+            };break;
+            case 6:{// 曲线激光 伪
+                if(laserIsShooting) return;
+                laserIsShooting=true;
+                let danmaku = new EntityDanmaku(entity.dimension, entity)
+                    .setDamage(1).setGravityVelocity(0.2).setThrowerOffset([0,1,0])
+                    .setDanmakuType(DanmakuType.GLOWEY_BALL).setColor(DanmakuColor.RED);
+                
+                let direction = entity.getViewDirection();
+                let axis = VectorMC.getAnyVerticalVector(direction).normalized();
+                var shootNext = function (){
+                    system.runTimeout(()=>{
+                        if(laserRadius > 60 || laserRadius<-60){
+                            laserStep = -laserStep;
+                        }
+                        laserRadius += laserStep;
+                        
+                        let direction_shoot = VectorMC.rotate_axis(direction, axis, laserRadius*Math.PI/180);
+                        danmaku.shoot(direction_shoot.x, direction_shoot.y, direction_shoot.z, 0.1);
+                        shootNext();
+                        
+                    },1)
+                }
+                shootNext();
             };break;
             default:
                 // 默认弹幕（妖精女仆）

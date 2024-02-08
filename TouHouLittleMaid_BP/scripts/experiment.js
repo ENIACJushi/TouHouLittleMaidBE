@@ -80,6 +80,58 @@ export default class experiment {
                 }
             }
         });
+        system.afterEvents.scriptEventReceive.subscribe(event => {
+            system.run(()=>{
+                switch(event.id){
+                    case "exp:e1":{ // 测试射线寻找方块的耗时
+                        let player = event.sourceEntity;
+                        let vec0 = player.getViewDirection();
+                        let dimension = player.dimension;
+                        let location = player.location
+                        
+                        
+                        if(false){// 单点
+                            const count = 100;// 实验次数
+                            let time = new Date().getTime();// 毫秒
+                            
+                            for(let i = 0; i < count; i++){
+                                dimension.getBlockFromRay(location, vec0);
+                                // dimension.getBlock(location);
+                            }
+
+                            time = (new Date().getTime()) - time;
+                            Tool.logger(`实验次数：${count} | 总耗时：${time} (ms) | 平均耗时：${time/count} (ms)`)
+                        }
+
+                        if(true){
+                            const length = 100;
+                            let x = [0,0,0]
+                            let y = [5,5,5]
+                            let time = new Date().getTime();// 毫秒
+                            // 网格
+                            for(let i = 0; i < length; i++){
+                                for(let i2 = 0; i2 < length; i2++){
+                                    let a = x[0]-y[0]
+                                    let b = x[1]-y[1]
+                                    let c =x[2]-y[2]
+                                    let d = a*a+b*b+c*c
+                                    // dimension.getBlock({
+                                    //     x: 1,
+                                    //     y: i,
+                                    //     z: i2
+                                    // }); 
+                                }
+                            }
+                            time = (new Date().getTime()) - time;
+                            Tool.logger(`实验次数：${length*length} | 总耗时：${time} (ms) | 平均耗时：${time/(length*length)} (ms)`)
+                        }
+                    }; break;
+                    default:
+                        break;
+                }
+                
+            })
+        }, {namespaces: ["exp"]});
     }
 }
 /**

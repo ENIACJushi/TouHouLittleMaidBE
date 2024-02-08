@@ -13,16 +13,16 @@
 				"creation_expression": "v.fall_acc = -0.3;v.wind_acc = 2;v.spawn_chance = 0.5;v.rot_speed = math.random(-30,30);v.curve_len = 15;v.particle_random_1=math.random(0,100)/100;"
 			},
 			"minecraft:emitter_rate_instant": {
-				"num_particles": "5*q.property('thlm:distance')"
+				"num_particles": "7*q.property('thlm:distance')"
 			},
 			"minecraft:emitter_lifetime_looping": {
 				"active_time": 0.1,
 				"sleep_time": 10
 			},
 			"minecraft:emitter_shape_box": {
-				"offset": [0, "-1*q.property('thlm:distance')", 0],
-				"half_dimensions": [0, "q.property('thlm:distance')", 0],
-				"direction": ["math.random(-0.2, 0.2)", "math.random(-0.2, 0.2)", "math.random(-0.2, 0.2)"]
+				"offset": [0, "-1*q.property('thlm:distance')+1", 0],
+				"half_dimensions": [0, "q.property('thlm:distance')-1", 0],
+				"direction": ["math.random(-0.05, 0.05)", "math.random(-0.2, -0.1)", "math.random(-0.05, 0.05)"]
 			},
 			"minecraft:particle_lifetime_expression": {
 				"max_lifetime": "math.random(1,2)"
@@ -33,7 +33,7 @@
 			},
 			"minecraft:particle_initial_speed": "math.random(2, 4)",
 			"minecraft:particle_motion_dynamic": {
-				"linear_drag_coefficient": 0.7,
+				"linear_drag_coefficient": 0.9,
 				"rotation_acceleration": "(math.random(0,1)>0.5)?-5:5"
 			},
 			"minecraft:particle_appearance_billboard": {
