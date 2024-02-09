@@ -7,7 +7,7 @@
 				"default" : {
 					"transitions" : [
 						{
-							"sitting" : "query.is_sitting"
+							"sitting" : "query.is_sitting && !q.is_in_ui"
 						}
 					],
 					"blend_transition": 0.375
@@ -16,7 +16,7 @@
 					"animations" : [ "sit" ],
 					"transitions" : [
 						{
-							"default" : "!query.is_sitting"
+							"default" : "!query.is_sitting || q.is_in_ui"
 						}
 					],
 					"blend_transition": 0.375

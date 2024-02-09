@@ -9,7 +9,7 @@
  *  thlmm:<女仆id>
  *  thlmo:<主人生物id>
  */
-import { ItemStack, world, Entity,Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, System, EntityDieAfterEvent } from "@minecraft/server";
+import { ItemStack, world, Entity, Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, System, EntityDieAfterEvent } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
@@ -243,9 +243,10 @@ export class MaidManager{
                 home_location[0] + HOME_RADIUS, home_location[2] + HOME_RADIUS);
         }
         // 维度不同或超出范围，回家
+        world.getDimension(home_location[3])
         if(!in_home){
-            maid.teleport(new Vector(home_location[0]+0.5,home_location[1],home_location[2]+0.5),
-                {dimension: world.getDimension(home_location[3])});
+            maid.teleport(new Vector(home_location[0]+0.5, home_location[1], home_location[2]+0.5),
+            {"dimension": world.getDimension(home_location[3])});
         }
     }
     /**
@@ -384,23 +385,23 @@ export class MaidManager{
             ]);
             let basicDamage = EntityMaid.Level.getProperty(maid, "danmaku");
             let distanceFactor = distance / 8;
-            let yOffset = distance < 10 ? 0 : 0.5; // 若距离很近，向目标坐标直接发射，若很远，向上偏移一些发射避免直接打到地上
+            let yOffset = distance < 5 ? 0.2 : 0.5; // 根据距离偏移目标位置
 
             if (Math.random() <= AIMED_SHOT_PROBABILITY) {
                 DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
-                        .setOwnerID(EntityMaid.Owner.getID(maid))
-                        .setTarget(maid.target).setRandomColor().setRandomType()
-                        .setDamage((distanceFactor + basicDamage)*(config["maid_damage"]/100)).setGravity(0)
-                        .setVelocity(0.5 * (distanceFactor + 1))
-                        .setInaccuracy(0.05).aimedShot();
+                    .setOwnerID(EntityMaid.Owner.getID(maid))
+                    .setTarget(maid.target).setRandomColor().setRandomType()
+                    .setDamage((distanceFactor + basicDamage)*(config["maid_damage"]/100)).setGravity(0)
+                    .setVelocity(0.5 * (distanceFactor + 1))
+                    .setInaccuracy(0.05).aimedShot();
             } else {
                 DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
-                        .setOwnerID(EntityMaid.Owner.getID(maid))
-                        .setTarget(maid.target).setRandomColor().setRandomType()
-                        .setDamage((distanceFactor + basicDamage + 0.5)*(config["maid_damage"]/100)).setGravity(0)
-                        .setVelocity(0.5 * (distanceFactor + 1))
-                        .setInaccuracy(0.02).setFanNum(3).setYawTotal(Math.PI / 6)
-                        .fanShapedShot();
+                    .setOwnerID(EntityMaid.Owner.getID(maid))
+                    .setTarget(maid.target).setRandomColor().setRandomType()
+                    .setDamage((distanceFactor + basicDamage + 0.5)*(config["maid_damage"]/100)).setGravity(0)
+                    .setVelocity(0.5 * (distanceFactor + 1))
+                    .setInaccuracy(0.02).setFanNum(3).setYawTotal(Math.PI / 6)
+                    .fanShapedShot();
             }
         }
     }

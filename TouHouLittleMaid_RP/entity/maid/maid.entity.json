@@ -312,7 +312,7 @@
         "wing": "animation.touhou_little_maid.basic.wing",
         "walk": "animation.touhou_little_maid.basic.walk",
         "emote": "animation.touhou_little_maid.emote",
-
+        
         "sit": "animation.touhou_little_maid.maid.sit",
         "controller_sit": "controller.animation.touhou_little_maid.sitting",
         "beg": "animation.touhou_little_maid.maid.beg"

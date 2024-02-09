@@ -1,0 +1,54 @@
+{
+    "namespace": "thlm_skin",
+    "main": {
+        "type": "panel",
+        "size": "$form_size",
+        "anchor_from": "center",
+        "anchor_to": "center",
+        "offset": [0,0],
+        "controls": [
+            { "right@right": {} }
+        ]
+    },
+    "header@header.header": {
+        "offset": [ 0, 11 ],
+        "anchor_to": "center",
+        "$title": "title",
+        "layer": 1,
+        "$close_button_to_button_id": "button.menu_exit"
+    },
+    "title@header.title": {
+        "bindings": [{
+            "binding_type": "view",
+            "source_control_name": "thlm_skin",
+            "source_property_name": "#title",
+            "target_property_name": "#title_text"
+        }]
+    },
+    "right": {
+        "type": "image",
+        "anchor_from": "top_right",
+        "anchor_to": "top_right",
+        "size": [ 230, 180 ],
+        "texture": "textures/gui/right_panel_background",
+        "controls": [
+            { "header@header": {"$close_button_offset":[-5, -1]} },
+            {"skin_model_clipper_@npc_interact.skins_grid_item":{}}
+        ]
+    },
+    "skin_model_clipper": {
+        "type": "panel",
+        "anchor_from": "top_left",
+        "anchor_to": "top_left",
+        "size": [ "100%", "100% - 1px" ],
+        "clips_children": true,
+        "controls": [
+            {
+                "skin_model@npc_interact.skin_model":{
+                    "layer": 4,
+                    "property_bag":{ "#skin_index": 1 }
+                }
+            }
+        ]
+      }
+}

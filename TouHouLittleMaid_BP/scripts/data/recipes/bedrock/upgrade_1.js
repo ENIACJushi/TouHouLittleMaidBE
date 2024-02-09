@@ -3,7 +3,7 @@ export const recipe = {
     "type": "touhou_little_maid:altar_crafting",
     "output": {
       "type": "touhou_little_maid:maid_upgrade",
-      "kills": 200,
+      "kills": 0,
       "level": 2
     },
     "power": 0.5,

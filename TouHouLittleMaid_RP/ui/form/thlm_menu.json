@@ -19,14 +19,12 @@
         "$close_button_to_button_id": "button.menu_exit"
     },
     "title@header.title": {
-        "bindings": [
-            {
-                "binding_type": "view",
-                "source_control_name": "vendor",
-                "source_property_name": "#title",
-                "target_property_name": "#title_text"
-            }
-        ]
+        "bindings": [{
+            "binding_type": "view",
+            "source_control_name": "thlm_main",
+            "source_property_name": "#title",
+            "target_property_name": "#title_text"
+        }]
     },
     "left": {
         "type": "image",
@@ -40,8 +38,7 @@
             {
                 "text@text": {
                     "$text": "gui.touhou_little_maid:left_panel.title",
-                    "anchor_from": "top_middle",
-                    "anchor_to": "top_middle",
+                    "anchor_from": "top_middle",  "anchor_to": "top_middle",
                     "size": [ "100%", "100%" ],
                     "offset": [ 30, 7 ]
                 }
@@ -55,7 +52,7 @@
         "size": [ 230, 180 ],
         "texture": "textures/gui/right_panel_background",
         "controls": [
-            { "header@header": {} },
+            { "header@header": {"$close_button_offset":[-5, -1]} },
             { "model@skin_model": {} },
             { "info@maid_infos": {} },
             { "right_items@right_items": {} }
@@ -92,7 +89,8 @@
         "anchor_to": "top_left",
         "color": "$title_text_color",
         "font_size": "normal",
-        "layer": 3
+        "line_padding": 2,
+        "layer": 4
     },
     "form_button_wrapper": {
         "type": "stack_panel",
@@ -125,7 +123,6 @@
     "image": {
         "type": "image",
         "size": [ "100%", "100%" ],
-        "collection_index": "$index",
         "bindings": [
             {
                 "binding_name": "#form_button_texture",
@@ -310,7 +307,7 @@
                     "type": "image",
                     "layer": 1,
                     "alpha": 1,
-                    "size": [ 75, 143 ],
+                    "size": [ 75, 150 ],
                     "offset": [ 4, 0 ],
                     "texture": "textures/gui/scrolling_background"
                 }
@@ -356,17 +353,7 @@
             { "0@left_item": { "$index": 6 } },
             { "1@left_item": { "$index": 7 } },
             { "2@left_item": { "$index": 8 } },
-            { "3@left_item": { "$index": 9 } },
-            { "4@left_item": { "$index": 10 } },
-            { "5@left_item": { "$index": 11 } },
-            { "6@left_item": { "$index": 12 } },
-            { "7@left_item": { "$index": 13 } },
-            { "8@left_item": { "$index": 14 } },
-            { "9@left_item": { "$index": 15 } },
-            { "10@left_item": { "$index": 16 } },
-            { "11@left_item": { "$index": 17 } },
-            { "12@left_item": { "$index": 18 } },
-            { "13@left_item": { "$index": 19 } }
+            { "3@left_item": { "$index": 9 } }
         ]
     },
     "left_item": {
@@ -381,7 +368,6 @@
                     "anchor_to": "left_middle",
                     "texture": "textures/gui/scrolling_item_hover",
                     "size": [ 19, 19 ],
-                    "collection_index": "$index",
                     "controls": [
                         {
                             "i@thlm_menu.image": {
@@ -396,7 +382,6 @@
                     "$pressed_button_name": "button.form_button_click",
                     "size": [ "100% - 24px", "110%" ],
                     "offset": [ 6,  0 ],
-                    "collection_index": "$index",
                     "$button_text": "#form_button_text",
                     "$button_text_binding_type": "collection",
                     "$button_text_grid_collection_name": "form_buttons",

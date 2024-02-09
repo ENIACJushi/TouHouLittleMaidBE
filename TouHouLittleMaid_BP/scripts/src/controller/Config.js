@@ -7,16 +7,16 @@ export var config={
      * 建议多人游戏时设为true
      */
     "maid_death_bag": false,
-    "ui_enable"     : false,  // 是否启用特殊UI
-    
+
     // 公开的配置项 只能为 整数 或 布尔值
+    "ui_enable"     : 1,  // 是否启用特殊UI
     "fairy_damage"  : 100, // 妖精女仆弹幕攻击力的倍数因子，伤害最后会乘上(这个数/100)
     "maid_damage"   : 100, // 女仆弹幕攻击力的倍数因子，伤害最后会乘上(这个数/100)
     "danmaku_damage": 6  // 弹幕的默认伤害，对玩家发射的弹幕有效
 
 }
 
-const config_lock = 2;// 锁定的配置项数量,锁定配置项总放在最前
+const config_lock = 1;// 锁定的配置项数量,锁定配置项总放在最前
 
 /**
  * 配置管理器

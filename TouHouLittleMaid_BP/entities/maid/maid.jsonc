@@ -149,7 +149,7 @@
       },
       "thlmm:lv1_basic":{
         "minecraft:movement": { "value": 0.3 },
-        "minecraft:attack": {"damage": 10 },
+        "minecraft:attack": {"damage": 12 },
         "minecraft:health": {"value": 64, "max": 64 },
         "minecraft:knockback_resistance": { "value": 0.1 }
       },
@@ -165,25 +165,9 @@
       },
       "thlmm:lv2_basic":{
         "minecraft:movement": { "value": 0.32 },
-        "minecraft:attack": { "damage"  : 10 },
-        "minecraft:health": { "value": 60, "max": 60 },
+        "minecraft:attack": { "damage"  : 16 },
+        "minecraft:health": { "value": 70, "max": 70 },
         "minecraft:knockback_resistance": { "value": 0.2 }
-      },
-      
-      "thlmm:lv3_tame": {
-        "minecraft:damage_sensor": {
-          "triggers": [
-            { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"test": "is_owner","subject": "damager","value": true} }},
-            { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } },
-            { "cause": "all", "damage_multiplier": 0.65 }
-          ]
-        }
-      },
-      "thlmm:lv3_basic":{
-        "minecraft:movement": { "value": 0.35 },
-        "minecraft:attack": { "damage"  : 16},
-        "minecraft:health": { "value": 80, "max": 80 },
-        "minecraft:knockback_resistance": { "value": 0.4 }
       },
 
       ///// 背包类别 /////
@@ -249,9 +233,19 @@
         }
       },
       // 近战
-      "mode:attack":{
-        "minecraft:behavior.melee_attack"        : { "priority": 5 },
-        
+      "mode:attack_lv1":{
+        "minecraft:behavior.melee_attack": {
+          "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.2,
+          "cooldown_time": 0.8
+        },
+        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
+        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
+      },
+      "mode:attack_lv2":{
+        "minecraft:behavior.melee_attack": {
+          "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.2,
+          "cooldown_time": 0.7
+        },
         "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
         "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
       },
@@ -261,7 +255,7 @@
           "priority": 5,
           "attack_interval_min": 1.0,
           "attack_interval_max": 3.0,
-          "attack_radius": 25.0
+          "attack_radius": 32.0
         },
         "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
         "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
@@ -271,8 +265,8 @@
         "minecraft:behavior.harvest_farm_block": {
           "priority": 7,
           "search_cooldown_max_seconds": 2,
-          "search_count": 5,
-          "search_height":5,
+          "search_count": 0,
+          "search_height":3,
           "search_range": 20
         },
         "minecraft:behavior.fertilize_farm_block": {
@@ -284,8 +278,8 @@
         "minecraft:behavior.harvest_farm_block": {
           "priority": 7,
           "search_cooldown_max_seconds": 2,
-          "search_count": 8,
-          "search_height":5,
+          "search_count": 0,
+          "search_height":3,
           "search_range": 20
         },
         "minecraft:behavior.fertilize_farm_block": {
@@ -406,7 +400,7 @@
       ///// AI属性 /////
       // 索敌
       "minecraft:behavior.nearest_attackable_target": {
-        "priority": 4,
+        "priority": 6,
         "must_reach": true,
         "must_see": true,
         "reselect_targets": true,
@@ -423,10 +417,14 @@
           }
         ]
       },
-      "minecraft:behavior.hurt_by_target": { "priority": 6 },
+      "minecraft:behavior.hurt_by_target": { "priority": 4 },
 
       // 基本移动
-      "minecraft:navigation.walk": { "can_path_over_water": true, "avoid_damage_blocks": true },
+      "minecraft:navigation.walk": {
+        "can_path_over_water": true,
+        "avoid_damage_blocks": true,
+        "avoid_portals": true
+      },
       "minecraft:movement.basic": { },
       "minecraft:jump.static": { },
       "minecraft:can_climb": { },
@@ -532,14 +530,14 @@
       "api:lv_1_tame"  : {"add": { "component_groups": [ "thlmm:lv1_tame"  ] }}, "api:lv_1_tame_quit"  : {"remove": { "component_groups": [ "thlmm:lv1_tame"  ] }},
       "api:lv_2_basic" : {"add": { "component_groups": [ "thlmm:lv2_basic" ] }}, "api:lv_2_basic_quit" : {"remove": { "component_groups": [ "thlmm:lv2_basic" ] }},
       "api:lv_2_tame"  : {"add": { "component_groups": [ "thlmm:lv2_tame"  ] }}, "api:lv_2_tame_quit"  : {"remove": { "component_groups": [ "thlmm:lv2_tame"  ] }},
-      "api:lv_3_basic" : {"add": { "component_groups": [ "thlmm:lv3_basic" ] }}, "api:lv_3_basic_quit" : {"remove": { "component_groups": [ "thlmm:lv3_basic" ] }},
-      "api:lv_3_tame"  : {"add": { "component_groups": [ "thlmm:lv3_tame"  ] }}, "api:lv_3_tame_quit"  : {"remove": { "component_groups": [ "thlmm:lv3_tame"  ] }},
 
       // 工作模式
       "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}, "set_property":{"thlm:work": 0}}]},
       "api:mode_quit_idle":  {"sequence": [{"remove": {"component_groups": ["mode:idle"]}}]},
-      "api:mode_attack"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack"]}, "set_property":{"thlm:work": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
-      "api:mode_quit_attack":{"sequence": [{"remove": {"component_groups": ["mode:attack"]}}]},
+      "api:mode_attack_lv1"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv1"]}, "set_property":{"thlm:work": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
+      "api:mode_quit_attack_lv1":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv1"]}}]},
+      "api:mode_attack_lv2"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv2"]}, "set_property":{"thlm:work": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
+      "api:mode_quit_attack_lv2":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv2"]}}]},
       "api:mode_danmaku_attack"       :{"sequence": [{"add"   : {"component_groups": ["mode:danmaku_attack"]}, "set_property":{"thlm:work": 2}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
       "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack"]}}]},
       

@@ -236,7 +236,6 @@ export class StrMaid{
          * @returns {string} New Maid String
          */
         set(maidStr, value){
-            Tool.logger(StrHelper.setValue(maidStr, 'N', value))
             return StrHelper.setValue(maidStr, 'N', value);
         }
     }

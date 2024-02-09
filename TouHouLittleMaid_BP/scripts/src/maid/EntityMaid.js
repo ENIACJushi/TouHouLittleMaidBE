@@ -36,6 +36,14 @@ export class EntityMaid{
                 "heal"   : [5, 8] // 单次回血量（3秒一次）
             }
         ],
+        str:[
+            "§l§aLv.1§r",
+            "§l§bLv.2§r",
+            "§l§cLv.3§r",
+            "§l§dLv.4§r",
+            "§l§eLv.5§r",
+            "§l§bL§cv§d.§e6§r",
+        ],
         /**
          * 获取等级
          * @param {Entity} maid
@@ -45,13 +53,19 @@ export class EntityMaid{
             return maid.getDynamicProperty("level");
         },
         /**
+         * 获取等级字符串
+         * @param {Entity} maid
+         * @returns {number}
+         */
+        getStr(maid){
+            return this.str[this.get(maid)-1];
+        },
+        /**
          * 设置等级
          * @param {Entity} maid
          * @param {number} level
          */
         set(maid, level){
-            Tool.logger(level);
-            
             let oldLevel = this.get(maid);
             maid.triggerEvent(`api:lv_${oldLevel}_basic_quit`);
             if(maid.getComponent("minecraft:is_tamed") !== undefined){
@@ -270,6 +284,9 @@ export class EntityMaid{
         set(maid, value){
             maid.triggerEvent(value?"api:mode_pick":"api:mode_quit_pick");
         },
+        switchMode(maid){
+            this.set(maid, !this.get(maid));
+        },
         /**
          * 获取模式
          * @param {Entity} maid 
@@ -397,7 +414,7 @@ export class EntityMaid{
          * @param {number} type
          */
         set(maid, type){
-            maid.triggerEvent(this.getEventName(maid, type, true));
+            maid.triggerEvent(this.getEventName(maid, this.get(maid), true));
             maid.triggerEvent(this.getEventName(maid, type, false));
         },
         /**
@@ -418,8 +435,8 @@ export class EntityMaid{
             result += this.getName(type);
             
             // 受等级影响的类型
-            if(type === this.farm){
-                result += `lv_${EntityMaid.Level.get(maid)}`;
+            if(type === this.farm || type === this.attack){
+                result += `_lv${EntityMaid.Level.get(maid)}`;
             }
             return result;
         },
@@ -508,7 +525,7 @@ export class EntityMaid{
             let z = location.z;
             let dim = maid.getDynamicProperty("home_dim");
             if(x===0 && y===0 && z===0 && dim===0) return undefined;
-            return [x, y, z, Tool.dim_int2string(maid.getProperty("thlm:home_dim"))];
+            return [x, y, z, Tool.dim_int2string(maid.getDynamicProperty("home_dim"))];
         }
     }    
     // 背包 只记录是否可见
