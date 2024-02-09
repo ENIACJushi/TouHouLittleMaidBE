@@ -19,7 +19,8 @@ item.touhou_little_maid:hakurei_gohei=博丽的御币
 item.touhou_little_maid:hakurei_gohei_crafting_table=博丽的御币(未激活)
 item.touhou_little_maid:power_point=P 点
 item.touhou_little_maid:camera=文文的相机
-
+item.touhou_little_maid:npc_tool=NPC 工具
+item.touhou_little_maid:npc_remove=清除 NPC
 
 item.touhou_little_maid:gold_microwaver=§6黄金微波炉
 item.touhou_little_maid:dragon_skull=龙头(待微波)
@@ -52,8 +53,11 @@ message.touhou_little_maid:photo.have_no_nbt_data.name=这该死的照片没有 
 message.touhou_little_maid:chisel.hit_block_error.name=请右击粘土块
 message.touhou_little_maid:chisel.offhand_not_photo.name=请副手持有一张女仆照片
 
-##### 其它 #####
 action.interact.camera=照相
+action.interact.thlm.npc=变为 NPC
+action.interact.thlm.npc_remove=清除 NPC
+
+##### 其它 #####
 danmaku.pellet.name=§a点弹
 danmaku.ball.name=§a小玉
 danmaku.orbs.name=§a环玉

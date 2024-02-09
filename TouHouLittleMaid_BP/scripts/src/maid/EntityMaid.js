@@ -502,7 +502,7 @@ export class EntityMaid{
          */
         setLocation(maid){
             let l = maid.location;
-            maid.setDynamicProperty("home", {x: Math.ceil(l.x), y:Math.ceil(l.y), z:Math.ceil(l.z)});
+            maid.setDynamicProperty("home", {x: l.x, y:l.y, z:l.z}); // {x: Math.ceil(l.x), y:Math.ceil(l.y), z:Math.ceil(l.z)}
             maid.setDynamicProperty("home_dim", Tool.dim_string2int(maid.dimension.id));
             // maid.setProperty("thlm:home_x", Math.ceil(l.x));
             // maid.setProperty("thlm:home_y", Math.ceil(l.y));

@@ -233,19 +233,21 @@ export class MaidManager{
     static returnHomeEvent(event){
         // 比较维度
         let maid = event.entity;
+        let homeRadius = EntityMaid.Work.get(maid)===-1 ? 2 : HOME_RADIUS;
+
         let home_location = EntityMaid.Home.getLocation(maid);
         if(home_location===undefined) return; // 没有家，不回
         let in_home = (maid.dimension.id===home_location[3]);
         if(in_home){
             // 计算范围
             in_home = Tool.pointInArea_2D(maid.location.x, maid.location.z,
-                home_location[0] - HOME_RADIUS, home_location[2] - HOME_RADIUS,
-                home_location[0] + HOME_RADIUS, home_location[2] + HOME_RADIUS);
+                home_location[0] - homeRadius, home_location[2] - homeRadius,
+                home_location[0] + homeRadius, home_location[2] + homeRadius);
         }
         // 维度不同或超出范围，回家
         world.getDimension(home_location[3])
         if(!in_home){
-            maid.teleport(new Vector(home_location[0]+0.5, home_location[1], home_location[2]+0.5),
+            maid.teleport(new Vector(home_location[0], home_location[1], home_location[2]),
             {"dimension": world.getDimension(home_location[3])});
         }
     }
@@ -288,6 +290,7 @@ export class MaidManager{
      */
     static timerEvent(event){
         let maid = event.entity;
+        
         // 2步一次回血
         let healStep = maid.getDynamicProperty("heal_step");
         if(healStep >= 1){
@@ -423,6 +426,14 @@ export class MaidManager{
         let maid = event.damageSource.damagingEntity;
         let oldAmount = EntityMaid.Kill.get(maid);
         EntityMaid.Kill.set(maid, oldAmount+1);
+    }
+    /**
+     * 女仆成为 NPC
+     * @param {EntityDieAfterEvent} event 
+     */
+    static onNPCEvent(event){
+        let maid = event.entity;
+        EntityMaid.Home.setLocation(maid);
     }
 }
 

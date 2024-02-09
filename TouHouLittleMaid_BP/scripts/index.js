@@ -266,6 +266,7 @@ class thlm {
                                 case "i": MaidManager.inventoryModeEvent(event);  break; // i Inventory mode
                                 case "l": MaidManager.setLevelEvent(event);       break; // l Level
                                 case "m": MaidManager.onInteractEvent(event);     break; // m Master interact
+                                case "n": MaidManager.onNPCEvent(event);          break; // n NPC
                                 case "p": MaidManager.onPhotoEvent(event);        break; // p Photo
                                 case "s": MaidManager.sitModeEvent(event);        break; // s Sit mode
                                 case "t": MaidManager.timerEvent(event);          break; // t Timer

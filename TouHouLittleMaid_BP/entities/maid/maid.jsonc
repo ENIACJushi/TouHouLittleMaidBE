@@ -5,7 +5,7 @@
       "identifier": "thlmm:maid", "is_spawnable": true, "is_summonable": true, "is_experimental": false,
       "properties": {
         // 工作模式
-        "thlm:work" : {"type": "int", "default": 0, "range":[0, 20], "client_sync": true},
+        "thlm:work" : {"type": "int", "default": 0, "range":[-1, 20], "client_sync": true},
         // 模型包
         "thlm:skin_pack"  : {"type": "int", "default": 0, "range":[0, 99999], "client_sync": true},
         "thlm:skin_index" : {"type": "int", "default": 0, "range":[0, 99999], "client_sync": true},
@@ -26,7 +26,276 @@
     },
     "component_groups": {
       "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
-      ///// 基础属性 /////
+      ///// NPC 基础属性 /////
+      "thlmm:npc_basic":{
+        "minecraft:timer": {
+          "time": 30,
+          "looping": true,
+          "time_down_event": {
+            "event": "thlmm:h",
+            "target": "self"
+          }
+        },
+        "minecraft:type_family": { "family": [ "npc", "mob" ] },
+        "minecraft:knockback_resistance": { "value": 1.0 },
+        "minecraft:damage_sensor": {
+          "triggers": [
+            {
+              "on_damage": {
+                "filters": {
+                  "all_of": [
+                    { "test": "is_family", "subject": "other", "value": "player" },
+                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:npc_tool"}
+                  ]
+                },
+                "event": "despawn",
+                "target": "self"
+              },
+              "deals_damage": false
+            },
+            {
+              "cause": "all",
+              "deals_damage": false
+            }
+          ]
+        },
+        "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
+        "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false},
+        "minecraft:physics": { "has_collision": true, "has_gravity": true, "push_towards_closest_space": false },
+        "minecraft:persistent": { },
+        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+        "minecraft:home": { },
+        "minecraft:behavior.look_at_player": { "priority": 0, "look_distance": 6.0,"probability": 0.02 },
+        "minecraft:npc": {
+          "npc_data": {
+            "portrait_offsets": {
+              "translate": [ -7, 50, 0 ],
+              "scale": [ 1.75, 1.75, 1.75 ]
+            },
+            "picker_offsets": {
+              "translate": [ 0, 20, 0 ],
+              "scale": [ 1.7, 1.7, 1.7 ]
+            },
+            "skin_list": [
+              { "variant": 0 },
+              { "variant": 1 },
+              { "variant": 2 },
+              { "variant": 3 },
+              { "variant": 4 },
+              { "variant": 5 },
+              { "variant": 6 },
+              { "variant": 7 },
+              { "variant": 8 },
+              { "variant": 9 },
+              { "variant": 10 },
+              { "variant": 11 },
+              { "variant": 12 },
+              { "variant": 13 },
+              { "variant": 14 },
+              { "variant": 15 },
+              { "variant": 16 },
+              { "variant": 17 },
+              { "variant": 18 },
+              { "variant": 19 },
+              { "variant": 20 },
+              { "variant": 21 },
+              { "variant": 22 },
+              { "variant": 23 },
+              { "variant": 24 },
+              { "variant": 25 },
+              { "variant": 26 },
+              { "variant": 27 },
+              { "variant": 28 },
+              { "variant": 29 },
+              { "variant": 30 },
+              { "variant": 31 },
+              { "variant": 32 },
+              { "variant": 33 },
+              { "variant": 34 },
+              { "variant": 35 },
+              { "variant": 36 },
+              { "variant": 37 },
+              { "variant": 38 },
+              { "variant": 39 },
+              { "variant": 40 },
+              { "variant": 41 },
+              { "variant": 42 },
+              { "variant": 43 },
+              { "variant": 44 },
+              { "variant": 45 },
+              { "variant": 46 },
+              { "variant": 47 },
+              { "variant": 48 },
+              { "variant": 49 },
+              { "variant": 50 },
+              { "variant": 51 },
+              { "variant": 52 },
+              { "variant": 53 },
+              { "variant": 54 },
+              { "variant": 55 },
+              { "variant": 56 },
+              { "variant": 57 },
+              { "variant": 58 },
+              { "variant": 59 },
+              { "variant": 60 },
+              { "variant": 61 },
+              { "variant": 62 },
+              { "variant": 63 },
+              { "variant": 64 },
+              { "variant": 65 },
+              { "variant": 66 },
+              { "variant": 67 },
+              { "variant": 68 },
+              { "variant": 69 },
+              { "variant": 70 },
+              { "variant": 71 },
+              { "variant": 72 },
+              { "variant": 73 },
+              { "variant": 74 },
+              { "variant": 75 },
+              { "variant": 76 },
+              { "variant": 77 },
+              { "variant": 78 },
+              { "variant": 79 },
+              { "variant": 80 },
+              { "variant": 81 },
+              { "variant": 82 },
+              { "variant": 83 },
+              { "variant": 84 },
+              { "variant": 85 },
+              { "variant": 86 },
+              { "variant": 87 },
+              { "variant": 88 },
+              { "variant": 89 },
+              { "variant": 90 },
+              { "variant": 91 },
+              { "variant": 92 },
+              { "variant": 93 },
+              { "variant": 94 },
+              { "variant": 95 },
+              { "variant": 96 },
+              { "variant": 97 },
+              { "variant": 98 },
+              { "variant": 99 },
+              { "variant": 100 },
+              { "variant": 101 },
+              { "variant": 102 },
+              { "variant": 103 },
+              { "variant": 104 },
+              { "variant": 105 },
+              { "variant": 106 },
+              { "variant": 107 },
+              { "variant": 108 },
+              { "variant": 109 },
+              { "variant": 110 },
+              { "variant": 111 },
+              { "variant": 112 },
+              { "variant": 113 },
+              { "variant": 114 },
+              { "variant": 115 },
+              { "variant": 116 },
+              { "variant": 117 },
+              { "variant": 118 },
+              { "variant": 119 },
+              { "variant": 120 },
+              { "variant": 121 }
+            ]
+          }
+        }
+      },
+      ///// 女仆基础属性 /////
+      "thlmm:maid_basic":{
+        "minecraft:timer": {
+          "time": 3,
+          "looping": true,
+          "time_down_event": {
+            "event": "thlmm:t",
+            "target": "self"
+          }
+        },
+        ///// 基础属性 /////
+        "minecraft:health"       : { "value": 40, "max": 40 },
+        "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
+        "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
+        "minecraft:loot"         : { "table": "loot_tables/empty.json" },
+        "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": true },
+        "minecraft:on_death"     : { "event": "thlmm:d", "target": "self" },
+        "minecraft:movement"     : { "value": 0.3 },
+        "minecraft:physics"      : { },
+        "minecraft:pushable"     : { "is_pushable": true, "is_pushable_by_piston": true },
+        "minecraft:attack"       : { "damage": 6 },
+        "minecraft:balloonable"  : { "mass": 0.8 },
+        "minecraft:breathable"   : { "total_supply": 15, "suffocate_time": 0 },
+        "minecraft:is_hidden_when_invisible": { },
+        "minecraft:conditional_bandwidth_optimization": { },
+        "minecraft:behavior.look_at_player": { "priority": 7, "look_distance": 6.0, "probability": 0.02 },
+        
+        ///// 交互属性 /////
+        "minecraft:rideable": {
+          "controlling_seat": 1,
+          "crouching_skip_interact": true,
+          "family_types": ["thlm:maid_backpack"],
+          "interact_text": "",
+          "pull_in_entities": false,
+          "rider_can_interact": false,
+          "seat_count": 1,
+          "seats":[{
+            "position": [0,0,0],
+            "lock_rider_rotation": 1
+          }]
+        },
+        "minecraft:healable": {
+          "items": [
+            {"item": "cake", "heal_amount": 20}
+          ]
+        },
+        "minecraft:behavior.beg": { "priority": 9, "look_distance": 8, "look_time": [ 2, 4 ], "items": [ "cake" ] },
+  
+        ///// AI属性 /////
+        // 索敌
+        "minecraft:behavior.nearest_attackable_target": {
+          "priority": 6,
+          "must_reach": true,
+          "must_see": true,
+          "reselect_targets": true,
+          "within_radius": 20,
+          "scan_interval": 10,
+          "entity_types": [
+            {
+              "filters": {
+                "all_of": [
+                  {"test": "is_family","subject": "other","value": "monster"}
+                ]
+              },
+              "max_dist": 20
+            }
+          ]
+        },
+        "minecraft:behavior.hurt_by_target": { "priority": 4 },
+  
+        // 基本移动
+        "minecraft:navigation.walk": {
+          "can_path_over_water": true,
+          "avoid_damage_blocks": true,
+          "avoid_portals": true
+        },
+        "minecraft:movement.basic": { },
+        "minecraft:jump.static": { },
+        "minecraft:can_climb": { },
+        "minecraft:behavior.float": { "priority": 0 },
+        "minecraft:behavior.stay_while_sitting": { "priority": 3 },
+  
+        "minecraft:behavior.mount_pathing": {
+          "priority": 3,
+          "speed_multiplier": 1.25,
+          "target_dist": 0,
+          "track_target": true
+        },
+        "minecraft:behavior.random_stroll": {
+          "priority": 8,
+          "speed_multiplier": 1.0
+        }
+      },
       "thlmm:maid_wild": {
         "minecraft:behavior.panic": { "priority": 1, "speed_multiplier": 1.25 },
         "minecraft:tameable": {
@@ -87,6 +356,23 @@
                   ]
                 },
                 "event": "thlmm:1",
+                "target": "self"
+              }
+            },
+            {
+              "cooldown": 2.5,
+              "use_item": false,
+              "interact_text": "action.interact.thlm.npc",
+              "vibration": "none",
+              "on_interact": {
+                "filters": {
+                  "all_of": [
+                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:npc_tool"},
+                    { "test": "is_family", "subject": "other", "value": "player" },
+                    { "test": "is_owner", "subject": "other", "value": true }
+                  ]
+                },
+                "event": "become_npc",
                 "target": "self"
               }
             }
@@ -294,8 +580,15 @@
           "priority": 5,
           "max_dist": 3,
           "goal_radius": 2,
-          "speed_multiplier": 0.5,
+          "speed_multiplier": 1.0,
+          
+          "can_pickup_any_item": true,
           "can_pickup_to_hand_or_equipment": false
+        },
+        "minecraft:shareables": {
+          "singular_pickup": true,
+          "all_items": true,
+          "items": []
         }
       },
 
@@ -339,113 +632,14 @@
       }
     },
     "components": {
-      "minecraft:timer": {
-        "time": 3,
-        "looping": true,
-        "time_down_event": {
-          "event": "thlmm:t",
-          "target": "self"
-        }
-      },
-      ///// 基础属性 /////
-      "minecraft:health"       : { "value": 40, "max": 40 },
-      "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
-      "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
-      "minecraft:loot"         : { "table": "loot_tables/empty.json" },
-      "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": true },
-      "minecraft:on_death"     : { "event": "thlmm:d", "target": "self" },
-      "minecraft:movement"     : { "value": 0.3 },
-      "minecraft:physics"      : { },
-      "minecraft:pushable"     : { "is_pushable": true, "is_pushable_by_piston": true },
-      "minecraft:attack"       : { "damage": 6 },
-      "minecraft:balloonable"  : { "mass": 0.8 },
-      "minecraft:breathable"   : { "total_supply": 15, "suffocate_time": 0 },
-      "minecraft:is_hidden_when_invisible": { },
-      "minecraft:conditional_bandwidth_optimization": { },
-      "minecraft:behavior.look_at_player": { "priority": 7, "look_distance": 6.0, "probability": 0.02 },
       
-      ///// 交互属性 /////
-      "minecraft:rideable": {
-        "controlling_seat": 1,
-        "crouching_skip_interact": true,
-        "family_types": ["thlm:maid_backpack"],
-        "interact_text": "",
-        "pull_in_entities": false,
-        "rider_can_interact": false,
-        "seat_count": 1,
-        "seats":[{
-          "position": [0,0,0],
-          "lock_rider_rotation": 1
-        }]
-      },
-      // "minecraft:equippable": {
-      //   "slots": [
-      //     {        
-      //       "slot": 0,
-      //       "item": "saddle",
-      //       "accepted_items": [ "saddle" ],
-      //       "on_equip": {"event": "minecraft:horse_saddled"},
-      //       "on_unequip": {"event": "minecraft:horse_unsaddled"}
-      //     }
-      //   ]
-      // },// 装备，未完成
-      "minecraft:healable": {
-        "items": [
-          {"item": "cake", "heal_amount": 20}
-        ]
-      },
-      "minecraft:behavior.beg": { "priority": 9, "look_distance": 8, "look_time": [ 2, 4 ], "items": [ "cake" ] },
-
-
-      ///// AI属性 /////
-      // 索敌
-      "minecraft:behavior.nearest_attackable_target": {
-        "priority": 6,
-        "must_reach": true,
-        "must_see": true,
-        "reselect_targets": true,
-        "within_radius": 20,
-        "scan_interval": 10,
-        "entity_types": [
-          {
-            "filters": {
-              "all_of": [
-                {"test": "is_family","subject": "other","value": "monster"}
-              ]
-            },
-            "max_dist": 20
-          }
-        ]
-      },
-      "minecraft:behavior.hurt_by_target": { "priority": 4 },
-
-      // 基本移动
-      "minecraft:navigation.walk": {
-        "can_path_over_water": true,
-        "avoid_damage_blocks": true,
-        "avoid_portals": true
-      },
-      "minecraft:movement.basic": { },
-      "minecraft:jump.static": { },
-      "minecraft:can_climb": { },
-      "minecraft:behavior.float": { "priority": 0 },
-      "minecraft:behavior.stay_while_sitting": { "priority": 3 },
-
-      "minecraft:behavior.mount_pathing": {
-        "priority": 3,
-        "speed_multiplier": 1.25,
-        "target_dist": 0,
-        "track_target": true
-      },
-      "minecraft:behavior.random_stroll": {
-        "priority": 8,
-        "speed_multiplier": 1.0
-      }
     },
     "events": {
+      ///// 基础事件 /////
       "minecraft:entity_spawned": {
         "add": {
           "component_groups": [
+            "thlmm:maid_basic",
             "thlmm:maid_wild",
             "environment:simple",
             "sound:ambient_mute",
@@ -483,6 +677,23 @@
           ]
         }
       },
+      "become_npc":{
+        "remove": { "component_groups": [
+          "thlmm:maid_basic",
+          "thlmm:maid_wild",
+          "environment:simple",
+          "sound:ambient_mute",
+          "backpack:default",
+          "thlmm:lv1_basic",
+          "thlmm:lv1_tame",
+          "status:follow_on_tame",
+          "sound:ambient",
+          "thlmm:maid_tame"
+        ]},
+        "add": { "component_groups": [ "thlmm:npc_basic" ] },
+        "trigger": "thlmm:n",
+        "set_property": { "thlm:work": -1 }
+      },
 
       ///// 脚本事件 /////
       "thlmm:t" :{
@@ -498,8 +709,9 @@
       "thlmm:f" :{}, // Follow on tamed
       "thlmm:h" :{}, // Home
       "thlmm:i" :{ "remove": {"component_groups": ["thlmm:maid_tame_sit"]}, "add": {"component_groups": ["thlmm:maid_tame_inventory"]} },
-      "thlmm:l1" :{}, "thlmm:l2" :{}, "thlmm:l3" :{}, "thlmm:l4" :{}, "thlmm:l5" :{}, "thlmm:l6" :{}, // Level 1~6
+      "thlmm:l1":{}, "thlmm:l2" :{}, "thlmm:l3" :{}, "thlmm:l4" :{}, "thlmm:l5" :{}, "thlmm:l6" :{}, // Level 1~6
       "thlmm:m" :{}, // Master interact
+      "thlmm:n" :{}, // NPC
       "thlmm:p" :{}, // Photo
       "thlmm:s" :{ "add": {"component_groups": ["thlmm:maid_tame_sit"]}, "remove": {"component_groups": ["thlmm:maid_tame_inventory"]} },
       "thlmm:0" :{}, // Spawn

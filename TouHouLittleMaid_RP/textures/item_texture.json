@@ -26,7 +26,8 @@
     "touhou_little_maid.gold_microwaver":{"textures":"textures/items/microwaver/gold_microwaver"},
     "touhou_little_maid.dragon_skull":{"textures":"textures/items/microwaver/dragon_skull"},
     "touhou_little_maid.magic_powder":{"textures":"textures/items/microwaver/magic_powder"},
-    "touhou_little_maid.warden_skull": {"textures":"textures/items/warden_skull"}
+    "touhou_little_maid.warden_skull": {"textures":"textures/items/warden_skull"},
+    "touhou_little_maid.npc_tool": {"textures":"textures/items/npc_maid_tool"}
     
   }
 }
