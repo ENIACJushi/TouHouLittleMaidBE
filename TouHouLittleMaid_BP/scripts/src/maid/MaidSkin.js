@@ -1,6 +1,8 @@
 import { world, system } from "@minecraft/server";
 
 export class MaidSkin{
+    static DEFAULTAMOUNT = 1; // 默认模型包数量
+    static PLACEHOLDER = 100; // 最大默认模型包预留序号
     static SkinList = [
         120
     ]
@@ -132,5 +134,17 @@ export class MaidSkin{
     }
     static length(){
         return this.SkinList.length
+    }
+    /**
+     * 获取模型包的模型数量
+     * @param {number} packId
+     */
+    static getSkinAmount(packId){
+        if(packId>this.DEFAULTAMOUNT){
+            return this.SkinList[packId-100];    
+        }
+        else{
+            return this.SkinList[packId]
+        }
     }
 }

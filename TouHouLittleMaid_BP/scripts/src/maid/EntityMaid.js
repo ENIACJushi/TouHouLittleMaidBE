@@ -1,4 +1,4 @@
-import { Entity, EntityTypes, world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack, DynamicPropertiesDefinition, WorldInitializeAfterEvent } from "@minecraft/server";
+import { Entity, EntityTypes, world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack, DynamicPropertiesDefinition, WorldInitializeAfterEvent, Block } from "@minecraft/server";
 import { MaidBackpack } from "./MaidBackpack";
 import * as Tool from "../libs/scarletToolKit"
 import { config } from "../controller/Config"
@@ -249,13 +249,12 @@ export class EntityMaid{
             return maid.setProperty("thlm:skin_pack", skinpack);
         },
         /**
-         * 设置模型编号
+         * 设置模型编号 从 0 开始
          * @param {Entity} maid
          *  @param {number} index
-         * @returns {number} 
          */
         setIndex(maid, index){
-            return maid.setProperty("thlm:skin_index", index);
+            maid.triggerEvent(`skin:${index}`);
         },
         /**
          * 获取模型包编号
@@ -271,7 +270,7 @@ export class EntityMaid{
          * @returns {number}
          */
         getIndex(maid){
-            return maid.getProperty("thlm:skin_index");
+            return maid.getComponent("minecraft:variant").value;
         }
     }
     // 拾物模式
@@ -889,5 +888,13 @@ export class EntityMaid{
         // 现在只是生成默认女仆
         dimension.spawnEntity("thlmm:maid", location);
     }
-    
+    /**
+     * 判断一个方块是否安全（用于放置女仆）
+     * @param {Block|undefined} block 
+     * @returns {boolean}
+     */
+    static isSafeBlock(block){
+        if(block===undefined || block.isAir) return true;
+        return false;
+    }
 }

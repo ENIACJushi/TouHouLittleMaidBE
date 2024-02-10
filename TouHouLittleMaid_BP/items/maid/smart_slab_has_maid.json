@@ -16,19 +16,14 @@
         "minecraft:foil": true,
         "minecraft:on_use_on": {
           "on_use_on": {
-            "event": "thlm:ss"
+            "event": "on_use_on"
           }
         },
         "minecraft:max_stack_size": 1
       },
       "events": {
-        "thlm:ss": {
+        "on_use_on": {
           "swing": {}
-        },
-        "transfrom":{
-          "transform_item": {
-            "transform": "touhou_little_maid:smart_slab_empty"
-          }
         }
       }
     }

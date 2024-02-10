@@ -2,7 +2,7 @@
 	"format_version": "1.12.10",
 	"minecraft:recipe_shapeless": {
 		"description": {
-			"identifier": "touhou_little_maid:memorizable_gensokyo_1"
+			"identifier": "touhou_little_maid:memorizable_gensokyo_2"
 		},
 		"tags": [ "crafting_table" ],
 		"ingredients": [
@@ -10,11 +10,11 @@
 			  "item": "minecraft:book"
 			},
 			{
-			  "item": "minecraft:cake"
+			  "item": "minecraft:red_wool"
 			}
 		],
 		"result": {
-			"item": "touhou_little_maid:memorizable_gensokyo_1"
+			"item": "touhou_little_maid:memorizable_gensokyo_2"
 		}
 	}
 }

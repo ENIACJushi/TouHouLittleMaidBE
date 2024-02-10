@@ -149,7 +149,6 @@ class thlm {
             }            
         });
 
-
         //// Item ////
         // Before Use On
         var on_use_player = {}; // 使用冷却
@@ -189,6 +188,8 @@ class thlm {
                         let itemName = itemStack.typeId.substring(19);
                         switch(itemName){
                             // case "gold_microwaver_item": GoldMicrowaver.placeEvent(event); break;
+                            case "photo": MaidManager.photoOnUseEvent(event); break;
+                            case "smart_slab_has_maid": MaidManager.smartSlabOnUseEvent(event); break;
                             default:{
                                 //// 御币使用事件 ////
                                 if(itemName.substring(0,13) === "hakurei_gohei"){
@@ -216,16 +217,15 @@ class thlm {
                         case "sc":  CustomSpellCardManger.onSpellCardUseEvent(event); break;
                         // item shoot
                         case "is":  itemShootManager.itemShootEvent(event); break;
-                        // ph: photo
-                        case "ph":  MaidManager.photoOnUseEvent(event); break;
-                        // ss: smart slab
-                        case "ss":  MaidManager.smartSlabOnUseEvent(event); break;
+                        // // ph: photo
+                        // case "ph":  MaidManager.photoOnUseEvent(event); break;
+                        // // ss: smart slab
+                        // case "ss":  MaidManager.smartSlabOnUseEvent(event); break;
                         default: break;
                     }
                 }
             })
         });
-
 
         //// Entity ////
         // Trigger Event
@@ -254,6 +254,8 @@ class thlm {
                                 case "ddb": Danmaku.debug_shoot(event.entity); break;
                                 // b: box open
                                 case "b"  : MaidManager.boxOpenEvent(event); break;
+                                // n: NPC
+                                case "n": MaidManager.NPCInteract(event); break;
                                 default: break;
                             }; break;
                         // 女仆专用事件

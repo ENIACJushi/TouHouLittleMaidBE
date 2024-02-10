@@ -44,14 +44,14 @@ message.touhou_little_maid:altar.not_enough_power.name=你没有足够多的 P �
 message.touhou_little_maid.altar.upgrade.notfound=没有找到符合等级条件的女仆
 message.touhou_little_maid.altar.upgrade.kill=女仆杀敌数不够
 message.touhou_little_maid.altar.upgrade.success=升级成功！
-
-message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止
-message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
-message.touhou_little_maid:owner_maid_num.can_not_add.name=你无法再驯服女仆，你已经达到了上限（%d/%d）
 message.touhou_little_maid:photo.not_suitable_for_place_maid.name=这该死的地方不能放置女仆
-message.touhou_little_maid:photo.have_no_nbt_data.name=这该死的照片没有 NBT 数据
-message.touhou_little_maid:chisel.hit_block_error.name=请右击粘土块
-message.touhou_little_maid:chisel.offhand_not_photo.name=请副手持有一张女仆照片
+
+## message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止
+## message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
+## message.touhou_little_maid:owner_maid_num.can_not_add.name=你无法再驯服女仆，你已经达到了上限（%d/%d）
+## message.touhou_little_maid:photo.have_no_nbt_data.name=这该死的照片没有 NBT 数据
+## message.touhou_little_maid:chisel.hit_block_error.name=请右击粘土块
+## message.touhou_little_maid:chisel.offhand_not_photo.name=请副手持有一张女仆照片
 
 action.interact.camera=照相
 action.interact.thlm.npc=变为 NPC
@@ -75,7 +75,7 @@ me.total_chapter=2
 item.touhou_little_maid:memorizable_gensokyo_1=记忆中的幻想乡 总览
 me.chapter1.page1.title=             §l总览§r
 me.chapter1.title.page=             §7(1/3)§r
-me.chapter1.page1.text=  一个与女仆和东方 Project 有关的模组。 感谢酒石酸菌和雪尼制作的java版TouhouLittleMaid。 感谢酒石酸菌、琥珀酸、帕金伊、天顶乌、天幂、Paulzzh、尤里的猫以及其他美工制作了如此优秀的模型和材质。 感谢 Little Maid Mob 的作者 Verclene。
+me.chapter1.page1.text=  一个与女仆和东方 Project 有关的模组。 感谢酒石酸菌和雪尼等人制作的java版TouhouLittleMaid。 感谢酒石酸菌、琥珀酸、帕金伊、天顶乌、天幂、Paulzzh、尤里的猫以及其他美工制作了如此优秀的模型和材质。 感谢 Little Maid Mob 的作者 Verclene。
 me.chapter1.page2.title=             §l目录§r
 me.chapter1.page2.text=  东方 Project____________3     女仆妖精_______________4     Power道具______________5     御币与弹幕_____________7     多方块祭坛_____________9
 

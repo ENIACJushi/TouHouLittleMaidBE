@@ -52,6 +52,11 @@
         
         <!-- 主要处理 -->
         <script type="text/javascript">
+            /*
+             * 附加模型包编号开始的前一个编号
+             *  例：设为100，则产生的第一个模型包编号为 101
+            */
+            const BASEINDEX = 100;
             //// 模板 ////
             const tmp = {
                 manifest: {
@@ -92,13 +97,13 @@
                             ]
                         }
                     },
-                    "geometry": "Array.geos[q.property('thlm:skin_pack')==<index>?q.property('thlm:skin_index')+1:0]",
+                    "geometry": "Array.geos[q.property('thlm:skin_pack')==<index>?q.variant+1:0]",
                     "materials": [
                         {"*": "Material.default"},
                         {"wingLeft": "Material.wing"},
                         {"wingRight": "Material.wing"}
                     ],
-                    "textures": [ "Array.skins[q.property('thlm:skin_pack')==<index>?q.property('thlm:skin_index')+1:0]" ]
+                    "textures": [ "Array.skins[q.property('thlm:skin_pack')==<index>?q.variant+1:0]" ]
                 },
                 entity: {
                     "format_version": "1.10.0",
@@ -224,7 +229,7 @@
                         var pack_controller = JSON.parse(JSON.stringify(tmp.pack_controller));
                         // 移动图标
                         zip.files["pack.png"].async("Blob").then(function success(content) {
-                            textures_icon.file(`pack_pack_${pack_id}.png`, content);
+                            textures_icon.file(`pack_pack_${pack_id + BASEINDEX}.png`, content);
                         }, function (e) {});
                         
                         // 处理 assets 文件
@@ -251,7 +256,7 @@
                         // 移动女仆图标（可能没有）
                         if(zip.files[`assets/${packName}/textures/maid_icon.png`] != undefined){
                             zip.files[`assets/${packName}/textures/maid_icon.png`].async("Blob").then(function success(content) {
-                                textures_icon.file(`pack_maid_${pack_id}.png`, content);
+                                textures_icon.file(`pack_maid_${pack_id + BASEINDEX}.png`, content);
                             }, function (e) {});
                         }
                         
@@ -301,7 +306,7 @@
                                 var infos = JSON.parse(content);
                                 
                                 // 作者字符串
-                                var authorStr = `maid_pack.${pack_id}.authors=`
+                                var authorStr = `maid_pack.${pack_id + BASEINDEX}.authors=`
                                 switch(typeof(infos["author"])){
                                     case "undefined": authorStr += ' '; break;
                                     case "string": authorStr += infos["author"]; break;
@@ -341,8 +346,8 @@
                                     
                                     pack_controller["arrays"]["geometries"]["Array.geos"].push(`Geometry.${packName2}_${model_name}`);
                                 }
-                                pack_controller["geometry"] = pack_controller["geometry"].replace("<index>", `${pack_id}`);
-                                pack_controller["textures"][0] = pack_controller["textures"][0].replace("<index>", `${pack_id}`);
+                                pack_controller["geometry"] = pack_controller["geometry"].replace("<index>", `${pack_id + BASEINDEX}`);
+                                pack_controller["textures"][0] = pack_controller["textures"][0].replace("<index>", `${pack_id + BASEINDEX}`);
                                 
                                 // 注册渲染器
                                 render_controller["render_controllers"][`controller.render.touhou_little_maid.pack_${packName2}`] = pack_controller;
@@ -370,17 +375,17 @@
                                                 // 名称在语言文件
                                                 target = content.replace(
                                                     infos["pack_name"].substring(1, infos["pack_name"].length - 1)
-                                                    , `maid_pack.${pack_id}.name`);
+                                                    , `maid_pack.${pack_id + BASEINDEX}.name`);
                                             }
                                             else{
                                                 // 名称直接定义
-                                                target = content += `\nmaid_pack.${pack_id}.name=${infos["pack_name"]}\n`;
+                                                target = content += `\nmaid_pack.${pack_id + BASEINDEX}.name=${infos["pack_name"]}\n`;
                                             }
                                             
                                             // 修改或添加模型包描述
                                             if(infos["description"] === undefined){
                                                 // 默认键值
-                                                target = target.replace(`maid_pack.${packName}.desc`, `maid_pack.${pack_id}.desc`);
+                                                target = target.replace(`maid_pack.${packName}.desc`, `maid_pack.${pack_id + BASEINDEX}.desc`);
                                             }
                                             else{
                                                 // 指定键值/字符
@@ -391,7 +396,7 @@
                                                     else // 直接指定
                                                         descStr += key + " ";
                                                 }
-                                                target += `\nmaid_pack.${pack_id}.desc=${descStr}\n`
+                                                target += `\nmaid_pack.${pack_id + BASEINDEX}.desc=${descStr}\n`
                                             }
                                             
                                             // 修改或添加模型名称及描述
@@ -400,7 +405,7 @@
                                                 let model_name = model_info["model_id"].split(':')[1];
                                                 // 女仆各自的描述和名称可能会共用，需要检查是否已经被替换
                                                 // 名称
-                                                let keyAfter = `model.${pack_id}.${c}.name`;
+                                                let keyAfter = `model.${pack_id + BASEINDEX}.${c}.name`;
                                                 let infoName = model_info["name"];
                                                 if(infoName === undefined){
                                                     // 默认键值
@@ -426,7 +431,7 @@
                                                 }
 
                                                 // 描述
-                                                keyAfter = `model.${pack_id}.${c}.desc`;
+                                                keyAfter = `model.${pack_id + BASEINDEX}.${c}.desc`;
                                                 if(model_info["description"] === undefined){
                                                     // 默认键值
                                                     target = target.replace(`model.${packName}.${model_name}.desc`, keyAfter);
@@ -464,7 +469,7 @@
                             }
                         );
                     }, function (e) {
-                        document.getElementById("error_log").innerHTML += "Error reading " + fileList[pack_id].name + ": " + e.message
+                        document.getElementById("error_log").innerHTML += "Error reading " + fileList[pack_id-1].name + ": " + e.message
                     });
                 }
 

@@ -9,7 +9,7 @@
  *  thlmm:<女仆id>
  *  thlmo:<主人生物id>
  */
-import { ItemStack, world, Entity, Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, System, EntityDieAfterEvent } from "@minecraft/server";
+import { Direction, ItemStack, world, Entity, Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
@@ -120,9 +120,46 @@ export class MaidManager{
     }
 
     /**
+     * 根据方块和一个方向获得可以放置女仆的位置
+     * 用于魂符和相片的放置
+     * @param {Dimension} dimension 
+     * @param {Location} location 
+     * @param {Direction} blockFace 
+     * @returns {Location|undefined}
+     */
+    static getSafeLocation(dimension, _location, blockFace){
+        let location = _location;
+        // 决定位置
+        switch(blockFace){
+            case Direction.Down: location.y--; break;
+            case Direction.Up  : location.y++; break;
+            case Direction.East: location.x++; break;
+            case Direction.West: location.x--; break;
+            case Direction.South: location.z++; break;
+            case Direction.North: location.z--; break;
+            default: return;
+        }
+        if(!EntityMaid.isSafeBlock(dimension.getBlock(location))){
+            return undefined;
+        }
+        // 上
+        const locationUp = new Vector(location.x, location.y+1, location.z);
+        if(!EntityMaid.isSafeBlock(dimension.getBlock(locationUp))){
+            // 下
+            const locationDown = new Vector(location.x, location.y-1, location.z);
+            if(EntityMaid.isSafeBlock(dimension.getBlock(location))){
+                return locationDown;
+            }
+            else{
+                return undefined;
+            }
+        }
+        return location;
+    }
+    /**
      * 照片使用事件
      * 当照片无 lore 或 使用者不为主人时，使用失败
-     * @param {ItemDefinitionTriggeredBeforeEvent} event 
+     * @param {ItemUseOnBeforeEvent} event 
      */
     static photoOnUseEvent(event){
         let lore = event.itemStack.getLore();
@@ -138,14 +175,26 @@ export class MaidManager{
             // 使用者不是主人
             return;
         }
+        
+        // 检测放置位置是否有两格空间
+        const player = event.source;
+        const dimension = player.dimension;
+        let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
+        if(location === undefined){
+            Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
+            return;
+        }
+        location.x+=0.5;
+        location.z+=0.5;
 
-        let maid = EntityMaid.fromStr(strPure, event.source.dimension, event.source.location, true);
+        // 放置
+        let maid = EntityMaid.fromStr(strPure, dimension, location, true);
         maid.triggerEvent("api:reborn");
         Tool.setPlayerMainHand(event.source);
     }
     /**
      * 魂符使用事件
-     * @param {ItemDefinitionTriggeredBeforeEvent} event 
+     * @param {ItemUseOnBeforeEvent} event 
      */
     static smartSlabOnUseEvent(event){
         let item = event.itemStack;
@@ -167,7 +216,20 @@ export class MaidManager{
                 // 使用者不是主人
                 return;
             }
-            let maid = EntityMaid.fromStr(str, event.source.dimension, event.source.location, true);
+
+            // 检测放置位置是否有两格空间
+            const player = event.source;
+            const dimension = player.dimension;
+            let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
+            if(location === undefined){
+                Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
+                return;
+            }
+            location.x+=0.5;
+            location.z+=0.5;
+
+            // 放置
+            let maid = EntityMaid.fromStr(str, dimension, location, true);
             maid.triggerEvent("api:reborn");
         }
         // 转换物品
@@ -429,11 +491,27 @@ export class MaidManager{
     }
     /**
      * 女仆成为 NPC
-     * @param {EntityDieAfterEvent} event 
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
      */
     static onNPCEvent(event){
         let maid = event.entity;
         EntityMaid.Home.setLocation(maid);
+    }
+    /**
+     * NPC 交互
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     */
+    static NPCInteract(event){
+        let maid = event.entity;
+        let players = maid.dimension.getPlayers({location:maid.location, maxDistance: 6})
+        for(let pl of players){
+            let item = Tool.getPlayerMainHand(pl);
+            if(item !== undefined && item.typeId === "touhou_little_maid:npc_tool"){
+                // 发送表单
+                UI.SkinMenu(pl, maid, false);
+                return;
+            }
+        }
     }
 }
 

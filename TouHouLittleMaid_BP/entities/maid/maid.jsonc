@@ -8,7 +8,6 @@
         "thlm:work" : {"type": "int", "default": 0, "range":[-1, 20], "client_sync": true},
         // 模型包
         "thlm:skin_pack"  : {"type": "int", "default": 0, "range":[0, 99999], "client_sync": true},
-        "thlm:skin_index" : {"type": "int", "default": 0, "range":[0, 99999], "client_sync": true},
         // 背包
         "thlm:backpack_type"     :{"type": "int" , "default": 0    , "range":[0,3], "client_sync": true},
         "thlm:backpack_invisible":{"type": "bool", "default": false, "client_sync": true},
@@ -29,12 +28,28 @@
       ///// NPC 基础属性 /////
       "thlmm:npc_basic":{
         "minecraft:timer": {
-          "time": 30,
-          "looping": true,
-          "time_down_event": {
-            "event": "thlmm:h",
-            "target": "self"
-          }
+          "time": 30, "looping": true,
+          "time_down_event": { "event": "thlmm:h", "target": "self" }
+        },
+        "minecraft:interact": {
+          "interactions": [
+            {
+              "cooldown": 2.5,
+              "use_item": false,
+              "hurt_item": 1,
+              "vibration": "none",
+              "on_interact": {
+                "filters": {
+                  "all_of": [
+                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:npc_tool"},
+                    { "test": "is_sneaking", "subject": "other", "value": true }
+                  ]
+                },
+                "event": "thlm:n",
+                "target": "self"
+              }
+            }
+          ]
         },
         "minecraft:type_family": { "family": [ "npc", "mob" ] },
         "minecraft:knockback_resistance": { "value": 1.0 },
@@ -45,7 +60,8 @@
                 "filters": {
                   "all_of": [
                     { "test": "is_family", "subject": "other", "value": "player" },
-                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:npc_tool"}
+                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:npc_tool"},
+                    { "test": "is_sneaking", "subject": "other", "value": true }
                   ]
                 },
                 "event": "despawn",
@@ -77,132 +93,31 @@
               "scale": [ 1.7, 1.7, 1.7 ]
             },
             "skin_list": [
-              { "variant": 0 },
-              { "variant": 1 },
-              { "variant": 2 },
-              { "variant": 3 },
-              { "variant": 4 },
-              { "variant": 5 },
-              { "variant": 6 },
-              { "variant": 7 },
-              { "variant": 8 },
-              { "variant": 9 },
-              { "variant": 10 },
-              { "variant": 11 },
-              { "variant": 12 },
-              { "variant": 13 },
-              { "variant": 14 },
-              { "variant": 15 },
-              { "variant": 16 },
-              { "variant": 17 },
-              { "variant": 18 },
-              { "variant": 19 },
-              { "variant": 20 },
-              { "variant": 21 },
-              { "variant": 22 },
-              { "variant": 23 },
-              { "variant": 24 },
-              { "variant": 25 },
-              { "variant": 26 },
-              { "variant": 27 },
-              { "variant": 28 },
-              { "variant": 29 },
-              { "variant": 30 },
-              { "variant": 31 },
-              { "variant": 32 },
-              { "variant": 33 },
-              { "variant": 34 },
-              { "variant": 35 },
-              { "variant": 36 },
-              { "variant": 37 },
-              { "variant": 38 },
-              { "variant": 39 },
-              { "variant": 40 },
-              { "variant": 41 },
-              { "variant": 42 },
-              { "variant": 43 },
-              { "variant": 44 },
-              { "variant": 45 },
-              { "variant": 46 },
-              { "variant": 47 },
-              { "variant": 48 },
-              { "variant": 49 },
-              { "variant": 50 },
-              { "variant": 51 },
-              { "variant": 52 },
-              { "variant": 53 },
-              { "variant": 54 },
-              { "variant": 55 },
-              { "variant": 56 },
-              { "variant": 57 },
-              { "variant": 58 },
-              { "variant": 59 },
-              { "variant": 60 },
-              { "variant": 61 },
-              { "variant": 62 },
-              { "variant": 63 },
-              { "variant": 64 },
-              { "variant": 65 },
-              { "variant": 66 },
-              { "variant": 67 },
-              { "variant": 68 },
-              { "variant": 69 },
-              { "variant": 70 },
-              { "variant": 71 },
-              { "variant": 72 },
-              { "variant": 73 },
-              { "variant": 74 },
-              { "variant": 75 },
-              { "variant": 76 },
-              { "variant": 77 },
-              { "variant": 78 },
-              { "variant": 79 },
-              { "variant": 80 },
-              { "variant": 81 },
-              { "variant": 82 },
-              { "variant": 83 },
-              { "variant": 84 },
-              { "variant": 85 },
-              { "variant": 86 },
-              { "variant": 87 },
-              { "variant": 88 },
-              { "variant": 89 },
-              { "variant": 90 },
-              { "variant": 91 },
-              { "variant": 92 },
-              { "variant": 93 },
-              { "variant": 94 },
-              { "variant": 95 },
-              { "variant": 96 },
-              { "variant": 97 },
-              { "variant": 98 },
-              { "variant": 99 },
-              { "variant": 100 },
-              { "variant": 101 },
-              { "variant": 102 },
-              { "variant": 103 },
-              { "variant": 104 },
-              { "variant": 105 },
-              { "variant": 106 },
-              { "variant": 107 },
-              { "variant": 108 },
-              { "variant": 109 },
-              { "variant": 110 },
-              { "variant": 111 },
-              { "variant": 112 },
-              { "variant": 113 },
-              { "variant": 114 },
-              { "variant": 115 },
-              { "variant": 116 },
-              { "variant": 117 },
-              { "variant": 118 },
-              { "variant": 119 },
-              { "variant": 120 },
-              { "variant": 121 }
+              { "variant": 0 },{ "variant": 1 },{ "variant": 2 },{ "variant": 3 },{ "variant": 4 },{ "variant": 5 },{ "variant": 6 },{ "variant": 7 },{ "variant": 8 },{ "variant": 9 },{ "variant": 10 },
+              { "variant": 11 },{ "variant": 12 },{ "variant": 13 },{ "variant": 14 },{ "variant": 15 },{ "variant": 16 },{ "variant": 17 },{ "variant": 18 },{ "variant": 19 },{ "variant": 20 },
+              { "variant": 21 },{ "variant": 22 },{ "variant": 23 },{ "variant": 24 },{ "variant": 25 },{ "variant": 26 },{ "variant": 27 },{ "variant": 28 },{ "variant": 29 },{ "variant": 30 },
+              { "variant": 31 },{ "variant": 32 },{ "variant": 33 },{ "variant": 34 },{ "variant": 35 },{ "variant": 36 },{ "variant": 37 },{ "variant": 38 },{ "variant": 39 },{ "variant": 40 },
+              { "variant": 41 },{ "variant": 42 },{ "variant": 43 },{ "variant": 44 },{ "variant": 45 },{ "variant": 46 },{ "variant": 47 },{ "variant": 48 },{ "variant": 49 },{ "variant": 50 },
+              { "variant": 51 },{ "variant": 52 },{ "variant": 53 },{ "variant": 54 },{ "variant": 55 },{ "variant": 56 },{ "variant": 57 },{ "variant": 58 },{ "variant": 59 },{ "variant": 60 },
+              { "variant": 61 },{ "variant": 62 },{ "variant": 63 },{ "variant": 64 },{ "variant": 65 },{ "variant": 66 },{ "variant": 67 },{ "variant": 68 },{ "variant": 69 },{ "variant": 70 },
+              { "variant": 71 },{ "variant": 72 },{ "variant": 73 },{ "variant": 74 },{ "variant": 75 },{ "variant": 76 },{ "variant": 77 },{ "variant": 78 },{ "variant": 79 },{ "variant": 80 },
+              { "variant": 81 },{ "variant": 82 },{ "variant": 83 },{ "variant": 84 },{ "variant": 85 },{ "variant": 86 },{ "variant": 87 },{ "variant": 88 },{ "variant": 89 },{ "variant": 90 },
+              { "variant": 91 },{ "variant": 92 },{ "variant": 93 },{ "variant": 94 },{ "variant": 95 },{ "variant": 96 },{ "variant": 97 },{ "variant": 98 },{ "variant": 99 },{ "variant": 100 },
+              { "variant": 101 },{ "variant": 102 },{ "variant": 103 },{ "variant": 104 },{ "variant": 105 },{ "variant": 106 },{ "variant": 107 },{ "variant": 108 },{ "variant": 109 },{ "variant": 110 },
+              { "variant": 111 },{ "variant": 112 },{ "variant": 113 },{ "variant": 114 },{ "variant": 115 },{ "variant": 116 },{ "variant": 117 },{ "variant": 118 },{ "variant": 119 },{ "variant": 120 },
+              { "variant": 121 },{ "variant": 122 },{ "variant": 123 },{ "variant": 124 },{ "variant": 125 },{ "variant": 126 },{ "variant": 127 },{ "variant": 128 },{ "variant": 129 },{ "variant": 130 },
+              { "variant": 131 },{ "variant": 132 },{ "variant": 133 },{ "variant": 134 },{ "variant": 135 },{ "variant": 136 },{ "variant": 137 },{ "variant": 138 },{ "variant": 139 },{ "variant": 140 },
+              { "variant": 141 },{ "variant": 142 },{ "variant": 143 },{ "variant": 144 },{ "variant": 145 },{ "variant": 146 },{ "variant": 147 },{ "variant": 148 },{ "variant": 149 },{ "variant": 150 },
+              { "variant": 151 },{ "variant": 152 },{ "variant": 153 },{ "variant": 154 },{ "variant": 155 },{ "variant": 156 },{ "variant": 157 },{ "variant": 158 },{ "variant": 159 },{ "variant": 160 },
+              { "variant": 161 },{ "variant": 162 },{ "variant": 163 },{ "variant": 164 },{ "variant": 165 },{ "variant": 166 },{ "variant": 167 },{ "variant": 168 },{ "variant": 169 },{ "variant": 170 },
+              { "variant": 171 },{ "variant": 172 },{ "variant": 173 },{ "variant": 174 },{ "variant": 175 },{ "variant": 176 },{ "variant": 177 },{ "variant": 178 },{ "variant": 179 },{ "variant": 180 },
+              { "variant": 181 },{ "variant": 182 },{ "variant": 183 },{ "variant": 184 },{ "variant": 185 },{ "variant": 186 },{ "variant": 187 },{ "variant": 188 },{ "variant": 189 },{ "variant": 190 },
+              { "variant": 191 },{ "variant": 192 },{ "variant": 193 },{ "variant": 194 },{ "variant": 195 },{ "variant": 196 },{ "variant": 197 },{ "variant": 198 },{ "variant": 199 },{ "variant": 200 }
             ]
           }
         }
       },
+
       ///// 女仆基础属性 /////
       "thlmm:maid_basic":{
         "minecraft:timer": {
@@ -422,6 +337,7 @@
           "event": "thlmm:s"
         }
       },
+
       ///// 等级属性 /////
       // tame 在驯服成功后添加  basic 在生成时添加
       "thlmm:lv1_tame": {
@@ -573,6 +489,7 @@
           "search_cooldown_max_seconds": 2
         }
       },
+
       ///// 拾物模式 /////
       "mode:pick":{
         "minecraft:is_charged": {},
@@ -629,10 +546,22 @@
       // 环境音：关闭
       "sound:ambient_mute":{
         "minecraft:ambient_sound_interval": { "event_name": "mute", "range": 32, "value": 16 }
-      }
+      },
+      ///// 皮肤穷举 /////
+      "skin:0":{"minecraft:variant": { "value": 0 }},"skin:1":{"minecraft:variant": { "value": 1 }},"skin:2":{"minecraft:variant": { "value": 2 }},"skin:3":{"minecraft:variant": { "value": 3 }},"skin:4":{"minecraft:variant": { "value": 4 }},"skin:5":{"minecraft:variant": { "value": 5 }},"skin:6":{"minecraft:variant": { "value": 6 }},"skin:7":{"minecraft:variant": { "value": 7 }},"skin:8":{"minecraft:variant": { "value": 8 }},"skin:9":{"minecraft:variant": { "value": 9 }},"skin:10":{"minecraft:variant": { "value": 10 }},"skin:11":{"minecraft:variant": { "value": 11 }},"skin:12":{"minecraft:variant": { "value": 12 }},"skin:13":{"minecraft:variant": { "value": 13 }},"skin:14":{"minecraft:variant": { "value": 14 }},"skin:15":{"minecraft:variant": { "value": 15 }},"skin:16":{"minecraft:variant": { "value": 16 }},"skin:17":{"minecraft:variant": { "value": 17 }},"skin:18":{"minecraft:variant": { "value": 18 }},"skin:19":{"minecraft:variant": { "value": 19 }},"skin:20":{"minecraft:variant": { "value": 20 }},
+      "skin:21":{"minecraft:variant": { "value": 21 }},"skin:22":{"minecraft:variant": { "value": 22 }},"skin:23":{"minecraft:variant": { "value": 23 }},"skin:24":{"minecraft:variant": { "value": 24 }},"skin:25":{"minecraft:variant": { "value": 25 }},"skin:26":{"minecraft:variant": { "value": 26 }},"skin:27":{"minecraft:variant": { "value": 27 }},"skin:28":{"minecraft:variant": { "value": 28 }},"skin:29":{"minecraft:variant": { "value": 29 }},"skin:30":{"minecraft:variant": { "value": 30 }},"skin:31":{"minecraft:variant": { "value": 31 }},"skin:32":{"minecraft:variant": { "value": 32 }},"skin:33":{"minecraft:variant": { "value": 33 }},"skin:34":{"minecraft:variant": { "value": 34 }},"skin:35":{"minecraft:variant": { "value": 35 }},"skin:36":{"minecraft:variant": { "value": 36 }},"skin:37":{"minecraft:variant": { "value": 37 }},"skin:38":{"minecraft:variant": { "value": 38 }},"skin:39":{"minecraft:variant": { "value": 39 }},"skin:40":{"minecraft:variant": { "value": 40 }},
+      "skin:41":{"minecraft:variant": { "value": 41 }},"skin:42":{"minecraft:variant": { "value": 42 }},"skin:43":{"minecraft:variant": { "value": 43 }},"skin:44":{"minecraft:variant": { "value": 44 }},"skin:45":{"minecraft:variant": { "value": 45 }},"skin:46":{"minecraft:variant": { "value": 46 }},"skin:47":{"minecraft:variant": { "value": 47 }},"skin:48":{"minecraft:variant": { "value": 48 }},"skin:49":{"minecraft:variant": { "value": 49 }},"skin:50":{"minecraft:variant": { "value": 50 }},"skin:51":{"minecraft:variant": { "value": 51 }},"skin:52":{"minecraft:variant": { "value": 52 }},"skin:53":{"minecraft:variant": { "value": 53 }},"skin:54":{"minecraft:variant": { "value": 54 }},"skin:55":{"minecraft:variant": { "value": 55 }},"skin:56":{"minecraft:variant": { "value": 56 }},"skin:57":{"minecraft:variant": { "value": 57 }},"skin:58":{"minecraft:variant": { "value": 58 }},"skin:59":{"minecraft:variant": { "value": 59 }},"skin:60":{"minecraft:variant": { "value": 60 }},
+      "skin:61":{"minecraft:variant": { "value": 61 }},"skin:62":{"minecraft:variant": { "value": 62 }},"skin:63":{"minecraft:variant": { "value": 63 }},"skin:64":{"minecraft:variant": { "value": 64 }},"skin:65":{"minecraft:variant": { "value": 65 }},"skin:66":{"minecraft:variant": { "value": 66 }},"skin:67":{"minecraft:variant": { "value": 67 }},"skin:68":{"minecraft:variant": { "value": 68 }},"skin:69":{"minecraft:variant": { "value": 69 }},"skin:70":{"minecraft:variant": { "value": 70 }},"skin:71":{"minecraft:variant": { "value": 71 }},"skin:72":{"minecraft:variant": { "value": 72 }},"skin:73":{"minecraft:variant": { "value": 73 }},"skin:74":{"minecraft:variant": { "value": 74 }},"skin:75":{"minecraft:variant": { "value": 75 }},"skin:76":{"minecraft:variant": { "value": 76 }},"skin:77":{"minecraft:variant": { "value": 77 }},"skin:78":{"minecraft:variant": { "value": 78 }},"skin:79":{"minecraft:variant": { "value": 79 }},"skin:80":{"minecraft:variant": { "value": 80 }},
+      "skin:81":{"minecraft:variant": { "value": 81 }},"skin:82":{"minecraft:variant": { "value": 82 }},"skin:83":{"minecraft:variant": { "value": 83 }},"skin:84":{"minecraft:variant": { "value": 84 }},"skin:85":{"minecraft:variant": { "value": 85 }},"skin:86":{"minecraft:variant": { "value": 86 }},"skin:87":{"minecraft:variant": { "value": 87 }},"skin:88":{"minecraft:variant": { "value": 88 }},"skin:89":{"minecraft:variant": { "value": 89 }},"skin:90":{"minecraft:variant": { "value": 90 }},"skin:91":{"minecraft:variant": { "value": 91 }},"skin:92":{"minecraft:variant": { "value": 92 }},"skin:93":{"minecraft:variant": { "value": 93 }},"skin:94":{"minecraft:variant": { "value": 94 }},"skin:95":{"minecraft:variant": { "value": 95 }},"skin:96":{"minecraft:variant": { "value": 96 }},"skin:97":{"minecraft:variant": { "value": 97 }},"skin:98":{"minecraft:variant": { "value": 98 }},"skin:99":{"minecraft:variant": { "value": 99 }},"skin:100":{"minecraft:variant": { "value": 100 }},
+      "skin:101":{"minecraft:variant": { "value": 101 }},"skin:102":{"minecraft:variant": { "value": 102 }},"skin:103":{"minecraft:variant": { "value": 103 }},"skin:104":{"minecraft:variant": { "value": 104 }},"skin:105":{"minecraft:variant": { "value": 105 }},"skin:106":{"minecraft:variant": { "value": 106 }},"skin:107":{"minecraft:variant": { "value": 107 }},"skin:108":{"minecraft:variant": { "value": 108 }},"skin:109":{"minecraft:variant": { "value": 109 }},"skin:110":{"minecraft:variant": { "value": 110 }},"skin:111":{"minecraft:variant": { "value": 111 }},"skin:112":{"minecraft:variant": { "value": 112 }},"skin:113":{"minecraft:variant": { "value": 113 }},"skin:114":{"minecraft:variant": { "value": 114 }},"skin:115":{"minecraft:variant": { "value": 115 }},"skin:116":{"minecraft:variant": { "value": 116 }},"skin:117":{"minecraft:variant": { "value": 117 }},"skin:118":{"minecraft:variant": { "value": 118 }},"skin:119":{"minecraft:variant": { "value": 119 }},"skin:120":{"minecraft:variant": { "value": 120 }},
+      "skin:121":{"minecraft:variant": { "value": 121 }},"skin:122":{"minecraft:variant": { "value": 122 }},"skin:123":{"minecraft:variant": { "value": 123 }},"skin:124":{"minecraft:variant": { "value": 124 }},"skin:125":{"minecraft:variant": { "value": 125 }},"skin:126":{"minecraft:variant": { "value": 126 }},"skin:127":{"minecraft:variant": { "value": 127 }},"skin:128":{"minecraft:variant": { "value": 128 }},"skin:129":{"minecraft:variant": { "value": 129 }},"skin:130":{"minecraft:variant": { "value": 130 }},"skin:131":{"minecraft:variant": { "value": 131 }},"skin:132":{"minecraft:variant": { "value": 132 }},"skin:133":{"minecraft:variant": { "value": 133 }},"skin:134":{"minecraft:variant": { "value": 134 }},"skin:135":{"minecraft:variant": { "value": 135 }},"skin:136":{"minecraft:variant": { "value": 136 }},"skin:137":{"minecraft:variant": { "value": 137 }},"skin:138":{"minecraft:variant": { "value": 138 }},"skin:139":{"minecraft:variant": { "value": 139 }},"skin:140":{"minecraft:variant": { "value": 140 }},
+      "skin:141":{"minecraft:variant": { "value": 141 }},"skin:142":{"minecraft:variant": { "value": 142 }},"skin:143":{"minecraft:variant": { "value": 143 }},"skin:144":{"minecraft:variant": { "value": 144 }},"skin:145":{"minecraft:variant": { "value": 145 }},"skin:146":{"minecraft:variant": { "value": 146 }},"skin:147":{"minecraft:variant": { "value": 147 }},"skin:148":{"minecraft:variant": { "value": 148 }},"skin:149":{"minecraft:variant": { "value": 149 }},"skin:150":{"minecraft:variant": { "value": 150 }},"skin:151":{"minecraft:variant": { "value": 151 }},"skin:152":{"minecraft:variant": { "value": 152 }},"skin:153":{"minecraft:variant": { "value": 153 }},"skin:154":{"minecraft:variant": { "value": 154 }},"skin:155":{"minecraft:variant": { "value": 155 }},"skin:156":{"minecraft:variant": { "value": 156 }},"skin:157":{"minecraft:variant": { "value": 157 }},"skin:158":{"minecraft:variant": { "value": 158 }},"skin:159":{"minecraft:variant": { "value": 159 }},"skin:160":{"minecraft:variant": { "value": 160 }},
+      "skin:161":{"minecraft:variant": { "value": 161 }},"skin:162":{"minecraft:variant": { "value": 162 }},"skin:163":{"minecraft:variant": { "value": 163 }},"skin:164":{"minecraft:variant": { "value": 164 }},"skin:165":{"minecraft:variant": { "value": 165 }},"skin:166":{"minecraft:variant": { "value": 166 }},"skin:167":{"minecraft:variant": { "value": 167 }},"skin:168":{"minecraft:variant": { "value": 168 }},"skin:169":{"minecraft:variant": { "value": 169 }},"skin:170":{"minecraft:variant": { "value": 170 }},"skin:171":{"minecraft:variant": { "value": 171 }},"skin:172":{"minecraft:variant": { "value": 172 }},"skin:173":{"minecraft:variant": { "value": 173 }},"skin:174":{"minecraft:variant": { "value": 174 }},"skin:175":{"minecraft:variant": { "value": 175 }},"skin:176":{"minecraft:variant": { "value": 176 }},"skin:177":{"minecraft:variant": { "value": 177 }},"skin:178":{"minecraft:variant": { "value": 178 }},"skin:179":{"minecraft:variant": { "value": 179 }},"skin:180":{"minecraft:variant": { "value": 180 }},
+      "skin:181":{"minecraft:variant": { "value": 181 }},"skin:182":{"minecraft:variant": { "value": 182 }},"skin:183":{"minecraft:variant": { "value": 183 }},"skin:184":{"minecraft:variant": { "value": 184 }},"skin:185":{"minecraft:variant": { "value": 185 }},"skin:186":{"minecraft:variant": { "value": 186 }},"skin:187":{"minecraft:variant": { "value": 187 }},"skin:188":{"minecraft:variant": { "value": 188 }},"skin:189":{"minecraft:variant": { "value": 189 }},"skin:190":{"minecraft:variant": { "value": 190 }},"skin:191":{"minecraft:variant": { "value": 191 }},"skin:192":{"minecraft:variant": { "value": 192 }},"skin:193":{"minecraft:variant": { "value": 193 }},"skin:194":{"minecraft:variant": { "value": 194 }},"skin:195":{"minecraft:variant": { "value": 195 }},"skin:196":{"minecraft:variant": { "value": 196 }},"skin:197":{"minecraft:variant": { "value": 197 }},"skin:198":{"minecraft:variant": { "value": 198 }},"skin:199":{"minecraft:variant": { "value": 199 }},"skin:200":{"minecraft:variant": { "value": 200 }}
+    
     },
     "components": {
-      
+      "minecraft:variant": { "value": 0 }
     },
     "events": {
       ///// 基础事件 /////
@@ -716,6 +645,7 @@
       "thlmm:s" :{ "add": {"component_groups": ["thlmm:maid_tame_sit"]}, "remove": {"component_groups": ["thlmm:maid_tame_inventory"]} },
       "thlmm:0" :{}, // Spawn
       "thlmm:1" :{}, // Smart slab
+      "thlm:n": {}, // npc交互
 
       ///// 脚本接口 /////
       // 曾有主人的生成
@@ -791,7 +721,19 @@
 
       ///// 声音控制 /////
       "sound:ambient":{ "remove":{"component_groups":["sound:ambient_mute"]}, "add":{"component_groups":["sound:ambient"]}},
-      "sound:ambient_mute":{ "add":{"component_groups":["sound:ambient_mute"]}, "remove":{"component_groups":["sound:ambient"]}}
+      "sound:ambient_mute":{ "add":{"component_groups":["sound:ambient_mute"]}, "remove":{"component_groups":["sound:ambient"]}},
+
+      ///// 皮肤穷举 /////
+      "skin:0":{"add":{"component_groups":["skin:0"]}},"skin:1":{"add":{"component_groups":["skin:1"]}},"skin:2":{"add":{"component_groups":["skin:2"]}},"skin:3":{"add":{"component_groups":["skin:3"]}},"skin:4":{"add":{"component_groups":["skin:4"]}},"skin:5":{"add":{"component_groups":["skin:5"]}},"skin:6":{"add":{"component_groups":["skin:6"]}},"skin:7":{"add":{"component_groups":["skin:7"]}},"skin:8":{"add":{"component_groups":["skin:8"]}},"skin:9":{"add":{"component_groups":["skin:9"]}},"skin:10":{"add":{"component_groups":["skin:10"]}},"skin:11":{"add":{"component_groups":["skin:11"]}},"skin:12":{"add":{"component_groups":["skin:12"]}},"skin:13":{"add":{"component_groups":["skin:13"]}},"skin:14":{"add":{"component_groups":["skin:14"]}},"skin:15":{"add":{"component_groups":["skin:15"]}},"skin:16":{"add":{"component_groups":["skin:16"]}},"skin:17":{"add":{"component_groups":["skin:17"]}},"skin:18":{"add":{"component_groups":["skin:18"]}},"skin:19":{"add":{"component_groups":["skin:19"]}},"skin:20":{"add":{"component_groups":["skin:20"]}},
+      "skin:21":{"add":{"component_groups":["skin:21"]}},"skin:22":{"add":{"component_groups":["skin:22"]}},"skin:23":{"add":{"component_groups":["skin:23"]}},"skin:24":{"add":{"component_groups":["skin:24"]}},"skin:25":{"add":{"component_groups":["skin:25"]}},"skin:26":{"add":{"component_groups":["skin:26"]}},"skin:27":{"add":{"component_groups":["skin:27"]}},"skin:28":{"add":{"component_groups":["skin:28"]}},"skin:29":{"add":{"component_groups":["skin:29"]}},"skin:30":{"add":{"component_groups":["skin:30"]}},"skin:31":{"add":{"component_groups":["skin:31"]}},"skin:32":{"add":{"component_groups":["skin:32"]}},"skin:33":{"add":{"component_groups":["skin:33"]}},"skin:34":{"add":{"component_groups":["skin:34"]}},"skin:35":{"add":{"component_groups":["skin:35"]}},"skin:36":{"add":{"component_groups":["skin:36"]}},"skin:37":{"add":{"component_groups":["skin:37"]}},"skin:38":{"add":{"component_groups":["skin:38"]}},"skin:39":{"add":{"component_groups":["skin:39"]}},"skin:40":{"add":{"component_groups":["skin:40"]}},
+      "skin:41":{"add":{"component_groups":["skin:41"]}},"skin:42":{"add":{"component_groups":["skin:42"]}},"skin:43":{"add":{"component_groups":["skin:43"]}},"skin:44":{"add":{"component_groups":["skin:44"]}},"skin:45":{"add":{"component_groups":["skin:45"]}},"skin:46":{"add":{"component_groups":["skin:46"]}},"skin:47":{"add":{"component_groups":["skin:47"]}},"skin:48":{"add":{"component_groups":["skin:48"]}},"skin:49":{"add":{"component_groups":["skin:49"]}},"skin:50":{"add":{"component_groups":["skin:50"]}},"skin:51":{"add":{"component_groups":["skin:51"]}},"skin:52":{"add":{"component_groups":["skin:52"]}},"skin:53":{"add":{"component_groups":["skin:53"]}},"skin:54":{"add":{"component_groups":["skin:54"]}},"skin:55":{"add":{"component_groups":["skin:55"]}},"skin:56":{"add":{"component_groups":["skin:56"]}},"skin:57":{"add":{"component_groups":["skin:57"]}},"skin:58":{"add":{"component_groups":["skin:58"]}},"skin:59":{"add":{"component_groups":["skin:59"]}},"skin:60":{"add":{"component_groups":["skin:60"]}},
+      "skin:61":{"add":{"component_groups":["skin:61"]}},"skin:62":{"add":{"component_groups":["skin:62"]}},"skin:63":{"add":{"component_groups":["skin:63"]}},"skin:64":{"add":{"component_groups":["skin:64"]}},"skin:65":{"add":{"component_groups":["skin:65"]}},"skin:66":{"add":{"component_groups":["skin:66"]}},"skin:67":{"add":{"component_groups":["skin:67"]}},"skin:68":{"add":{"component_groups":["skin:68"]}},"skin:69":{"add":{"component_groups":["skin:69"]}},"skin:70":{"add":{"component_groups":["skin:70"]}},"skin:71":{"add":{"component_groups":["skin:71"]}},"skin:72":{"add":{"component_groups":["skin:72"]}},"skin:73":{"add":{"component_groups":["skin:73"]}},"skin:74":{"add":{"component_groups":["skin:74"]}},"skin:75":{"add":{"component_groups":["skin:75"]}},"skin:76":{"add":{"component_groups":["skin:76"]}},"skin:77":{"add":{"component_groups":["skin:77"]}},"skin:78":{"add":{"component_groups":["skin:78"]}},"skin:79":{"add":{"component_groups":["skin:79"]}},"skin:80":{"add":{"component_groups":["skin:80"]}},
+      "skin:81":{"add":{"component_groups":["skin:81"]}},"skin:82":{"add":{"component_groups":["skin:82"]}},"skin:83":{"add":{"component_groups":["skin:83"]}},"skin:84":{"add":{"component_groups":["skin:84"]}},"skin:85":{"add":{"component_groups":["skin:85"]}},"skin:86":{"add":{"component_groups":["skin:86"]}},"skin:87":{"add":{"component_groups":["skin:87"]}},"skin:88":{"add":{"component_groups":["skin:88"]}},"skin:89":{"add":{"component_groups":["skin:89"]}},"skin:90":{"add":{"component_groups":["skin:90"]}},"skin:91":{"add":{"component_groups":["skin:91"]}},"skin:92":{"add":{"component_groups":["skin:92"]}},"skin:93":{"add":{"component_groups":["skin:93"]}},"skin:94":{"add":{"component_groups":["skin:94"]}},"skin:95":{"add":{"component_groups":["skin:95"]}},"skin:96":{"add":{"component_groups":["skin:96"]}},"skin:97":{"add":{"component_groups":["skin:97"]}},"skin:98":{"add":{"component_groups":["skin:98"]}},"skin:99":{"add":{"component_groups":["skin:99"]}},"skin:100":{"add":{"component_groups":["skin:100"]}},
+      "skin:101":{"add":{"component_groups":["skin:101"]}},"skin:102":{"add":{"component_groups":["skin:102"]}},"skin:103":{"add":{"component_groups":["skin:103"]}},"skin:104":{"add":{"component_groups":["skin:104"]}},"skin:105":{"add":{"component_groups":["skin:105"]}},"skin:106":{"add":{"component_groups":["skin:106"]}},"skin:107":{"add":{"component_groups":["skin:107"]}},"skin:108":{"add":{"component_groups":["skin:108"]}},"skin:109":{"add":{"component_groups":["skin:109"]}},"skin:110":{"add":{"component_groups":["skin:110"]}},"skin:111":{"add":{"component_groups":["skin:111"]}},"skin:112":{"add":{"component_groups":["skin:112"]}},"skin:113":{"add":{"component_groups":["skin:113"]}},"skin:114":{"add":{"component_groups":["skin:114"]}},"skin:115":{"add":{"component_groups":["skin:115"]}},"skin:116":{"add":{"component_groups":["skin:116"]}},"skin:117":{"add":{"component_groups":["skin:117"]}},"skin:118":{"add":{"component_groups":["skin:118"]}},"skin:119":{"add":{"component_groups":["skin:119"]}},"skin:120":{"add":{"component_groups":["skin:120"]}},
+      "skin:121":{"add":{"component_groups":["skin:121"]}},"skin:122":{"add":{"component_groups":["skin:122"]}},"skin:123":{"add":{"component_groups":["skin:123"]}},"skin:124":{"add":{"component_groups":["skin:124"]}},"skin:125":{"add":{"component_groups":["skin:125"]}},"skin:126":{"add":{"component_groups":["skin:126"]}},"skin:127":{"add":{"component_groups":["skin:127"]}},"skin:128":{"add":{"component_groups":["skin:128"]}},"skin:129":{"add":{"component_groups":["skin:129"]}},"skin:130":{"add":{"component_groups":["skin:130"]}},"skin:131":{"add":{"component_groups":["skin:131"]}},"skin:132":{"add":{"component_groups":["skin:132"]}},"skin:133":{"add":{"component_groups":["skin:133"]}},"skin:134":{"add":{"component_groups":["skin:134"]}},"skin:135":{"add":{"component_groups":["skin:135"]}},"skin:136":{"add":{"component_groups":["skin:136"]}},"skin:137":{"add":{"component_groups":["skin:137"]}},"skin:138":{"add":{"component_groups":["skin:138"]}},"skin:139":{"add":{"component_groups":["skin:139"]}},"skin:140":{"add":{"component_groups":["skin:140"]}},
+      "skin:141":{"add":{"component_groups":["skin:141"]}},"skin:142":{"add":{"component_groups":["skin:142"]}},"skin:143":{"add":{"component_groups":["skin:143"]}},"skin:144":{"add":{"component_groups":["skin:144"]}},"skin:145":{"add":{"component_groups":["skin:145"]}},"skin:146":{"add":{"component_groups":["skin:146"]}},"skin:147":{"add":{"component_groups":["skin:147"]}},"skin:148":{"add":{"component_groups":["skin:148"]}},"skin:149":{"add":{"component_groups":["skin:149"]}},"skin:150":{"add":{"component_groups":["skin:150"]}},"skin:151":{"add":{"component_groups":["skin:151"]}},"skin:152":{"add":{"component_groups":["skin:152"]}},"skin:153":{"add":{"component_groups":["skin:153"]}},"skin:154":{"add":{"component_groups":["skin:154"]}},"skin:155":{"add":{"component_groups":["skin:155"]}},"skin:156":{"add":{"component_groups":["skin:156"]}},"skin:157":{"add":{"component_groups":["skin:157"]}},"skin:158":{"add":{"component_groups":["skin:158"]}},"skin:159":{"add":{"component_groups":["skin:159"]}},"skin:160":{"add":{"component_groups":["skin:160"]}},
+      "skin:161":{"add":{"component_groups":["skin:161"]}},"skin:162":{"add":{"component_groups":["skin:162"]}},"skin:163":{"add":{"component_groups":["skin:163"]}},"skin:164":{"add":{"component_groups":["skin:164"]}},"skin:165":{"add":{"component_groups":["skin:165"]}},"skin:166":{"add":{"component_groups":["skin:166"]}},"skin:167":{"add":{"component_groups":["skin:167"]}},"skin:168":{"add":{"component_groups":["skin:168"]}},"skin:169":{"add":{"component_groups":["skin:169"]}},"skin:170":{"add":{"component_groups":["skin:170"]}},"skin:171":{"add":{"component_groups":["skin:171"]}},"skin:172":{"add":{"component_groups":["skin:172"]}},"skin:173":{"add":{"component_groups":["skin:173"]}},"skin:174":{"add":{"component_groups":["skin:174"]}},"skin:175":{"add":{"component_groups":["skin:175"]}},"skin:176":{"add":{"component_groups":["skin:176"]}},"skin:177":{"add":{"component_groups":["skin:177"]}},"skin:178":{"add":{"component_groups":["skin:178"]}},"skin:179":{"add":{"component_groups":["skin:179"]}},"skin:180":{"add":{"component_groups":["skin:180"]}},
+      "skin:181":{"add":{"component_groups":["skin:181"]}},"skin:182":{"add":{"component_groups":["skin:182"]}},"skin:183":{"add":{"component_groups":["skin:183"]}},"skin:184":{"add":{"component_groups":["skin:184"]}},"skin:185":{"add":{"component_groups":["skin:185"]}},"skin:186":{"add":{"component_groups":["skin:186"]}},"skin:187":{"add":{"component_groups":["skin:187"]}},"skin:188":{"add":{"component_groups":["skin:188"]}},"skin:189":{"add":{"component_groups":["skin:189"]}},"skin:190":{"add":{"component_groups":["skin:190"]}},"skin:191":{"add":{"component_groups":["skin:191"]}},"skin:192":{"add":{"component_groups":["skin:192"]}},"skin:193":{"add":{"component_groups":["skin:193"]}},"skin:194":{"add":{"component_groups":["skin:194"]}},"skin:195":{"add":{"component_groups":["skin:195"]}},"skin:196":{"add":{"component_groups":["skin:196"]}},"skin:197":{"add":{"component_groups":["skin:197"]}},"skin:198":{"add":{"component_groups":["skin:198"]}},"skin:199":{"add":{"component_groups":["skin:199"]}},"skin:200":{"add":{"component_groups":["skin:200"]}}
     }
   }
 }
