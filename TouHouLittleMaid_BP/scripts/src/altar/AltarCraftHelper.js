@@ -149,11 +149,12 @@ export class AltarCraftHelper{
                         if(this.isItemMatchDefine(source_item, output.copy["ingredient"])){
                             let lore = source_item.getLore();
                             if(lore.length === 0) return false; // 无lore
+                            
+                            // 拼接lore字符串
                             let strLore="";
-                            for(let temp of lore){
-                                strLore += temp;
-                            }
+                            for(let temp of lore){ strLore += temp; }
                             let strPure = Tool.loreStr2Pure(strLore);
+
                             EntityMaid.fromStr(strPure, dimension, location, false);
                             return true;
                         }

@@ -208,6 +208,9 @@ class MaidMenuUI {
         // 护甲值
 
         // 模型名
+        // const form1 = new mcui.ActionFormData()
+        // .title("/A textures/thlm/pack_pack_0.png").body(this.maid.id).button("1");
+        // form1.show(this.player); return;
 
         ///// 构建表单 /////
         const form = new mcui.ActionFormData()
@@ -260,8 +263,12 @@ class MaidMenuUI {
         .title(maid_name) // 女仆名，为空则使用默认标题
         .body(`模型选择`);
         let skinList = MaidSkin.SkinList;
-        for(let i=0; i < MaidSkin.length(); i++){
+        let i = 0;
+        for(; i < MaidSkin.DEFAULTAMOUNT ; i++){
             form.button(MaidSkin.getPackDisplayName(i), MaidSkin.getPackIcon(i));
+        }
+        for(; i < MaidSkin.length(); i++){
+            form.button(MaidSkin.getPackDisplayName(i+100), MaidSkin.getPackIcon(i+100));
         }
         
         form.show(this.player).then((response) => {
@@ -282,7 +289,7 @@ class MaidMenuUI {
         .title(MaidSkin.getPackDisplayName(pack_index)) // 女仆名，为空则使用默认标题
         .body({"rawtext":[{"translate":"gui.touhou_little_maid.author.name"}, MaidSkin.getAuthors(pack_index)]});
 
-        for(let i = 0; i < MaidSkin.SkinList[pack_index]; i++){
+        for(let i = 0; i < MaidSkin.getSkinAmount(pack_index); i++){
             form.button(MaidSkin.getSkinDisplayName(pack_index, i));
         }
         

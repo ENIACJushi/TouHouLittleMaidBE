@@ -344,8 +344,8 @@ export function debug_shoot(entity){
                 }
             }break;
             case 4:{// 樱花束
-                
-                for(let i2=0;i2<10;i2++){
+                GoheiCherry.shoot(entity, undefined);
+                for(let i2=0;i2<0;i2++){
                     system.runTimeout(()=>{
                         for(let i=0;i<5;i++){
                             GoheiCherry.shoot(entity, undefined);
@@ -354,7 +354,7 @@ export function debug_shoot(entity){
                 }
                 
             };break;
-            case 5:{// 激光
+            case 5:{// 激光 伪
                 var danmakuShoot =DanmakuShoot.create().setWorld(entity.dimension)
                     .setThrower(entity).setTarget(target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
                     .setColor(DanmakuColor.RED).setType(DanmakuType.GLOWEY_BALL)

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="utf-8" content="text/html; charset=GBK">
+        <meta name="viewport" content="width=device-width">
+        <title>车万女仆指南书生成器</title>
+    </head>
+    <body>
+        <h1>车万女仆指南书生成器</h1>
+        <p>一个指南书生成工具（仅开发者）</p>
+        
+        <hr>
+
+        <div style="text-indent: 10px;">
+            <p>标题</p>
+            <textarea id="title" name="title" style="padding:10px;" cols="40", rows="1"></textarea>
+        </div>
+
+        <div style="text-indent: 10px;">
+            <p>说明文本</p>
+            <textarea id="info" name="info" style="padding:10px;" cols="40", rows="5"></textarea>
+        </div>
+        
+        <div style="text-indent: 10px;">
+            <p>配方json</p>
+            <textarea id="recipe" name="recipe" style="padding:10px;" cols="40", rows="5"></textarea>
+        </div>
+        <div>
+            <textarea id="chapter" name="recipe" style="padding:5px;" cols="3", rows="1">章</textarea>
+            <textarea id="page"    name="recipe" style="padding:5px;" cols="3", rows="1">页</textarea>
+            <button onclick="generate()">生成</button>
+        </div>
+        <hr/>
+
+        <p id="error_log"></div>
+        
+        <div style="text-indent: 10px;">
+            <p>书内字符</p>
+            <textarea id="booktext" name="booktext" style="padding:10px;" cols="40", rows="5"></textarea>
+        </div>
+        
+        <div style="text-indent: 10px;">
+            <p>语言字符</p>
+            <textarea id="langtext" name="langtext" style="padding:10px;" cols="40", rows="5"></textarea>
+        </div>
+
+
+        <hr>
+
+        <div style="text-indent: 10px;">
+            
+        </div>
+        
+        <!-- 样式 -->
+        <style type="text/css">
+            table td{padding:5px;}
+        </style>
+        
+        <!-- 主要处理 -->
+        <script src="main.js"></script>
+    </body>
+</html>
+

@@ -21,7 +21,7 @@ import {DanmakuShoot}  from "../danmaku/DanmakuShoot";
 import {DanmakuColor}  from "../danmaku/DanmakuColor";
 import {DanmakuType}   from "../danmaku/DanmakuType";
 
-const HOME_RADIUS=25;
+const HOME_RADIUS=32;
 
 export class MaidManager{
     /**
@@ -164,19 +164,8 @@ export class MaidManager{
     static photoOnUseEvent(event){
         let lore = event.itemStack.getLore();
         if(lore.length === 0) return; // 无lore
-        let strLore="";
-        for(let temp of lore){
-            strLore += temp;
-        }
-        
-        let strPure = Tool.loreStr2Pure(strLore);
-
-        if(StrMaid.Owner.getId(strPure) !== event.source.id){
-            // 使用者不是主人
-            return;
-        }
-        
-        // 检测放置位置是否有两格空间
+ 
+        //// 检测放置位置是否有两格空间 ////
         const player = event.source;
         const dimension = player.dimension;
         let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
@@ -187,10 +176,25 @@ export class MaidManager{
         location.x+=0.5;
         location.z+=0.5;
 
+        // 拼接lore字符串
+        let strLore="";
+        for(let temp of lore){ strLore += temp; }
+        let strPure = Tool.loreStr2Pure(strLore);
+
+        // 使用者不是主人
+        if(StrMaid.Owner.getId(strPure) !== event.source.id) return;
+        
         // 放置
         let maid = EntityMaid.fromStr(strPure, dimension, location, true);
+        
         maid.triggerEvent("api:reborn");
+        
+        // 消耗照片
         Tool.setPlayerMainHand(event.source);
+        // 给予玩家一个苹果
+        let apple = new ItemStack("minecraft:apple", 1);
+        apple.nameTag="§cApple!"
+        event.source.dimension.spawnItem(apple, event.source.location);
     }
     /**
      * 魂符使用事件
@@ -205,17 +209,14 @@ export class MaidManager{
             EntityMaid.spawnRandomMaid(event.source.dimension, event.source.location);
         }
         else{
+            
+            // 拼接lore字符串
             let str="";
-            for(let temp of lore){
-                str += temp;
-            }
-
+            for(let temp of lore){ str += temp; }
             str = Tool.loreStr2Pure(str);
 
-            if(StrMaid.Owner.getId(str) !== event.source.id){
-                // 使用者不是主人
-                return;
-            }
+            // 使用者不是主人
+            if(StrMaid.Owner.getId(str) !== event.source.id) return;
 
             // 检测放置位置是否有两格空间
             const player = event.source;
@@ -234,6 +235,10 @@ export class MaidManager{
         }
         // 转换物品
         Tool.setPlayerMainHand(event.source, new ItemStack("touhou_little_maid:smart_slab_empty", 1));
+        // 给予玩家一个苹果
+        let apple = new ItemStack("minecraft:apple", 1);
+        apple.nameTag="§cApple!"
+        event.source.dimension.spawnItem(apple, event.source.location);
     }
     /**
      * 女仆驯服寻主事件
@@ -259,16 +264,13 @@ export class MaidManager{
 
                 // 设置主人
                 EntityMaid.Owner.setID(maid, player.id);
+                EntityMaid.Owner.setName(maid, player.name);
                 MaidBackpack.setOwnerID(backpack, player.id);
             }
             else{
                 // 跟随到的主人与记录不符 回到未驯服状态
                 maid.triggerEvent("api:follow_on_tame_over_backreborn");
             }
-            // 给予玩家一个苹果
-            let apple = new ItemStack("minecraft:apple", 1);
-            apple.nameTag="§cApple!"
-            player.dimension.spawnItem(apple, player.location);
         }
     }
     /**
@@ -496,6 +498,7 @@ export class MaidManager{
     static onNPCEvent(event){
         let maid = event.entity;
         EntityMaid.Home.setLocation(maid);
+        EntityMaid.Backpack.getEntity(maid).kill();
     }
     /**
      * NPC 交互

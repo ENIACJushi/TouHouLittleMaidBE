@@ -22,8 +22,50 @@
  */
 
 import * as Tool from "../libs/scarletToolKit"
+import { EntityMaid } from "./EntityMaid";
 
 export class StrMaid{
+    /**
+     * 格式化输出 rawtext
+     * @param {string} maidStr 
+     * @returns {object}
+     */
+    static formatOutput(maidStr){
+        let rawtext = []
+        // 标题
+        rawtext.push({"translate": "message.tlm.admin.item_info"});
+        rawtext.push({"text":"\n"});
+        // 女仆名称
+        rawtext.push({"translate": "message.tlm.admin.maid.name"});
+        rawtext.push({"text": `${this.Str.getMaidName(maidStr)}\n`});
+        // 主人名称
+        rawtext.push({"translate": "message.tlm.admin.maid.owner.name"});
+        rawtext.push({"text": `${this.Str.getOwnerName(maidStr)}\n`});
+        // 主人ID
+        rawtext.push({"translate": "message.tlm.admin.maid.owner.id"});
+        rawtext.push({"text": `${this.Owner.getId(maidStr)}\n`});
+        // 等级
+        rawtext.push({"translate": "message.tlm.admin.maid.level"});
+        rawtext.push({"text": `${this.Level.get(maidStr)}\n`});
+        // 杀敌数
+        rawtext.push({"translate": "message.tlm.admin.maid.kill"});
+        rawtext.push({"text": `${this.Kill.get(maidStr)}\n`});
+        // 生命值
+        rawtext.push({"translate": "message.tlm.admin.maid.health"});
+        let health = this.Health.get(maidStr);
+        rawtext.push({"text": `${health.current}/${health.max}\n`});
+        // 工作模式
+        rawtext.push({"translate": "message.tlm.admin.maid.work"});
+        rawtext.push({"text": `${EntityMaid.Work.getName(this.Work.get(maidStr))}\n`});
+        // 隐藏背包
+        rawtext.push({"translate": "message.tlm.admin.maid.backpack"});
+        rawtext.push({"text": `${this.backpackInvisibility.get(maidStr)}\n`});
+        // 拾物模式
+        rawtext.push({"translate": "message.tlm.admin.maid.pick"});
+        rawtext.push({"text": `${this.Pick.get(maidStr)}\n`});
+
+        return rawtext;
+    }
     // L O H S W B P N K
     // L 等级
     static Level = {
@@ -70,7 +112,7 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'K', str);
         }
     }
-    // O 主人 可为空
+    // O 主人生物ID 可为空
     static Owner = {
         /**
          * 获取字符串包含的主人ID
@@ -217,28 +259,120 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'P', str);
         }
     }
-    // N 名称 因其内部含有普通字符，放在最后记录  因为有名称的女仆一定有主人，无需考虑主人为空时会搜到这里的字符串
-    static Name = {
+    /**
+     * N 字符串数据，放在最后，使用json数组格式存储： ["12",0,0]
+     * 数据为空时，设为数字 0，因为只占一个字符的位置
+     * 包含数据：主人名称 女仆名称
+     * 当数据没有被设置时，留空
+     */
+    static Str = {
+        //// 指定键操作 ////
+        // 数据数量，向少兼容
+        amount: 2,
         /**
-         * 获取名称
+         * 获取主人名称
+         * @param {string} maidStr 
+         * @returns {string | undefined}
+         */
+        getOwnerName(maidStr){ return this.getValue(maidStr, 0); },
+        /**
+         * 设置主人名称
+         * @param {string} maidStr 
+         * @param {string|undefined} value 
+         * @returns {string}
+         */
+        setOwnerName(maidStr, value){
+            return this.setValue(maidStr, 0, value) },
+        /**
+         * 获取女仆名称
+         * @param {string} maidStr 
+         * @returns {string | undefined}
+         */
+        getMaidName(maidStr){ return this.getValue(maidStr, 1); },
+        /**
+         * 设置女仆名称
+         * @param {string} maidStr 
+         * @param {string|undefined} value 
+         * @returns {string}
+         */
+        setMaidName(maidStr, value){ return this.setValue(maidStr, 1, value) },
+
+        //// 基础操作 ////
+        /**
+         * 获取所有字符串数据
          * @param {string} maidStr
-         * @returns {string|undefined}
+         * @returns {string[]|undefined}
          */
         get(maidStr){
-            let str = StrHelper.getValue(maidStr, 'N', undefined);
-            if(str === undefined) return undefined;
-            return str;
+            try{
+                let str = StrHelper.getValue(maidStr, 'N', undefined);
+                if(str === undefined) return undefined;
+                return JSON.parse(str);
+            }
+            catch{
+                return undefined;
+            }
         },
         /**
-         * 设置名称
+         * 设置所有字符串数据
          * @param {string} maidStr
-         * @param {string} value
+         * @param {string[]} value
          * @returns {string} New Maid String
          */
         set(maidStr, value){
-            return StrHelper.setValue(maidStr, 'N', value);
+            try{
+                return StrHelper.setValue(maidStr, 'N', JSON.stringify(value));
+            }
+            catch{
+                return maidStr;
+            }
+        },
+        /**
+         * 设置指定位置的数据
+         * @param {string} maidStr 
+         * @param {number} index 
+         * @param {string|undefined} value 
+         * @returns {string}
+         */
+        setValue(maidStr, index, value){
+            // 获取旧值
+            let oldValue = this.get(maidStr);
+            if(oldValue===undefined){
+                // 不存在则新建
+                oldValue = [];
+                for(let i = 0; i < this.amount; i++){
+                    oldValue[i] = 0;
+                }
+            }
+            else{
+                // 若数组长度比数据量小，则补齐空字符串
+                for(let i = oldValue.length()-1; i < this.amount; i++){
+                    oldValue[i] = 0;
+                }
+            }
+
+            // 设置新值
+            oldValue[index] = value===undefined?0:value;
+            return this.set(maidStr, oldValue);
+        },
+        /**
+         * 获取指定位置的数据
+         * @param {string} maidStr 
+         * @param {number} index 
+         * @returns {string|undefined}
+         */
+        getValue(maidStr, index){
+            let allValues = this.get(maidStr);
+            if(allValues === undefined){
+                return undefined;
+            }
+            else{
+                let result = allValues[index];
+                return result===0?undefined:result;
+            }
         }
     }
+
 }
 
 class StrHelper{

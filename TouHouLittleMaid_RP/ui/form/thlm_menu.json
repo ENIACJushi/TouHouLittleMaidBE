@@ -2,7 +2,10 @@
     "namespace": "thlm_menu",
     "main": {
         "type": "panel",
-        "size": "$form_size",
+        "size": [
+            269,
+            174
+        ],
         "anchor_from": "center",
         "anchor_to": "center",
         "offset": [0,0],
@@ -11,14 +14,14 @@
             { "left@left": {} }
         ]
     },
-    "header@header.header": {
+    "header@thlm_header.header": {
         "offset": [ 0, 11 ],
         "anchor_to": "center",
         "$title": "title",
         "layer": 1,
         "$close_button_to_button_id": "button.menu_exit"
     },
-    "title@header.title": {
+    "title@thlm_header.title": {
         "bindings": [{
             "binding_type": "view",
             "source_control_name": "thlm_main",

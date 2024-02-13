@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="utf-8" content="text/html; charset=GBK">
+        <meta name="viewport" content="width=device-width">
+        <title>将json压缩成1行</title>
+    </head>
+    <body>
+        <h1>将json压缩成1行</h1>
+        
+        <div style="text-indent: 10px;">
+            <textarea id="input" name="input" style="padding:10px;" cols="80", rows="20"></textarea>
+        </div>
+        <br>
+        <div>
+            <button onclick="generate()">压缩</button>
+        </div>
+        <hr/>
+
+        <p id="error_log"></div>
+        
+        <div style="text-indent: 10px;">
+            <textarea id="output" name="output" style="padding:10px;" cols="80", rows="20"></textarea>
+        </div>
+
+        <hr>
+
+        <div style="text-indent: 10px;">
+            
+        </div>
+        
+        <!-- 样式 -->
+        <style type="text/css">
+            table td{padding:5px;}
+        </style>
+        
+        <!-- 主要处理 -->
+        <script>
+            function generate(){
+                let input = document.getElementById("input").value;
+                input = JSON.parse(input);
+                document.getElementById("output").value = JSON.stringify(input);
+            }
+        </script>
+    </body>
+</html>
+

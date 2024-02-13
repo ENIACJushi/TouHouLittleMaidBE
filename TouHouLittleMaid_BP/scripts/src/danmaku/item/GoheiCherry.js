@@ -60,30 +60,33 @@ export const GoheiCherry = {
         }
         
         /// 范围伤害 ///
-        var areaAttackList=[];
-        DanmakuInterface.setDamage(danmaku, 3);
-        let offset = VectorMC.getAnyVerticalVector(direction).normalized();
-        const radius = 0.7;
-        offset.x*=radius;
-        offset.y*=radius;
-        offset.z*=radius;
+        system.runTimeout(()=>{
+            var areaAttackList=[];
+            DanmakuInterface.setDamage(danmaku, 3);
+            let offset = VectorMC.getAnyVerticalVector(direction).normalized();
+            const radius = 0.7;
+            offset.x*=radius;
+            offset.y*=radius;
+            offset.z*=radius;
 
-        const count = 6;// 分割次数
-        const rotateOnce = 2*Math.PI/(count);
-        for(let i=0; i<count; i++){
-            var areaVictims = dimension.getEntitiesFromRay(Vector.add(location, offset), direction);
-            offset = VectorMC.rotate_axis(offset, direction, rotateOnce);
-            // dimension.spawnEntity("thlmd:danmaku_basic_ball", Vector.add(location, offset));
-            for(let victim of areaVictims){
-                if(attacklist[victim.entity.id]===undefined){
-                    attacklist[victim.entity.id]=true;
-                    areaAttackList.push(victim.entity);
+            const count = 6;// 分割次数
+            const rotateOnce = 2*Math.PI/(count);
+            for(let i=0; i<count; i++){
+                var areaVictims = dimension.getEntitiesFromRay(Vector.add(location, offset),
+                    direction,{ "maxDistance": distance });
+                offset = VectorMC.rotate_axis(offset, direction, rotateOnce);
+                // dimension.spawnEntity("thlmd:danmaku_basic_ball", Vector.add(location, offset));
+                for(let victim of areaVictims){
+                    if(attacklist[victim.entity.id]===undefined){
+                        attacklist[victim.entity.id]=true;
+                        areaAttackList.push(victim.entity);
+                    }
                 }
             }
-        }
-        for(let victim of areaAttackList){
-            DanmakuInterface.applyDamage(entity, danmaku, victim)
-        }
+            for(let victim of areaAttackList){
+                DanmakuInterface.applyDamage(entity, danmaku, victim)
+            }
+        },1);
 
         /// 展示粒子 ///
         danmaku.setProperty("thlm:distance", distance/2);

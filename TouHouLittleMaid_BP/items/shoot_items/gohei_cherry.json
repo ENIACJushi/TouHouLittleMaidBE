@@ -38,6 +38,7 @@
           "target": "self"
         }
       },
+      "minecraft:use_duration": 0,
       "minecraft:display_name": {
         "value": "item.touhou_little_maid:hakurei_gohei_cherry"
       },

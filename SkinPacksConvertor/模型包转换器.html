@@ -40,7 +40,10 @@
         <div style="text-indent: 10px;">
             <button onclick="startConvert()" id="b_convert">开始转换</button>
             <div>
-                转换完成后，将得到的资源包导入并在世界激活，执行如下指令即可完成模型包加载：
+                转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包的优先级：<br>
+                <div style="text-indent: 20px;">若是单机游戏，则令附加模型包在主包上方；</div>
+                <div style="text-indent: 20px;">若是服务器，则修改世界文件夹下的 “world_resource_packs.json”，令附加模型包在主包上方。</div>
+                <div>执行如下指令即可完成模型包加载：</div>
                 <p style="background-color: yellow;" id="command">待生成...</p>
             </div>
         </div>

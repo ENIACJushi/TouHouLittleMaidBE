@@ -3,6 +3,7 @@ const FontRoot = 0xE600; // 物品字符头
 const CraftingTable = String.fromCodePoint(0xE500); // 合成台字符
 const Altar = String.fromCodePoint(0xE501); // 祭坛字符
 const VoidItem = 0; // 物品占位字符
+const Arrow = String.fromCodePoint(FontRoot + 2) 
 /**
  * 模板
  * %n：材料
@@ -12,17 +13,21 @@ const VoidItem = 0; // 物品占位字符
  * $n：产品数量（仅一位数）
  * %p：消耗p点
  */
-// 合成台字符串：    %1 %2 %3                g      %4          %5 %6 a $                                     %7 %8 %9
+// 合成台字符串
+//                                                                    1       
+//1 2 3                                4 5 6   r                               c     7 8 9
 const TemplateCraftingTable = "   %1 %2 %3                " + CraftingTable 
-    + "      %4          %5 %6 " + String.fromCodePoint(FontRoot + 2) 
+    + "               %4 %5 %6 " + Arrow
     + " $                               $n     %7 %8 %9";
 // 祭坛字符串：                                                                                1               §cP:5.00
 const TemplateAltar = "      %3%4                    " + Altar
-    + "               %2      %5 " + String.fromCodePoint(FontRoot + 2)
+    + "               %2      %5 " + Arrow
     + " $                               $n     %1      %6    §c%p";
 
 // 物品-字体序号映射表
 var itemFont = {
+    // 空位
+    "air": 0x00,
     // 工作台御币
     "minecraft:diamond": 0x10,
     "minecraft:stick": 0x11,
@@ -62,7 +67,28 @@ var itemFont = {
     "minecraft:redstone_block":0x29,
     "minecraft:iron_block":0x2A,
     "minecraft:coal_block":0x2B,
-    "touhou_little_maid:box":0x2C
+    "touhou_little_maid:box":0x2C,
+
+    // 记忆中的幻想乡
+    "minecraft:book": 0x2D,
+    "minecraft:cake": 0x2E,
+    "touhou_little_maid:memorizable_gensokyo": 0x2F,
+
+    // 龙头
+    "minecraft:amethyst_shard": 0x30,
+    "minecraft:chorus_flower": 0x31,
+    "minecraft:lightning_rod": 0x32,
+    "minecraft:skull:5": 0x33,
+
+    // 黄金微波炉
+    "minecraft:bell": 0x34,
+    "minecraft:yellow_stained_glass": 0x35,
+    "minecraft:end_crystal": 0x36,
+
+    // 樱之御币
+    "minecraft:cherry_sapling": 0x37,
+    "minecraft:water_bucket": 0x38,
+    "minecraft:dirt": 0x39
 };
 
 ///// 处理 /////
@@ -130,10 +156,76 @@ function generate(){
             }
             recipeStr = recipeStr.replace(`%${i+1}`, String.fromCodePoint(FontRoot+id));
         }
+        // P点
         recipeStr = recipeStr.replace("%p", `P:${recipeInfo["p"].toFixed(2)}`);
         
         lang[`me.c${c}.p${p}.t2`] = recipeStr;
     }
+
+    // 输出
+    document.getElementById("booktext").value = JSON.stringify(book, null, '');
+    let langStr = "";
+    for(let langKey in lang){
+        langStr += `${langKey}=${lang[langKey]}\n`
+    }
+    document.getElementById("langtext").value = langStr
+}
+
+function generate_table(){
+    // 解析合成表
+    let recipeInfo = {list:[], output:""}
+
+    recipeInfo["list"] = [
+        document.getElementById("recipe1_1").value,
+        document.getElementById("recipe1_2").value,
+        document.getElementById("recipe1_3").value,
+
+        document.getElementById("recipe2_1").value,
+        document.getElementById("recipe2_2").value,
+        document.getElementById("recipe2_3").value,
+
+        document.getElementById("recipe3_1").value,
+        document.getElementById("recipe3_2").value,
+        document.getElementById("recipe3_3").value
+    ];
+    recipeInfo["output"] = document.getElementById("output").value
+    recipeInfo["output_c"] = document.getElementById("output_c").value
+
+    // 生成字符串
+    var title  = document.getElementById("title").value;
+    var info   = document.getElementById("info").value;
+    var c = document.getElementById("chapter").value; // chapter
+    var p = document.getElementById("page").value; // page
+
+    var book = {"rawtext":[
+        {"text":"\n"},{"translate":`me.c${c}.p${p}.ti`},{"text":"\n"},// 标题
+        {"translate":`me.c${c}.p${p}.t1`},{"text":"\n\n\n"},// 说明
+        {"translate":`me.c${c}.p${p}.t2`}]};// 合成表
+    var lang = {};
+
+    lang[`me.c${c}.p${p}.ti`] = `§l${title}§r`;
+    lang[`me.c${c}.p${p}.t1`] = `   ${info}`;
+
+    
+    var recipeStr = TemplateCraftingTable;
+        
+    // 产物
+    let count = recipeInfo["output_c"]==="1"?' ':`${recipeInfo["output_c"]}`;
+    recipeStr = recipeStr.replace("$n", count);
+    let cid = itemFont[recipeInfo["output"]];
+    recipeStr = recipeStr.replace("$", String.fromCodePoint(FontRoot+cid));
+
+    // 材料
+    for(let i = 0; i<9; i++){
+        let id = VoidItem;
+        if(recipeInfo["list"][i]!="air"){
+            id = itemFont[recipeInfo["list"][i]];
+        }
+        recipeStr = recipeStr.replace(`%${i+1}`, String.fromCodePoint(FontRoot+id));
+    }
+    
+    
+    lang[`me.c${c}.p${p}.t2`] = recipeStr;
 
     // 输出
     document.getElementById("booktext").value = JSON.stringify(book, null, '');

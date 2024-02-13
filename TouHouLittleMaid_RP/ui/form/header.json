@@ -1,5 +1,5 @@
 {
-    "namespace": "header",
+    "namespace": "thlm_header",
     "header": {
         "$title|default": "title",
         "$binding|default": "#title_text",

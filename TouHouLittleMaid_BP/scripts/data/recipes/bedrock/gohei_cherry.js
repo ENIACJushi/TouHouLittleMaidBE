@@ -12,7 +12,7 @@ export const recipe = {
       }
     }
   },
-  "power": 0.15,
+  "power": 2.0,
   "ingredients": [
     {
       "tag": "thlm:gohei_lv1"

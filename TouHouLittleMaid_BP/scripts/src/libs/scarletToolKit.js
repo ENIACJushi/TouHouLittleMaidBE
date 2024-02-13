@@ -11,9 +11,18 @@ import { world, Entity, Vector, Dimension,Player, ItemStack } from "@minecraft/s
 
 ////////// Logger //////////
 export function logger(str){
-    world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
+    
+    for(let pl of world.getPlayers()){
+        pl.sendMessage({rawtext:[{"text": `${str}`}]})
+    }
 }
-
+export function error(str, position=undefined){
+    let msg = `§e[THLM] §cError: ${str}`
+    if(position!==undefined){
+        msg += `\n§a At ${position}`
+    }
+    logger(msg);
+}
 const debug = true;
 export function logger_debug(str){
     if(!debug) return;

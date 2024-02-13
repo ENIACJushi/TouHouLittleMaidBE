@@ -1,4 +1,4 @@
-import { Entity, EntityTypes, world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack, DynamicPropertiesDefinition, WorldInitializeAfterEvent, Block } from "@minecraft/server";
+import { Entity, EntityTypes, world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack, DynamicPropertiesDefinition, WorldInitializeAfterEvent, Block, Player } from "@minecraft/server";
 import { MaidBackpack } from "./MaidBackpack";
 import * as Tool from "../libs/scarletToolKit"
 import { config } from "../controller/Config"
@@ -6,6 +6,46 @@ import { StrMaid } from "./StrMaid";
 import { emote } from "../../data/emote";
 
 export class EntityMaid{
+    /**
+     * 格式化输出 rawtext
+     * @param {Entity} maid
+     * @returns {object}
+     */
+    static formatOutput(maid){
+        let rawtext = []
+        // 标题
+        rawtext.push({"translate": "message.tlm.admin.maid_info"});
+        rawtext.push({"text":"\n"});
+        // 女仆名称
+        rawtext.push({"translate": "message.tlm.admin.maid.name"});
+        rawtext.push({"text": `${maid.nameTag}\n`});
+        // 主人名称
+        rawtext.push({"translate": "message.tlm.admin.maid.owner.name"});
+        rawtext.push({"text": `${this.Owner.getName(maid)}\n`});
+        // 主人ID
+        rawtext.push({"translate": "message.tlm.admin.maid.owner.id"});
+        rawtext.push({"text": `${this.Owner.getID(maid)}\n`});
+        // 等级
+        rawtext.push({"translate": "message.tlm.admin.maid.level"});
+        rawtext.push({"text": `${this.Level.get(maid)}\n`});
+        // 杀敌数
+        rawtext.push({"translate": "message.tlm.admin.maid.kill"});
+        rawtext.push({"text": `${this.Kill.get(maid)}\n`});
+        // 生命值
+        rawtext.push({"translate": "message.tlm.admin.maid.health"});
+        rawtext.push({"text": `${this.Health.get(maid)}/${this.Health.getMax(maid)}\n`});
+        // 工作模式
+        rawtext.push({"translate": "message.tlm.admin.maid.work"});
+        rawtext.push({"text": `${EntityMaid.Work.getName(this.Work.get(maid))}\n`});
+        // 隐藏背包
+        rawtext.push({"translate": "message.tlm.admin.maid.backpack"});
+        rawtext.push({"text": `${this.Backpack.getInvisible(maid)}\n`});
+        // 拾物模式
+        rawtext.push({"translate": "message.tlm.admin.maid.pick"});
+        rawtext.push({"text": `${this.Pick.get(maid)}\n`});
+
+        return rawtext;
+    }
     /**
      * 初始化动态属性
      * @param {WorldInitializeAfterEvent} event 
@@ -116,13 +156,30 @@ export class EntityMaid{
             return Tool.getTagData(maid, "thlmo:");
         },
         /**
-         * 设置主人id
+         * 设置主人ID
          * @param {Entity} maid 
          * @param {string} id 
          */
         setID(maid, id){
             Tool.delTagData(maid, "thlmo:");
             Tool.setTagData(maid, "thlmo:", id);
+        },
+        /**
+         * 获取主人名称
+         * @param {Entity} maid
+         * @returns {string|undefined}
+         */
+        getName(maid){
+            return Tool.getTagData(maid, "thlmn:");
+        },
+        /**
+         * 设置主人名称
+         * @param {Entity} maid 
+         * @param {string} name 
+         */
+        setName(maid, name){
+            Tool.delTagData(maid, "thlmn:");
+            Tool.setTagData(maid, "thlmn:", name);
         },
         /**
          * 获取主人实体
@@ -134,15 +191,23 @@ export class EntityMaid{
             if(id!==undefined){
                 return world.getEntity(id);
             }
+            let name = this.getName(maid);
+            if(name!==undefined){
+                let players = world.getPlayers({"name": name});
+                if(players.length()!==0){
+                    return players[0];
+                }
+            }
             return undefined;
         },
         /**
          * 设置主人实体
          * @param {Entity} maid
-         * @param {Entity} player
+         * @param {Player} player
          */
         set(maid, player){
             this.setID(maid, player.id);
+            this.setName(maid, player.name);
         }
     }
     // 生命值
@@ -718,9 +783,12 @@ export class EntityMaid{
         // 背包是否隐藏
         maidStr = StrMaid.backpackInvisibility.set(maidStr, this.Backpack.getInvisible(maid));
 
-        // 名称 最后设置
-        if(maid.nameTag!==""){
-            maidStr = StrMaid.Name.set(maidStr, maid.nameTag);
+        // 字符类数据最后设置
+        if(o_id !== undefined){
+            // 主人名称
+            maidStr = StrMaid.Str.setOwnerName(maidStr, this.Owner.getName(maid));
+            // 女仆名称
+            if(maid.nameTag!=="") maidStr = StrMaid.Str.setMaidName(maidStr, maid.nameTag);
         }
         /**
          * 打包背包
@@ -807,10 +875,13 @@ export class EntityMaid{
         // 背包是否隐藏
         this.Backpack.setInvisible(maid, StrMaid.backpackInvisibility.get(maidStr));
 
-        // 名称
-        let name = StrMaid.Name.get(maidStr);
-        if(name!==undefined){ maid.nameTag = name }
-        
+        // 字符数据
+        // 女仆名称
+        let maidName = StrMaid.Str.getMaidName(maidStr);
+        if(maidName!==undefined){ maid.nameTag = maidName }
+        // 主人名称
+        let ownerName = StrMaid.Str.getOwnerName(maidStr);
+        if(ownerName!==undefined){ this.Owner.setName(maid, ownerName)};
 
         return maid;
 
@@ -844,6 +915,17 @@ export class EntityMaid{
                 maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
             }, 1);
         }
+    }
+    /**
+     * 将物品的lore数组转为女仆  由照片、魂符放出的女仆不会回满血
+     * @param {string[]} lores
+     * @param {Dimension} dimension
+     * @param {Vector} location 
+     * @param {boolean} [set_health=false]
+     * @param {*} player 
+     */
+    static fromLore(lores, dimension, location, set_health=false, player=undefined){
+
     }
     /**
      * 将女仆转为物品lore

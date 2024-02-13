@@ -12,6 +12,8 @@ import { MaidSkin } from "./src/maid/MaidSkin";
 import { EntityMaid } from "./src/maid/EntityMaid";
 import { GoldMicrowaver } from "./src/blocks/GoldMicrowaver";
 
+import { CommandManager } from './src/controller/Command'
+
 if(true){
     // World Initialize
     world.afterEvents.worldInitialize.subscribe((e) => {
@@ -82,50 +84,7 @@ class thlm {
         // Script Event
         system.afterEvents.scriptEventReceive.subscribe(event => {
             system.run(()=>{
-                switch(event.id){
-                    case "thlm:skin_set":{ // scriptevent thlm:skin_set 6,19,20
-                        let strList = event.message.split(",");
-                        let numList = [];
-                        for(let str of strList){
-                            Tool.logger(str);
-                            numList.push(parseInt(str));
-                        }
-                        MaidSkin.setSkin(numList);
-                        
-                        Tool.logger(`Add skin: ${numList}`);
-                    }; break;
-                    case "thlm:config":{ // scriptevent thlm:config danmaku_damage:600
-                        try{
-                            let strList = event.message.split(":");
-                            if(strList.length===1){
-                                switch(event.message){
-                                    case "show":
-                                        if(event.sourceEntity !== undefined){
-                                            event.sourceEntity.runCommand(`tellraw @s {"rawtext":[{"text": "${ConfigHelper.tostring()}"}]}`);
-                                        }
-                                        
-                                        break;
-                                    default: Tool.logger("Unknown config command."); break;
-                                }
-                            }
-                            else{
-                                let value = parseInt(strList[1])
-                                ConfigHelper.set(strList[0], value)
-                                Tool.logger(`Config set: ${strList[0]} - ${value}`);
-                            }
-                        }
-                        catch{
-                            Tool.logger("Invalid config command.");
-                        }
-                    }; break;
-                    case "thlm:skin_remove":
-                        break;
-                    case "thlm:skin_list":
-                        break;
-                    default:
-                        break;
-                }
-                
+                CommandManager.scriptEvent(event);
             })
         }, {namespaces: ["thlm"]});
 
@@ -134,6 +93,10 @@ class thlm {
             // 进服事件
             if(event.initialSpawn){
                 let player = event.player;
+                player.sendMessage({rawtext:[
+                    {"translate": "message.tlm.player_join1"},{"text": "\n"},
+                    {"translate": "message.tlm.player_join2"}
+                ]});
                 // 首次进服事件
                 if(PowerPoint.test_power_number(player.name) === false){
                     let playerName = Tool.playerCMDName(player.name);
@@ -378,6 +341,6 @@ class thlm {
             });
         });
         // Power Point Scan
-        system.runInterval(()=>{ PowerPoint.scan_tick(); }, 5);
+        system.runInterval(()=>{ PowerPoint.scan_tick(); }, 10);
     }
 }
