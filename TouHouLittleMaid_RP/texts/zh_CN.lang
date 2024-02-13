@@ -61,6 +61,20 @@ message.tlm.admin.maid.work= 工作模式 -
 message.tlm.admin.maid.backpack= 隐藏背包 - 
 message.tlm.admin.maid.pick= 拾物模式 - 
 
+message.tlm.admin.item.void=§c使用此指令需要手持物品 §r
+message.tlm.admin.item.not_supported=§c不支持的物品, 应该为可以放置女仆的道具 §r
+
+message.tlm.admin.set.invalid=§c不支持的设置项, 应该为 §r
+message.tlm.admin.set.lack_colon=§c指令格式错误, 示例:§e /scriptevent thlm:admin setmowner:Voyage1976 §r
+message.tlm.admin.set.after=§e【当前信息】§r
+
+message.tlm.admin.set.owner.success=§e设置主人名称: §r
+message.tlm.admin.set.level.success=§e设置等级: §r
+message.tlm.admin.set.level.out_of_range=§c设置失败, 等级无效。§r
+message.tlm.admin.set.kill.success=§e设置杀敌数: §r
+message.tlm.admin.set.kill.out_of_range=§c设置失败, 杀敌数无效。§r
+
+
 message.tlm.player_join1=§e[TLM] 车万女仆 1.6.0
 message.tlm.player_join2=§e 访问 mcmod.cn 获取全部教程。
 ## message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止

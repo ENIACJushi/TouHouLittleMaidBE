@@ -58,10 +58,12 @@ export class EntityMaid{
         def.defineBoolean("temp_pick", false);     // 转储背包时临时记录拾取模式的属性
         def.defineNumber("level", 1);              // 等级
         def.defineNumber("kill", 0);               // 杀敌数
+        def.defineBoolean("pick", false);          // 拾取模式
         event.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get("thlmm:maid"));
     }
     // 等级
     static Level = {
+        max:2,
         properties:[
             {// lv.1
                 "danmaku": 15,    // 弹幕伤害
@@ -347,6 +349,7 @@ export class EntityMaid{
          */
         set(maid, value){
             maid.triggerEvent(value?"api:mode_pick":"api:mode_quit_pick");
+            maid.setDynamicProperty("pick", value);
         },
         switchMode(maid){
             this.set(maid, !this.get(maid));
@@ -357,7 +360,7 @@ export class EntityMaid{
          * @returns {boolean}
          */
         get(maid){
-            return maid.getComponent("minecraft:is_charged")!==undefined;
+            return maid.getDynamicProperty("pick");
         },
         getImg(is_open){
             return is_open?"textures/gui/pick_activate.png":"textures/gui/pick_deactivate.png"
@@ -935,8 +938,15 @@ export class EntityMaid{
      */
     static toLore(maid){
         let strPure = this.toStr(maid);
+        return this.str2Lore(strPure);
+    }
+    /**
+     * 将纯净字符串转为物品lore
+     * @param {string} strPure 
+     * @returns {string[]}
+     */
+    static str2Lore(strPure){
         let strLore = Tool.pureStr2Lore(strPure);
-
         let lore =[];
         while(true){
             if(strLore.length > 50){

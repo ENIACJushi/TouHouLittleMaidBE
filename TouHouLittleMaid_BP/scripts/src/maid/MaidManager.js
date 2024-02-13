@@ -39,6 +39,8 @@ export class MaidManager{
         system.runTimeout(()=>{
             try{
                 let maid = event.entity;
+                if(maid===undefined) return;
+
                 var rideable = maid.getComponent("minecraft:rideable");
                 const rider = rideable.getRiders()[0];
                 if(rider === undefined){
@@ -54,12 +56,65 @@ export class MaidManager{
         }, 2);
         
     }
+    
+    /**
+     * 女仆被拍照事件
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     */
+    static onPhotoEvent(event){
+        let maid = event.entity;
+        if(maid===undefined) return;
+
+        let lore = EntityMaid.toLore(maid);
+        
+        // 发出声音
+        EntityMaid.playSound(maid, "thlm.camera_use");
+        
+        // 输出照片
+        let location = maid.location;
+        location.y += 0.5;
+        let output_item = new ItemStack("touhou_little_maid:photo", 1);
+        output_item.setLore(lore);
+        if(maid.dimension.spawnItem(output_item, maid.location) !== undefined){
+            // 清除女仆
+            EntityMaid.Pick.set(maid, false);// 避免捡完东西被消除
+            maid.triggerEvent("despawn");
+        }
+    }
+    /**
+     * 女仆被魂符收回事件
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     */
+    static onSmartSlabRecycleEvent(event){
+        let maid = event.entity;
+        if(maid===undefined) return;
+
+        // 获取魂符物品
+        let owner = EntityMaid.Owner.get(maid);
+        if(owner === undefined) return;
+        let item = Tool.getPlayerMainHand(owner);
+        if(item === undefined || item.typeId !== "touhou_little_maid:smart_slab_empty") return;
+
+        // 将女仆转为lore
+        let lore = EntityMaid.toLore(maid);
+        
+        // 清除女仆
+        EntityMaid.Pick.set(maid, false);// 避免捡完东西被消除
+        maid.triggerEvent("despawn");
+
+        // 修改魂符
+        let new_itme = new ItemStack("touhou_little_maid:smart_slab_has_maid", 1)
+        new_itme.setLore(lore);
+        Tool.setPlayerMainHand(owner, new_itme);
+    }
     /**
      * 女仆寄事件
      * @param {DataDrivenEntityTriggerBeforeEvent} event 
      */
     static onDeathEvent(event){
         let maid = event.entity;
+        if(maid===undefined) return;
+
         let backpack = EntityMaid.Backpack.getEntity(maid);
         let lore = EntityMaid.toLore(maid);
         let output_item = new ItemStack("touhou_little_maid:film", 1);
@@ -77,48 +132,6 @@ export class MaidManager{
         }
         event.entity.dimension.spawnItem(output_item, event.entity.location);
     }
-    
-    /**
-     * 女仆被拍照事件
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
-     */
-    static onPhotoEvent(event){
-        let maid = event.entity
-        let lore = EntityMaid.toLore(maid);
-        
-        // 发出声音
-        EntityMaid.playSound(maid, "thlm.camera_use");
-        // 清除女仆
-        maid.triggerEvent("despawn");
-        // 输出照片
-        let output_item = new ItemStack("touhou_little_maid:photo", 1);
-        output_item.setLore(lore);
-        maid.dimension.spawnItem(output_item, maid.location);
-    }
-    /**
-     * 女仆被魂符收回事件
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
-     */
-    static onSmartSlabRecycleEvent(event){
-        let maid = event.entity;
-        // 获取魂符物品
-        let owner = EntityMaid.Owner.get(maid);
-        if(owner === undefined) return;
-        let item = Tool.getPlayerMainHand(owner);
-        if(item === undefined || item.typeId !== "touhou_little_maid:smart_slab_empty") return;
-
-        // 将女仆转为lore
-        let lore = EntityMaid.toLore(maid);
-        
-        // 清除女仆
-        maid.triggerEvent("despawn");
-
-        // 修改魂符
-        let new_itme = new ItemStack("touhou_little_maid:smart_slab_has_maid", 1)
-        new_itme.setLore(lore);
-        Tool.setPlayerMainHand(owner, new_itme);
-    }
-
     /**
      * 根据方块和一个方向获得可以放置女仆的位置
      * 用于魂符和相片的放置
@@ -252,10 +265,10 @@ export class MaidManager{
             maxDistance:2,
             location:event.entity.location
         })
-        // 寻主成功
         if(results.length == 1){
             let maid = event.entity;
             let player = results[0];
+            // 寻主成功
             if(EntityMaid.Owner.getID(maid)===undefined || EntityMaid.Owner.getID(maid)===results[0].id){
                 let backpack = EntityMaid.Backpack.getEntity(event.entity);
                 // 添加组件
@@ -267,8 +280,8 @@ export class MaidManager{
                 EntityMaid.Owner.setName(maid, player.name);
                 MaidBackpack.setOwnerID(backpack, player.id);
             }
+            // 跟随到的主人与记录不符 回到未驯服状态
             else{
-                // 跟随到的主人与记录不符 回到未驯服状态
                 maid.triggerEvent("api:follow_on_tame_over_backreborn");
             }
         }
@@ -353,7 +366,8 @@ export class MaidManager{
      * @param {DataDrivenEntityTriggerBeforeEvent} event 
      */
     static timerEvent(event){
-        let maid = event.entity;
+        let maid = event.entity; 
+        if(maid===undefined) return;
         
         // 2步一次回血
         let healStep = maid.getDynamicProperty("heal_step");
@@ -443,6 +457,8 @@ export class MaidManager{
     static danmakuAttack(event){
         const AIMED_SHOT_PROBABILITY = 0.8; //java 0.9
         let maid = event.entity;
+        if(maid===undefined) return;
+
         let target = maid.target
         if(target != undefined){
             let distance = Vec.length([
@@ -478,6 +494,8 @@ export class MaidManager{
      */
     static setLevelEvent(event){
         let maid = event.entity;
+        if(maid===undefined) return;
+
         let level = parseInt(event.id.substring(7));
         EntityMaid.Level.set(maid, level);
     }
@@ -497,6 +515,8 @@ export class MaidManager{
      */
     static onNPCEvent(event){
         let maid = event.entity;
+        if(maid===undefined) return;
+
         EntityMaid.Home.setLocation(maid);
         EntityMaid.Backpack.getEntity(maid).kill();
     }
@@ -506,6 +526,8 @@ export class MaidManager{
      */
     static NPCInteract(event){
         let maid = event.entity;
+        if(maid===undefined) return;
+
         let players = maid.dimension.getPlayers({location:maid.location, maxDistance: 6})
         for(let pl of players){
             let item = Tool.getPlayerMainHand(pl);

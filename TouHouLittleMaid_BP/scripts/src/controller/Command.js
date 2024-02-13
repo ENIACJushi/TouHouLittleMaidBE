@@ -1,8 +1,9 @@
-import { ScriptEventCommandMessageAfterEvent } from "@minecraft/server";
+import { ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
 import * as Tool from"../libs/scarletToolKit";
 import { StrMaid } from "../maid/StrMaid";
 import { MaidSkin } from "../maid/MaidSkin";
 import { ConfigHelper } from "./Config";
+import {EntityMaid} from '../maid/EntityMaid'
 
 export class CommandManager{
     /**
@@ -75,7 +76,10 @@ export class CommandManager{
                 if(source === undefined || source.typeId !== "minecraft:player") return;
 
                 let item = Tool.getPlayerMainHand(source);
-                if(item === undefined) return;
+                if(item === undefined){
+                    source.sendMessage({rawtext: [{translate: "message.tlm.admin.item.void"}]});
+                    return;
+                }
 
                 switch(item.typeId){
                     // 三种存储女仆的道具
@@ -90,8 +94,10 @@ export class CommandManager{
                         source.sendMessage(
                             {rawtext:StrMaid.formatOutput(strPure)});
                         break;
-                    default:
-                        break;
+                    default:{
+                        source.sendMessage({rawtext: [{translate: "message.tlm.admin.item.not_supported"}]});
+                        return;
+                    }; break;
                 }
             }; break;
             case "maidinfo":{// 获取最近的一个女仆的信息 必须由玩家执行
@@ -106,16 +112,140 @@ export class CommandManager{
                 
                 source.sendMessage({rawtext: EntityMaid.formatOutput(maid)});
             }; break;
-            case "setowner":{// 设置最近一个女仆的主人id
-                
-            }; break;
-            case "setlevel":{// 设置最近一个女仆的等级
+            default:{
+                if(event.message.substring(0, 4)==="setm"){// 修改女仆信息
+                    // 获取女仆
+                    let source = event.sourceEntity;
+                    if(source === undefined || source.typeId !== "minecraft:player") return;
+                    let maid = source.dimension.getEntities({"location": source.location, "type": "thlmm:maid", "closest": 1})[0];
+                    if(maid===undefined){
+                        source.sendMessage({rawtext:[{translate: "message.tlm.admin.maid.not_found"}]});
+                        return;
+                    }
 
-            }; break;
-            case "setkill":{// 设置最近一个女仆的杀敌数
+                    // 进行修改
+                    let input = event.message.substring(4);
+                    input = input.split(':');
+                    if(input.length === 2){
+                        switch(input[0]){
+                            case "owner": { // 设置最近一个女仆的主人名称
+                                EntityMaid.Owner.setName(maid, input[1]);
+                                source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.owner.success"}, {text: input[1]}]});
+                            }; break;
+                            case "level":{ // 设置最近一个女仆的等级
+                                let value = undefined;
+                                try{ value = parseInt(input[1]); } catch{ };
+                                if(typeof(value)!=='number' || isNaN(value) || value < 1 || value > EntityMaid.Level.max){
+                                    source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.level.out_of_range"}]})
+                                    return;
+                                }
+                                EntityMaid.Level.set(maid, value);
+                                source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.level.success"}, {text: value.toString()}]});
+                                
+                            }; break;
+                            case "kill":{ // 设置最近一个女仆的杀敌数
+                                let value = parseInt(input[1]);
+                                if(value===undefined || value < 0){
+                                    source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.kill.out_of_range"}]})
+                                    return;
+                                }
+                                EntityMaid.Kill.set(maid, value);
+                                source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.kill.success"}, {text: input[1]}]});
+                            }; break;
+                            default: {
+                                let options = "owner, level, kill"
+                                source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.invalid"}, {text: options}]});
+                                return;
+                            }break;
+                        }
+                    }
+                    else{
+                        source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.lack_colon"}]});
+                        return;
+                    }
 
+                    // 修改后信息
+                    system.runTimeout(()=>{// 等设置好了再展示
+                        source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.after"}]})
+                        source.sendMessage({rawtext: EntityMaid.formatOutput(maid)});   
+                    }, 2);
+                }
+                else if(event.message.substring(0, 4)==="seti"){// 修改物品信息
+                    
+                    // 获取物品
+                    let source = event.sourceEntity;
+                    if(source === undefined || source.typeId !== "minecraft:player") return;
+
+                    let item = Tool.getPlayerMainHand(source);
+                    if(item === undefined){
+                        source.sendMessage({rawtext: [{translate: "message.tlm.admin.item.void"}]});
+                        return;
+                    }
+
+                    switch(item.typeId){
+                        // 三种存储女仆的道具
+                        case "touhou_little_maid:smart_slab_has_maid":
+                        case "touhou_little_maid:photo":
+                        case "touhou_little_maid:film":{
+                            // 拼接lore字符串
+                            let lore = item.getLore();
+                            let strLore="";
+                            for(let temp of lore){ strLore += temp; }
+                            let strPure = Tool.loreStr2Pure(strLore);
+
+                            // 进行修改
+                            let input = event.message.substring(4);
+                            input = input.split(':');
+                            if(input.length === 2){
+                                switch(input[0]){
+                                    case "owner": { // 设置最近一个女仆的主人名称
+                                        strPure = StrMaid.Str.setOwnerName(strPure, input[1]);
+                                        source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.owner.success"}, {text: input[1]}]});
+                                    }; break;
+                                    case "level":{ // 设置最近一个女仆的等级
+                                        let value = undefined;
+                                        try{ value = parseInt(input[1]); } catch{ };
+                                        if(typeof(value)!=='number' || isNaN(value) || value < 1 || value > EntityMaid.Level.max){
+                                            source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.level.out_of_range"}]})
+                                            return;
+                                        }
+                                        strPure = StrMaid.Level.set(strPure, value);
+                                        source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.level.success"}, {text: value.toString()}]});
+                                    }; break;
+                                    case "kill":{ // 设置最近一个女仆的杀敌数
+                                        let value = parseInt(input[1]);
+                                        if(value===undefined || value < 0){
+                                            source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.kill.out_of_range"}]})
+                                            return;
+                                        }
+                                        strPure = StrMaid.Kill.set(strPure, value);
+                                        source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.kill.success"}, {text: input[1]}]});
+                                    }; break;
+                                    default: {
+                                        let options = "owner, level, kill"
+                                        source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.invalid"}, {text: options}]});
+                                        return;
+                                    }break;
+                                }
+                            }
+                            else{
+                                source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.lack_colon"}]});
+                                return;
+                            }
+                            item.setLore(EntityMaid.str2Lore(strPure));
+                            Tool.setPlayerMainHand(source, item);
+
+                            // 修改后信息
+                            source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.after"}]})
+                            source.sendMessage({rawtext: StrMaid.formatOutput(strPure)});
+                        }; break;
+                        default:{
+                            source.sendMessage({rawtext: [{translate: "message.tlm.admin.item.not_supported"}]});
+                            return;
+                        }break;
+                    }
+                }
             }; break;
-            default: break;
         }
     }
 }

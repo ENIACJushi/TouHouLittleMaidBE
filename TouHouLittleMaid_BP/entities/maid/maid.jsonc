@@ -24,7 +24,9 @@
       }
     },
     "component_groups": {
-      "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
+      "despawn":{
+        "minecraft:instant_despawn":{ "remove_child_entities": false }
+      },
       ///// NPC 基础属性 /////
       "thlmm:npc_basic":{
         "minecraft:timer": {
@@ -135,7 +137,7 @@
         "minecraft:loot"         : { "table": "loot_tables/empty.json" },
         "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": true },
         "minecraft:on_death"     : { "event": "thlmm:d", "target": "self" },
-        "minecraft:movement"     : { "value": 0.3 },
+        "minecraft:movement"     : { "value": 0.25 },
         "minecraft:physics"      : { },
         "minecraft:pushable"     : { "is_pushable": true, "is_pushable_by_piston": true },
         "minecraft:attack"       : { "damage": 6 },
@@ -350,7 +352,7 @@
         }
       },
       "thlmm:lv1_basic":{
-        "minecraft:movement": { "value": 0.3 },
+        "minecraft:movement": { "value": 0.25 },
         "minecraft:attack": {"damage": 12 },
         "minecraft:health": {"value": 64, "max": 64 },
         "minecraft:knockback_resistance": { "value": 0.1 }
@@ -366,7 +368,7 @@
         }
       },
       "thlmm:lv2_basic":{
-        "minecraft:movement": { "value": 0.32 },
+        "minecraft:movement": { "value": 0.3 },
         "minecraft:attack": { "damage"  : 16 },
         "minecraft:health": { "value": 70, "max": 70 },
         "minecraft:knockback_resistance": { "value": 0.2 }
@@ -393,7 +395,7 @@
         },
         "minecraft:behavior.follow_owner": {
           "priority": 0,
-          "speed_multiplier": 1.0,
+          "speed_multiplier": 1.4,
           "start_distance": 1,
           "stop_distance": 1,
           "can_teleport": true
@@ -415,9 +417,9 @@
       "status:follow_standard":{
         "minecraft:behavior.follow_owner": {
           "priority": 6,
-          "speed_multiplier": 1.2,
-          "start_distance": 15,
-          "stop_distance": 2,
+          "speed_multiplier": 1.25,
+          "start_distance": 10,
+          "stop_distance": 3,
           "can_teleport": true
         }
       },
@@ -437,7 +439,7 @@
       // 近战
       "mode:attack_lv1":{
         "minecraft:behavior.melee_attack": {
-          "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.2,
+          "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25,
           "cooldown_time": 0.8
         },
         "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
@@ -445,7 +447,7 @@
       },
       "mode:attack_lv2":{
         "minecraft:behavior.melee_attack": {
-          "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.2,
+          "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25,
           "cooldown_time": 0.7
         },
         "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
@@ -492,12 +494,11 @@
 
       ///// 拾物模式 /////
       "mode:pick":{
-        "minecraft:is_charged": {},
         "minecraft:behavior.pickup_items": {
           "priority": 5,
           "max_dist": 3,
           "goal_radius": 2,
-          "speed_multiplier": 1.0,
+          "speed_multiplier": 1.25,
           
           "can_pickup_any_item": true,
           "can_pickup_to_hand_or_equipment": false
@@ -660,11 +661,12 @@
         "add": {"component_groups": [ "thlmm:maid_tame", "status:follow_standard", "thlmm:maid_tame_sit"]}, 
         "remove": {"component_groups": ["status:follow_on_tame"]},
         "trigger": "api:mode_idle",
-        "run_command":{ "command": ["playsound mob.thlmm.maid.tamed @a ~~~"]}
+        "run_command":{ "command": ["playsound mob.thlmm.maid.tamed @a ~~~", "particle thlm:maid_happy ~~~"]}
       },
       "api:follow_on_tame_over_backreborn":{
         "add": { "component_groups": [ "thlmm:maid_wild" ] },
-        "remove": {"component_groups": ["status:follow_on_tame"]}
+        "remove": {"component_groups": ["status:follow_on_tame"]},
+        "run_command":{ "command": ["particle minecraft:villager_angry ~~~"]}
       },
 
       // 等级

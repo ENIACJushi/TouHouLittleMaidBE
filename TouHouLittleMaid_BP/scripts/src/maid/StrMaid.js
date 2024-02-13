@@ -485,10 +485,10 @@ class StrHelper{
     }
     // 布尔转换
     static str2bool(str){
-        if(str===0) return false;
+        if(str==='0') return false;
         return true;
     }
     static bool2str(value){
-        return value?1:0;
+        return value===true?'1':'0';
     }
 }
