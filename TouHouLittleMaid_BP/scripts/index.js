@@ -104,6 +104,7 @@ class thlm {
                     PowerPoint.set_power_number(player.name, 0);
                     // 给书
                     player.dimension.runCommand(`give ${playerName} touhou_little_maid:memorizable_gensokyo_1 1`);
+                    player.dimension.runCommand(`give ${playerName} touhou_little_maid:memorizable_gensokyo_2 1`);
                     // 给魂符
                     player.dimension.runCommand(`give ${playerName} touhou_little_maid:smart_slab_has_maid 1`);
                     // say something

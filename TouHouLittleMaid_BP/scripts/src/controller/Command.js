@@ -1,8 +1,8 @@
 import { ScriptEventCommandMessageAfterEvent } from "@minecraft/server";
-import * as Tool from"./src/libs/scarletToolKit";
-import { StrMaid } from "./src/maid/StrMaid";
-import { MaidSkin } from "./src/maid/MaidSkin";
-import { ConfigHelper } from "./src/controller/Config";
+import * as Tool from"../libs/scarletToolKit";
+import { StrMaid } from "../maid/StrMaid";
+import { MaidSkin } from "../maid/MaidSkin";
+import { ConfigHelper } from "./Config";
 
 export class CommandManager{
     /**
@@ -14,8 +14,8 @@ export class CommandManager{
         // 不要求使用者为玩家的命令，返回值均在世界范围广播
         switch(event.id){
             case "thlm:skin_set": this.setSkin(event); break;
-            case "thlm:config": this.config(event); break;
-            case "thlm:admin": this.admin(event); break;
+            case "thlm:config"  : this.config(event) ; break;
+            case "thlm:admin"   : this.admin(event)  ; break;
             default: break;
         }
     }

@@ -15,6 +15,12 @@ export class MaidBackpack{
         "big"
     ]
     static capacityList = [6, 12, 24, 36]
+    static nameTags = [
+        "§t§h§l§m§d",
+        "§t§h§l§m§s",
+        "§t§h§l§m§m",
+        "§t§h§l§m§b"
+    ]
     // 区块加载器, config.Maid.death_bag 为false时启用
     static loader = {
         // 区块加载器的实体id
@@ -88,7 +94,8 @@ export class MaidBackpack{
         
         // 设置大小
         backpack.triggerEvent(`api:${this.type2Name(type)}`);
-        
+        backpack.nameTag = this.nameTags[type];
+
         // 设置默认状态
         backpack.triggerEvent(`api:hide`);// 隐藏
 
@@ -134,7 +141,7 @@ export class MaidBackpack{
      * @param {Entity} backpack
      * @return {string}
      */
-    static getName(type){
+    static getName(backpack){
         return this.type2Name(this.getType(backpack));
     }
     /**
@@ -223,8 +230,10 @@ export class MaidBackpack{
     static setType(backpack, type){
         let type_old = this.getType(backpack);
         if(type_old !== type){
+            // 改变背包类型
             backpack.triggerEvent(`api:quit_${this.type2Name(type_old)}`);
             backpack.triggerEvent(`api:${this.type2Name(type)}`);
+            backpack.nameTag = this.nameTags[type];
             // 改变女仆的背包类型
             let maid = this.getMaid(backpack);
             if(maid !== undefined){

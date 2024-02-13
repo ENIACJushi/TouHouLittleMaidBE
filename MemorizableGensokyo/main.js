@@ -34,7 +34,7 @@ var itemFont = {
     "forge:rods/wooden": 0x11,
     "minecraft:paper": 0x12,
     "thlm:gohei": 0x13,
-    "touhou_little_maid:hakurei_gohei_pellet": 0x13,
+    "touhou_little_maid:hakurei_gohei": 0x13,
     // 照相机
     "minecraft:quartz_block": 0x14,
     "minecraft:obsidian": 0x15,
@@ -79,50 +79,36 @@ var itemFont = {
     "minecraft:chorus_flower": 0x31,
     "minecraft:lightning_rod": 0x32,
     "minecraft:skull:5": 0x33,
+    "touhou_little_maid:dragon_skull": 0x34,
 
     // 黄金微波炉
-    "minecraft:bell": 0x34,
-    "minecraft:yellow_stained_glass": 0x35,
-    "minecraft:end_crystal": 0x36,
+    "minecraft:bell": 0x35,
+    "minecraft:yellow_stained_glass": 0x36,
+    "minecraft:end_crystal": 0x37,
+    "touhou_little_maid:gold_microwaver_item": 0x38, 
 
     // 樱之御币
-    "minecraft:cherry_sapling": 0x37,
-    "minecraft:water_bucket": 0x38,
-    "minecraft:dirt": 0x39
+    "minecraft:cherry_sapling": 0x39,
+    "minecraft:water_bucket": 0x3A,
+    "minecraft:dirt": 0x3B
 };
 
 ///// 处理 /////
 function generate(){
-    var errorLog = document.getElementById("error_log").value;
     // 解析合成表
-    var recipeStr = document.getElementById("recipe").value;
-    recipeStr = recipeStr.replace("export const recipe = ", "");
-    var recipe = JSON.parse(recipeStr);
     var recipeInfo = {};
-    if(recipe["type"] != undefined 
-        && recipe["type"] === "touhou_little_maid:altar_crafting")
-    {
-        // 祭坛合成，收集所需物品信息
-        recipeInfo["type"] = "altar";
-        recipeInfo["list"] = [];
-        recipeInfo["output"] = recipe["output"]["nbt"]["Item"]["id"];
-        recipeInfo["output_c"] = recipe["output"]["nbt"]["Item"]["Count"];
-        recipeInfo["p"] = recipe["power"]
-        for(let input of recipe["ingredients"]){
-            // tag 或 item
-            let id = input["item"]===undefined ? input["tag"]:input["item"];
-            recipeInfo["list"].push(id);
-            if(itemFont[id] === undefined){
-                errorLog.innerHTML += `错误：未指定的图标 ${id}\n`;
-                return;
-            }
-        }
-    }
-    else{
-        // 工作台合成
-        recipeInfo["type"] = "table";
-
-    }
+    recipeInfo["list"] = [
+        document.getElementById("recipe1").value,
+        document.getElementById("recipe2").value,
+        document.getElementById("recipe3").value,
+        document.getElementById("recipe4").value,
+        document.getElementById("recipe5").value,
+        document.getElementById("recipe6").value,
+    ];
+    recipeInfo["output"] = document.getElementById("output").value;
+    recipeInfo["output_c"] = document.getElementById("output_c").value;
+    recipeInfo["p"] = document.getElementById("power").value;
+    if(recipeInfo["p"] === '1') recipeInfo["p"] = ' '
 
     // 生成字符串
     var title  = document.getElementById("title").value;
@@ -139,32 +125,32 @@ function generate(){
     lang[`me.c${c}.p${p}.ti`] = `§l${title}§r`;
     lang[`me.c${c}.p${p}.t1`] = `   ${info}`;
     
-    if(recipeInfo["type"] === "altar"){
-        var recipeStr = TemplateAltar;
+    var recipeStr = TemplateAltar;
         
-        // 产物
-        let count = recipeInfo["output_c"]===1?' ':`${recipeInfo["output_c"]}`;
-        recipeStr = recipeStr.replace("$n", count);
-        let cid = itemFont[recipeInfo["output"]];
-        recipeStr = recipeStr.replace("$", String.fromCodePoint(FontRoot+cid));
+    // 产物
+    let count = recipeInfo["output_c"]===1?' ':`${recipeInfo["output_c"]}`;
+    recipeStr = recipeStr.replace("$n", count);
+    let cid = itemFont[recipeInfo["output"]];
+    recipeStr = recipeStr.replace("$", String.fromCodePoint(FontRoot+cid));
 
-        // 材料
-        for(let i = 0; i<6; i++){
-            let id = VoidItem;
-            if(recipeInfo["list"][i]!=undefined){
-                id = itemFont[recipeInfo["list"][i]];
-            }
-            recipeStr = recipeStr.replace(`%${i+1}`, String.fromCodePoint(FontRoot+id));
+    // 材料
+    for(let i = 0; i<6; i++){
+        let id = VoidItem;
+        if(recipeInfo["list"][i]!=undefined){
+            id = itemFont[recipeInfo["list"][i]];
         }
-        // P点
-        recipeStr = recipeStr.replace("%p", `P:${recipeInfo["p"].toFixed(2)}`);
-        
-        lang[`me.c${c}.p${p}.t2`] = recipeStr;
+        recipeStr = recipeStr.replace(`%${i+1}`, String.fromCodePoint(FontRoot+id));
     }
-
+    // P点
+    recipeStr = recipeStr.replace("%p", `P:${recipeInfo["p"]}`);
+    
+    lang[`me.c${c}.p${p}.t2`] = recipeStr;
+    
     // 输出
-    document.getElementById("booktext").value = JSON.stringify(book, null, '');
-    let langStr = "";
+    let bookStr = JSON.stringify(book, null, '');
+    document.getElementById("booktext").value = bookStr;
+    
+    let langStr = `## ${title} ##\n## ${bookStr}\n`;
     for(let langKey in lang){
         langStr += `${langKey}=${lang[langKey]}\n`
     }
@@ -228,8 +214,10 @@ function generate_table(){
     lang[`me.c${c}.p${p}.t2`] = recipeStr;
 
     // 输出
-    document.getElementById("booktext").value = JSON.stringify(book, null, '');
-    let langStr = "";
+    let bookStr = JSON.stringify(book, null, '');
+    document.getElementById("booktext").value = bookStr;
+    
+    let langStr = `## ${title} ##\n## ${bookStr}\n`;
     for(let langKey in lang){
         langStr += `${langKey}=${lang[langKey]}\n`
     }

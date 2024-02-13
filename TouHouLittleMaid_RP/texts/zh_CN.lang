@@ -62,7 +62,7 @@ message.tlm.admin.maid.backpack= 隐藏背包 -
 message.tlm.admin.maid.pick= 拾物模式 - 
 
 message.tlm.player_join1=§e[TLM] 车万女仆 1.6.0
-message.tlm.player_join2=§e 前往 mcmod.cn 获取全部教程。
+message.tlm.player_join2=§e 访问 mcmod.cn 获取全部教程。
 ## message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止
 ## message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
 ## message.touhou_little_maid:owner_maid_num.can_not_add.name=你无法再驯服女仆，你已经达到了上限（%d/%d）
@@ -127,64 +127,109 @@ me.c1.p11.t1=   你可以右击六个柱子的顶端来放置物品。在柱子�
 me.c1.p11.t2=   因为缺少Power而导致的合成中断，获取足够Power后重新放置任意材料可以触发合成。
 me.c1.p11.t3=   无需担心忘记取下材料，祭坛上的物品是不会自动消失的。
 
-me.c1.p12.t1=  本书的合成配方：
-me.c1.p12.t2=                                                                               
 
-### 第二章 ###
+#### 第二章 ####
 item.touhou_little_maid:memorizable_gensokyo_2=记忆中的幻想乡 合成
+
+## 封面 ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p1.title"},{"text":"\n"},{"translate":"me.c2.title.page"},{"text":"\n"},{"translate":"me.c2.p1.text"}]}
 me.c2.p1.title=             §l合成§r
 me.c2.title.page=             §7(2/3)§r
 me.c2.p1.text=  
-me.c2.p1={"rawtext":[{"text":"\n"},{"translate":"me.c2.p1.title"},{"text":"\n"},{"translate":"me.c2.title.page"},{"text":"\n"},{"translate":"me.c2.p1.text"}]}
 
+## 目录 ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p2.title"},{"text":"\n"},{"translate":"me.c2.p2.text"}]}
 me.c2.p2.title=             §l目录§r
 me.c2.p2.text=  §7因配方较多，仅给出顺序。    §r御币（合成）   御币（修复）         女仆（生成）   女仆（复活）        背包         照相机            落雷
-m3.c2.p2={"rawtext":[{"text":"\n"},{"translate":"me.c2.p2.title"},{"text":"\n"},{"translate":"me.c2.p2.text"}]}
 
-me.c2.p3.ti=§l御币（合成）§r
+## 御币 (合成) ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p3.ti"},{"text":"\n"},{"translate":"me.c2.p3.t1"},{"text":"\n\n\n\n"},{"translate":"me.c2.p3.t2"}]}
+me.c2.p3.ti=§l御币 (合成)§r
 me.c2.p3.t1=   御币可以在祭坛以更低的代价合成。
 me.c2.p3.t2=                                                                                                §cP:0.15
-me.c2.p3={"rawtext":[{"text":"\n"},{"translate":"me.c2.p3.ti"},{"text":"\n"},{"translate":"me.c2.p3.t1"},{"text":"\n\n\n\n"},{"translate":"me.c2.p3.t2"}]}
 
-me.c2.p4.ti=§l御币（修复）§r
+## 御币 (修复) ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p4.ti"},{"text":"\n"},{"translate":"me.c2.p4.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p4.t2"}]}
+me.c2.p4.ti=§l御币 (修复)§r
 me.c2.p4.t1=   御币无法被附魔经验修补，但可以消耗P点和纸回满耐久，这种修复没有惩罚。
 me.c2.p4.t2=                                                                                                §cP:0.10
-me.c2.p4={"rawtext":[{"text":"\n"},{"translate":"me.c2.p4.ti"},{"text":"\n"},{"translate":"me.c2.p4.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p4.t2"}]}
 
-me.c2.p5.ti=§l女仆（生成）§r
+## 女仆 (生成) ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p5.ti"},{"text":"\n"},{"translate":"me.c2.p5.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p5.t2"}]}
+me.c2.p5.ti=§l女仆 (生成)§r
 me.c2.p5.t1= 
 me.c2.p5.t2=                                                                                                §cP:0.50
-m3.c2.p5={"rawtext":[{"text":"\n"},{"translate":"me.c2.p5.ti"},{"text":"\n"},{"translate":"me.c2.p5.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p5.t2"}]}
 
-me.c2.p6.ti=§l女仆（复活）§r
+## 女仆 (复活) ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p6.ti"},{"text":"\n"},{"translate":"me.c2.p6.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p6.t2"}]}
+me.c2.p6.ti=§l女仆 (复活)§r
 me.c2.p6.t1=    
 me.c2.p6.t2=                                                                                                §cP:0.50
-me.c2.p6={"rawtext":[{"text":"\n"},{"translate":"me.c2.p6.ti"},{"text":"\n"},{"translate":"me.c2.p6.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p6.t2"}]}
 
-me.c2.p7.ti=§l背包（小）§r
-me.c2.p7.t1=    
+## 背包 (小) ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p7.ti"},{"text":"\n"},{"translate":"me.c2.p7.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p7.t2"}]}
+me.c2.p7.ti=§l背包 (小)§r
+me.c2.p7.t1=    红色羊毛、铁锭。提供 6 格额外储物空间。
 me.c2.p7.t2=                                                                                                §cP:0.10
-me.c2.p7={"rawtext":[{"text":"\n"},{"translate":"me.c2.p7.ti"},{"text":"\n"},{"translate":"me.c2.p7.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p7.t2"}]}
 
-me.c2.p8.ti=§l背包（中）§r
-me.c2.p8.t1=    
+## 背包 (中) ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p8.ti"},{"text":"\n"},{"translate":"me.c2.p8.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p8.t2"}]}
+me.c2.p8.ti=§l背包 (中)§r
+me.c2.p8.t1=    粉色羊毛、金锭。提供 18 格额外储物空间。
 me.c2.p8.t2=                                                                                                §cP:0.20
-me.c2.p8={"rawtext":[{"text":"\n"},{"translate":"me.c2.p8.ti"},{"text":"\n"},{"translate":"me.c2.p8.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p8.t2"}]}
 
-me.c2.p9.ti=§l背包（大）§r
-me.c2.p9.t1=    
+## 背包 (大) ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p9.ti"},{"text":"\n"},{"translate":"me.c2.p9.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p9.t2"}]}
+me.c2.p9.ti=§l背包 (大)§r
+me.c2.p9.t1=    灰色羊毛、钻石。提供 30 格额外储物空间。
 me.c2.p9.t2=                                                                                                §cP:0.30
-me.c2.p9={"rawtext":[{"text":"\n"},{"translate":"me.c2.p9.ti"},{"text":"\n"},{"translate":"me.c2.p9.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p9.t2"}]}
 
+## 照相机 ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pa.ti"},{"text":"\n"},{"translate":"me.c2.pa.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pa.t2"}]}
 me.c2.pa.ti=§l照相机§r
-me.c2.pa.t1=    
+me.c2.pa.t1=    石英块、黑曜石。
 me.c2.pa.t2=                                                                                                §cP:0.20
-me.c2.pa={"rawtext":[{"text":"\n"},{"translate":"me.c2.pa.ti"},{"text":"\n"},{"translate":"me.c2.pa.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pa.t2"}]}
 
+## 落雷 ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pb.ti"},{"text":"\n"},{"translate":"me.c2.pb.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pb.t2"}]}
 me.c2.pb.ti=§l落雷§r
-me.c2.pb.t1=    
+me.c2.pb.t1=    召唤一道雷电。
 me.c2.pb.t2=                                                                                                §cP:0.20
-me.c2.pb={"rawtext":[{"text":"\n"},{"translate":"me.c2.pb.ti"},{"text":"\n"},{"translate":"me.c2.pb.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pb.t2"}]}
+
+## 樱之御币 ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pc.ti"},{"text":"\n"},{"translate":"me.c2.pc.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pc.t2"}]}
+me.c2.pc.ti=§l樱之御币§r
+me.c2.pc.t1=   御币、樱花树苗、水桶、泥土。
+me.c2.pc.t2=                                                                                                §cP:2.00
+
+
+### 工作台合成 放在祭坛合成后 ###
+## 记忆中的幻想乡 - 总览 ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pc1.ti"},{"text":"\n"},{"translate":"me.c2.pc1.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pc1.t2"}]}
+me.c2.pc1.ti=§l《记忆中的幻想乡》 - 总览§r
+me.c2.pc1.t1=   书、蛋糕。
+me.c2.pc1.t2=                                                                               
+
+## 记忆中的幻想乡 - 合成 ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pc2.ti"},{"text":"\n"},{"translate":"me.c2.pc2.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pc2.t2"}]}
+me.c2.pc2.ti=§l《记忆中的幻想乡》 - 合成§r
+me.c2.pc2.t1=   书、红色羊毛。
+me.c2.pc2.t2=                                                                               
+
+## 女仆章节预留 pc3
+
+## 黄金微波炉 ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pc4.ti"},{"text":"\n"},{"translate":"me.c2.pc4.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pc4.t2"}]}
+me.c2.pc4.ti=§l黄金微波炉§r
+me.c2.pc4.t1=   钟、烈焰粉、黄色玻璃、金锭、末影水晶。
+me.c2.pc4.t2=                                                                               
+
+## 龙头 ##
+## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pc5.ti"},{"text":"\n"},{"translate":"me.c2.pc5.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pc5.t2"}]}
+me.c2.pc5.ti=§l龙头§r
+me.c2.pc5.t1=   青金石、雷霆之杖、紫水晶、龙首、紫颂花。
+me.c2.pc5.t2=                                                                               
+
 
 item.touhou_little_maid:memorizable_gensokyo_3=记忆中的幻想乡 女仆 
 
