@@ -83,7 +83,7 @@
         "minecraft:persistent": { },
         "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
         "minecraft:home": { },
-        "minecraft:behavior.look_at_player": { "priority": 0, "look_distance": 6.0,"probability": 0.02 },
+        "minecraft:behavior.look_at_player": { "priority": 5, "look_distance": 6.0,"probability": 0.02 },
         "minecraft:npc": {
           "npc_data": {
             "portrait_offsets": {
@@ -145,7 +145,7 @@
         "minecraft:breathable"   : { "total_supply": 15, "suffocate_time": 0 },
         "minecraft:is_hidden_when_invisible": { },
         "minecraft:conditional_bandwidth_optimization": { },
-        "minecraft:behavior.look_at_player": { "priority": 7, "look_distance": 6.0, "probability": 0.02 },
+        "minecraft:behavior.look_at_player": { "priority": 9, "look_distance": 6.0, "probability": 0.02 },
         
         ///// 交互属性 /////
         "minecraft:rideable": {
@@ -199,7 +199,7 @@
         "minecraft:movement.basic": { },
         "minecraft:jump.static": { },
         "minecraft:can_climb": { },
-        "minecraft:behavior.float": { "priority": 0 },
+        "minecraft:behavior.float": { "priority": 2 },
         "minecraft:behavior.stay_while_sitting": { "priority": 3 },
   
         "minecraft:behavior.mount_pathing": {
