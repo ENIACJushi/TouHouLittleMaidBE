@@ -2,39 +2,23 @@
 	"format_version": 2,
 	"header": {
 		"name": "TouHou Little Maid BE",
-		"uuid": "ab825193-c2da-42e6-b6b0-398f135cb5d5",
-		"version": [
-			1,
-			6,
-			0
-		],
+		"uuid": "fed26523-2c16-4560-9076-aff6ad49a1e3",
+		"version": [ 1, 0, 0 ],
 		"description": "Author: ENIAC_Jushi",
-		"min_engine_version": [
-			1,
-			20,
-			30
-		]
+		"min_engine_version": [ 1, 20, 30 ]
 	},
 	"modules": [
 		{
 			"type": "script",
 			"language": "javascript",
-			"uuid": "c1ec0381-d932-4a3c-9ab4-fdca2eba64c0",
+			"uuid": "9439f1f5-116d-4f4a-8e23-9adc2b9d4721",
 			"entry": "scripts/index.js",
-			"version": [
-				1,
-				0,
-				0
-			]
+			"version": [ 1, 0, 0 ]
 		},
 		{
 			"type": "data",
-			"uuid": "fea7ec88-b114-4ad0-8511-11d98267fe05",
-			"version": [
-				1,
-				0,
-				0
-			]
+			"uuid": "f3249f90-9682-4b1a-a084-e111881b678f",
+			"version": [ 1, 0, 0 ]
 		}
 	],
 	"dependencies": [
