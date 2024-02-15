@@ -1,3 +1,6 @@
+message.tlm.player_join1=§e[TLM] Touhou Little Maid 1.0.1
+message.tlm.player_join2=§e Visit mcmod.cn for complete tutorial.
+
 ##### UI #####
 gui.touhou_little_maid.author.name=Authors:
 
@@ -67,8 +70,7 @@ message.tlm.admin.set.kill.out_of_range=§cError: Invalid kill amount.§r
 ## message.touhou_little_maid:chisel.hit_block_error.name=Please right click on the clay block
 ## message.touhou_little_maid:chisel.offhand_not_photo.name=Please have a photo of the maid in your offhand
 
-message.tlm.player_join1=§e[TLM] Touhou Little Maid 1.0.1
-message.tlm.player_join2=§e Visit mcmod.cn for complete tutorial.
+
 
 action.interact.camera=Photo
 action.interact.thlm.npc=Turn into NPC

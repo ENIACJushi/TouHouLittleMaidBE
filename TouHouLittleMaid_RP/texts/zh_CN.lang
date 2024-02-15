@@ -1,3 +1,6 @@
+message.tlm.player_join1=§e[TLM] 车万女仆 1.0.1
+message.tlm.player_join2=§e 访问 mcmod.cn 获取全部教程。
+
 ##### UI #####
 gui.touhou_little_maid.author.name=作者：
 
@@ -74,8 +77,7 @@ message.tlm.admin.set.level.out_of_range=§c设置失败, 等级无效。§r
 message.tlm.admin.set.kill.success=§e设置杀敌数: §r
 message.tlm.admin.set.kill.out_of_range=§c设置失败, 杀敌数无效。§r
 
-message.tlm.player_join1=§e[TLM] 车万女仆 1.0.1
-message.tlm.player_join2=§e 访问 mcmod.cn 获取全部教程。
+
 ## message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止
 ## message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
 ## message.touhou_little_maid:owner_maid_num.can_not_add.name=你无法再驯服女仆，你已经达到了上限（%d/%d）
