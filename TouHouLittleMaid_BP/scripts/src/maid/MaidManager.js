@@ -35,7 +35,17 @@ export class MaidManager{
      * @param {DataDrivenEntityTriggerBeforeEvent} event 
      */
     static onSpawnEvent(event){
-        // 生成 默 认 背包  为脚本召唤背包预留2刻
+        let maid = event.entity;
+        
+        // 设置动态属性
+        EntityMaid.initDynamicProperties(maid);
+        system.runTimeout(()=>{
+            // 首次生成选择随机皮肤
+            if(!EntityMaid.Owner.has(maid)){
+                EntityMaid.Skin.setRandom(maid);
+            }
+        },1);
+        // 生成默认背包 ，为脚本召唤背包预留2刻
         system.runTimeout(()=>{
             try{
                 let maid = event.entity;
@@ -54,7 +64,6 @@ export class MaidManager{
             }
             catch{};
         }, 2);
-        
     }
     
     /**
@@ -216,13 +225,27 @@ export class MaidManager{
     static smartSlabOnUseEvent(event){
         let item = event.itemStack;
         let lore = item.getLore();
+        
+        // 检测放置位置是否有两格空间
+        const player = event.source;
+        const dimension = player.dimension;
+        let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
+        if(location === undefined){
+            Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
+            return;
+        }
+        location.x+=0.5;
+        location.z+=0.5;
+
         // 生成女仆
         if(lore.length === 0){
             // 首次使用
-            EntityMaid.spawnRandomMaid(event.source.dimension, event.source.location);
+            let maid = EntityMaid.spawnRandomMaid(dimension, location);
+            EntityMaid.Skin.setRandom(maid);
+            EntityMaid.Owner.set(maid, player);
+            maid.triggerEvent("api:reborn");
         }
         else{
-            
             // 拼接lore字符串
             let str="";
             for(let temp of lore){ str += temp; }
@@ -231,23 +254,13 @@ export class MaidManager{
             // 使用者不是主人
             if(StrMaid.Owner.getId(str) !== event.source.id) return;
 
-            // 检测放置位置是否有两格空间
-            const player = event.source;
-            const dimension = player.dimension;
-            let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
-            if(location === undefined){
-                Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
-                return;
-            }
-            location.x+=0.5;
-            location.z+=0.5;
-
             // 放置
             let maid = EntityMaid.fromStr(str, dimension, location, true);
             maid.triggerEvent("api:reborn");
         }
         // 转换物品
         Tool.setPlayerMainHand(event.source, new ItemStack("touhou_little_maid:smart_slab_empty", 1));
+
         // 给予玩家一个苹果
         let apple = new ItemStack("minecraft:apple", 1);
         apple.nameTag="§cApple!"

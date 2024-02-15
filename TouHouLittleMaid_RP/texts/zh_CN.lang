@@ -74,8 +74,7 @@ message.tlm.admin.set.level.out_of_range=§c设置失败, 等级无效。§r
 message.tlm.admin.set.kill.success=§e设置杀敌数: §r
 message.tlm.admin.set.kill.out_of_range=§c设置失败, 杀敌数无效。§r
 
-
-message.tlm.player_join1=§e[TLM] 车万女仆 1.0.0
+message.tlm.player_join1=§e[TLM] 车万女仆 1.0.1
 message.tlm.player_join2=§e 访问 mcmod.cn 获取全部教程。
 ## message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止
 ## message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
@@ -87,6 +86,13 @@ message.tlm.player_join2=§e 访问 mcmod.cn 获取全部教程。
 action.interact.camera=照相
 action.interact.thlm.npc=变为 NPC
 action.interact.thlm.npc_remove=清除 NPC
+
+gui.touhou_little_maid:button.backpack.true.name=显示背包
+gui.touhou_little_maid:button.backpack.false.name=隐藏背包
+gui.touhou_little_maid:button.skin.name=切换模型
+gui.touhou_little_maid:button.pickup.true.name=拾物模式已开启
+gui.touhou_little_maid:button.pickup.false.name=拾物模式已关闭
+gui.touhou_little_maid:left_panel.title=工作模式
 
 ##### 其它 #####
 danmaku.pellet.name=§a点弹
@@ -105,6 +111,8 @@ me.total_chapter=2
 
 ### 第一章 ###
 item.touhou_little_maid:memorizable_gensokyo_1=记忆中的幻想乡 总览
+thlm.mg1=记忆中的幻想乡 总览
+
 me.chapter1.page1.title=             §l总览§r
 me.chapter1.title.page=             §7(1/3)§r
 me.chapter1.page1.text=  一个与女仆和东方 Project 有关的模组。 感谢酒石酸菌和雪尼等人制作的java版TouhouLittleMaid。 感谢酒石酸菌、琥珀酸、帕金伊、天顶乌、天幂、Paulzzh、尤里的猫以及其他美工制作了如此优秀的模型和材质。 感谢 Little Maid Mob 的作者 Verclene。
@@ -144,6 +152,7 @@ me.c1.p11.t3=   无需担心忘记取下材料，祭坛上的物品是不会自�
 
 #### 第二章 ####
 item.touhou_little_maid:memorizable_gensokyo_2=记忆中的幻想乡 合成
+thlm.mg2=记忆中的幻想乡 合成
 
 ## 封面 ##
 ## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p1.title"},{"text":"\n"},{"translate":"me.c2.title.page"},{"text":"\n"},{"translate":"me.c2.p1.text"}]}
@@ -563,12 +572,9 @@ gui.touhou_little_maid:button.pick.true.name=拾取 模式已开启
 gui.touhou_little_maid:button.pick.false.name=拾取 模式已关闭
 gui.touhou_little_maid:button.ride.true.name=骑乘 模式已开启
 gui.touhou_little_maid:button.ride.false.name=骑乘 模式已关闭
-gui.touhou_little_maid:button.pickup.true.name=拾物模式已开启
-gui.touhou_little_maid:button.pickup.false.name=拾物模式已关闭
-gui.touhou_little_maid:button.backpack.true.name=显示背包
-gui.touhou_little_maid:button.backpack.false.name=隐藏背包
+
 gui.touhou_little_maid:button.home.desc.name=§7点击此按钮可以设置女仆是否跟随玩家
-gui.touhou_little_maid:button.skin.name=切换模型
+
 
 tooltips.touhou_little_maid:chair.place.desc.name=右击方块顶部进行放置。
 tooltips.touhou_little_maid:chair.destroy.desc.name=Shift 左击破坏它。
@@ -607,7 +613,6 @@ gui.touhou_little_maid:schedule.all.name=全天
 gui.touhou_little_maid:activity.work.name=工作
 gui.touhou_little_maid:activity.idle.name=休息
 gui.touhou_little_maid:activity.rest.name=睡觉
-gui.touhou_little_maid:button.skin.name=更改皮肤
 gui.touhou_little_maid:task.next_page.name=下一页
 gui.touhou_little_maid:task.previous_page.name=上一页
 gui.touhou_little_maid:task.close.name=关闭
@@ -671,7 +676,7 @@ gui.touhou_little_maid:resources_download.tab.3.name=声音资源包
 gui.touhou_little_maid:resources_download.sound.downloaded.tip.name=声音包需要像原版资源包一样加载才能使用！
 gui.touhou_little_maid:model_gui.easter_egg.encrypt.name=这是一个加密的命名彩蛋
 gui.touhou_little_maid:model_gui.easter_egg.normal.name=这是一个普通的命名彩蛋
-gui.touhou_little_maid:left_panel.title=工作模式
+
 
 
 

@@ -1,17 +1,20 @@
-import { DanmakuShoot } from "../DanmakuShoot";
-import { EntityDanmaku } from "../EntityDanmaku";
-import { DanmakuColor } from "../DanmakuColor";
-import { DanmakuType } from "../DanmakuType";
+import { DanmakuShoot } from "../../../src/danmaku/DanmakuShoot";
+import { EntityDanmaku } from "../../../src/danmaku/EntityDanmaku";
+import { DanmakuColor } from "../../../src/danmaku/DanmakuColor";
+import { DanmakuType } from "../../../src/danmaku/DanmakuType";
 import { Entity, ItemStack } from "@minecraft/server";
 import { system } from "@minecraft/server";
-import { getRandom } from "../../libs/scarletToolKit";
-export const Gossip = {
-    id : "thlmd:gossip_0",
+import { getRandom } from "../../../src/libs/scarletToolKit";
+
+export const SpellCard = {
+    // 释放该符卡的物品id，必须以thlms为开头
+    id : "thlms:gossip",
     /**
-     * @param {Entity} entity
-     * @param {ItemStack} item
+     * 执行的符卡逻辑，函数签名固定，会直接调用
+     * @param {Dimension} world 当前所处的世界
+     * @param {Entity} entity 释放符卡的实体
      */
-    shoot:function(entity, item){
+    spellCard:function(world, entity){
         var aimDanmakuShoot_small = new EntityDanmaku(entity.dimension, entity);
         aimDanmakuShoot_small.setThrowerOffset([0,0.8,0]).setColor(DanmakuColor.RANDOM).
             setDanmakuType(DanmakuType.STAR).setDamage(2);

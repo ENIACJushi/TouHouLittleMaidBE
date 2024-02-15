@@ -21,9 +21,9 @@ if(true){
             ConfigHelper.init();
             PowerPoint.init_scoreboard_world();
 
-            PowerPoint.init_dynamic_properties(e);
-            Danmaku.init_dynamic_properties(e);
-            EntityMaid.initDynamicProperties(e);
+            // PowerPoint.init_dynamic_properties(e);
+            // Danmaku.init_dynamic_properties(e);
+            // EntityMaid.initDynamicProperties(e);
             
             MaidManager.init();
             MaidSkin.initScoreboard();
@@ -93,10 +93,12 @@ class thlm {
             // 进服事件
             if(event.initialSpawn){
                 let player = event.player;
-                player.sendMessage({rawtext:[
-                    {"translate": "message.tlm.player_join1"},{"text": "\n"},
-                    {"translate": "message.tlm.player_join2"}
-                ]});
+                system.runTimeout(()=>{
+                    player.sendMessage({rawtext:[
+                        {"translate": "message.tlm.player_join1"},{"text": "\n"},
+                        {"translate": "message.tlm.player_join2"}
+                    ]});
+                },40);
                 // 首次进服事件
                 if(PowerPoint.test_power_number(player.name) === false){
                     let playerName = Tool.playerCMDName(player.name);
@@ -173,22 +175,34 @@ class thlm {
             system.run(()=>{
                 if(event.eventName.substring(0, 5) == "thlm:"){
                     switch(event.eventName.substring(5)){
-                        // hakurei gohei transform
-                        case "hgt": Danmaku.gohei_transform(event); break;
                         // hakurei gohei activate - hakurei gohei (crafting table) transform to true gohei
                         case "hga": Danmaku.gohei_activate(event); break;
                         // spell card
                         case "sc":  CustomSpellCardManger.onSpellCardUseEvent(event); break;
                         // item shoot
                         case "is":  itemShootManager.itemShootEvent(event); break;
-                        // // ph: photo
-                        // case "ph":  MaidManager.photoOnUseEvent(event); break;
-                        // // ss: smart slab
-                        // case "ss":  MaidManager.smartSlabOnUseEvent(event); break;
                         default: break;
                     }
                 }
             })
+        });
+        
+        // 物品使用事件
+        world.afterEvents.itemUse.subscribe(event=>{
+            system.run(()=>{
+                let item = event.itemStack;
+                if(item.typeId.substring(0, 18) === "touhou_little_maid"){
+                    switch(item.typeId.substring(20)){
+                        case "hakurei_gohei_crafting_table": Danmaku.gohei_activate(event); break;
+                        case "hakurei_gohei_cherry": itemShootManager.itemShootEvent(event);
+                        default: break;
+                    }
+                }
+                else if(item.typeId.substring(0, 6) === "thlms:"){
+                    // 符卡释放
+                    CustomSpellCardManger.onSpellCardUseEvent(event);
+                }
+            });
         });
 
         //// Entity ////

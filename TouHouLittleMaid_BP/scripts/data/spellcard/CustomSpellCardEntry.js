@@ -4,11 +4,14 @@ import { SpellCard as boundary_between_wave_and_particle } from "./default/borde
 import { SpellCard as milky_way } from "./default/magic_sign.milky_way";
 import { SpellCard as metal_fatigue } from "./default/metal_sign.metal_fatigue";
 import { SpellCard as night_bird } from "./default/night_sign.night_bird";
+import { SpellCard as gossip} from "./default/Gossip"
+
 // Register
 export const spellCardList = [
     boundary_between_wave_and_particle,
     boundary_between_wave_and_particle_3d,
     milky_way,
     metal_fatigue,
-    night_bird
+    night_bird,
+    gossip
 ]

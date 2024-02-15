@@ -1,4 +1,4 @@
-import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerAfterEvent, Entity, ItemStack, Player } from "@minecraft/server";
+import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerBeforeEvent, Entity, ItemStack, Player } from "@minecraft/server";
 import { getDirectionByView2D, toString } from "../libs/VectorMC";
 import { logger, getPlayerMainHand, setPlayerMainHand } from "../libs/scarletToolKit";
 
@@ -294,7 +294,7 @@ export class GoldMicrowaver{
     }
     /** 
      * 交互事件 空手
-     * @param {DataDrivenEntityTriggerAfterEvent} event 
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
     */
     static interactEventNoItem(event){
         let waver = event.entity;
@@ -303,7 +303,7 @@ export class GoldMicrowaver{
     }
     /** 
      * 交互事件 空手潜行
-     * @param {DataDrivenEntityTriggerAfterEvent} event 
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
     */
     static interactEventNoItemSneaking(event){
         let waver = event.entity;
@@ -458,7 +458,7 @@ export class GoldMicrowaver{
     }
     /** 
      * 销毁事件
-     * @param {DataDrivenEntityTriggerAfterEvent} event 
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
     */
     static despawnEvent(event){
         let microwaver = event.entity;
@@ -475,7 +475,7 @@ export class GoldMicrowaver{
     }
     /** 
      * 完成事件 用于设置方块的 status
-     * @param {DataDrivenEntityTriggerAfterEvent} event 
+     * @param {DataDrivenEntityTriggerBeforeEvent} event 
     */
      static finishEvent(event){
         let waver = event.entity;

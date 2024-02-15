@@ -32,15 +32,8 @@ function getRotationVector(x, y, z, yawIn, yOffset, entity){
 }
 
 export const SpellCard = {
-    // 符卡的 id，字符串，必需参数
-    // 推荐格式：资源域:X符.符卡名
+    // 释放该符卡的物品id，必须以thlms为开头
     id: "thlms:magic_sign.milky_way",
-    // 作者，字符串
-    author: "tartaric_acid",
-    // 版本，字符串
-    version: "1.0.0",
-    // 冷却时间，整型数
-    cooldown: 250,
     /**
      * 执行的符卡逻辑，函数签名固定，会直接调用
      * @param {Dimension} world 当前所处的世界

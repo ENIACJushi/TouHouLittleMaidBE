@@ -80,11 +80,15 @@ class MaidMenuSimple {
             // Home 模式
             .button({ translate: EntityMaid.Home.getLang(home_mode)}, EntityMaid.Home.getImg(home_mode))
             // 显示/隐藏背包
-            .button(backpack_invisible?"显示背包":"隐藏背包", MaidBackpack.getButtonImg(backpack_invisible))
+            .button({rawtext:[{translate: backpack_invisible
+                ? "gui.touhou_little_maid:button.backpack.true.name"
+                : "gui.touhou_little_maid:button.backpack.false.name"}]}, MaidBackpack.getButtonImg(backpack_invisible))
             // 拾物模式
-            .button("拾物模式 | "+ (mode_pick?"开":"关"), EntityMaid.Pick.getImg(mode_pick))
+            .button({rawtext:[{translate: mode_pick
+                ? "gui.touhou_little_maid:button.pickup.true.name"
+                : "gui.touhou_little_maid:button.pickup.false.name"}]}, EntityMaid.Pick.getImg(mode_pick))
             // 选择模型
-            .button({rawtext:[{text: "选择模型"},{text: " | "},skin_display]}, MaidSkin.getPackIcon(skin_pack_index))
+            .button({rawtext:[{translate: "gui.touhou_little_maid:button.skin.name"},{text: " | "}, skin_display]}, MaidSkin.getPackIcon(skin_pack_index))
 
         form.show(this.player).then((response) => {
             switch(response.selection){
@@ -130,7 +134,7 @@ class MaidMenuSimple {
     skinpackSelection(selectSkin=true){
         const form = new mcui.ActionFormData()
         .title(this.maid_name) // 女仆名，为空则使用默认标题
-        .body(`模型选择`);
+        .body({rawtext:[{translate: "gui.touhou_little_maid:button.skin.name"}]});
         let skinList = MaidSkin.SkinList;
         let i = 0;
         for(; i < MaidSkin.DEFAULTAMOUNT ; i++){
@@ -199,18 +203,6 @@ class MaidMenuUI {
         ///// 生成字符串 /////
         /// 皮肤包字符
         skin_display = MaidSkin.getSkinDisplayName(skin_pack_index, skin_index);
-        /// 女仆信息字符(rawtext array)
-        let info_str = [];
-        // 健康值
-        let health_int = health.currentValue.toFixed(0);
-        info_str.push({text: `${EntityMaid.Health.toStr(health_int)}  ${health_int}\n`});
-        info_str.push({text: "40/40"})
-        // 护甲值
-
-        // 模型名
-        // const form1 = new mcui.ActionFormData()
-        // .title("/A textures/thlm/pack_pack_0.png").body(this.maid.id).button("1");
-        // form1.show(this.player); return;
 
         ///// 构建表单 /////
         const form = new mcui.ActionFormData()
@@ -261,7 +253,7 @@ class MaidMenuUI {
 
         const form = new mcui.ActionFormData()
         .title(maid_name) // 女仆名，为空则使用默认标题
-        .body(`模型选择`);
+        .body({rawtext:[{translate: "gui.touhou_little_maid:button.skin.name"}]});
         let skinList = MaidSkin.SkinList;
         let i = 0;
         for(; i < MaidSkin.DEFAULTAMOUNT ; i++){

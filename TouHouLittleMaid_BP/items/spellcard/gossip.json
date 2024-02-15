@@ -3,7 +3,7 @@
   "minecraft:item": {
     "description": {
       "category": "Equipment",
-      "identifier": "thlmd:gossip_0"
+      "identifier": "thlms:gossip"
     },
     "components": {
       "minecraft:icon": {

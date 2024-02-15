@@ -1,4 +1,5 @@
 import { world, system } from "@minecraft/server";
+import { getRandomInteger } from "../libs/scarletToolKit";
 
 export class MaidSkin{
     static DEFAULTAMOUNT = 1; // 默认模型包数量
@@ -34,6 +35,33 @@ export class MaidSkin{
                 }
             }
         }
+    }
+    /**
+     * 获取一个随机皮肤 {pack, seq}
+     * @returns {object} 
+     */
+    static getRandom(){
+        // 计算总数
+        let total = 0;
+        for(let amount of this.SkinList){
+            total += amount;
+        }
+        let seqAll = getRandomInteger(0, total-1);
+        
+        // 获取一个
+        let pack = 0;
+        let seq = seqAll;
+        for(let amount of this.SkinList){
+            seqAll -= amount;
+            if(seqAll < 1){
+                break;
+            }
+            seq = seqAll;
+            pack ++;
+        }
+        if(pack > this.DEFAULTAMOUNT) pack += 100;
+
+        return {pack:pack, seq:seq}
     }
     /**
      * 设置皮肤列表，使用重置-追加模式，从1开始

@@ -2,11 +2,12 @@
 import * as Tool from "../libs/scarletToolKit"
 import * as Vec from "../libs/vector3d"
 import { ItemDefinitionTriggeredBeforeEvent, ItemStack, Enchantment, EntityTypes, ItemUseOnBeforeEvent,
-    DynamicPropertiesDefinition, world, Entity, Vector, Dimension, DataDrivenEntityTriggerAfterEvent, DataDrivenEntityTriggerBeforeEvent, WorldInitializeAfterEvent, system
+     world, Entity, Vector, Dimension, DataDrivenEntityTriggerBeforeEvent, WorldInitializeAfterEvent, system
     ,EntityDamageCause, 
     ProjectileHitEntityAfterEvent,
     ProjectileHitBlockAfterEventSignal,
-    ProjectileHitBlockAfterEvent} from "@minecraft/server";
+    ProjectileHitBlockAfterEvent,
+    ItemUseAfterEvent} from "@minecraft/server";
 
 import {DanmakuColor}  from "./DanmakuColor";
 import {DanmakuType}   from "./DanmakuType";
@@ -41,45 +42,6 @@ export function init_dynamic_properties(e){
     
 }
 
-/**
- * 弹幕击中处理(在1.6.0-beta被拆分为两个事件)
- * @param {ProjectileHitAfterEvent} ev 
- * @returns 
- */
-function danmakuHitEvent(ev){
-    let projectile = ev.projectile;
-    // Hit block
-    if(ev.getBlockHit() != undefined){
-        projectile.triggerEvent("despawn");
-        return;
-    }
-    // Hit entity
-    let hit_info = ev.getEntityHit()
-    if(hit_info != null){
-        // Get source entity by event or property
-        // let damageOptions = {"damagingProjectile": projectile}; // 弹射物
-        let damageOptions = {"cause" : EntityDamageCause.magic} // 魔法
-        let source = ev.source;
-        if(source == undefined){
-            // 没有原版框架下的攻击实体，则通过动态属性寻找
-            let id = projectile.getDynamicProperty("source");
-            if(id != "0"){
-                source =  world.getEntity(id);
-            }
-        }
-        if(source != undefined) damageOptions["damagingEntity"] = source;
-        // Do not hit source
-        if(hit_info.entity.id == source.id){
-            return;
-        }
-        // Hit other entities
-        else{
-            hit_info.entity.applyDamage(projectile.getDynamicProperty("damage"), damageOptions);
-            projectile.triggerEvent("despawn");
-        }
-    }
-}
-
 // 记录正在删除的弹幕
 var despawningDanmaku = {
 
@@ -102,8 +64,7 @@ export function danmakuHitEntityEvent(ev){
 
         // 计算穿透次数
         let piercing = danmaku.getDynamicProperty("piercing");
-        piercing--;
-        if(piercing <= 0){
+        if(piercing === undefined || piercing <= 1){
             // 销毁弹幕
             danmaku.triggerEvent("despawn");
             var id = danmaku.id;
@@ -125,6 +86,7 @@ export function danmakuHitEntityEvent(ev){
             }
         }
         else{
+            piercing--;
             danmaku.setDynamicProperty("piercing", piercing);
         }
     },1);
@@ -181,7 +143,7 @@ const GoheiPrefix = "touhou_little_maid:hakurei_gohei_";
 const GoheiDefault = DanmakuType.PELLET;
 /**
  * 激活由工作台合成的御币
- * @param {ItemDefinitionTriggeredBeforeEvent} ev 
+ * @param {ItemUseAfterEvent} ev 
  */
 export function gohei_activate(ev){
     try{

@@ -36,6 +36,7 @@
         "scale_power_by_draw_duration": true,
         "charge_on_draw": false
       },
+      "minecraft:use_modifiers": {"use_duration": 1},
       "minecraft:repairable": {
         "repair_items": [
           {

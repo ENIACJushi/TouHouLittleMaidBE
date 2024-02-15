@@ -6,16 +6,14 @@
  *   shoot 定义发射函数，接收发射实体 entity 和物品 item
  *  定义文件需要在 ItemShootManager constructor 中注册
  */
-import { Gossip } from "./item/Gossip";
 import { GoheiCherry } from "./item/GoheiCherry"
 
-import { ItemDefinitionTriggeredBeforeEvent } from "@minecraft/server";
+import { ItemUseAfterEvent } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 
 export class ItemShootManager{
     constructor(){
         this.map = {};
-        this.register(Gossip);
         this.register(GoheiCherry)
     }
     register(data){
@@ -23,7 +21,7 @@ export class ItemShootManager{
     }
     /**
      * 吓我一跳释放符卡
-     * @param {ItemDefinitionTriggeredBeforeEvent} event
+     * @param {ItemUseAfterEvent} event
      */
     itemShootEvent(event){
         let item = event.itemStack;

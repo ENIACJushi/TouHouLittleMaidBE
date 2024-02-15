@@ -1,4 +1,4 @@
-import { Player, world, Dimension, Entity, Vector, MolangVariableMap,DynamicPropertiesDefinition,WorldInitializeAfterEvent,EntityTypes } from "@minecraft/server";
+import { Player, world, Dimension, Entity, Vector, MolangVariableMap, WorldInitializeAfterEvent,EntityTypes } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 
 var gohei_scan = 0;
@@ -15,7 +15,7 @@ export default class PowerPoint {
      */
     static init_dynamic_properties(event){
         let def = new DynamicPropertiesDefinition();
-        def.defineString("target", 15, "0");
+        def.defineString("target", 15, undefined);
     
         event.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get("touhou_little_maid:p_point"));
     }
@@ -99,7 +99,7 @@ export default class PowerPoint {
     
         for(let en of results){
             try{
-                if(en.getDynamicProperty("target") == "0"){
+                if(en.getDynamicProperty("target") == undefined){
                     en.triggerEvent("scan_start");
                     en.setDynamicProperty("target", pl.id);
                 }
@@ -126,9 +126,11 @@ export default class PowerPoint {
      */
     static scan_powerpoint(en){
         let player_id = en.getDynamicProperty("target");
+        if(player_id===undefined) return;
+
         let pl = world.getEntity(player_id);
         if(pl == undefined){
-            en.setDynamicProperty("target", "0");
+            en.setDynamicProperty("target", undefined);
             en.triggerEvent("scan_stop");
         }
         else{
@@ -194,7 +196,7 @@ export default class PowerPoint {
             }
             else{
                 en.triggerEvent("scan_stop");
-                en.setDynamicProperty("target", "0");
+                en.setDynamicProperty("target", undefined);
             }
         }
         try{

@@ -8,8 +8,7 @@ import * as Tool from "../../../src/libs/scarletToolKit"
 
 // Java.asJSONCompatible 改为 export const SpellCard = 
 export const SpellCard = {
-    // 符卡的 id，字符串，必需参数
-    // 推荐格式：资源域:X符.符卡名
+    // 释放该符卡的物品id，必须以thlms为开头
     id: "thlms:border_sign.boundary_between_wave_and_particle",
     // 作者，字符串
     author: "tartaric_acid",

@@ -1,9 +1,10 @@
-import { Entity, EntityTypes, world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack, DynamicPropertiesDefinition, WorldInitializeAfterEvent, Block, Player } from "@minecraft/server";
+import { Entity, EntityTypes, world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack, WorldInitializeAfterEvent, Block, Player } from "@minecraft/server";
 import { MaidBackpack } from "./MaidBackpack";
 import * as Tool from "../libs/scarletToolKit"
 import { config } from "../controller/Config"
 import { StrMaid } from "./StrMaid";
 import { emote } from "../../data/emote";
+import { MaidSkin } from "./MaidSkin";
 
 export class EntityMaid{
     /**
@@ -46,20 +47,20 @@ export class EntityMaid{
 
         return rawtext;
     }
+
     /**
-     * 初始化动态属性
-     * @param {WorldInitializeAfterEvent} event 
+     * 初始化女仆动态属性
+     *  在刚生成时调用
+     * @param {Entity} maid 
      */
-    static initDynamicProperties(event){
-        let def = new DynamicPropertiesDefinition();
-        def.defineNumber("heal_step", 0);          // 治疗步数
-        def.defineVector("home", {x:0, y:0, z:0}); // 家位置
-        def.defineNumber("home_dim", 0);           // 家维度
-        def.defineBoolean("temp_pick", false);     // 转储背包时临时记录拾取模式的属性
-        def.defineNumber("level", 1);              // 等级
-        def.defineNumber("kill", 0);               // 杀敌数
-        def.defineBoolean("pick", false);          // 拾取模式
-        event.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get("thlmm:maid"));
+    static initDynamicProperties(maid){
+        if(maid.getDynamicProperty("heal_step") === undefined) maid.setDynamicProperty("heal_step", 0);
+        if(maid.getDynamicProperty("home")      === undefined) maid.setDynamicProperty("home"     , {x:0, y:0, z:0});
+        if(maid.getDynamicProperty("home_dim")  === undefined) maid.setDynamicProperty("home_dim" , 0);
+        if(maid.getDynamicProperty("temp_pick") === undefined) maid.setDynamicProperty("temp_pick", false);
+        if(maid.getDynamicProperty("level")     === undefined) maid.setDynamicProperty("level"    , 1);
+        if(maid.getDynamicProperty("kill")      === undefined) maid.setDynamicProperty("kill"     , 0);
+        if(maid.getDynamicProperty("pick")      === undefined) maid.setDynamicProperty("pick"     , false);
     }
     // 等级
     static Level = {
@@ -109,7 +110,9 @@ export class EntityMaid{
          */
         set(maid, level){
             let oldLevel = this.get(maid);
-            maid.triggerEvent(`api:lv_${oldLevel}_basic_quit`);
+            if(oldLevel !== undefined){
+                maid.triggerEvent(`api:lv_${oldLevel}_basic_quit`);
+            }
             if(maid.getComponent("minecraft:is_tamed") !== undefined){
                 maid.triggerEvent(`api:lv_${oldLevel}_tame_quit`);
             }
@@ -149,6 +152,16 @@ export class EntityMaid{
     }
     // 主人
     static Owner = {
+        /**
+         * 是否有主人
+         * @returns {boolean}
+         */
+        has(maid){
+            if(this.getID(maid) === undefined && this.getName(maid) == undefined){
+                return false;
+            }
+            return true;
+        },
         /**
          * 获取主人ID
          * @param {Entity} maid
@@ -313,7 +326,7 @@ export class EntityMaid{
          * @returns {number}
          */
         setPack(maid, skinpack){
-            return maid.setProperty("thlm:skin_pack", skinpack);
+            maid.setProperty("thlm:skin_pack", skinpack);
         },
         /**
          * 设置模型编号 从 0 开始
@@ -338,6 +351,15 @@ export class EntityMaid{
          */
         getIndex(maid){
             return maid.getComponent("minecraft:variant").value;
+        },
+        /**
+         * 随机设置一个皮肤
+         * @param {Entity} maid 
+         */
+        setRandom(maid){
+            let target = MaidSkin.getRandom();
+            this.setPack(maid, target.pack);
+            this.setIndex(maid, target.seq);
         }
     }
     // 拾物模式
@@ -781,6 +803,7 @@ export class EntityMaid{
         maidStr = StrMaid.Skin.set(maidStr, this.Skin.getPack(maid),this.Skin.getIndex(maid))
         // 工作模式
         maidStr = StrMaid.Work.set(maidStr, this.Work.get(maid));
+        // maidStr = StrMaid.Work.set(maidStr, this.Work.get(maid));
         // 拾物模式
         maidStr = StrMaid.Pick.set(maidStr, this.Pick.get(maid));
         // 背包是否隐藏
@@ -871,8 +894,9 @@ export class EntityMaid{
         let skin = StrMaid.Skin.get(maidStr);
         this.Skin.setPack(maid, skin.pack);
         this.Skin.setIndex(maid, skin.index);
-        // 工作模式
-        this.Work.set(maid, StrMaid.Work.get(maidStr));
+        // 工作模式 不再设置
+        // this.Work.set(maid, StrMaid.Work.get(maidStr));
+
         // 拾物模式
         this.Pick.set(maid, StrMaid.Pick.get(maidStr));
         // 背包是否隐藏
@@ -978,7 +1002,7 @@ export class EntityMaid{
      */
     static spawnRandomMaid(dimension, location){
         // 现在只是生成默认女仆
-        dimension.spawnEntity("thlmm:maid", location);
+        return dimension.spawnEntity("thlmm:maid", location);
     }
     /**
      * 判断一个方块是否安全（用于放置女仆）
