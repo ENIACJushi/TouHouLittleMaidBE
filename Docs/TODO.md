@@ -66,8 +66,15 @@
 
 ## 计划
 
-灵梦史莱姆
+√ 灵梦史莱姆
 手办
+四种音效
+  mob.thlmm.maid.cold     1 
+  mob.thlmm.maid.hot      2 
+  mob.thlmm.maid.rain     3 
+  mob.thlmm.maid.snow     4 
+
+
 *回血数字
 *女仆背包内物品进入箱子的方式。九宫格存在绑定问题，不太好实现；隙间容易做，但是需要增加饰品功能。
 *相册（如果lore没有上限或者在装满的状态不会溢出，可以考虑加一个）

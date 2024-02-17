@@ -16,5 +16,5 @@ A bedrock-edition Add-On transplanted by Java mod: TouHou Little Maid. (https://
 - Code: [MIT](https://www.mit.edu/~amini/LICENSE.md)
 - Assets: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
-<!-- ## Tutorial
-- [Memorizable Gensokyo](Tutorial/Tutorial.md) -->
+
+苦力怕论坛的1l6mnj即为项目的开发者 `ENIACJushi`。
