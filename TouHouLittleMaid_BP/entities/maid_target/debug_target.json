@@ -6,6 +6,9 @@
       "is_spawnable": false,
       "is_summonable": true
     },
+    "component_groups": {
+      "despawn": { "minecraft:instant_despawn":{ "remove_child_entities": false } }
+    },
     "components": {
       "minecraft:type_family": {
         "family": [ "debug_target" ]
@@ -53,6 +56,9 @@
       "minecraft:physics": {
         "has_gravity": false
       }
+    },
+    "events": {
+      "despawn":{ "add": { "component_groups": [ "despawn" ] } }
     }
   }
 }

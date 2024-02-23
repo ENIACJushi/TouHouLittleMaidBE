@@ -281,7 +281,12 @@ class thlm {
                             break;
                     }
                     
-                } 
+                }
+                else{
+                    if(event.id === "minecraft:entity_born"){
+                        Tool.logger("born");
+                    }
+                }
             });
         });
         // Death Event

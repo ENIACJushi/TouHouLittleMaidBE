@@ -241,7 +241,7 @@ class MaidMenuUI {
                     case 5: this.skinpackSelection(); break; // 模型选择
                     default:// 工作模式选择
                         EntityMaid.Work.set(this.maid, response.selection - 6);
-                        system.runTimeout(()=>{this.main()},1);
+                        system.runTimeout(()=>{this.main()},2);
                         break;
                 }
             }

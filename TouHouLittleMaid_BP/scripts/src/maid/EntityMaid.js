@@ -418,10 +418,13 @@ export class EntityMaid{
         cocoa          : 6,  // 可可
         grass          : 7,  // 花草
         snow           : 8,  // 清雪
-        feed           : 9, // 喂食
+
+        feed           : 9,  // 喂食
+        
         shears         : 10, // 剪刀
         milk           : 11, // 牛奶
         torch          : 12, // 火把
+        
         feed_animal    : 13, // 繁殖动物
         extinguishing  : 14, // 灭火
         
@@ -431,11 +434,9 @@ export class EntityMaid{
             "attack",
             "danmaku_attack",
             "farm",
-
-
             "sugar_cane",
             "melon",
-            "cocoa",          
+            "cocoa",
             "grass",      
             "snow",
             "feed",
@@ -504,7 +505,9 @@ export class EntityMaid{
          */
         set(maid, type){
             maid.triggerEvent(this.getEventName(maid, this.get(maid), true));
-            maid.triggerEvent(this.getEventName(maid, type, false));
+            system.runTimeout(()=>{
+                maid.triggerEvent(this.getEventName(maid, type, false));
+            },1); // 有些工作模式存在相同的组件，避免删除
         },
         /**
          * 获取名称

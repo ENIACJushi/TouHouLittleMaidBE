@@ -1,0 +1,33 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "touhou_little_maid:target_feed",
+      "is_spawnable": false,
+      "is_summonable": true
+    },
+    "component_groups": {
+      "despawn": { "minecraft:instant_despawn":{ "remove_child_entities": false } }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [ "thlm:target_feed" ]
+      },
+      "minecraft:damage_sensor": { 
+        "triggers": [
+          { "on_damage": { "filters": { "all_of": [ { "test": "is_family", "subject": "other", "value": "maid" } ] }, "event": "thlm:t", "target": "self" }, "deals_damage": true },
+          { "on_damage": { "filters": { "none_of": [ { "test": "is_family", "subject": "other", "value": "maid" } ] } }, "deals_damage": false }
+        ]
+      },
+      "minecraft:collision_box": { "width": 0, "height": 0 },
+      "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+      "minecraft:persistent": {},
+      "minecraft:knockback_resistance": { "value": 1.0 },
+      "minecraft:physics": { "has_gravity": false,"has_collision": false, "push_towards_closest_space": false }
+    },
+    "events": {
+      "despawn":{ "add": { "component_groups": [ "despawn" ] } },
+      "thlm:t":{}
+    }
+  }
+}

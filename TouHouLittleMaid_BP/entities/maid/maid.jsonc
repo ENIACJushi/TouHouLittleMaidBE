@@ -79,25 +79,7 @@
         "minecraft:behavior.beg": { "priority": 9, "look_distance": 8, "look_time": [ 2, 4 ], "items": [ "cake" ] },
   
         ///// AI属性 /////
-        // 索敌
-        "minecraft:behavior.nearest_attackable_target": {
-          "priority": 6,
-          "must_reach": true,
-          "must_see": true,
-          "reselect_targets": true,
-          "within_radius": 32,
-          "scan_interval": 10,
-          "entity_types": [
-            {
-              "filters": {
-                "all_of": [
-                  {"test": "is_family","subject": "other","value": "monster"}
-                ]
-              },
-              "max_dist": 32
-            }
-          ]
-        },
+        
         "minecraft:behavior.hurt_by_target": { "priority": 4 },
   
         // 基本移动
@@ -267,7 +249,6 @@
         "minecraft:health": {"value": 64, "max": 64 },
         "minecraft:knockback_resistance": { "value": 0.1 }
       },
-      
       "thlmm:lv2_tame": {
         "minecraft:damage_sensor": {
           "triggers": [
@@ -289,6 +270,15 @@
       "mode:idle":{
         "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
         "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 1.25 }
+      },
+      // 战斗索敌
+      "mode:searching_attack":{
+        // 战斗索敌
+        "minecraft:behavior.nearest_attackable_target": {
+          "priority": 6, "must_reach": true, "must_see": true,
+          "reselect_targets": true, "within_radius": 32, "scan_interval": 10,
+          "entity_types": [ { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "monster"} ] }, "max_dist": 32 } ]
+        }
       },
       // 近战
       "mode:attack_lv1":{
@@ -428,8 +418,8 @@
               "event": "environment:weather_clear", "target": "self", "filters": [{ "all_of": [
                 {"test": "int_property", "value": 0, "operator":"!=", "domain": "environment:weather"}, 
                 {"any_of": [
-                    {"all_of": [{"test": "is_temperature_type", "value": "mild"}, {"test": "weather", "value": "clear"} ]},
-                    {"all_of": [{"test": "is_temperature_type", "value": "warm"}, {"test": "weather", "value": "rain"} ]}
+                    {"all_of": [{"test": "is_temperature_type", "value": "mild"}, {"test": "weather", "operator": "==", "value": "clear"} ]},
+                    {"all_of": [{"test": "is_temperature_type", "value": "warm"}, {"test": "weather", "operator": "==", "value": "precipitation"} ]}
                 ]}
               ]}]
             },
@@ -441,13 +431,15 @@
                     {"test": "is_temperature_type", "value": "ocean"}
                   ]
                 },
-                {"test": "weather", "value": "rain"}]}]
+                {"test": "weather", "operator": "==", "value": "precipitation"}
+              ]}]
             },
             { // 雪：寒冷群系的雨天
               "event": "environment:weather_snow", "target": "self", "filters": [{ "all_of": [
                 {"test": "int_property", "value": 2, "operator":"!=", "domain": "environment:weather"}, 
                 {"test": "is_temperature_type", "value": "cold"},
-                {"test": "weather", "value": "rain"}]}]
+                {"test": "weather", "operator": "==", "value": "precipitation"}
+              ]}]
             },
             ///// 早晨/夜晚报时 /////
             { 
@@ -697,12 +689,12 @@
       // 工作模式
       "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}, "set_property":{"thlm:work": 0}}]},
       "api:mode_quit_idle":  {"sequence": [{"remove": {"component_groups": ["mode:idle"]}}]},
-      "api:mode_attack_lv1"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv1"]}, "set_property":{"thlm:work": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
-      "api:mode_quit_attack_lv1":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv1"]}}]},
-      "api:mode_attack_lv2"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv2"]}, "set_property":{"thlm:work": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
-      "api:mode_quit_attack_lv2":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv2"]}}]},
-      "api:mode_danmaku_attack"       :{"sequence": [{"add"   : {"component_groups": ["mode:danmaku_attack"]}, "set_property":{"thlm:work": 2}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
-      "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack"]}}]},
+      "api:mode_attack_lv1"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv1", "mode:searching_attack"]}, "set_property":{"thlm:work": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
+      "api:mode_quit_attack_lv1":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv1", "mode:searching_attack"]}}]},
+      "api:mode_attack_lv2"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv2", "mode:searching_attack"]}, "set_property":{"thlm:work": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
+      "api:mode_quit_attack_lv2":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv2", "mode:searching_attack"]}}]},
+      "api:mode_danmaku_attack"       :{"sequence": [{"add"   : {"component_groups": ["mode:danmaku_attack", "mode:searching_attack"]}, "set_property":{"thlm:work": 2}, "run_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
+      "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack", "mode:searching_attack"]}}]},
       
       "api:mode_farm_lv1"       :{"sequence": [{"add"   : {"component_groups": ["mode:farm_lv1"]}, "set_property":{"thlm:work": 3}}]},
       "api:mode_quit_farm_lv1"  :{"sequence": [{"remove": {"component_groups": ["mode:farm_lv1"]}}]},
@@ -724,18 +716,24 @@
       ///// 环境变化 /////
       "environment:temperature_mild":{ "set_property":{"environment:temperature": 0} },
       "environment:temperature_cold":{
-        "set_property":{"environment:temperature": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.cold @a ~~~"]}
+        "set_property":{"environment:temperature": 1},
+        "run_command":{ "command": ["playsound mob.thlmm.maid.cold @a ~~~"]}
       },
       "environment:temperature_hot":{
-        "set_property":{"environment:temperature": 2}, "run_command":{ "command": ["playsound mob.thlmm.maid.hot @a ~~~"]}
+        "set_property":{"environment:temperature": 2},
+        "run_command":{ "command": ["playsound mob.thlmm.maid.hot @a ~~~"]}
       },
+
       "environment:weather_clear":{ "set_property":{"environment:weather": 0} },
       "environment:weather_rain":{
-        "set_property":{"environment:weather": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.rain @a ~~~"]}
+        "set_property":{"environment:weather": 1}, 
+        "run_command":{ "command": ["playsound mob.thlmm.maid.rain @a ~~~"]}
       },
       "environment:weather_snow":{
-        "set_property":{"environment:weather": 2}, "run_command":{ "command": ["playsound mob.thlmm.maid.snow @a ~~~"]}
+        "set_property":{"environment:weather": 2}, 
+        "run_command":{ "command": ["playsound mob.thlmm.maid.snow @a ~~~"]}
       },
+      
       "environment:morning":{ "set_property":{"environment:daytime": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.morning @a ~~~"]}},
       "environment:night"  :{ "set_property":{"environment:daytime": 0}, "run_command":{ "command": ["playsound mob.thlmm.maid.night @a ~~~"]}},
 
