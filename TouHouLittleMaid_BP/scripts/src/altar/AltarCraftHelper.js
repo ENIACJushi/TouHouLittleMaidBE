@@ -1,4 +1,4 @@
-import { Dimension, ItemStack, Player, Enchantment, ItemEnchantsComponent, Vector } from "@minecraft/server";
+import { Dimension, ItemStack, Player, Vector } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import { recipeList } from "../../data/recipes/index"
 import { tagDefines } from "../../data/recipes/tag_define"
@@ -123,11 +123,14 @@ export class AltarCraftHelper{
                     if(itemInfo["Count"]) amount = itemInfo["Count"];
                     let output_item = new ItemStack(itemInfo["id"], amount);
                     if(itemInfo["Enchantments"] != null){
-                        let ench_list = output_item.getComponent("minecraft:enchantments").enchantments
+                        let ench_list = output_item.getComponent("minecraft:enchantable")
                         for(let key in itemInfo["Enchantments"]){
-                            ench_list.addEnchantment(new Enchantment(key, itemInfo["Enchantments"][key]));
+                            ench_list.addEnchantment({
+                                type: key, 
+                                level: itemInfo["Enchantments"][key]
+                            });
                         }
-                        output_item.getComponent("minecraft:enchantments").enchantments = ench_list;
+                        // output_item.getComponent("minecraft:enchantments").enchantments = ench_list;
                     }
                     dimension.spawnItem(output_item, location);
                     break;

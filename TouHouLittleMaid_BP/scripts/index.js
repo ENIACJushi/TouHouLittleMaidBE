@@ -1,4 +1,4 @@
-import { world, system, Enchantment, ItemEnchantsComponent } from "@minecraft/server"
+import { world, system } from "@minecraft/server"
 import { altarStructure } from "./src/altar/AltarStructureHelper";
 import experiment from "./experiment"
 import PowerPoint from "./src/altar/PowerPoint"
@@ -9,7 +9,6 @@ import { itemShootManager } from "./src/danmaku/ItemShootManager";
 import { MaidManager } from "./src/maid/MaidManager";
 import { ConfigHelper } from "./src/controller/Config";
 import { MaidSkin } from "./src/maid/MaidSkin";
-import { EntityMaid } from "./src/maid/EntityMaid";
 import { GoldMicrowaver } from "./src/blocks/GoldMicrowaver";
 
 import { CommandManager } from './src/controller/Command'

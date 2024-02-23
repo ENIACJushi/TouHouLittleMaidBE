@@ -121,9 +121,9 @@ export class MaidBackpack{
         let dimension = backpack.dimension;
         let container = this.getContainer(backpack);
         for(let i = 0; i < container.size; i++){
-            let item = container.getItem(i);
+            let item = container.getItem(i)
             if(item !== undefined){
-                dimension.spawnItem(item, location);
+                dimension.spawnItem(item.clone(), location);
                 container.setItem(i);
             }
         }

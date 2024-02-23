@@ -72,7 +72,8 @@
         },
         "minecraft:healable": {
           "items": [
-            {"item": "cake", "heal_amount": 20}
+            {"item": "cake", "heal_amount": 20},
+            {"item": "apple", "heal_amount": 3}
           ]
         },
         "minecraft:behavior.beg": { "priority": 9, "look_distance": 8, "look_time": [ 2, 4 ], "items": [ "cake" ] },
@@ -84,7 +85,7 @@
           "must_reach": true,
           "must_see": true,
           "reselect_targets": true,
-          "within_radius": 20,
+          "within_radius": 32,
           "scan_interval": 10,
           "entity_types": [
             {
@@ -93,7 +94,7 @@
                   {"test": "is_family","subject": "other","value": "monster"}
                 ]
               },
-              "max_dist": 20
+              "max_dist": 32
             }
           ]
         },
@@ -292,7 +293,7 @@
       // 近战
       "mode:attack_lv1":{
         "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
-        "minecraft:behavior.melee_attack": { "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25, "cooldown_time": 1.0 },
+        "minecraft:behavior.melee_attack": { "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25, "cooldown_time": 0.9 },
         "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
         "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
       },
@@ -380,7 +381,7 @@
       "mode:pick":{
         "minecraft:behavior.pickup_items": {
           "priority": 5,
-          "max_dist": 3,
+          "max_dist": 8,
           "goal_radius": 2,
           "speed_multiplier": 1.25,
           
@@ -390,7 +391,9 @@
         "minecraft:shareables": {
           "singular_pickup": true,
           "all_items": true,
-          "items": []
+          "items": [
+            {"item": "minecraft:apple", "want_amount": 1111}
+          ]
         }
       },
 

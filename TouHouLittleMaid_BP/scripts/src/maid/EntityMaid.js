@@ -822,43 +822,18 @@ export class EntityMaid{
          * b: backpack,背包大小
          * bi: backpack id, 临时背包的生物id
          */ 
+        EntityMaid.dumpMaidBackpack(maid);// 转储 女仆→背包实体
         let backpack_id = this.Backpack.getID(maid);
         if(backpack_id !== undefined){
             let backpack = world.getEntity(backpack_id);
             if(backpack !== undefined){
-                let backpack_type = MaidBackpack.getType(backpack);
-
-                // lore→实体时，靠是否有infos.bi判断用的是哪种保存方法，身上背的背包都会保留
-                let deathBagSuccess = false;
-                // (弃用)将物品转移到常加载区域, 若区块加载器不存在则会失败，转而使用原地生成法
-                if(config["maid_death_bag"] === false){
-                    let loader = MaidBackpack.loader.get();
-                    if(loader !== undefined){
-                        // 在地底创建新背包(隐形)
-                        let temp_backpack = MaidBackpack.create(maid, backpack_type,
-                            backpack.dimension, loader.location);
-                        MaidBackpack.setInvisible(temp_backpack, true);
-
-                        system.runTimeout(()=>{
-                            // 将物品移入临时背包
-                            MaidBackpack.copy(backpack, temp_backpack);
-                            MaidBackpack.clear(backpack);
-                            // 清除旧背包
-                            backpack.triggerEvent("despawn");
-                        }, 1); // 延时是因为要等新背包完成初始化
-                        deathBagSuccess = true;
-                    }
+                if(MaidBackpack.getType(backpack) === MaidBackpack.default){
+                    // 爆出物品
+                    MaidBackpack.dump(backpack, backpack.location);
                 }
-                // 原地生成法，如果没有背包(default)就会爆出物品
-                if(deathBagSuccess === false){
-                    if(backpack_type === MaidBackpack.default){
-                        // 爆出物品
-                        MaidBackpack.dump(backpack, backpack.location);
-                    }
-                    else{
-                        MaidBackpack.setInvisible(backpack, false);
-                        backpack.triggerEvent("api:grave");
-                    }
+                else{
+                    MaidBackpack.setInvisible(backpack, false);
+                    backpack.triggerEvent("api:grave");
                 }
             }
         }

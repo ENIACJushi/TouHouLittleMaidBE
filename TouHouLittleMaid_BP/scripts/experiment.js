@@ -1,4 +1,4 @@
-import { Player, world, system, Enchantment, ItemEnchantsComponent } from "@minecraft/server"
+import { Player, world, system } from "@minecraft/server"
 import * as Tool from"./src/libs/scarletToolKit";
 import * as mcui from "@minecraft/server-ui"
 import { StrMaid } from "./src/maid/StrMaid";

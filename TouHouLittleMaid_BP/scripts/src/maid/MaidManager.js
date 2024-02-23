@@ -392,23 +392,26 @@ export class MaidManager{
     static timerEvent(event){
         let maid = event.entity; 
         if(maid===undefined) return;
-        
-        // 2步一次回血
-        let healStep = maid.getDynamicProperty("heal_step");
-        if(healStep >= 1){
-            let healthComponent = EntityMaid.Health.getComponent(maid);
-            if(healthComponent.currentValue < healthComponent.defaultValue){
-                // 回血
-                let healAmount = EntityMaid.Level.getProperty(maid, "heal");
-                healthComponent.setCurrentValue(
-                    Math.min(healthComponent.defaultValue,
-                    healthComponent.currentValue + Tool.getRandomInteger(healAmount[0], healAmount[1])));
+        try{
+            // 2步一次回血
+            let healStep = maid.getDynamicProperty("heal_step");
+            if(healStep >= 1){
+                let healthComponent = EntityMaid.Health.getComponent(maid);
+                if(healthComponent.currentValue < healthComponent.defaultValue){
+                    // 回血
+                    let healAmount = EntityMaid.Level.getProperty(maid, "heal");
+                    healthComponent.setCurrentValue(
+                        Math.min(healthComponent.defaultValue,
+                        healthComponent.currentValue + Tool.getRandomInteger(healAmount[0], healAmount[1])));
+                }
+                maid.setDynamicProperty("heal_step", 0);
             }
-            maid.setDynamicProperty("heal_step", 0);
+            else{
+                maid.setDynamicProperty("heal_step", healStep+1);
+            }
         }
-        else{
-            maid.setDynamicProperty("heal_step", healStep+1);
-        }
+        catch{ }
+        
     }
     /**
      * 开盒，生成一只随机女仆

@@ -1,7 +1,7 @@
 
 import * as Tool from "../libs/scarletToolKit"
 import * as Vec from "../libs/vector3d"
-import { ItemDefinitionTriggeredBeforeEvent, ItemStack, Enchantment, EntityTypes, ItemUseOnBeforeEvent,
+import { ItemDefinitionTriggeredBeforeEvent, ItemStack, EntityTypes, ItemUseOnBeforeEvent,
      world, Entity, Vector, Dimension, DataDrivenEntityTriggerBeforeEvent, WorldInitializeAfterEvent, system
     ,EntityDamageCause, 
     ProjectileHitEntityAfterEvent,
@@ -154,9 +154,9 @@ export function gohei_activate(ev){
 
         if(item && item.typeId == GoheiPrefix + "crafting_table") {
             let itemStack = new ItemStack(GoheiPrefix + DanmakuType.getName(GoheiDefault), 1);
-            let ench_list = itemStack.getComponent("minecraft:enchantments").enchantments;
-            ench_list.addEnchantment(new Enchantment("infinity", 1));
-            itemStack.getComponent("minecraft:enchantments").enchantments = ench_list;
+            let ench_list = itemStack.getComponent("minecraft:enchantable");
+            ench_list.addEnchantment({type: "infinity", level: 1});
+            // itemStack.getComponent("minecraft:enchantments").enchantments = ench_list;
             container.setItem(slot, itemStack);
         }
     }
