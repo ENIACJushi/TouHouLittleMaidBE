@@ -155,7 +155,8 @@ export class AltarCraftHelper{
                             for(let temp of lore){ strLore += temp; }
                             let strPure = Tool.loreStr2Pure(strLore);
 
-                            EntityMaid.fromStr(strPure, dimension, location, false);
+                            let maid = EntityMaid.fromStr(strPure, dimension, location, false);
+                            maid.triggerEvent("api:reborn");
                             return true;
                         }
                     }

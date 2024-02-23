@@ -19,108 +19,17 @@
         // 表情
         "thlm:emote"             :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
         // 环境
-        "environment:status" :{"type": "int", "client_sync": true, "default": 0 , "range": [0, 5]},
-        "environment:daytime":{"type": "int", "client_sync": true, "default": -1, "range": [-1, 1]} // 为了在生成时发出声音，默认设为-1
+        "environment:temperature" :{"type": "int", "client_sync": true, "default": 0 , "range": [0, 5]}, // 0 正常  0 海  1 冷  2 热
+        "environment:weather"     :{"type": "int", "client_sync": true, "default": 0 , "range": [0, 5]}, // 0 无天气  1 雨  1 雷电  2 雪
+        "environment:daytime"     :{"type": "int", "client_sync": true, "default": -1, "range": [-1, 1]} // 为了在生成时发出声音，默认设为-1
       }
     },
     "component_groups": {
       "despawn":{
         "minecraft:instant_despawn":{ "remove_child_entities": false }
       },
-      ///// NPC 基础属性 /////
-      "thlmm:npc_basic":{
-        "minecraft:timer": {
-          "time": 30, "looping": true,
-          "time_down_event": { "event": "thlmm:h", "target": "self" }
-        },
-        "minecraft:interact": {
-          "interactions": [
-            {
-              "cooldown": 2.5,
-              "use_item": false,
-              "hurt_item": 1,
-              "vibration": "none",
-              "on_interact": {
-                "filters": {
-                  "all_of": [
-                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:npc_tool"},
-                    { "test": "is_sneaking", "subject": "other", "value": true }
-                  ]
-                },
-                "event": "thlm:n",
-                "target": "self"
-              }
-            }
-          ]
-        },
-        "minecraft:type_family": { "family": [ "npc", "mob" ] },
-        "minecraft:knockback_resistance": { "value": 1.0 },
-        "minecraft:damage_sensor": {
-          "triggers": [
-            {
-              "on_damage": {
-                "filters": {
-                  "all_of": [
-                    { "test": "is_family", "subject": "other", "value": "player" },
-                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:npc_tool"},
-                    { "test": "is_sneaking", "subject": "other", "value": true }
-                  ]
-                },
-                "event": "despawn",
-                "target": "self"
-              },
-              "deals_damage": false
-            },
-            {
-              "cause": "all",
-              "deals_damage": false
-            }
-          ]
-        },
-        "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
-        "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false},
-        "minecraft:physics": { "has_collision": true, "has_gravity": true, "push_towards_closest_space": false },
-        "minecraft:persistent": { },
-        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
-        "minecraft:home": { },
-        "minecraft:behavior.look_at_player": { "priority": 5, "look_distance": 6.0,"probability": 0.02 },
-        "minecraft:npc": {
-          "npc_data": {
-            "portrait_offsets": {
-              "translate": [ -7, 50, 0 ],
-              "scale": [ 1.75, 1.75, 1.75 ]
-            },
-            "picker_offsets": {
-              "translate": [ 0, 20, 0 ],
-              "scale": [ 1.7, 1.7, 1.7 ]
-            },
-            "skin_list": [
-              { "variant": 0 },{ "variant": 1 },{ "variant": 2 },{ "variant": 3 },{ "variant": 4 },{ "variant": 5 },{ "variant": 6 },{ "variant": 7 },{ "variant": 8 },{ "variant": 9 },{ "variant": 10 },
-              { "variant": 11 },{ "variant": 12 },{ "variant": 13 },{ "variant": 14 },{ "variant": 15 },{ "variant": 16 },{ "variant": 17 },{ "variant": 18 },{ "variant": 19 },{ "variant": 20 },
-              { "variant": 21 },{ "variant": 22 },{ "variant": 23 },{ "variant": 24 },{ "variant": 25 },{ "variant": 26 },{ "variant": 27 },{ "variant": 28 },{ "variant": 29 },{ "variant": 30 },
-              { "variant": 31 },{ "variant": 32 },{ "variant": 33 },{ "variant": 34 },{ "variant": 35 },{ "variant": 36 },{ "variant": 37 },{ "variant": 38 },{ "variant": 39 },{ "variant": 40 },
-              { "variant": 41 },{ "variant": 42 },{ "variant": 43 },{ "variant": 44 },{ "variant": 45 },{ "variant": 46 },{ "variant": 47 },{ "variant": 48 },{ "variant": 49 },{ "variant": 50 },
-              { "variant": 51 },{ "variant": 52 },{ "variant": 53 },{ "variant": 54 },{ "variant": 55 },{ "variant": 56 },{ "variant": 57 },{ "variant": 58 },{ "variant": 59 },{ "variant": 60 },
-              { "variant": 61 },{ "variant": 62 },{ "variant": 63 },{ "variant": 64 },{ "variant": 65 },{ "variant": 66 },{ "variant": 67 },{ "variant": 68 },{ "variant": 69 },{ "variant": 70 },
-              { "variant": 71 },{ "variant": 72 },{ "variant": 73 },{ "variant": 74 },{ "variant": 75 },{ "variant": 76 },{ "variant": 77 },{ "variant": 78 },{ "variant": 79 },{ "variant": 80 },
-              { "variant": 81 },{ "variant": 82 },{ "variant": 83 },{ "variant": 84 },{ "variant": 85 },{ "variant": 86 },{ "variant": 87 },{ "variant": 88 },{ "variant": 89 },{ "variant": 90 },
-              { "variant": 91 },{ "variant": 92 },{ "variant": 93 },{ "variant": 94 },{ "variant": 95 },{ "variant": 96 },{ "variant": 97 },{ "variant": 98 },{ "variant": 99 },{ "variant": 100 },
-              { "variant": 101 },{ "variant": 102 },{ "variant": 103 },{ "variant": 104 },{ "variant": 105 },{ "variant": 106 },{ "variant": 107 },{ "variant": 108 },{ "variant": 109 },{ "variant": 110 },
-              { "variant": 111 },{ "variant": 112 },{ "variant": 113 },{ "variant": 114 },{ "variant": 115 },{ "variant": 116 },{ "variant": 117 },{ "variant": 118 },{ "variant": 119 },{ "variant": 120 },
-              { "variant": 121 },{ "variant": 122 },{ "variant": 123 },{ "variant": 124 },{ "variant": 125 },{ "variant": 126 },{ "variant": 127 },{ "variant": 128 },{ "variant": 129 },{ "variant": 130 },
-              { "variant": 131 },{ "variant": 132 },{ "variant": 133 },{ "variant": 134 },{ "variant": 135 },{ "variant": 136 },{ "variant": 137 },{ "variant": 138 },{ "variant": 139 },{ "variant": 140 },
-              { "variant": 141 },{ "variant": 142 },{ "variant": 143 },{ "variant": 144 },{ "variant": 145 },{ "variant": 146 },{ "variant": 147 },{ "variant": 148 },{ "variant": 149 },{ "variant": 150 },
-              { "variant": 151 },{ "variant": 152 },{ "variant": 153 },{ "variant": 154 },{ "variant": 155 },{ "variant": 156 },{ "variant": 157 },{ "variant": 158 },{ "variant": 159 },{ "variant": 160 },
-              { "variant": 161 },{ "variant": 162 },{ "variant": 163 },{ "variant": 164 },{ "variant": 165 },{ "variant": 166 },{ "variant": 167 },{ "variant": 168 },{ "variant": 169 },{ "variant": 170 },
-              { "variant": 171 },{ "variant": 172 },{ "variant": 173 },{ "variant": 174 },{ "variant": 175 },{ "variant": 176 },{ "variant": 177 },{ "variant": 178 },{ "variant": 179 },{ "variant": 180 },
-              { "variant": 181 },{ "variant": 182 },{ "variant": 183 },{ "variant": 184 },{ "variant": 185 },{ "variant": 186 },{ "variant": 187 },{ "variant": 188 },{ "variant": 189 },{ "variant": 190 },
-              { "variant": 191 },{ "variant": 192 },{ "variant": 193 },{ "variant": 194 },{ "variant": 195 },{ "variant": 196 },{ "variant": 197 },{ "variant": 198 },{ "variant": 199 },{ "variant": 200 }
-            ]
-          }
-        }
-      },
-
-      ///// 女仆基础属性 /////
+      ///////// 女仆属性 /////////
+      ///// 基础属性 /////
       "thlmm:maid_basic":{
         "minecraft:timer": {
           "time": 3,
@@ -374,25 +283,64 @@
         "minecraft:knockback_resistance": { "value": 0.2 }
       },
 
+      ///// 工作模式 /////
+      // 空闲
+      "mode:idle":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
+        "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 1.25 }
+      },
+      // 近战
+      "mode:attack_lv1":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
+        "minecraft:behavior.melee_attack": { "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25, "cooldown_time": 1.0 },
+        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
+        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
+      },
+      "mode:attack_lv2":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
+        "minecraft:behavior.melee_attack": { "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25, "cooldown_time": 0.8 },
+        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
+        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
+      },
+      // 弹幕攻击
+      "mode:danmaku_attack":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
+        "minecraft:behavior.ranged_attack": { "priority": 5, "attack_interval_min": 1.0, "attack_interval_max": 3.0, "attack_radius": 32.0 },
+        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
+        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
+      },
+      // 农耕
+      "mode:farm_lv1":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
+        "minecraft:behavior.harvest_farm_block": {
+          "priority": 7,
+          "search_cooldown_max_seconds": 2,
+          "search_count": 0,
+          "search_height":3, "search_range": 20
+        },
+        "minecraft:behavior.fertilize_farm_block": { "priority": 8, "search_cooldown_max_seconds": 2 }
+      },
+      "mode:farm_lv2":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
+        "minecraft:behavior.harvest_farm_block": {
+          "priority": 7,
+          "search_cooldown_max_seconds": 2,
+          "search_count": 0,
+          "search_height":3,
+          "search_range": 20
+        },
+        "minecraft:behavior.fertilize_farm_block": { "priority": 8, "search_cooldown_max_seconds": 2 }
+      },
       ///// 背包类别 /////
-      "backpack:default":{
-        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": true}
-      },
-      "backpack:small":{
-        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 12, "private": true}
-      },
-      "backpack:middle":{
-        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 24, "private": true}
-      },
-      "backpack:big":{
-        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 36, "private": true}
-      },
+      "backpack:default":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": true} },
+      "backpack:small":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 12, "private": true} },
+      "backpack:middle":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 24, "private": true} },
+      "backpack:big":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 36, "private": true} },
 
       ///// 跟随类别 /////
       // 拐走后跟随
       "status:follow_on_tame":{
-        "minecraft:is_tamed": {
-        },
+        "minecraft:is_tamed": { },
         "minecraft:behavior.follow_owner": {
           "priority": 0,
           "speed_multiplier": 1.4,
@@ -428,70 +376,6 @@
         "minecraft:is_baby": {}
       },
 
-      ///// 工作模式 /////
-      // 空闲
-      "mode:idle":{
-        "minecraft:behavior.panic": {
-          "priority": 4,
-          "speed_multiplier": 1.25
-        }
-      },
-      // 近战
-      "mode:attack_lv1":{
-        "minecraft:behavior.melee_attack": {
-          "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25,
-          "cooldown_time": 0.8
-        },
-        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
-        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
-      },
-      "mode:attack_lv2":{
-        "minecraft:behavior.melee_attack": {
-          "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25,
-          "cooldown_time": 0.7
-        },
-        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
-        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
-      },
-      // 弹幕攻击
-      "mode:danmaku_attack":{
-        "minecraft:behavior.ranged_attack": {
-          "priority": 5,
-          "attack_interval_min": 1.0,
-          "attack_interval_max": 3.0,
-          "attack_radius": 32.0
-        },
-        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
-        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
-      },
-      // 农耕
-      "mode:farm_lv1":{
-        "minecraft:behavior.harvest_farm_block": {
-          "priority": 7,
-          "search_cooldown_max_seconds": 2,
-          "search_count": 0,
-          "search_height":3,
-          "search_range": 20
-        },
-        "minecraft:behavior.fertilize_farm_block": {
-          "priority": 8,
-          "search_cooldown_max_seconds": 2
-        }
-      },
-      "mode:farm_lv2":{
-        "minecraft:behavior.harvest_farm_block": {
-          "priority": 7,
-          "search_cooldown_max_seconds": 2,
-          "search_count": 0,
-          "search_height":3,
-          "search_range": 20
-        },
-        "minecraft:behavior.fertilize_farm_block": {
-          "priority": 8,
-          "search_cooldown_max_seconds": 2
-        }
-      },
-
       ///// 拾物模式 /////
       "mode:pick":{
         "minecraft:behavior.pickup_items": {
@@ -514,29 +398,65 @@
       "environment:simple":{
         "minecraft:environment_sensor": {
           "triggers": [
-            // 热
-            {
-              "event": "environment:hot",
-              "target": "self",
-              "filters": [
-                {
-                  "all_of": [
-                    {
-                      "any_of": [
-                        {"test": "is_biome", "value": "desert"},
-                        {"test": "is_biome", "value": "savanna"},
-                        {"test": "is_biome", "value": "the_nether"}
-                      ]
-                    },
-                    {"test": "in_water_or_rain", "value": false},
-                    {"test": "weather", "value": "clear"}
-                  ]
-                }
-              ]
+            ///// 温度 /////
+            { // 适宜
+              "event": "environment:temperature_mild", "target": "self",
+              "filters": [ { "all_of": [ 
+                {"test": "int_property", "value": 0, "operator":"!=", "domain": "environment:temperature"}, 
+                {"test": "is_temperature_type", "value": "mild"} 
+              ] } ]
             },
-            // 早晨/夜晚报时
-            { "event": "environment:morning", "target": "self", "filters": [{ "all_of": [{"test": "int_property", "value": 1, "operator":"!=", "domain": "environment:daytime"}, {"test": "is_daytime", "value": true}]}]},
-            { "event": "environment:night"  , "target": "self", "filters": [{ "all_of": [{"test": "int_property", "value": 0, "operator":"!=", "domain": "environment:daytime"}, {"test": "is_daytime", "value": false}]}]}
+            { // 热
+              "event": "environment:temperature_warm", "target": "self",
+              "filters": [ { "all_of": [ 
+                {"test": "int_property", "value": 1, "operator":"!=", "domain": "environment:temperature"}, 
+                {"test": "is_temperature_type", "value": "warm"} 
+              ] } ]
+            },
+            { // 冷
+              "event": "environment:temperature_cold", "target": "self",
+              "filters": [ { "all_of": [ 
+                {"test": "int_property", "value": 2, "operator":"!=", "domain": "environment:temperature"}, 
+                {"test": "is_temperature_type", "value": "cold"} 
+              ] } ]
+            },
+            ///// 天气 /////
+            { // 无天气：普通群系的无天气、炎热群系的雨天
+              "event": "environment:weather_clear", "target": "self", "filters": [{ "all_of": [
+                {"test": "int_property", "value": 0, "operator":"!=", "domain": "environment:weather"}, 
+                {"any_of": [
+                    {"all_of": [{"test": "is_temperature_type", "value": "mild"}, {"test": "weather", "value": "clear"} ]},
+                    {"all_of": [{"test": "is_temperature_type", "value": "warm"}, {"test": "weather", "value": "rain"} ]}
+                ]}
+              ]}]
+            },
+            { // 雨：普通群系的雨天
+              "event": "environment:weather_rain", "target": "self", "filters": [{ "all_of": [
+                {"test": "int_property", "value": 1, "operator":"!=", "domain": "environment:weather"}, 
+                { "any_of": [
+                    {"test": "is_temperature_type", "value": "mild"},
+                    {"test": "is_temperature_type", "value": "ocean"}
+                  ]
+                },
+                {"test": "weather", "value": "rain"}]}]
+            },
+            { // 雪：寒冷群系的雨天
+              "event": "environment:weather_snow", "target": "self", "filters": [{ "all_of": [
+                {"test": "int_property", "value": 2, "operator":"!=", "domain": "environment:weather"}, 
+                {"test": "is_temperature_type", "value": "cold"},
+                {"test": "weather", "value": "rain"}]}]
+            },
+            ///// 早晨/夜晚报时 /////
+            { 
+              "event": "environment:morning", "target": "self", "filters": [{ "all_of": [
+                {"test": "int_property", "value": 1, "operator":"!=", "domain": "environment:daytime"}, 
+                {"test": "is_daytime", "value": true}]}]
+            },
+            { 
+              "event": "environment:night"  , "target": "self", "filters": [{ "all_of": [
+                {"test": "int_property", "value": 0, "operator":"!=", "domain": "environment:daytime"}, 
+                {"test": "is_daytime", "value": false}]}]
+            }
           ]
         }
       },
@@ -558,8 +478,105 @@
       "skin:121":{"minecraft:variant": { "value": 121 }},"skin:122":{"minecraft:variant": { "value": 122 }},"skin:123":{"minecraft:variant": { "value": 123 }},"skin:124":{"minecraft:variant": { "value": 124 }},"skin:125":{"minecraft:variant": { "value": 125 }},"skin:126":{"minecraft:variant": { "value": 126 }},"skin:127":{"minecraft:variant": { "value": 127 }},"skin:128":{"minecraft:variant": { "value": 128 }},"skin:129":{"minecraft:variant": { "value": 129 }},"skin:130":{"minecraft:variant": { "value": 130 }},"skin:131":{"minecraft:variant": { "value": 131 }},"skin:132":{"minecraft:variant": { "value": 132 }},"skin:133":{"minecraft:variant": { "value": 133 }},"skin:134":{"minecraft:variant": { "value": 134 }},"skin:135":{"minecraft:variant": { "value": 135 }},"skin:136":{"minecraft:variant": { "value": 136 }},"skin:137":{"minecraft:variant": { "value": 137 }},"skin:138":{"minecraft:variant": { "value": 138 }},"skin:139":{"minecraft:variant": { "value": 139 }},"skin:140":{"minecraft:variant": { "value": 140 }},
       "skin:141":{"minecraft:variant": { "value": 141 }},"skin:142":{"minecraft:variant": { "value": 142 }},"skin:143":{"minecraft:variant": { "value": 143 }},"skin:144":{"minecraft:variant": { "value": 144 }},"skin:145":{"minecraft:variant": { "value": 145 }},"skin:146":{"minecraft:variant": { "value": 146 }},"skin:147":{"minecraft:variant": { "value": 147 }},"skin:148":{"minecraft:variant": { "value": 148 }},"skin:149":{"minecraft:variant": { "value": 149 }},"skin:150":{"minecraft:variant": { "value": 150 }},"skin:151":{"minecraft:variant": { "value": 151 }},"skin:152":{"minecraft:variant": { "value": 152 }},"skin:153":{"minecraft:variant": { "value": 153 }},"skin:154":{"minecraft:variant": { "value": 154 }},"skin:155":{"minecraft:variant": { "value": 155 }},"skin:156":{"minecraft:variant": { "value": 156 }},"skin:157":{"minecraft:variant": { "value": 157 }},"skin:158":{"minecraft:variant": { "value": 158 }},"skin:159":{"minecraft:variant": { "value": 159 }},"skin:160":{"minecraft:variant": { "value": 160 }},
       "skin:161":{"minecraft:variant": { "value": 161 }},"skin:162":{"minecraft:variant": { "value": 162 }},"skin:163":{"minecraft:variant": { "value": 163 }},"skin:164":{"minecraft:variant": { "value": 164 }},"skin:165":{"minecraft:variant": { "value": 165 }},"skin:166":{"minecraft:variant": { "value": 166 }},"skin:167":{"minecraft:variant": { "value": 167 }},"skin:168":{"minecraft:variant": { "value": 168 }},"skin:169":{"minecraft:variant": { "value": 169 }},"skin:170":{"minecraft:variant": { "value": 170 }},"skin:171":{"minecraft:variant": { "value": 171 }},"skin:172":{"minecraft:variant": { "value": 172 }},"skin:173":{"minecraft:variant": { "value": 173 }},"skin:174":{"minecraft:variant": { "value": 174 }},"skin:175":{"minecraft:variant": { "value": 175 }},"skin:176":{"minecraft:variant": { "value": 176 }},"skin:177":{"minecraft:variant": { "value": 177 }},"skin:178":{"minecraft:variant": { "value": 178 }},"skin:179":{"minecraft:variant": { "value": 179 }},"skin:180":{"minecraft:variant": { "value": 180 }},
-      "skin:181":{"minecraft:variant": { "value": 181 }},"skin:182":{"minecraft:variant": { "value": 182 }},"skin:183":{"minecraft:variant": { "value": 183 }},"skin:184":{"minecraft:variant": { "value": 184 }},"skin:185":{"minecraft:variant": { "value": 185 }},"skin:186":{"minecraft:variant": { "value": 186 }},"skin:187":{"minecraft:variant": { "value": 187 }},"skin:188":{"minecraft:variant": { "value": 188 }},"skin:189":{"minecraft:variant": { "value": 189 }},"skin:190":{"minecraft:variant": { "value": 190 }},"skin:191":{"minecraft:variant": { "value": 191 }},"skin:192":{"minecraft:variant": { "value": 192 }},"skin:193":{"minecraft:variant": { "value": 193 }},"skin:194":{"minecraft:variant": { "value": 194 }},"skin:195":{"minecraft:variant": { "value": 195 }},"skin:196":{"minecraft:variant": { "value": 196 }},"skin:197":{"minecraft:variant": { "value": 197 }},"skin:198":{"minecraft:variant": { "value": 198 }},"skin:199":{"minecraft:variant": { "value": 199 }},"skin:200":{"minecraft:variant": { "value": 200 }}
+      "skin:181":{"minecraft:variant": { "value": 181 }},"skin:182":{"minecraft:variant": { "value": 182 }},"skin:183":{"minecraft:variant": { "value": 183 }},"skin:184":{"minecraft:variant": { "value": 184 }},"skin:185":{"minecraft:variant": { "value": 185 }},"skin:186":{"minecraft:variant": { "value": 186 }},"skin:187":{"minecraft:variant": { "value": 187 }},"skin:188":{"minecraft:variant": { "value": 188 }},"skin:189":{"minecraft:variant": { "value": 189 }},"skin:190":{"minecraft:variant": { "value": 190 }},"skin:191":{"minecraft:variant": { "value": 191 }},"skin:192":{"minecraft:variant": { "value": 192 }},"skin:193":{"minecraft:variant": { "value": 193 }},"skin:194":{"minecraft:variant": { "value": 194 }},"skin:195":{"minecraft:variant": { "value": 195 }},"skin:196":{"minecraft:variant": { "value": 196 }},"skin:197":{"minecraft:variant": { "value": 197 }},"skin:198":{"minecraft:variant": { "value": 198 }},"skin:199":{"minecraft:variant": { "value": 199 }},"skin:200":{"minecraft:variant": { "value": 200 }},
     
+      ///////// NPC 基础属性 /////////
+      "thlmm:npc_basic":{
+        "minecraft:timer": {
+          "time": 30, "looping": true,
+          "time_down_event": { "event": "thlmm:h", "target": "self" }
+        },
+        "minecraft:interact": {
+          "interactions": [
+            {
+              "cooldown": 2.5,
+              "use_item": false,
+              "hurt_item": 1,
+              "vibration": "none",
+              "on_interact": {
+                "filters": {
+                  "all_of": [
+                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:npc_tool"},
+                    { "test": "is_sneaking", "subject": "other", "value": true }
+                  ]
+                },
+                "event": "thlm:n",
+                "target": "self"
+              }
+            }
+          ]
+        },
+        "minecraft:type_family": { "family": [ "npc", "mob" ] },
+        "minecraft:knockback_resistance": { "value": 1.0 },
+        "minecraft:damage_sensor": {
+          "triggers": [
+            {
+              "on_damage": {
+                "filters": {
+                  "all_of": [
+                    { "test": "is_family", "subject": "other", "value": "player" },
+                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:npc_tool"},
+                    { "test": "is_sneaking", "subject": "other", "value": true }
+                  ]
+                },
+                "event": "despawn",
+                "target": "self"
+              },
+              "deals_damage": false
+            },
+            {
+              "cause": "all",
+              "deals_damage": false
+            }
+          ]
+        },
+        "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
+        "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false},
+        "minecraft:physics": { "has_collision": true, "has_gravity": true, "push_towards_closest_space": false },
+        "minecraft:persistent": { },
+        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+        "minecraft:home": { },
+        "minecraft:behavior.look_at_player": { "priority": 5, "look_distance": 6.0,"probability": 0.02 },
+        "minecraft:npc": {
+          "npc_data": {
+            "portrait_offsets": {
+              "translate": [ -7, 50, 0 ],
+              "scale": [ 1.75, 1.75, 1.75 ]
+            },
+            "picker_offsets": {
+              "translate": [ 0, 20, 0 ],
+              "scale": [ 1.7, 1.7, 1.7 ]
+            },
+            "skin_list": [
+              { "variant": 0 },{ "variant": 1 },{ "variant": 2 },{ "variant": 3 },{ "variant": 4 },{ "variant": 5 },{ "variant": 6 },{ "variant": 7 },{ "variant": 8 },{ "variant": 9 },{ "variant": 10 },
+              { "variant": 11 },{ "variant": 12 },{ "variant": 13 },{ "variant": 14 },{ "variant": 15 },{ "variant": 16 },{ "variant": 17 },{ "variant": 18 },{ "variant": 19 },{ "variant": 20 },
+              { "variant": 21 },{ "variant": 22 },{ "variant": 23 },{ "variant": 24 },{ "variant": 25 },{ "variant": 26 },{ "variant": 27 },{ "variant": 28 },{ "variant": 29 },{ "variant": 30 },
+              { "variant": 31 },{ "variant": 32 },{ "variant": 33 },{ "variant": 34 },{ "variant": 35 },{ "variant": 36 },{ "variant": 37 },{ "variant": 38 },{ "variant": 39 },{ "variant": 40 },
+              { "variant": 41 },{ "variant": 42 },{ "variant": 43 },{ "variant": 44 },{ "variant": 45 },{ "variant": 46 },{ "variant": 47 },{ "variant": 48 },{ "variant": 49 },{ "variant": 50 },
+              { "variant": 51 },{ "variant": 52 },{ "variant": 53 },{ "variant": 54 },{ "variant": 55 },{ "variant": 56 },{ "variant": 57 },{ "variant": 58 },{ "variant": 59 },{ "variant": 60 },
+              { "variant": 61 },{ "variant": 62 },{ "variant": 63 },{ "variant": 64 },{ "variant": 65 },{ "variant": 66 },{ "variant": 67 },{ "variant": 68 },{ "variant": 69 },{ "variant": 70 },
+              { "variant": 71 },{ "variant": 72 },{ "variant": 73 },{ "variant": 74 },{ "variant": 75 },{ "variant": 76 },{ "variant": 77 },{ "variant": 78 },{ "variant": 79 },{ "variant": 80 },
+              { "variant": 81 },{ "variant": 82 },{ "variant": 83 },{ "variant": 84 },{ "variant": 85 },{ "variant": 86 },{ "variant": 87 },{ "variant": 88 },{ "variant": 89 },{ "variant": 90 },
+              { "variant": 91 },{ "variant": 92 },{ "variant": 93 },{ "variant": 94 },{ "variant": 95 },{ "variant": 96 },{ "variant": 97 },{ "variant": 98 },{ "variant": 99 },{ "variant": 100 },
+              { "variant": 101 },{ "variant": 102 },{ "variant": 103 },{ "variant": 104 },{ "variant": 105 },{ "variant": 106 },{ "variant": 107 },{ "variant": 108 },{ "variant": 109 },{ "variant": 110 },
+              { "variant": 111 },{ "variant": 112 },{ "variant": 113 },{ "variant": 114 },{ "variant": 115 },{ "variant": 116 },{ "variant": 117 },{ "variant": 118 },{ "variant": 119 },{ "variant": 120 },
+              { "variant": 121 },{ "variant": 122 },{ "variant": 123 },{ "variant": 124 },{ "variant": 125 },{ "variant": 126 },{ "variant": 127 },{ "variant": 128 },{ "variant": 129 },{ "variant": 130 },
+              { "variant": 131 },{ "variant": 132 },{ "variant": 133 },{ "variant": 134 },{ "variant": 135 },{ "variant": 136 },{ "variant": 137 },{ "variant": 138 },{ "variant": 139 },{ "variant": 140 },
+              { "variant": 141 },{ "variant": 142 },{ "variant": 143 },{ "variant": 144 },{ "variant": 145 },{ "variant": 146 },{ "variant": 147 },{ "variant": 148 },{ "variant": 149 },{ "variant": 150 },
+              { "variant": 151 },{ "variant": 152 },{ "variant": 153 },{ "variant": 154 },{ "variant": 155 },{ "variant": 156 },{ "variant": 157 },{ "variant": 158 },{ "variant": 159 },{ "variant": 160 },
+              { "variant": 161 },{ "variant": 162 },{ "variant": 163 },{ "variant": 164 },{ "variant": 165 },{ "variant": 166 },{ "variant": 167 },{ "variant": 168 },{ "variant": 169 },{ "variant": 170 },
+              { "variant": 171 },{ "variant": 172 },{ "variant": 173 },{ "variant": 174 },{ "variant": 175 },{ "variant": 176 },{ "variant": 177 },{ "variant": 178 },{ "variant": 179 },{ "variant": 180 },
+              { "variant": 181 },{ "variant": 182 },{ "variant": 183 },{ "variant": 184 },{ "variant": 185 },{ "variant": 186 },{ "variant": 187 },{ "variant": 188 },{ "variant": 189 },{ "variant": 190 },
+              { "variant": 191 },{ "variant": 192 },{ "variant": 193 },{ "variant": 194 },{ "variant": 195 },{ "variant": 196 },{ "variant": 197 },{ "variant": 198 },{ "variant": 199 },{ "variant": 200 }
+            ]
+          }
+        }
+      },
+
+      ///////// 手办 基础属性 /////////
+      "thlmm:sculpture_basic":{
+
+      }
     },
     "components": {
       "minecraft:variant": { "value": 0 }
@@ -612,7 +629,6 @@
           "thlmm:maid_basic",
           "thlmm:maid_wild",
           "environment:simple",
-          "sound:ambient_mute",
           "backpack:default",
           "thlmm:lv1_basic",
           "thlmm:lv1_tame",
@@ -620,7 +636,7 @@
           "sound:ambient",
           "thlmm:maid_tame"
         ]},
-        "add": { "component_groups": [ "thlmm:npc_basic" ] },
+        "add": { "component_groups": [ "sound:ambient_mute","thlmm:npc_basic" ] },
         "trigger": "thlmm:n",
         "set_property": { "thlm:work": -1 }
       },
@@ -664,9 +680,9 @@
         "run_command":{ "command": ["playsound mob.thlmm.maid.tamed @a ~~~", "particle thlm:maid_happy ~~~"]}
       },
       "api:follow_on_tame_over_backreborn":{
-        "add": { "component_groups": [ "thlmm:maid_wild" ] },
+        "add": { "component_groups": [ "thlmm:maid_wild", "thlmm:reborn" ] },
         "remove": {"component_groups": ["status:follow_on_tame"]},
-        "run_command":{ "command": ["particle minecraft:villager_angry ~~~"]}
+        "run_command":{ "command": ["particle thlm:maid_angry ~~~"]}
       },
 
       // 等级
@@ -703,20 +719,19 @@
       "api:backpack_quit_invisible":{ "set_property":{"thlm:backpack_invisible": false} },
       
       ///// 环境变化 /////
-      "environment:simple":{
-        "set_property":{"environment:status": 0}
+      "environment:temperature_mild":{ "set_property":{"environment:temperature": 0} },
+      "environment:temperature_cold":{
+        "set_property":{"environment:temperature": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.cold @a ~~~"]}
       },
-      "environment:cold":{
-        "set_property":{"environment:status": 1}
+      "environment:temperature_hot":{
+        "set_property":{"environment:temperature": 2}, "run_command":{ "command": ["playsound mob.thlmm.maid.hot @a ~~~"]}
       },
-      "environment:hot":{
-        "set_property":{"environment:status": 2}
+      "environment:weather_clear":{ "set_property":{"environment:weather": 0} },
+      "environment:weather_rain":{
+        "set_property":{"environment:weather": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.rain @a ~~~"]}
       },
-      "environment:rain":{
-        "set_property":{"environment:status": 3}
-      },
-      "environment:snow":{
-        "set_property":{"environment:status": 4}
+      "environment:weather_snow":{
+        "set_property":{"environment:weather": 2}, "run_command":{ "command": ["playsound mob.thlmm.maid.snow @a ~~~"]}
       },
       "environment:morning":{ "set_property":{"environment:daytime": 1}, "run_command":{ "command": ["playsound mob.thlmm.maid.morning @a ~~~"]}},
       "environment:night"  :{ "set_property":{"environment:daytime": 0}, "run_command":{ "command": ["playsound mob.thlmm.maid.night @a ~~~"]}},

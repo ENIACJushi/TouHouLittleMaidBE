@@ -87,7 +87,6 @@ class thlm {
                 CommandManager.scriptEvent(event);
             })
         }, {namespaces: ["thlm"]});
-
         // Player spawn
         world.afterEvents.playerSpawn.subscribe(event => {
             // 进服事件

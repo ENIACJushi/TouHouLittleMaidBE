@@ -3,7 +3,7 @@
     "minecraft:entity": {
         "description": {
             "identifier": "thlm:chunk_loader",
-            "is_spawnable": true,
+            "is_spawnable": false,
             "is_summonable": true,
             "is_experimental": false
         },

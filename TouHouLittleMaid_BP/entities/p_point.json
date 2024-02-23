@@ -17,19 +17,13 @@
         "init":{
           "minecraft:ageable": {
             "duration": 0.5,
-            "grow_up": {
-              "event": "init_over",
-              "target": "self"
-            }
+            "grow_up": { "event": "init_over", "target": "self" }
           }
         },
         "life":{
           "minecraft:ageable": {
             "duration": 180,
-            "grow_up": {
-              "event": "despawn",
-              "target": "self"
-            }
+            "grow_up": { "event": "despawn", "target": "self" }
           }
         },
         "init_over":{
@@ -38,32 +32,28 @@
           }
         },
         "scan":{
-          "minecraft:timer": {
-            "looping": true,
-            "time": 0.1,
-            "time_down_event": {
-              "event": "thlm:pps"
-            }
+          "minecraft:entity_sensor": {
+            "sensor_range": 8,
+            "relative_range": false,
+            "minimum_count": 1,
+            "maximum_count": 99,
+            "event_filters": {
+              "any_of":[
+                { "test": "distance_to_nearest_player", "subject" : "self", "operator": "<", "value" : 8}
+              ]
+            },
+            "event": "thlm:pps"
           }
         }
       },
       "components": {
-        "minecraft:collision_box": {
-          "width": 0,
-          "height": 0
-        },
+        "minecraft:collision_box": { "width": 0, "height": 0 },
         "minecraft:damage_sensor": {
           "triggers": [
             {
               "on_damage": {
                 "filters": {
-                  "all_of": [
-                    {
-                      "test": "is_family",
-                      "subject": "other",
-                      "value": "player"
-                    }
-                  ]
+                  "all_of": [ { "test": "is_family",  "subject": "other","value": "player" } ]
                 }
               },
               "deals_damage": false
@@ -89,29 +79,16 @@
             }
           ]
         },
-        "minecraft:friction_modifier":{
-          "value": 1
-        },
-        "minecraft:type_family": {
-          "family": [ "inanimate" ]
-        },
+        "minecraft:friction_modifier":{ "value": 1 },
+        "minecraft:type_family": { "family": [ "inanimate" ] },
 
-        "minecraft:health": {
-          "value": 5,
-          "max": 5
-        },
+        "minecraft:health": { "value": 5, "max": 5 },
         "minecraft:buoyant":{
           "apply_gravity": false,
           "liquid_blocks": ["minecraft:flowing_water", "minecraft:water"] 
         },
-        "minecraft:physics": {
-          "has_collision": true,
-          "push_towards_closest_space": true
-        },
-        "minecraft:pushable": {
-          "is_pushable": false,
-          "is_pushable_by_piston": true
-        },
+        "minecraft:physics": { "has_collision": true, "push_towards_closest_space": true },
+        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": true },
         "minecraft:conditional_bandwidth_optimization": {
           "default_values": {
             "max_optimized_distance": 80.0,
@@ -131,17 +108,10 @@
         },
         "scan_stop" :{ "remove": { "component_groups": [ "scan" ] } },
         "init_over":{
-          "sequence": [
-            {
-              "remove": { "component_groups": [ "init" ] },
-              "add": {
-              "component_groups": [
-                "init_over", "scan", "life"
-                ]
-              }
-            }
-            
-          ]
+          "sequence": [{
+            "remove": { "component_groups": [ "init" ] },
+            "add": { "component_groups": [ "init_over", "scan", "life" ] }
+          }]
         },
         "init_random":{
           "randomize": [

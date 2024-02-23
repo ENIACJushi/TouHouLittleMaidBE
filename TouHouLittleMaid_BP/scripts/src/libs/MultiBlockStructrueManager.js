@@ -23,7 +23,7 @@ function logger_debug(str){
 export class MultiBlockStructrueManager {
     /**
      * @param {Int[3]} size Size of structure which contains this coordinate. Example: [8, 6, 8].
-     * @param {Array} background An array of blocks as background. Expample: [{name:"minecraft:air", data: null}]
+     * @param {Array} background An array of blocks as background, set undefined for any blocks. Expample: [{name:"minecraft:air", data: null}]
      * @param {Array} blocks An array of block as main structure, including activates and deactivates status.
      *   Expample: [{ location: [2, 0, 0], deactivated:{name:"minecraft:wool", data:[{type:"color", value:"red"}]}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null}]
      */
@@ -208,7 +208,7 @@ export class MultiBlockStructrueManager {
      * @returns {boolean}
      */
     isBackground(block){
-        if(this.background != null && this.background != []){
+        if(this.background !== undefined && this.background != []){
             for(let backgroundBlock of this.background){
                 if(block.typeId == backgroundBlock.name){
                     let dataMatched = true;

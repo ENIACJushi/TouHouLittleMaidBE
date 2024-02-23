@@ -80,12 +80,13 @@ export default class PowerPoint {
         }
         for(let pl of world.getPlayers()){
             if(gohei) this.scan_gohei(pl);
-            this.scan_power_point(pl);
+            // this.scan_power_point(pl);
         }
     }
     
     /**
      * Scan power point near the player
+     * 弃用，移至数驱
      * @param {Player} pl 
      */
     static power_point_distance = 8;
@@ -99,7 +100,7 @@ export default class PowerPoint {
     
         for(let en of results){
             try{
-                if(en.getDynamicProperty("target") == undefined){
+                if(en.getDynamicProperty("target") === undefined){
                     en.triggerEvent("scan_start");
                     en.setDynamicProperty("target", pl.id);
                 }
@@ -125,13 +126,27 @@ export default class PowerPoint {
      * @param {Entity} en 
      */
     static scan_powerpoint(en){
+        // 获取目标玩家
+        let pl = undefined;
         let player_id = en.getDynamicProperty("target");
-        if(player_id===undefined) return;
-
-        let pl = world.getEntity(player_id);
-        if(pl == undefined){
+        if(player_id===undefined){
+            const results = en.dimension.getPlayers({"closest": 1});
+            if(results.length === 1){
+                pl = results[0];
+                en.setDynamicProperty("target", pl.id);
+            }
+            else{
+                return;
+            }
+        }
+        else{
+            pl = world.getEntity(player_id);
+        }
+        
+        // 设置方向
+        if(pl === undefined){
             en.setDynamicProperty("target", undefined);
-            en.triggerEvent("scan_stop");
+            // en.triggerEvent("scan_stop");
         }
         else{
             let pl_headLocation = pl.getHeadLocation();
@@ -195,14 +210,10 @@ export default class PowerPoint {
                 }
             }
             else{
-                en.triggerEvent("scan_stop");
+                // en.triggerEvent("scan_stop");
                 en.setDynamicProperty("target", undefined);
             }
         }
-        try{
-
-            }
-        catch{}
     }
     
     /**

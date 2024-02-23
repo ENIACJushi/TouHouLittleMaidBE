@@ -7,7 +7,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
     constructor(){
         super(
             [8, 6, 8],
-            [{name:"minecraft:air", data: null}],
+            undefined, // [{name:"minecraft:air", data: null}],
             [
                 // Left red wool column
                 { location: [2, 0, 0], deactivated:{name:"minecraft:red_wool", data:null}, activated:{name: "touhou_little_maid:altar_torii_block"}, data: null},

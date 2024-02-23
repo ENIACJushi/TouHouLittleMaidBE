@@ -292,6 +292,7 @@
           "variable.emote_frame=Math.max(1, Math.mod( Math.floor(query.property('thlm:emote')/1000), 1000) );",
           "variable.emote_speed=Math.max(1, Math.floor(query.property('thlm:emote')/1000000) );"
         ],
+        "should_update_bones_and_effects_offscreen": true,
         "animate": [
           "backpack_offset",
           "blink",

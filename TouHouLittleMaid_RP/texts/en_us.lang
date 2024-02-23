@@ -71,7 +71,6 @@ message.tlm.admin.set.kill.out_of_range=§cError: Invalid kill amount.§r
 ## message.touhou_little_maid:chisel.offhand_not_photo.name=Please have a photo of the maid in your offhand
 
 
-
 action.interact.camera=Photo
 action.interact.thlm.npc=Turn into NPC
 action.interact.thlm.npc_remove=Clear NPC

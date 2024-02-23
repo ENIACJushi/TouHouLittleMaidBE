@@ -241,22 +241,33 @@ export class MaidManager{
         if(lore.length === 0){
             // 首次使用
             let maid = EntityMaid.spawnRandomMaid(dimension, location);
-            EntityMaid.Skin.setRandom(maid);
-            EntityMaid.Owner.set(maid, player);
-            maid.triggerEvent("api:reborn");
+            try{
+                EntityMaid.Skin.setRandom(maid);
+                EntityMaid.Owner.set(maid, player);
+                maid.triggerEvent("api:reborn");
+            }
+            catch{}
         }
         else{
-            // 拼接lore字符串
-            let str="";
-            for(let temp of lore){ str += temp; }
-            str = Tool.loreStr2Pure(str);
+            let maid = undefined;
+            try{
+                // 拼接lore字符串
+                let str="";
+                for(let temp of lore){ str += temp; }
+                str = Tool.loreStr2Pure(str);
 
-            // 使用者不是主人
-            if(StrMaid.Owner.getId(str) !== event.source.id) return;
+                // 使用者不是主人
+                if(StrMaid.Owner.getId(str) !== event.source.id) return;
 
-            // 放置
-            let maid = EntityMaid.fromStr(str, dimension, location, true);
-            maid.triggerEvent("api:reborn");
+                // 放置
+                maid = EntityMaid.fromStr(str, dimension, location, true);
+                maid.triggerEvent("api:reborn");
+            }
+            catch{}
+            // 没有成功召唤 直接退出
+            if(maid === undefined){
+                return;
+            }
         }
         // 转换物品
         Tool.setPlayerMainHand(event.source, new ItemStack("touhou_little_maid:smart_slab_empty", 1));
