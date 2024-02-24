@@ -2,7 +2,7 @@
   "format_version": "1.12.0",
   "minecraft:entity": {
     "description": {
-      "identifier": "thlmt:feed",
+      "identifier": "thlmt:sugar_cane",
       "is_spawnable": false,
       "is_summonable": true
     },
@@ -11,13 +11,16 @@
     },
     "components": {
       "minecraft:type_family": {
-        "family": [ "thlmt:feed" ]
+        "family": [ "thlmt:sugar_cane" ]
       },
-      
+      "minecraft:ageable": {
+        "duration": 32,
+        "grow_up": { "event": "despawn", "target": "self" }
+      },
       "minecraft:damage_sensor": { 
         "triggers": [
-          { "on_damage": { "filters": { "all_of": [ { "test": "is_family", "subject": "other", "value": "maid" } ] }, "event": "thlm:t", "target": "self" }, "deals_damage": true },
-          { "on_damage": { "filters": { "none_of": [ { "test": "is_family", "subject": "other", "value": "maid" } ] } }, "deals_damage": false }
+          { "on_damage": { "filters": { "all_of": [ { "test": "is_family", "subject": "damager", "value": "maid" } ] }, "event": "despawn", "target": "self" }, "deals_damage": false },
+          { "cause": "all", "deals_damage": false}
         ]
       },
       "minecraft:collision_box": { "width": 0, "height": 0 },
@@ -27,8 +30,7 @@
       "minecraft:physics": { "has_gravity": false,"has_collision": false, "push_towards_closest_space": false }
     },
     "events": {
-      "despawn":{ "add": { "component_groups": [ "despawn" ] } },
-      "thlm:t":{}
+      "despawn":{ "add": { "component_groups": [ "despawn" ] } }
     }
   }
 }

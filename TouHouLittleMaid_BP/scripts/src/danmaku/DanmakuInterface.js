@@ -1,6 +1,7 @@
 import { Entity, EntityDamageCause, world } from "@minecraft/server";
 import { EntityMaid } from "../maid/EntityMaid";
 import { logger } from "../libs/scarletToolKit";
+import { config } from "../controller/Config";
 /**
  * 对弹幕实体的通用操作接口
  *  可用于默认弹幕和自定义弹幕
@@ -111,6 +112,7 @@ export class DanmakuInterface{
             }
             // 免伤失败，施加伤害
             let damage = danmaku.getDynamicProperty("damage");
+            if(damage === undefined) damage = config.danmaku_damage;
             if(damage !== 0){
                 if(target.applyDamage(damage, damageOptions)){
                     return true;

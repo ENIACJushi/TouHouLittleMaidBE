@@ -56,8 +56,9 @@ export function danmakuHitEntityEvent(ev){
         var danmaku = ev.projectile;
         if(danmaku===undefined || despawningDanmaku[danmaku.id]) return;
         var hit_info = ev.getEntityHit()
-        if(hit_info === null) return;
+        if(hit_info === undefined) return;
         // Tool.logger(`${danmaku.location.x}, ${danmaku.location.y}, ${danmaku.location.z}`)
+        
         // 施加伤害
         if(!DanmakuInterface.applyDamage(ev.source, danmaku, hit_info.entity))
             return;
@@ -178,7 +179,9 @@ export function gohei_transform(ev){
             
             // Create item
             let itemStack = new ItemStack(GoheiPrefix + DanmakuType.getName(GoheiSequence[index]), 1);
-            itemStack.getComponent("minecraft:enchantments").enchantments = origin_item.getComponent("minecraft:enchantments").enchantments;
+            itemStack.getComponent("minecraft:enchantable").addEnchantments(
+                origin_item.getComponent("minecraft:enchantable").getEnchantments()
+                );
             itemStack.getComponent("minecraft:durability").damage = origin_item.getComponent("minecraft:durability").damage;
             itemStack.setLore(origin_item.getLore());
             itemStack.nameTag = origin_item.nameTag;

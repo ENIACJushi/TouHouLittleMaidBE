@@ -298,7 +298,19 @@ class thlm {
                 }
             }
         });
-        
+        // Hurt Event
+        world.afterEvents.entityHitEntity.subscribe(event =>{
+            system.run(()=>{
+                let hurtId = event.hitEntity.typeId;
+                if(hurtId.substring(0, 4) === "thlm"){
+                    switch(hurtId.charAt(4)){
+                        // t: Target
+                        case "t": MaidManager.targetAcquire(event); break;
+                        default: break;
+                    }
+                }
+            });
+        });
         //// Block ////
         // Place
         world.afterEvents.playerPlaceBlock.subscribe(event=>{

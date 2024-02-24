@@ -77,7 +77,7 @@
       "item_skull5":{"set_property": { "thlm:item": 1 }},
 
       "check":{
-        "run_command": { "command": [ "execute as @s at @s unless block ~~~ touhou_little_maid:gold_microwaver run event entity @s thlmw:d" ] }
+        "queue_command": { "command": [ "execute as @s at @s unless block ~~~ touhou_little_maid:gold_microwaver run event entity @s thlmw:d" ] }
       }
     }
   }

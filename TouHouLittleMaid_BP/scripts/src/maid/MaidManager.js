@@ -9,7 +9,7 @@
  *  thlmm:<女仆id>
  *  thlmo:<主人生物id>
  */
-import { Direction, ItemStack, world, Entity, Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension } from "@minecraft/server";
+import { Direction, ItemStack, world, Entity, Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';

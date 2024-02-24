@@ -75,8 +75,7 @@
           }
         ]
       },
-
-
+      
       // AI
       "mob.thlmm.maid.death":{
         "category": "neutral",
