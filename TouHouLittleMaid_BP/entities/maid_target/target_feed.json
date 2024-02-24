@@ -2,7 +2,7 @@
   "format_version": "1.12.0",
   "minecraft:entity": {
     "description": {
-      "identifier": "touhou_little_maid:target_feed",
+      "identifier": "thlmt:feed",
       "is_spawnable": false,
       "is_summonable": true
     },
@@ -11,8 +11,9 @@
     },
     "components": {
       "minecraft:type_family": {
-        "family": [ "thlm:target_feed" ]
+        "family": [ "thlmt:feed" ]
       },
+      
       "minecraft:damage_sensor": { 
         "triggers": [
           { "on_damage": { "filters": { "all_of": [ { "test": "is_family", "subject": "other", "value": "maid" } ] }, "event": "thlm:t", "target": "self" }, "deals_damage": true },

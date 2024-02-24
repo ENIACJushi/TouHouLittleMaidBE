@@ -714,14 +714,16 @@
       "api:backpack_quit_invisible":{ "set_property":{"thlm:backpack_invisible": false} },
       
       ///// 环境变化 /////
-      "environment:temperature_mild":{ "set_property":{"environment:temperature": 0} },
-      "environment:temperature_cold":{
-        "set_property":{"environment:temperature": 1},
-        "run_command":{ "command": ["playsound mob.thlmm.maid.cold @a ~~~"]}
+      "environment:temperature_mild":{
+        "set_property":{"environment:temperature": 0}
       },
-      "environment:temperature_hot":{
-        "set_property":{"environment:temperature": 2},
+      "environment:temperature_warm":{
+        "set_property":{"environment:temperature": 1},
         "run_command":{ "command": ["playsound mob.thlmm.maid.hot @a ~~~"]}
+      },
+      "environment:temperature_cold":{
+        "set_property":{"environment:temperature": 2},
+        "run_command":{ "command": ["playsound mob.thlmm.maid.cold @a ~~~"]}
       },
 
       "environment:weather_clear":{ "set_property":{"environment:weather": 0} },
