@@ -832,7 +832,7 @@ export class EntityMaid{
             if(backpack !== undefined){
                 if(MaidBackpack.getType(backpack) === MaidBackpack.default){
                     // 爆出物品
-                    MaidBackpack.dump(backpack, backpack.location);
+                    MaidBackpack.dump(backpack, maid.location);
                 }
                 else{
                     MaidBackpack.setInvisible(backpack, false);
@@ -872,9 +872,9 @@ export class EntityMaid{
         let skin = StrMaid.Skin.get(maidStr);
         this.Skin.setPack(maid, skin.pack);
         this.Skin.setIndex(maid, skin.index);
-        // 工作模式 不再设置
+        // 工作模式 驯服成功后才会恢复
+        maid.setDynamicProperty("temp_work", StrMaid.Work.get(maidStr))
         // this.Work.set(maid, StrMaid.Work.get(maidStr));
-
         // 拾物模式
         this.Pick.set(maid, StrMaid.Pick.get(maidStr));
         // 背包是否隐藏
@@ -920,17 +920,6 @@ export class EntityMaid{
                 maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
             }, 1);
         }
-    }
-    /**
-     * 将物品的lore数组转为女仆  由照片、魂符放出的女仆不会回满血
-     * @param {string[]} lores
-     * @param {Dimension} dimension
-     * @param {Vector} location 
-     * @param {boolean} [set_health=false]
-     * @param {*} player 
-     */
-    static fromLore(lores, dimension, location, set_health=false, player=undefined){
-
     }
     /**
      * 将女仆转为物品lore

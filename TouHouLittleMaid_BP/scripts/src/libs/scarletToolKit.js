@@ -34,9 +34,14 @@ export function getRandom(min = 0, max = 1){
     if(min < max) return (min + Math.random() * (max - min));
     else return null;
 }
-
+/**
+ * 获取随机整数 两边都是闭区间
+ * @param {number} min 
+ * @param {number} max 
+ * @returns 
+ */
 export function getRandomInteger(min=0, max=1){
-    return min + Math.floor(Math.random() * max)
+    return min + Math.floor(Math.random() * (max+1))
 }
 
 export function raduis2angle(raduis){

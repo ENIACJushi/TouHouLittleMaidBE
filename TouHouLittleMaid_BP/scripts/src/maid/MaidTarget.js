@@ -22,11 +22,16 @@ class MaidTarget{
     static acquireSugarCane(target, maid){
         let block = target.dimension.getBlock(target.location);
         if(block !== undefined){
-
+            if(block.typeId === "minecraft:sugar_cane"){
+                const l = block.location;
+                block.dimension.runCommand(`setblock ${l.x} ${l.y} ${l.z} air destroy`);
+            }
         }
+        // 无论是否成功破坏甘蔗，都清除目标
+        target.triggerEvent("despawn");
     }
     /**
-     * 寻找甘蔗
+     * 寻找甘蔗 最多设置16个目标
      * @param {Dimension} dimension 
      * @param {Vector} location 
      * @param {number} range 
@@ -45,9 +50,15 @@ class MaidTarget{
         for(let x = location.x - 6; x < xMax; x++){
             for(let z = location.z - 6; z < zMax; z++){
                 let y = location.y;
-                // 滑动窗口搜索
+                // 滑动窗口搜索 s s x
                 let block = dimension.getBlock({x:x, y:y, z:z});
                 if(block.typeId === "minecraft:sugar_cane"){
+                    let downBlock = dimension.getBlock({x:x, y:y-1, z:z});
+                    if(downBlock.typeId !== "minecraft:sugar_cane"){
+                        
+                    }
+                }
+                else{
 
                 }
             }

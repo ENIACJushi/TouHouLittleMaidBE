@@ -129,8 +129,7 @@
       },
       "thlmm:maid_tame": {
         "minecraft:sittable": {},
-        "minecraft:is_tamed": {
-        },
+        "minecraft:is_tamed": {},
         "minecraft:interact": {
           "interactions": [
             {
@@ -267,12 +266,24 @@
 
       ///// 工作模式 /////
       // 战斗索敌
-      "mode:searching_attack":{
+      "mode:searching_melee_attack":{
         "minecraft:behavior.nearest_attackable_target": {
-          "priority": 6, "must_reach": true, "must_see": true,
-          "reselect_targets": true, "within_radius": 32, "scan_interval": 10,
-          "entity_types": [ { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "monster"} ] }, "max_dist": 32 } ]
+          "priority": 6, "must_see": true,
+          "reselect_targets": true, "within_radius": 16, "scan_interval": 10,
+          "entity_types": [ { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "monster"} ] }, "max_dist": 16 } ]
         },
+        "minecraft:behavior.hurt_by_target": { "priority": 3 },
+        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
+        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
+      },
+      "mode:searching_danmaku_attack":{
+        "minecraft:behavior.nearest_attackable_target": {
+          "priority": 4, "must_see": true,
+          "reselect_targets": true, "within_radius": 16, "scan_interval": 10,
+          "entity_types": [ { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "monster"} ] }, "max_dist": 16,"must_see": true } ]
+        },
+        "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 1.25 },
+        "minecraft:behavior.hurt_by_target": { "priority": 3 },
         "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
         "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
       },
@@ -293,7 +304,7 @@
       // 弹幕攻击
       "mode:danmaku_attack":{
         "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
-        "minecraft:behavior.ranged_attack": { "priority": 5, "attack_interval_min": 1.0, "attack_interval_max": 3.0, "attack_radius": 32.0 }
+        "minecraft:behavior.ranged_attack": { "priority": 5, "attack_interval_min": 0.3, "attack_interval_max": 0.3, "attack_radius": 16.0,"attack_radius_min": 5 }
       },
       // 农耕
       "mode:farm_lv1":{
@@ -328,7 +339,7 @@
       },
 
       ///// 背包类别 /////
-      "backpack:default":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": true} },
+      "backpack:default":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "restrict_to_owner": true} },
       "backpack:small":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 12, "private": true} },
       "backpack:middle":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 24, "private": true} },
       "backpack:big":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 36, "private": true} },
@@ -694,12 +705,12 @@
       // 工作模式
       "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}, "set_property":{"thlm:work": 0}}]},
       "api:mode_quit_idle":  {"sequence": [{"remove": {"component_groups": ["mode:idle"]}}]},
-      "api:mode_attack_lv1"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv1", "mode:searching_attack"]}, "set_property":{"thlm:work": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
-      "api:mode_quit_attack_lv1":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv1", "mode:searching_attack"]}}]},
-      "api:mode_attack_lv2"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv2", "mode:searching_attack"]}, "set_property":{"thlm:work": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
-      "api:mode_quit_attack_lv2":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv2", "mode:searching_attack"]}}]},
-      "api:mode_danmaku_attack"       :{"sequence": [{"add"   : {"component_groups": ["mode:danmaku_attack", "mode:searching_attack"]}, "set_property":{"thlm:work": 2}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
-      "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack", "mode:searching_attack"]}}]},
+      "api:mode_attack_lv1"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv1", "mode:searching_melee_attack"]}, "set_property":{"thlm:work": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
+      "api:mode_quit_attack_lv1":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv1", "mode:searching_melee_attack"]}}]},
+      "api:mode_attack_lv2"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv2", "mode:searching_melee_attack"]}, "set_property":{"thlm:work": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
+      "api:mode_quit_attack_lv2":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv2", "mode:searching_melee_attack"]}}]},
+      "api:mode_danmaku_attack"       :{"sequence": [{"add"   : {"component_groups": ["mode:danmaku_attack", "mode:searching_danmaku_attack"]}, "set_property":{"thlm:work": 2}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
+      "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack", "mode:searching_danmaku_attack"]}}]},
       "api:mode_sugar_cane"          :  {"sequence": [{"add"   : {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 3}}]},
       "api:mode_quit_sugar_cane"     :  {"sequence": [{"remove": {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 3}}]},
 

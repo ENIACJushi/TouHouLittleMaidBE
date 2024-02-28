@@ -35,6 +35,7 @@ export class DanmakuShoot{
         this.gravity    = 0.2;
         this.velocity   = 0.6;
         this.inaccuracy = 0;
+        this.lifeTime   = 0;
 
         // Fan Shaped
         this.yawTotal = 3;
@@ -102,6 +103,7 @@ export class DanmakuShoot{
         let danmaku = new EntityDanmaku(this.world, this.thrower)
                 .setDamage(this.damage).setGravityVelocity(this.gravity)
                 .setDanmakuType(this.type).setColor(this.color);
+        danmaku.setLifeTime(this.lifeTime)
         // 设置主人
         if(this.ownerID!==undefined){ danmaku.setOwnerID(this.ownerID); }
         
@@ -121,6 +123,9 @@ export class DanmakuShoot{
         let danmaku = new EntityDanmaku(this.world, this.thrower)
                 .setDamage(this.damage).setGravityVelocity(this.gravity)
                 .setDanmakuType(this.type).setColor(this.color);
+        
+        danmaku.setLifeTime(this.lifeTime);
+
         // 设置主人
         if(this.ownerID!==undefined){ danmaku.setOwnerID(this.ownerID); }
         let v = this.calculateVelocity(danmaku);
@@ -148,7 +153,6 @@ export class DanmakuShoot{
                     v[2]/v[0]]
             }
         }
-        
         yawAxis = Vec.normalize(yawAxis)
         
         // 绕发射向量旋转旋转向量
@@ -346,6 +350,14 @@ export class DanmakuShoot{
      */
     setOwnerID(id){
         this.ownerID=id;
+        return this;
+    }
+    /**
+     * 设置弹幕留存时间
+     * @param {number} tick 
+     */
+    setLifeTime(tick){
+        this.lifeTime = tick;
         return this;
     }
 }

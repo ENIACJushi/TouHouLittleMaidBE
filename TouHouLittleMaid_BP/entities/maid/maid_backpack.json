@@ -26,7 +26,7 @@
       },
       "type:default":{
         "minecraft:variant": {"value": 0},
-        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": false}
+        "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "restrict_to_owner": true}
       },
       "type:default_private":{
         "minecraft:is_sheared": {},
@@ -36,7 +36,7 @@
 
       "type:small":{
         "minecraft:variant": {"value": 1},
-        "minecraft:inventory":{"container_type": "inventory", "inventory_size": 12, "private": false}
+        "minecraft:inventory":{"container_type": "inventory", "inventory_size": 12, "restrict_to_owner": true}
       },
       "type:small_private":{
         "minecraft:is_sheared": {},
@@ -46,7 +46,7 @@
 
       "type:middle":{
         "minecraft:variant": {"value": 2},
-        "minecraft:inventory":{"container_type": "inventory", "inventory_size": 24, "private": false}
+        "minecraft:inventory":{"container_type": "inventory", "inventory_size": 24, "restrict_to_owner": true}
       },
       "type:middle_private":{
         "minecraft:is_sheared": {},
@@ -56,7 +56,7 @@
 
       "type:big":{
         "minecraft:variant": {"value": 3},
-        "minecraft:inventory":{"container_type": "inventory", "inventory_size": 36, "private": false }
+        "minecraft:inventory":{"container_type": "inventory", "inventory_size": 36, "restrict_to_owner": true }
       },
       "type:big_private":{
         "minecraft:is_sheared": {},
@@ -93,6 +93,9 @@
       }
     },
     "components": {
+      "minecraft:tameable": {
+        "probability": 1
+      },
       "minecraft:nameable": {
         "always_show": false,
         "allow_name_tag_renaming": false
@@ -156,7 +159,7 @@
       "thlmb:t1": {},
       "thlmb:t2": {},
       "thlmb:t3": {},
-
+      
       "api:default": { "add": { "component_groups": [ "type:default" ] } },
       "api:small"  : { "add": { "component_groups": [ "type:small" ] } },
       "api:middle" : { "add": { "component_groups": [ "type:middle" ] } },

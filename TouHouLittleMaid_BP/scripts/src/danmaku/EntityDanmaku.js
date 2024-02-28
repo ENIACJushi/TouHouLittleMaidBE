@@ -183,8 +183,10 @@ export class EntityDanmaku{
         // Ticks existed
         if(this.ticks_existed > 0){
             system.runTimeout(()=>{
-                danmaku.triggerEvent("despawn");
-            }, this.ticks_existed)
+                try{
+                    danmaku.triggerEvent("despawn");
+                }catch{}
+            }, this.ticks_existed);
         }
     }
 
@@ -273,7 +275,7 @@ export class EntityDanmaku{
      * 设置弹幕的留存时间
      * @param {number} tick 
      */
-    setTicksExisted(tick){
+    setLifeTime(tick){
         this.ticks_existed = tick;
         return this;
     }

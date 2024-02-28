@@ -208,15 +208,22 @@ export class MaidManager{
         
         // 放置
         let maid = EntityMaid.fromStr(strPure, dimension, location, true);
-        
         maid.triggerEvent("api:reborn");
         
         // 消耗照片
         Tool.setPlayerMainHand(event.source);
-        // 给予玩家一个苹果
-        let apple = new ItemStack("minecraft:apple", 1);
-        apple.nameTag="§cApple!"
-        event.source.dimension.spawnItem(apple, event.source.location);
+        
+        // 如果最近的玩家是主人，直接设置主人
+        let closestPlayer = dimension.getPlayers({"closest":1, "location": location})[0];
+        if(closestPlayer.id === player.id){
+            maid.getComponent("tameable").tame();
+        }
+        // 否则给予玩家一个苹果，自己驯服
+        else{
+            let apple = new ItemStack("minecraft:apple", 1);
+            apple.nameTag="§cApple!"
+            event.source.dimension.spawnItem(apple, event.source.location);
+        }
     }
     /**
      * 魂符使用事件
@@ -238,9 +245,10 @@ export class MaidManager{
         location.z+=0.5;
 
         // 生成女仆
+        let maid = undefined;
         if(lore.length === 0){
             // 首次使用
-            let maid = EntityMaid.spawnRandomMaid(dimension, location);
+            maid = EntityMaid.spawnRandomMaid(dimension, location);
             try{
                 EntityMaid.Skin.setRandom(maid);
                 EntityMaid.Owner.set(maid, player);
@@ -249,7 +257,6 @@ export class MaidManager{
             catch{}
         }
         else{
-            let maid = undefined;
             try{
                 // 拼接lore字符串
                 let str="";
@@ -262,20 +269,26 @@ export class MaidManager{
                 // 放置
                 maid = EntityMaid.fromStr(str, dimension, location, true);
                 maid.triggerEvent("api:reborn");
+                maid.getComponent("tameable").tame()
             }
             catch{}
-            // 没有成功召唤 直接退出
-            if(maid === undefined){
-                return;
-            }
         }
+        // 没有成功召唤 直接退出
+        if(maid === undefined){ return; }
         // 转换物品
         Tool.setPlayerMainHand(event.source, new ItemStack("touhou_little_maid:smart_slab_empty", 1));
-
-        // 给予玩家一个苹果
-        let apple = new ItemStack("minecraft:apple", 1);
-        apple.nameTag="§cApple!"
-        event.source.dimension.spawnItem(apple, event.source.location);
+        
+        // 如果最近的玩家是主人，直接设置主人
+        let closestPlayer = dimension.getPlayers({"closest":1, "location": location})[0];
+        if(closestPlayer.id === player.id){
+            maid.getComponent("tameable").tame();
+        }
+        // 否则给予玩家一个苹果，自己驯服
+        else{
+            let apple = new ItemStack("minecraft:apple", 1);
+            apple.nameTag="§cApple!"
+            event.source.dimension.spawnItem(apple, event.source.location);
+        }
     }
     /**
      * 女仆驯服寻主事件
@@ -289,12 +302,16 @@ export class MaidManager{
             maxDistance:2,
             location:event.entity.location
         })
-        if(results.length == 1){
+        if(results.length === 1){
             let maid = event.entity;
             let player = results[0];
             // 寻主成功
             if(EntityMaid.Owner.getID(maid)===undefined || EntityMaid.Owner.getID(maid)===results[0].id){
+                // 设置背包主人 因为有可能还没召唤出来，尝试多次直到背包生成
                 let backpack = EntityMaid.Backpack.getEntity(event.entity);
+                if(backpack===undefined) return;
+
+                backpack.getComponent("tameable").tame();
                 // 添加组件
                 maid.triggerEvent("api:follow_on_tame_over");
                 EntityMaid.Level.eventTamed(maid);
@@ -303,10 +320,21 @@ export class MaidManager{
                 EntityMaid.Owner.setID(maid, player.id);
                 EntityMaid.Owner.setName(maid, player.name);
                 MaidBackpack.setOwnerID(backpack, player.id);
+                
+                // 设置工作模式
+                let work = maid.getDynamicProperty("temp_work");
+                if(work !== undefined){
+                    EntityMaid.Work.set(maid, work);
+                    maid.setDynamicProperty("temp_work")
+                }
             }
             // 跟随到的主人与记录不符 回到未驯服状态
             else{
                 maid.triggerEvent("api:follow_on_tame_over_backreborn");
+                // 返还一个苹果
+                let apple = new ItemStack("minecraft:apple", 1);
+                apple.nameTag="§cApple!"
+                player.dimension.spawnItem(apple, player.location);
             }
         }
     }
@@ -390,12 +418,22 @@ export class MaidManager{
      * @param {DataDrivenEntityTriggerBeforeEvent} event 
      */
     static timerEvent(event){
+        const STEP_MAX = 1000;
         let maid = event.entity; 
         if(maid===undefined) return;
         try{
-            // 2步一次回血
+            // 步数计算 一步3秒
             let healStep = maid.getDynamicProperty("heal_step");
-            if(healStep >= 1){
+            if(healStep >= STEP_MAX){
+                maid.setDynamicProperty("heal_step", 0);
+            }
+            else{
+                maid.setDynamicProperty("heal_step", healStep+1);
+            }
+
+            // 取模决定执行任务
+            // 3步一回血
+            if(healStep % 3 === 0){
                 let healthComponent = EntityMaid.Health.getComponent(maid);
                 if(healthComponent.currentValue < healthComponent.defaultValue){
                     // 回血
@@ -404,11 +442,8 @@ export class MaidManager{
                         Math.min(healthComponent.defaultValue,
                         healthComponent.currentValue + Tool.getRandomInteger(healAmount[0], healAmount[1])));
                 }
-                maid.setDynamicProperty("heal_step", 0);
             }
-            else{
-                maid.setDynamicProperty("heal_step", healStep+1);
-            }
+            
         }
         catch{ }
         
@@ -497,21 +532,77 @@ export class MaidManager{
             let distanceFactor = distance / 8;
             let yOffset = distance < 5 ? 0.2 : 0.5; // 根据距离偏移目标位置
 
-            if (Math.random() <= AIMED_SHOT_PROBABILITY) {
-                DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
+            // 攻击方式确定
+            let monsters = maid.dimension.getEntities({"location": maid.location, "families":["monster"], "maxDistance":20});
+            // 群攻
+            if(monsters.length > 4){
+                const amount = 3;
+                const delta = 0.8;// 伤害系数
+                let random = Tool.getRandomInteger(0, 1);
+                switch(random){
+                    case 0:{
+                        // 中程密集扇形弹幕
+                        let shoot = DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
+                        .setOwnerID(EntityMaid.Owner.getID(maid))
+                        .setRandomColor().setRandomType()
+                        .setDamage((distanceFactor + basicDamage + 0.5)*(config["maid_damage"]/100)*delta/amount).setGravity(0)
+                        .setVelocity(0.5 * (distanceFactor + 1))
+                        .setInaccuracy(0.02).setFanNum(12).setYawTotal(Math.PI/2).setLifeTime(30)
+                        for(let i = 0; i < amount; i++){
+                        system.runTimeout(()=>{
+                            shoot.setTarget(maid.target)
+                            .setRandomColor().setRandomType().fanShapedShot();
+                        }, i*20);
+                        }
+                    }; break;
+                    case 1:{
+                        // 星弹
+                        var aimDanmakuShoot_small = DanmakuShoot.create().setWorld(maid.dimension)
+                        .setThrower(maid).setTarget(maid.target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
+                        .setColor(DanmakuColor.RANDOM).setType(DanmakuType.STAR)
+                        .setDamage((distanceFactor + basicDamage + 0.5)*(config["maid_damage"]/100)*delta/18).setGravity(0).setLifeTime(40)
+                        .setVelocity(0.5 * (distanceFactor + 1)).setInaccuracy(Math.PI/7);
+                        
+                        var aimDanmakuShoot_big =DanmakuShoot.create().setWorld(maid.dimension)
+                        .setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0]).setLifeTime(45)
+                        .setColor(DanmakuColor.RANDOM).setType(DanmakuType.BIG_STAR)
+                        .setDamage((distanceFactor + basicDamage + 0.5)*(config["maid_damage"]/100)*delta/10).setGravity(0)
+                        .setVelocity(0.5 * (distanceFactor + 1)).setInaccuracy(Math.PI/15);
+                        for(let i=0; i<5;i++){
+                            system.runTimeout(()=>{
+                                aimDanmakuShoot_big.setTarget(maid.target).setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                            }, i*8);
+                            system.runTimeout(()=>{
+                                aimDanmakuShoot_small.setTarget(maid.target).setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                            }, 1+i*8);
+                            system.runTimeout(()=>{
+                                aimDanmakuShoot_small.setTarget(maid.target).setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                            }, 2+i*8);
+                            system.runTimeout(()=>{
+                                aimDanmakuShoot_big.setTarget(maid.target).setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                            }, 3+i*8);
+                            system.runTimeout(()=>{
+                                aimDanmakuShoot_small.setTarget(maid.target).setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                            }, 4+i*8);
+                        }
+                    }; break;
+                    default:break;
+                }
+            }
+            // 单体
+            else{
+                const amount = 4;
+                let shoot = DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
                     .setOwnerID(EntityMaid.Owner.getID(maid))
-                    .setTarget(maid.target).setRandomColor().setRandomType()
-                    .setDamage((distanceFactor + basicDamage)*(config["maid_damage"]/100)).setGravity(0)
+                    .setDamage((distanceFactor + basicDamage)*(config["maid_damage"]/100)/amount).setGravity(0)
                     .setVelocity(0.5 * (distanceFactor + 1))
-                    .setInaccuracy(0.05).aimedShot();
-            } else {
-                DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
-                    .setOwnerID(EntityMaid.Owner.getID(maid))
-                    .setTarget(maid.target).setRandomColor().setRandomType()
-                    .setDamage((distanceFactor + basicDamage + 0.5)*(config["maid_damage"]/100)).setGravity(0)
-                    .setVelocity(0.5 * (distanceFactor + 1))
-                    .setInaccuracy(0.02).setFanNum(3).setYawTotal(Math.PI / 6)
-                    .fanShapedShot();
+                    .setInaccuracy(0.05);
+                
+                for(let i = 0; i < amount; i++){
+                    system.runTimeout(()=>{
+                        shoot.setTarget(maid.target).setRandomColor().setRandomType().aimedShot();
+                    }, i*12);
+                }
             }
         }
     }
