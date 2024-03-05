@@ -8,22 +8,14 @@
 				"texture": "textures/particle/cherry_petal_atlas"
 			}
 		},
-		"curves": {
-			"variable.distance2": {
-				"type": "linear",
-				"input": "v.particle_age",
-				"horizontal_range": "v.particle_lifetime",
-				"nodes": [0, 0.5, 1]
-			}
-		},
 		"components": {
 			"minecraft:emitter_initialization": {
-				"creation_expression": "v.distance=-1;v.direction_x=1;v.direction_y=0;v.direction_z=0;v.length=10;",
+				"creation_expression": "v.distance=-1;v.direction_x=0.5;v.direction_y=0.2;v.direction_z=0.5;v.length=50;",
 				"per_update_expression": "v.distance=v.distance+1;"
 			},
 			"minecraft:emitter_rate_steady": {
-				"spawn_rate": 100,
-				"max_particles": 100
+				"spawn_rate": 50,
+				"max_particles": 50
 			},
 			"minecraft:emitter_lifetime_expression": {
 				"activation_expression": "v.distance!=-1",
@@ -33,9 +25,9 @@
 				"offset": ["v.direction_x*v.distance", "v.direction_y*v.distance", "v.direction_z*v.distance"]
 			},
 			"minecraft:particle_lifetime_expression": {
-				"max_lifetime": "math.random(0.5,1)"
+				"max_lifetime": 1
 			},
-			"minecraft:particle_initial_speed": 0,
+			"minecraft:particle_initial_speed": 3,
 			"minecraft:particle_motion_dynamic": {},
 			"minecraft:particle_appearance_billboard": {
 				"size": ["v.particle_random_1 > 0.5 ? 0.05 : 0.075", "v.particle_random_1 > 0.5 ? 0.05 : 0.075"],

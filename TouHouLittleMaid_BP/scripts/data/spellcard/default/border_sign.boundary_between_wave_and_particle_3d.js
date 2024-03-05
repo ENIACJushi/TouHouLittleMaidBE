@@ -55,7 +55,7 @@ export const SpellCard = {
         var d = 0.0;
         // danmaku.setMotion(v);
         // danmaku.setPosition(pos);
-        // danmaku.setTicksExisted(100);
+        // danmaku.setLifeTime(100);
         var danmaku = new Danmaku(world, shooter).setDamage(2).
             setDanmakuType(Type.PELLET).setColor(Color.MAGENTA).
             setThrowerLocation([shooter.location.x, shooter.location.y + 1, shooter.location.z]); // setThrowerOffset([0,1,0]);

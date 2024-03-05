@@ -616,6 +616,7 @@ export class EntityMaid{
             let y = location.y;
             let z = location.z;
             let dim = maid.getDynamicProperty("home_dim");
+            if(location === undefined || dim === undefined) return undefined;
             if(x===0 && y===0 && z===0 && dim===0) return undefined;
             return [x, y, z, Tool.dim_int2string(maid.getDynamicProperty("home_dim"))];
         }

@@ -1,4 +1,4 @@
-import { world, system } from "@minecraft/server"
+import { world, system, MolangVariableMap } from "@minecraft/server"
 import { altarStructure } from "./src/altar/AltarStructureHelper";
 import experiment from "./experiment"
 import PowerPoint from "./src/altar/PowerPoint"
@@ -78,7 +78,7 @@ class thlm {
                 
         });
         }
-        
+
         //// Player ////
         // Script Event
         system.afterEvents.scriptEventReceive.subscribe(event => {
@@ -283,9 +283,6 @@ class thlm {
                     
                 }
                 else{
-                    if(event.id === "minecraft:entity_born"){
-                        Tool.logger("born");
-                    }
                 }
             });
         });

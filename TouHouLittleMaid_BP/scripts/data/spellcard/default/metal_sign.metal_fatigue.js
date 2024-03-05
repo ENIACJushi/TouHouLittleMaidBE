@@ -29,7 +29,7 @@ export const SpellCard = {
             var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset([0,0.8,0])
                 .setDanmakuType(Type.BIG_BALL).setColor(Color.YELLOW);
             let direction = rotate_axis([0,0,1], [0,-1,0], Tool.angle2raduis(entity.getRotation().y + 15 + 45 * j));
-            danmaku.setTicksExisted(31);
+            danmaku.setLifeTime(31);
             danmaku.shoot(direction[0], direction[1], direction[2], 0.2, 0);
         }
 
@@ -54,7 +54,7 @@ export const SpellCard = {
                     var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset([0,0.8,0])
                         .setDanmakuType(Type.BIG_BALL).setColor(Color.YELLOW);
                     let direction = rotate_axis([0,0,1], [0,-1,0], Tool.angle2raduis(entity.getRotation().y + 30 + 45 * j));
-                    danmaku.setTicksExisted(31);
+                    danmaku.setLifeTime(31);
                     danmaku.shoot(direction[0], direction[1], direction[2], 0.2, 0);
                 }
             }, 20 * (k + 1));
