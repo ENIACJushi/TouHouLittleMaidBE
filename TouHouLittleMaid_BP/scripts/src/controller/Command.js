@@ -17,6 +17,7 @@ export class CommandManager{
             case "thlm:skin_set": this.setSkin(event); break;
             case "thlm:config"  : this.config(event) ; break;
             case "thlm:admin"   : this.admin(event)  ; break;
+            case "thlm:test"    : this.test(event)   ; break;
             default: break;
         }
     }
@@ -247,5 +248,28 @@ export class CommandManager{
                 }
             }; break;
         }
+    }
+    /**
+     * 测试函数
+     * @param {ScriptEventCommandMessageAfterEvent} event
+     */
+    static test(event){
+
+        // 获取一个最近的女仆
+        let source = event.sourceEntity;
+        if(source === undefined || source.typeId !== "minecraft:player") return;
+
+        let maid = source.dimension.getEntities({"location": source.location, "type": "thlmm:maid", "closest": 1})[0];
+        if(maid===undefined){
+            source.sendMessage({rawtext:[{translate: "message.tlm.admin.maid.not_found"}]});
+            return;
+        }
+
+        // 清空动态属性
+        maid.setDynamicProperty("home");
+        maid.setDynamicProperty("home_dim");
+        maid.setDynamicProperty("level");
+        maid.setDynamicProperty("kill");
+        maid.setDynamicProperty("pick");
     }
 }

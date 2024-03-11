@@ -5,6 +5,8 @@ import { config } from "../controller/Config"
 import { StrMaid } from "./StrMaid";
 import { emote } from "../../data/emote";
 import { MaidSkin } from "./MaidSkin";
+import * as Tag from '../libs/TagDataInterface'
+import * as DP from '../libs/DynamicPropertyInterface'
 
 export class EntityMaid{
     /**
@@ -54,13 +56,15 @@ export class EntityMaid{
      * @param {Entity} maid 
      */
     static initDynamicProperties(maid){
-        if(maid.getDynamicProperty("heal_step") === undefined) maid.setDynamicProperty("heal_step", 0);
-        if(maid.getDynamicProperty("home")      === undefined) maid.setDynamicProperty("home"     , {x:0, y:0, z:0});
-        if(maid.getDynamicProperty("home_dim")  === undefined) maid.setDynamicProperty("home_dim" , 0);
-        if(maid.getDynamicProperty("temp_pick") === undefined) maid.setDynamicProperty("temp_pick", false);
-        if(maid.getDynamicProperty("level")     === undefined) maid.setDynamicProperty("level"    , 1);
-        if(maid.getDynamicProperty("kill")      === undefined) maid.setDynamicProperty("kill"     , 0);
-        if(maid.getDynamicProperty("pick")      === undefined) maid.setDynamicProperty("pick"     , false);
+        // 可以丢失的量 仅用动态属性存储
+        // if(maid.getDynamicProperty("temp_pick") === undefined) maid.setDynamicProperty("temp_pick", false);
+
+        // 有持久化存储需求的变量 使用标签辅助存储
+        if(DP.getVector (maid, "home")     === undefined) DP.setVector (maid, "home"     , {x:0, y:0, z:0});
+        if(DP.getInt    (maid, "home_dim") === undefined) DP.setInt    (maid, "home_dim" , 0);
+        if(DP.getInt    (maid, "level")    === undefined) DP.setInt    (maid, "level"    , 1);
+        if(DP.getInt    (maid, "kill")     === undefined) DP.setInt    (maid, "kill"     , 0);
+        if(DP.getBoolean(maid, "pick")     === undefined) DP.setBoolean(maid, "pick"    , false);
     }
     // 等级
     static Level = {
@@ -93,7 +97,7 @@ export class EntityMaid{
          * @returns {number}
          */
         get(maid){
-            return maid.getDynamicProperty("level");
+            return DP.getInt(maid, "level")
         },
         /**
          * 获取等级字符串
@@ -124,7 +128,7 @@ export class EntityMaid{
                 }
             },1)
             
-            maid.setDynamicProperty("level", level);
+            DP.setInt(maid, "level");
         },
         /**
          * 触发基础事件
@@ -168,7 +172,7 @@ export class EntityMaid{
          * @returns {string|undefined}
          */
         getID(maid){
-            return Tool.getTagData(maid, "thlmo:");
+            return Tag.get(maid, "thlmo:");
         },
         /**
          * 设置主人ID
@@ -176,8 +180,8 @@ export class EntityMaid{
          * @param {string} id 
          */
         setID(maid, id){
-            Tool.delTagData(maid, "thlmo:");
-            Tool.setTagData(maid, "thlmo:", id);
+            Tag.del(maid, "thlmo:")
+            Tag.set(maid, "thlmo:", id);
         },
         /**
          * 获取主人名称
@@ -185,7 +189,7 @@ export class EntityMaid{
          * @returns {string|undefined}
          */
         getName(maid){
-            return Tool.getTagData(maid, "thlmn:");
+            return Tag.get(maid, "thlmn:");
         },
         /**
          * 设置主人名称
@@ -193,8 +197,8 @@ export class EntityMaid{
          * @param {string} name 
          */
         setName(maid, name){
-            Tool.delTagData(maid, "thlmn:");
-            Tool.setTagData(maid, "thlmn:", name);
+            Tag.del(maid, "thlmn:");
+            Tag.set(maid, "thlmn:", name);
         },
         /**
          * 获取主人实体
@@ -306,7 +310,9 @@ export class EntityMaid{
          * @returns {number}
          */
         get(maid){
-            return maid.getDynamicProperty("kill");
+            let result = DP.getInt(maid, "kill");
+            if(result===undefined) return 0;
+            return result;
         },
         /**
          * 设置杀敌数
@@ -314,7 +320,7 @@ export class EntityMaid{
          * @param {number} amount
          */
         set(maid, amount){
-            maid.setDynamicProperty("kill", amount);
+            DP.setInt(maid, "kill", amount);
         }
     }
     // 皮肤
@@ -371,7 +377,7 @@ export class EntityMaid{
          */
         set(maid, value){
             maid.triggerEvent(value?"api:mode_pick":"api:mode_quit_pick");
-            maid.setDynamicProperty("pick", value);
+            DP.setBoolean(maid, "pick", value);
         },
         switchMode(maid){
             this.set(maid, !this.get(maid));
@@ -382,7 +388,7 @@ export class EntityMaid{
          * @returns {boolean}
          */
         get(maid){
-            return maid.getDynamicProperty("pick");
+            return DP.getBoolean(maid, "pick");
         },
         getImg(is_open){
             return is_open?"textures/gui/pick_activate.png":"textures/gui/pick_deactivate.png"
@@ -594,12 +600,8 @@ export class EntityMaid{
          */
         setLocation(maid){
             let l = maid.location;
-            maid.setDynamicProperty("home", {x: l.x, y:l.y, z:l.z}); // {x: Math.ceil(l.x), y:Math.ceil(l.y), z:Math.ceil(l.z)}
-            maid.setDynamicProperty("home_dim", Tool.dim_string2int(maid.dimension.id));
-            // maid.setProperty("thlm:home_x", Math.ceil(l.x));
-            // maid.setProperty("thlm:home_y", Math.ceil(l.y));
-            // maid.setProperty("thlm:home_z", Math.ceil(l.z));
-            // maid.setProperty("thlm:home_dim", Tool.dim_string2int(maid.dimension.id));
+            DP.setVector(maid, "home", {x: l.x, y:l.y, z:l.z});
+            DP.setInt(maid, "home_dim", Tool.dim_string2int(maid.dimension.id))
         },
         /**
          * 获取家的位置
@@ -607,21 +609,20 @@ export class EntityMaid{
          * @returns {number[]|undefined}
          */
         getLocation(maid){
-            // let x = maid.getProperty("thlm:home_x");
-            // let y = maid.getProperty("thlm:home_y")
-            // let z = maid.getProperty("thlm:home_z");
-            // let dim = maid.getProperty("thlm:home_dim");
-            let location = maid.getDynamicProperty("home");
+            let location = DP.getVector(maid, "home");
+            if(location === undefined) return undefined;
+
+            let dim = DP.getInt(maid, "home_dim");
+            if(dim === undefined) return undefined;
+
             let x = location.x;
             let y = location.y;
             let z = location.z;
-            let dim = maid.getDynamicProperty("home_dim");
-            if(location === undefined || dim === undefined) return undefined;
             if(x===0 && y===0 && z===0 && dim===0) return undefined;
-            return [x, y, z, Tool.dim_int2string(maid.getDynamicProperty("home_dim"))];
+            return [x, y, z, Tool.dim_int2string(dim)];
         }
     }    
-    // 背包 只记录是否可见
+    // 背包
     static Backpack = {
         /**
          * 获取背包ID
@@ -629,7 +630,7 @@ export class EntityMaid{
          * @returns {string|undefined}
          */
         getID(maid){
-            return Tool.getTagData(maid, "thlmb:");
+            return Tag.get(maid, "thlmb:");
         },
         /**
          * 设置背包id
@@ -637,8 +638,8 @@ export class EntityMaid{
          * @param {string} id 
          */
         setID(maid, id){
-            Tool.delTagData(maid, "thlmb:");
-            Tool.setTagData(maid, "thlmb:", id);
+            Tag.del(maid, "thlmb:");
+            Tag.set(maid, "thlmb:", id);
         },
 
         /**

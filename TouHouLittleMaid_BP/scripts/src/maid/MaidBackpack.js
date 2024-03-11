@@ -2,6 +2,7 @@ import { system, Entity,world,Vector,Dimension,Container, ItemStack } from "@min
 import { config } from "../controller/Config"
 import * as Tool from "../libs/scarletToolKit"
 import { EntityMaid } from "./EntityMaid";
+import * as Tag from "../libs/TagDataInterface"
 
 export class MaidBackpack{
     static default = 0;
@@ -174,7 +175,7 @@ export class MaidBackpack{
      * @returns {string|undefined}
      */
     static getOwnerID(backpack){
-        return Tool.getTagData(backpack, "thlmo:");
+        return Tag.get(backpack, "thlmo:");
     }
     /**
      * 获取女仆生物id
@@ -182,7 +183,7 @@ export class MaidBackpack{
      * @returns {string|undefined}
      */
     static getMaidID(backpack){
-        return Tool.getTagData(backpack, "thlmm:");
+        return Tag.get(backpack, "thlmm:");
     }
     /**
      * 获取女仆实体
@@ -309,7 +310,7 @@ export class MaidBackpack{
      * @param {string} id 
      */
     static setOwnerID(backpack, id){
-        Tool.setTagData(backpack, "thlmo:", id);
+        Tag.set(backpack, "thlmo:", id);
     }
     /**
      * 设置女仆ID
@@ -317,6 +318,6 @@ export class MaidBackpack{
      * @param {string} id 
      */
     static setMaidID(backpack, id){
-        Tool.setTagData(backpack, "thlmm:", id);
+        Tag.set(backpack, "thlmm:", id);
     }
 }

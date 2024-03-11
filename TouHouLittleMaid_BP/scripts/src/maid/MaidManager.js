@@ -20,6 +20,7 @@ import * as Vec from "../libs/vector3d"
 import {DanmakuShoot}  from "../danmaku/DanmakuShoot";
 import {DanmakuColor}  from "../danmaku/DanmakuColor";
 import {DanmakuType}   from "../danmaku/DanmakuType";
+import { shoot as cherryShoot } from "../danmaku/custom/Cherry";
 
 const HOME_RADIUS=32;
 
@@ -374,7 +375,7 @@ export class MaidManager{
                 home_location[0] + homeRadius, home_location[2] + homeRadius);
         }
         // 维度不同或超出范围，回家
-        world.getDimension(home_location[3])
+        world.getDimension(home_location[3]);
         if(!in_home){
             maid.teleport(new Vector(home_location[0], home_location[1], home_location[2]),
             {"dimension": world.getDimension(home_location[3])});
@@ -423,12 +424,19 @@ export class MaidManager{
         if(maid===undefined) return;
         try{
             // 步数计算 一步3秒
-            let healStep = maid.getDynamicProperty("heal_step");
+            let healStep = maid.getDynamicProperty("step");
+
+            // 计时量未初始化 立即初始化
+            if(healStep === undefined){
+                maid.setDynamicProperty("step", 0);
+                return;
+            }
+
             if(healStep >= STEP_MAX){
-                maid.setDynamicProperty("heal_step", 0);
+                maid.setDynamicProperty("step", 0);
             }
             else{
-                maid.setDynamicProperty("heal_step", healStep+1);
+                maid.setDynamicProperty("step", healStep+1);
             }
 
             // 取模决定执行任务
@@ -523,16 +531,29 @@ export class MaidManager{
 
         let target = maid.target
         if(target != undefined){
+            let basicDamage = EntityMaid.Level.getProperty(maid, "danmaku");
+
+            // 目标为幻翼时，使用樱花束攻击
+            if(target.typeId === "minecraft:phantom"){// 无效：target.getComponent("minecraft:can_fly") !== undefined
+                let location = maid.getHeadLocation()
+                let direction = new Vector(target.location.x - location.x,
+                    target.location.y - location.y,
+                    target.location.z - location.z)
+                let centerDamage = basicDamage*(config["maid_damage"]/100);
+                cherryShoot(maid, location, direction, centerDamage, centerDamage/3, 1);
+                return;
+            }
+
+            // 默认攻击方式
             let distance = Vec.length([
                 maid.location.x - maid.target.location.x,
                 maid.location.y - maid.target.location.y,
                 maid.location.z - maid.target.location.z,
             ]);
-            let basicDamage = EntityMaid.Level.getProperty(maid, "danmaku");
             let distanceFactor = distance / 8;
             let yOffset = distance < 5 ? 0.2 : 0.5; // 根据距离偏移目标位置
 
-            // 攻击方式确定
+            // 数量判定
             let monsters = maid.dimension.getEntities({"location": maid.location, "families":["monster"], "maxDistance":20});
             // 群攻
             if(monsters.length > 4){
