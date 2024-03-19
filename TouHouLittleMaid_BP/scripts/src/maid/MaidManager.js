@@ -21,6 +21,7 @@ import {DanmakuShoot}  from "../danmaku/DanmakuShoot";
 import {DanmakuColor}  from "../danmaku/DanmakuColor";
 import {DanmakuType}   from "../danmaku/DanmakuType";
 import { shoot as cherryShoot } from "../danmaku/custom/Cherry";
+import { SugarCane } from "./MaidTarget";
 
 const HOME_RADIUS=32;
 
@@ -363,10 +364,16 @@ export class MaidManager{
     static returnHomeEvent(event){
         // 比较维度
         let maid = event.entity;
+        // NPC的家半径为 2
         let homeRadius = EntityMaid.Work.get(maid)===-1 ? 2 : HOME_RADIUS;
 
         let home_location = EntityMaid.Home.getLocation(maid);
-        if(home_location===undefined) return; // 没有家，不回
+
+        // 没有家，设置为当前位置
+        if(home_location===undefined){
+            EntityMaid.Home.setLocation(maid);
+            return; 
+        }
         let in_home = (maid.dimension.id===home_location[3]);
         if(in_home){
             // 计算范围
@@ -423,35 +430,44 @@ export class MaidManager{
         let maid = event.entity; 
         if(maid===undefined) return;
         try{
-            // 步数计算 一步3秒
+            ///// 步数计算 一步3秒 /////
             let healStep = maid.getDynamicProperty("step");
-
             // 计时量未初始化 立即初始化
             if(healStep === undefined){
                 maid.setDynamicProperty("step", 0);
                 return;
             }
-
             if(healStep >= STEP_MAX){
                 maid.setDynamicProperty("step", 0);
             }
             else{
                 maid.setDynamicProperty("step", healStep+1);
             }
-
-            // 取模决定执行任务
-            // 3步一回血
+            ///// 取模决定执行任务 /////
+            // 3步
             if(healStep % 3 === 0){
-                let healthComponent = EntityMaid.Health.getComponent(maid);
-                if(healthComponent.currentValue < healthComponent.defaultValue){
-                    // 回血
-                    let healAmount = EntityMaid.Level.getProperty(maid, "heal");
-                    healthComponent.setCurrentValue(
-                        Math.min(healthComponent.defaultValue,
-                        healthComponent.currentValue + Tool.getRandomInteger(healAmount[0], healAmount[1])));
+                // 回血
+                try{
+                    let healthComponent = EntityMaid.Health.getComponent(maid);
+                    if(healthComponent.currentValue < healthComponent.defaultValue){
+                        // 回血
+                        let healAmount = EntityMaid.Level.getProperty(maid, "heal");
+                        healthComponent.setCurrentValue(
+                            Math.min(healthComponent.defaultValue,
+                            healthComponent.currentValue + Tool.getRandomInteger(healAmount[0], healAmount[1])));
+                    }
                 }
+                catch{}
+
+                // 甘蔗扫描
+                try{
+                    if(EntityMaid.Work.get(maid) === EntityMaid.Work.sugar_cane){
+                        SugarCane.search(maid.dimension, maid.location, 15);
+                    }
+                }
+                catch{}
+                
             }
-            
         }
         catch{ }
         
@@ -678,4 +694,3 @@ export class MaidManager{
         }
     }
 }
-

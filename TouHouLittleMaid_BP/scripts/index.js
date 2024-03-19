@@ -6,10 +6,11 @@ import * as Danmaku from "./src/danmaku/DanmakuManager"
 import { CustomSpellCardManger } from "./src/danmaku/CustomSpellCardManger";
 import * as Tool from"./src/libs/scarletToolKit";
 import { itemShootManager } from "./src/danmaku/ItemShootManager";
-import { MaidManager } from "./src/maid/MaidManager";
 import { ConfigHelper } from "./src/controller/Config";
-import { MaidSkin } from "./src/maid/MaidSkin";
 import { GoldMicrowaver } from "./src/blocks/GoldMicrowaver";
+import { MaidManager } from "./src/maid/MaidManager";
+import { MaidSkin } from "./src/maid/MaidSkin";
+import { MaidTarget } from "./src/maid/MaidTarget"
 
 import { CommandManager } from './src/controller/Command'
 
@@ -302,7 +303,7 @@ class thlm {
                 if(hurtId.substring(0, 4) === "thlm"){
                     switch(hurtId.charAt(4)){
                         // t: Target
-                        case "t": MaidManager.targetAcquire(event); break;
+                        case "t": MaidTarget.targetAcquire(event); break;
                         default: break;
                     }
                 }

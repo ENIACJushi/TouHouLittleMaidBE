@@ -254,7 +254,6 @@ export class CommandManager{
      * @param {ScriptEventCommandMessageAfterEvent} event
      */
     static test(event){
-
         // 获取一个最近的女仆
         let source = event.sourceEntity;
         if(source === undefined || source.typeId !== "minecraft:player") return;

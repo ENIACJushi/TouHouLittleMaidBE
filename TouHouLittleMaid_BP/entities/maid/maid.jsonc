@@ -86,6 +86,7 @@
         "minecraft:navigation.walk": {
           "can_path_over_water": true,
           "avoid_damage_blocks": true,
+          "avoid_water": true,
           "avoid_portals": true
         },
         "minecraft:movement.basic": { },
@@ -270,11 +271,52 @@
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 6, "must_see": true,
           "reselect_targets": true, "within_radius": 16, "scan_interval": 10,
-          "entity_types": [ { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "monster"} ] }, "max_dist": 16 } ]
+          "entity_types": [{ "filters": { "all_of": [ 
+            {"test": "is_family","subject": "other","value": "monster"}
+          ] }, "max_dist": 16 } ]
         },
-        "minecraft:behavior.hurt_by_target": { "priority": 3 },
-        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
-        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
+        "minecraft:behavior.hurt_by_target": {
+          "priority": 3,
+          "entity_types": {
+            "filters":{ "all_of": [
+              {"test": "has_component","subject": "other","value": "is_tamed", "operator": "not"},
+              {"test": "is_family","subject": "other","value": "maid", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "player", "operator": "!="}
+            ] }
+          }
+        },
+        "minecraft:behavior.owner_hurt_by_target": {
+          "priority": 1,
+          "entity_types": {
+            "filters":{ "all_of": [
+              {"test": "has_component","subject": "other","value": "is_tamed", "operator": "not"},
+              {"test": "is_family","subject": "other","value": "maid", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "player", "operator": "!="}
+            ] }
+          }
+        },
+        "minecraft:behavior.owner_hurt_target"   : {
+          "priority": 2,
+          "entity_types": {
+            "filters":{ "all_of": [
+              {"test": "has_component","subject": "other","value": "is_tamed", "operator": "not"},
+              {"test": "is_family","subject": "other","value": "maid", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "player", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "villager", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "allay", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "horse", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "donkey", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "mule", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "axolotl", "operator": "!="}, // 美西螈
+              {"test": "is_family","subject": "other","value": "cat", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "ocelot", "operator": "!="}, // 豹猫
+              {"test": "is_family","subject": "other","value": "parrot_tame", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "parrot_wild", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "camel", "operator": "!="}, // 骆驼
+              {"test": "is_family","subject": "other","value": "panda", "operator": "!="}
+            ] }
+          }
+        }
       },
       "mode:searching_danmaku_attack":{
         "minecraft:behavior.nearest_attackable_target": {
@@ -287,7 +329,28 @@
         "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 1.25 },
         "minecraft:behavior.hurt_by_target": { "priority": 3 },
         "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
-        "minecraft:behavior.owner_hurt_target"   : { "priority": 2 }
+        "minecraft:behavior.owner_hurt_target"   : {
+          "priority": 2,
+          "entity_types": {
+            "filters":{ "all_of": [
+              {"test": "has_component","subject": "other","value": "is_tamed", "operator": "not"},
+              {"test": "is_family","subject": "other","value": "maid", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "player", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "villager", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "allay", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "horse", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "donkey", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "mule", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "axolotl", "operator": "!="}, // 美西螈
+              {"test": "is_family","subject": "other","value": "cat", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "ocelot", "operator": "!="}, // 豹猫
+              {"test": "is_family","subject": "other","value": "parrot_tame", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "parrot_wild", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "camel", "operator": "!="}, // 骆驼
+              {"test": "is_family","subject": "other","value": "panda", "operator": "!="}
+            ] }
+          }
+        }
       },
       // 空闲
       "mode:idle":{
@@ -333,11 +396,11 @@
       // 甘蔗
       "mode:sugar_cane":{
         "minecraft:behavior.nearest_attackable_target": {
-          "priority": 6, "must_reach": true, "must_see": false,
+          "priority": 7, "must_reach": false, "must_see": false,
           "reselect_targets": true, "within_radius": 32, "scan_interval": 10,
-          "entity_types": [ { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:sugar_cane"} ] }, "max_dist": 32 } ]
+          "entity_types": [ { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:sugar_cane"} ] }, "max_dist": 32, "must_see": false } ]
         },
-        "minecraft:behavior.melee_attack": { "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25, "cooldown_time": 0.9 }
+        "minecraft:behavior.melee_attack": { "priority": 6, "speed_multiplier": 1, "cooldown_time": 1.0,"reach_multiplier": 3 }
       },
 
       ///// 背包类别 /////
@@ -663,7 +726,7 @@
           { "filters": {"test": "int_property", "value": 2, "operator":"==", "domain": "thlm:work"}, "trigger": "thlmm:a"}
         ]
       },// timer 每3秒一次的定时事件 
-      "thlmm:a": {}, // Danmaku Attack
+      "thlmm:a": {}, // danmaku Attack
       "thlmm:d" :{}, // Death
       "thlmm:f" :{}, // Follow on tamed
       "thlmm:h" :{}, // Home
@@ -674,7 +737,7 @@
       "thlmm:p" :{}, // Photo
       "thlmm:s" :{ "add": {"component_groups": ["thlmm:maid_tame_sit"]}, "remove": {"component_groups": ["thlmm:maid_tame_inventory"]} },
       "thlmm:0" :{}, // Spawn
-      "thlmm:1" :{}, // Smart slab
+      "thlmm:1" :{}, // smart slab
       "thlm:n": {}, // npc交互
 
       ///// 脚本接口 /////
@@ -713,14 +776,15 @@
       "api:mode_quit_attack_lv2":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv2", "mode:searching_melee_attack"]}}]},
       "api:mode_danmaku_attack"       :{"sequence": [{"add"   : {"component_groups": ["mode:danmaku_attack", "mode:searching_danmaku_attack"]}, "set_property":{"thlm:work": 2}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
       "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack", "mode:searching_danmaku_attack"]}}]},
-      "api:mode_sugar_cane"          :  {"sequence": [{"add"   : {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 3}}]},
-      "api:mode_quit_sugar_cane"     :  {"sequence": [{"remove": {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 3}}]},
-
 
       "api:mode_farm_lv1"       :{"sequence": [{"add"   : {"component_groups": ["mode:farm_lv1"]}, "set_property":{"thlm:work": 3}}]},
       "api:mode_quit_farm_lv1"  :{"sequence": [{"remove": {"component_groups": ["mode:farm_lv1"]}}]},
       "api:mode_farm_lv2"       :{"sequence": [{"add"   : {"component_groups": ["mode:farm_lv2"]}, "set_property":{"thlm:work": 3}}]},
       "api:mode_quit_farm_lv2"  :{"sequence": [{"remove": {"component_groups": ["mode:farm_lv2"]}}]},
+
+      
+      "api:mode_sugar_cane"          :  {"sequence": [{"add"   : {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 4}}]},
+      "api:mode_quit_sugar_cane"     :  {"sequence": [{"remove": {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 4}}]},
 
       // 拾物模式
       "api:mode_pick"     :{ "add"    : {"component_groups": ["mode:pick"] } },
