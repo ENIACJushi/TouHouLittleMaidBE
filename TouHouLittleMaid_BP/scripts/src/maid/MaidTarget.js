@@ -1,5 +1,6 @@
 import { EntityHitEntityAfterEvent, Entity, Dimension, Vector, Block, system } from "@minecraft/server";
-import { logger } from "../libs/scarletToolKit";
+import { EntityMaid } from "./EntityMaid";
+import { logger, pointInArea_3D } from "../libs/scarletToolKit";
 
 export class MaidTarget{
     /**
@@ -12,13 +13,30 @@ export class MaidTarget{
 
         switch(target.typeId.substring(6)){
             case "sugar_cane": SugarCane.acquire(target, maid); break;
+            case "melon": Melon.acquire(target, maid); break;
+            default: break;
+        }
+    }
+    /**
+     * 寻找甘蔗
+     * @param {number} type
+     * @param {Dimension} dimension
+     * @param {Vector} location
+     * @param {number} range
+     * @param {number} height
+     * @returns {object}
+     */
+    static search(type, dimension, location, range=6){
+        switch(type){
+            case EntityMaid.Work.sugar_cane: SugarCane.search(dimension, location, range); break;
+            case EntityMaid.Work.melon: Melon.search(dimension, location, range); break;
             default: break;
         }
     }
 }
 
-// 甘蔗目标
-export class SugarCane{
+// 甘蔗
+class SugarCane{
     /**
      * 放置目标, 位置应为整数方块坐标
      * @param {Dimension} dimension 
@@ -37,6 +55,20 @@ export class SugarCane{
         new Vector(location.x + 0.5, location.y + 0.2, location.z + 0.5))
     }
     /**
+     * 收集甘蔗
+     * @param {Entity} target 
+     * @param {Entity} maid 
+     */
+    static acquire(target, maid){
+        let block = target.dimension.getBlock(target.location);
+        if(block !== undefined && block.typeId === "minecraft:reeds"){
+            const l = block.location;
+            block.dimension.runCommand(`setblock ${l.x} ${l.y} ${l.z} air destroy`);
+        }
+        // 无论是否成功破坏甘蔗，都清除目标
+        target.triggerEvent("despawn");
+    }
+    /**
      * 寻找甘蔗
      * @param {Dimension} dimension 
      * @param {Vector} location 
@@ -53,19 +85,6 @@ export class SugarCane{
             "location": location, "maxDistance": range, "type": "thlmt:sugar_cane"});
         if(existedTargets.length > 3) return;
 
-        // 初始化扫描矩阵
-        let length = 2*range + 1;
-        let matrix = new Array(length);
-        for(let i = 0; i < length; i++){
-            matrix[i] = new Array(length)
-        }
-        
-        // 记录点位，搜索时跳过
-        for(let target of existedTargets){
-            matrix[Math.floor(range + target.location.x - location.x)]
-                    [Math.floor(range + target.location.z - location.z)] = true;
-        }
-
         /**
          * 获取方块耗时 0.01ms，一刻 50ms，尽量在10ms内完成搜索，即1000次查询
          * 一般来说，甘蔗地的起伏不会太大，设女仆位置的高度为 y，搜索 y-2 ~ y+3 就足够了，即6格高，对应面积 166 的 2D 区域，边长大约为 13
@@ -76,14 +95,13 @@ export class SugarCane{
          * 甘蔗通常种植在同一高度，所以搜索开始的高度设为上一次成功查找的高度
          */
         let y = Math.floor(location.y);
-        let xStart = Math.floor(location.x) - range;
+        let xStart = Math.floor(location.x);
         let zStart = Math.floor(location.z);
         const MAX = 3; // 单方向最大寻找距离
         
-        for(let ix = 0; ix < length; ix++){
-            for(let iz = -1*range; iz < range; iz++){
+        for(let ix = -range; ix <= range; ix++){
+            for(let iz = -1*range; iz <= range; iz++){
                 system.runTimeout(()=>{
-                    if(matrix[ix][iz] !== undefined) return;
                     // 流程图：甘蔗查找算法.drawio
                     let x = xStart + ix;
                     let z = zStart + iz;
@@ -165,24 +183,171 @@ export class SugarCane{
                             // 查找失败, 次数用尽
                         }
                     }
-                    // 查找矩阵仅记录是否已经进行过查找，不记录高度等数据
-                    matrix[ix][iz] = true;
                 }, (iz<0 ? 4-8*iz : iz*8));
             }
         }
     }
+}
+
+// 西瓜、南瓜
+export class Melon{
     /**
-     * 收集甘蔗
+     * 放置目标, 位置通常为整数方块坐标
+     * @param {Dimension} dimension 
+     * @param {Vector} location 
+     */
+    static place(dimension, location){
+        // 若该位置已经有目标，则不放置
+        let entities = dimension.getEntitiesAtBlockLocation(location);
+        for(let entity of entities){
+            if(entity.typeId === "thlmt:melon"){
+                return;
+            }
+        }
+        // 放置目标
+        dimension.spawnEntity("thlmt:melon", 
+            new Vector(location.x + 0.5, location.y + 0.4, location.z + 0.5))
+    }
+    /**
+     * 收集瓜类 进行两次攻击后才会将瓜破坏
      * @param {Entity} target 
      * @param {Entity} maid 
      */
     static acquire(target, maid){
+        const neededStep = 2;
         let block = target.dimension.getBlock(target.location);
-        if(block !== undefined && block.typeId === "minecraft:reeds"){
-            const l = block.location;
-            block.dimension.runCommand(`setblock ${l.x} ${l.y} ${l.z} air destroy`);
+        if(block !== undefined && 
+            (block.typeId === "minecraft:melon_block" || block.typeId === "minecraft:pumpkin")){
+            // 进行两次攻击后才会将瓜破坏
+            let step = target.getProperty("thlmt:step") + 1;
+            if(step < neededStep){
+                target.setProperty("thlmt:step", step);
+            }
+            else{
+                const l = block.location;
+                block.dimension.runCommand(`setblock ${l.x} ${l.y} ${l.z} air destroy`);
+                target.triggerEvent("despawn");
+            }
+
         }
-        // 无论是否成功破坏甘蔗，都清除目标
-        target.triggerEvent("despawn");
+        else{
+            // 目标方块已消失，清除目标
+            target.triggerEvent("despawn");
+        }
+    }
+    /**
+     * 因为不能穿墙攻击 使用脚本定时获取目标
+     * 事件每3秒触发一次
+     * @param {Entity} maid 
+     */
+    static stepEvent(maid){
+        for(let i = 0; i < 3; i++){
+            system.runTimeout(()=>{
+                try{
+                    if(maid === undefined) return;
+                    let target = maid.target;
+                    if(target !== undefined){
+                        if(pointInArea_3D(
+                                target.location.x, target.location.y, target.location.z,
+                                maid.location.x - 2, maid.location.y - 2, maid.location.z - 2,
+                                maid.location.x + 2, maid.location.y + 2, maid.location.z + 2
+                            )){
+                            this.acquire(target, maid);
+                        }
+                    }
+                }
+                catch{}
+            }, i*20);
+        }
+    }
+    /**
+     * 寻找瓜类
+     * @param {Dimension} dimension 
+     * @param {Vector} location 
+     * @param {number} range 
+     * @param {number} height
+     * @returns {object} 
+     */
+    static search(dimension, location, range=6){
+        let existedTargets = dimension.getEntities({
+            "location": location, "maxDistance": range, "type": "thlmt:melon"});
+        if(existedTargets.length > 3) return;
+            
+        // 初始化扫描矩阵
+        let xStart = Math.floor(location.x) - range;
+        let zStart = Math.floor(location.z) - range;
+        let y = Math.floor(location.y);
+        let length = 2*range + 1;
+
+        let matrix = new Array(length);
+        for(let i = 0; i < length; i++){
+            matrix[i] = new Array(length)
+        }
+        // 记录点位，搜索时跳过
+        for(let target of existedTargets){
+            matrix[Math.floor(target.location.x) - xStart]
+                    [Math.floor(target.location.z) - zStart] = true;
+        }
+
+
+        /**
+         * 寻找成熟（"growth"=7）且方向（facing_direction）不为0的瓜蒂(melon_stem/pumpkin_stem)，从而定位瓜的位置
+         * 瓜蒂方向
+         *  0是没长出瓜，1是无效值，不会自然生成
+         *  2：z-1； 3：z+1； 4：x-1； 5：x+1
+         */
+        const MAX = 3; // 单方向最大寻找距离
+        for(let ix = 0; ix < length; ix++){
+            for(let iz = 0; iz < length; iz++){
+                system.runTimeout(()=>{
+                    if(matrix[ix][iz] !== undefined) return;
+                    let x = xStart + ix;
+                    let z = zStart + iz;
+                    let _y = y;
+                    for(let iy = 0; iy < MAX; iy = iy > 0 ? -iy : 1 - iy){
+                        let block = dimension.getBlock(new Vector(x, _y + iy, z));
+                        if(block !== undefined && 
+                            (block.typeId === "minecraft:melon_stem" || block.typeId === "minecraft:pumpkin_stem")){
+                            // 找到瓜蒂
+                            if(block.permutation.getState("growth") === 7){
+                                let location = block.location;
+                                try{ // 极端情况下女仆可能在可操作范围的边缘
+                                    switch(block.permutation.getState("facing_direction")){
+                                        case 2:{
+                                            location.z--;
+                                            this.place(dimension, location);
+                                            if(iz > 0) matrix[ix][iz-1] = true;
+                                            y = _y;
+                                        }; break;
+                                        case 3: {
+                                            location.z++;
+                                            this.place(dimension, location);
+                                            if(iz < length - 1) matrix[ix][iz+1] = true;
+                                            y = _y;
+                                        }; break;
+                                        case 4: {
+                                            location.x--;
+                                            this.place(dimension, location);
+                                            if(ix > 0) matrix[ix-1][iz] = true;
+                                            y = _y;
+                                        }; break;
+                                        case 5: {
+                                            location.x++;
+                                            this.place(dimension, location);
+                                            if(ix < length - 1) matrix[ix+1][iz] = true;
+                                            y = _y;
+                                        }; break;
+                                        case 0: case 1: default: break;
+                                    }
+                                }
+                                catch{}
+                            }
+                            matrix[ix][iz] = true;
+                            break;
+                        }
+                    }
+                }, (iz < range ? 4+8*(range - iz) : (iz-range)*8));
+            }
+        }
     }
 }

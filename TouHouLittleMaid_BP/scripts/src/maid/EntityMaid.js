@@ -411,15 +411,15 @@ export class EntityMaid{
     }
     // 工作模式
     static Work = {
-        AMOUNT         : 5,  // 总数（包含空闲）
+        AMOUNT         : 6,  // 总数（包含空闲）
         
         idle           : 0,  // 空闲
         attack         : 1,  // 攻击
         danmaku_attack : 2,  // 弹幕攻击
         farm           : 3,  // 农场
         sugar_cane     : 4,  // 甘蔗
-
         melon          : 5,  // 瓜类
+
         cocoa          : 6,  // 可可
         grass          : 7,  // 花草
         snow           : 8,  // 清雪
@@ -440,17 +440,21 @@ export class EntityMaid{
             "danmaku_attack",
             "farm",
             "sugar_cane",
-            
             "melon",
+
             "cocoa",
             "grass",      
             "snow",
+            
             "feed",
             "shears",
             "milk",
+            
             "torch",
             "feed_animal",
             "extinguishing",
+            
+            
             "ranged_attack"
         ],
         // 切换到模式时的音效(现在已经转移到行为包内播放)
@@ -460,8 +464,8 @@ export class EntityMaid{
             "mob.thlmm.maid.attack",
             undefined,
             undefined,
-
             undefined,
+
             undefined,          
             undefined,      
             undefined,
@@ -479,8 +483,8 @@ export class EntityMaid{
             "textures/items/hakurei_gohei.png",
             "textures/items/iron_hoe.png",
             "textures/items/reeds.png",
-
             "textures/items/melon.png",
+            
             "textures/items/dye_powder_brown.png",
             "textures/blocks/tallgrass.png",
             "textures/items/snowball.png",

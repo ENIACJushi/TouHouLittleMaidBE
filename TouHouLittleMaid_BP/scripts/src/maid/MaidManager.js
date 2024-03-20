@@ -21,7 +21,7 @@ import {DanmakuShoot}  from "../danmaku/DanmakuShoot";
 import {DanmakuColor}  from "../danmaku/DanmakuColor";
 import {DanmakuType}   from "../danmaku/DanmakuType";
 import { shoot as cherryShoot } from "../danmaku/custom/Cherry";
-import { SugarCane } from "./MaidTarget";
+import { MaidTarget, Melon } from "./MaidTarget";
 
 const HOME_RADIUS=32;
 
@@ -443,7 +443,14 @@ export class MaidManager{
             else{
                 maid.setDynamicProperty("step", healStep+1);
             }
+
             ///// 取模决定执行任务 /////
+            // 每次
+            let work = EntityMaid.Work.get(maid);
+            switch(work){
+                case EntityMaid.Work.melon: Melon.stepEvent(maid); break;
+                default: break;
+            }
             // 3步
             if(healStep % 3 === 0){
                 // 回血
@@ -458,12 +465,9 @@ export class MaidManager{
                     }
                 }
                 catch{}
-
-                // 甘蔗扫描
+                // 扫描
                 try{
-                    if(EntityMaid.Work.get(maid) === EntityMaid.Work.sugar_cane){
-                        SugarCane.search(maid.dimension, maid.location, 15);
-                    }
+                    MaidTarget.search(work, maid.dimension, maid.location, 15);
                 }
                 catch{}
                 

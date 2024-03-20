@@ -90,6 +90,7 @@
           "avoid_portals": true
         },
         "minecraft:movement.basic": { },
+        "minecraft:water_movement": { "drag_factor": 0.9},
         "minecraft:jump.static": { },
         "minecraft:can_climb": { },
         "minecraft:behavior.float": { "priority": 2 },
@@ -396,12 +397,30 @@
       // 甘蔗
       "mode:sugar_cane":{
         "minecraft:behavior.nearest_attackable_target": {
-          "priority": 7, "must_reach": false, "must_see": false,
+          "priority": 7, "must_reach": true, "must_see": false,
           "reselect_targets": true, "within_radius": 32, "scan_interval": 10,
           "entity_types": [ { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:sugar_cane"} ] }, "max_dist": 32, "must_see": false } ]
         },
         "minecraft:behavior.melee_attack": { "priority": 6, "speed_multiplier": 1, "cooldown_time": 1.0,"reach_multiplier": 3 }
       },
+      // 瓜类
+      "mode:melon":{
+        "minecraft:behavior.nearest_attackable_target": {
+          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 10.0, 
+          "reselect_targets": false, "within_radius": 32, "scan_interval": 20,
+          "entity_types": [ 
+            { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:melon"} ] }, "max_dist": 32, "must_see": false }
+          ]
+        },
+        "minecraft:behavior.ranged_attack": {
+          "priority": 6,
+          "attack_interval_min": 0.8,
+          "attack_interval_max": 0.8,
+          "attack_radius": 2.1,
+          "attack_radius_min": 0.9
+        }
+      },
+      
 
       ///// 背包类别 /////
       "backpack:default":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "restrict_to_owner": true} },
@@ -785,6 +804,8 @@
       
       "api:mode_sugar_cane"          :  {"sequence": [{"add"   : {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 4}}]},
       "api:mode_quit_sugar_cane"     :  {"sequence": [{"remove": {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 4}}]},
+      "api:mode_melon"          :  {"sequence": [{"add"   : {"component_groups": ["mode:melon"]}, "set_property":{"thlm:work": 5}}]},
+      "api:mode_quit_melon"     :  {"sequence": [{"remove": {"component_groups": ["mode:melon"]}, "set_property":{"thlm:work": 5}}]},
 
       // 拾物模式
       "api:mode_pick"     :{ "add"    : {"component_groups": ["mode:pick"] } },

@@ -358,7 +358,8 @@
             { "1@left_item": { "$index": 7 } },
             { "2@left_item": { "$index": 8 } },
             { "3@left_item": { "$index": 9 } },
-            { "4@left_item": { "$index": 10 } }
+            { "4@left_item": { "$index": 10 } },
+            { "5@left_item": { "$index": 11 } }
         ]
     },
     "left_item": {
