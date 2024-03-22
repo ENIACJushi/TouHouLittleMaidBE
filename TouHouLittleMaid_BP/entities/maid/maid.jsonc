@@ -420,7 +420,23 @@
           "attack_radius_min": 0.9
         }
       },
-      
+      // 可可豆
+      "mode:cocoa":{
+        "minecraft:behavior.nearest_attackable_target": {
+          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 10.0, 
+          "reselect_targets": false, "within_radius": 32, "scan_interval": 20, "target_search_height": 5,
+          "entity_types": [ 
+            { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:cocoa"} ] }, "max_dist": 32, "must_see": false }
+          ]
+        },
+        "minecraft:behavior.ranged_attack": {
+          "priority": 6,
+          "attack_interval_min": 0.8,
+          "attack_interval_max": 0.8,
+          "attack_radius": 2.1,
+          "attack_radius_min": 0.9
+        }
+      },
 
       ///// 背包类别 /////
       "backpack:default":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "restrict_to_owner": true} },
@@ -806,7 +822,9 @@
       "api:mode_quit_sugar_cane"     :  {"sequence": [{"remove": {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 4}}]},
       "api:mode_melon"          :  {"sequence": [{"add"   : {"component_groups": ["mode:melon"]}, "set_property":{"thlm:work": 5}}]},
       "api:mode_quit_melon"     :  {"sequence": [{"remove": {"component_groups": ["mode:melon"]}, "set_property":{"thlm:work": 5}}]},
-
+      "api:mode_cocoa"          :  {"sequence": [{"add"   : {"component_groups": ["mode:cocoa"]}, "set_property":{"thlm:work": 6}}]},
+      "api:mode_quit_cocoa"     :  {"sequence": [{"remove": {"component_groups": ["mode:cocoa"]}, "set_property":{"thlm:work": 6}}]},
+      
       // 拾物模式
       "api:mode_pick"     :{ "add"    : {"component_groups": ["mode:pick"] } },
       "api:mode_quit_pick":{ "remove" : {"component_groups": ["mode:pick"] } },

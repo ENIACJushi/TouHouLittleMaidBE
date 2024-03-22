@@ -30,6 +30,7 @@ export class MaidTarget{
         switch(type){
             case EntityMaid.Work.sugar_cane: SugarCane.search(dimension, location, range); break;
             case EntityMaid.Work.melon: Melon.search(dimension, location, range); break;
+            case EntityMaid.Work.cocoa: Cocoa.search(dimension, location, range); break;
             default: break;
         }
     }
@@ -344,6 +345,128 @@ export class Melon{
                             }
                             matrix[ix][iz] = true;
                             break;
+                        }
+                    }
+                }, (iz < range ? 4+8*(range - iz) : (iz-range)*8));
+            }
+        }
+    }
+}
+
+// 可可豆
+export class Cocoa{
+    /**
+     * 放置目标, 位置通常为整数方块坐标
+     * @param {Dimension} dimension 
+     * @param {Vector} location 
+     * @param {number} direction 
+     */
+    static place(dimension, location, direction){
+        // 若该位置已经有目标，则不放置
+        let entities = dimension.getEntitiesAtBlockLocation(location);
+        for(let entity of entities){
+            if(entity.typeId === "thlmt:cocoa"){
+                return;
+            }
+        }
+        // 放置目标
+        dimension.spawnEntity("thlmt:cocoa", 
+            new Vector(location.x + 0.5, location.y + 0.4, location.z + 0.5))
+            .setProperty("thlmt:direction", direction);
+    }
+    /**
+     * 收集和放置可可豆
+     * 进行两次攻击后才会将可可豆破坏
+     * 破坏后0.5秒消耗背包内的可可豆补种并清除目标，若没有则不补
+     * @param {Entity} target
+     * @param {Entity} maid 
+     */
+    static acquire(target, maid){
+        const neededStep = 2;
+        let block = target.dimension.getBlock(target.location);
+        if(block !== undefined && block.typeId === "minecraft:cocoa"){
+            // 进行两次攻击后才会将可可豆破坏
+            let step = target.getProperty("thlmt:step") + 1;
+            if(step >= neededStep){
+                const l = block.location;
+                block.dimension.runCommand(`setblock ${l.x} ${l.y} ${l.z} air destroy`);
+            }
+            target.setProperty("thlmt:step", step);
+        }
+        else{
+            // 目标方块已消失，补种
+            if(block.typeId === "minecraft:air"){
+                // 消耗
+                if(EntityMaid.Inventory.removeItem_type(maid, "minecraft:cocoa_beans", 1) === true){
+                    // 放置
+                    let direction = target.getProperty("thlmt:direction");
+                    const l = block.location;
+                    block.dimension.runCommand(`setblock ${l.x} ${l.y} ${l.z} cocoa ["direction"=${direction},"age"=0] keep`);
+                }
+            }
+            // 清除目标
+            target.triggerEvent("despawn");
+        }
+    }
+    /**
+     * 因为不能穿墙攻击 使用脚本定时获取目标
+     * 竖直方向最大高度差为5格
+     * 事件每3秒触发一次
+     * @param {Entity} maid 
+     */
+    static stepEvent(maid){
+        for(let i = 0; i < 3; i++){
+            system.runTimeout(()=>{
+                try{
+                    if(maid === undefined) return;
+                    let target = maid.target;
+                    if(target !== undefined){
+                        if(pointInArea_3D(
+                                target.location.x, target.location.y, target.location.z,
+                                maid.location.x - 2, maid.location.y - 5, maid.location.z - 2,
+                                maid.location.x + 2, maid.location.y + 5, maid.location.z + 2
+                            )){
+                            this.acquire(target, maid);
+                        }
+                    }
+                }
+                catch{}
+            }, i*20);
+        }
+    }
+    /**
+     * 寻找可可豆，整列寻找，每列最多5个
+     * @param {Dimension} dimension 
+     * @param {Vector} location 
+     * @param {number} range 
+     * @param {number} height
+     * @returns {object} 
+     */
+    static search(dimension, location, range=6){
+        let existedTargets = dimension.getEntities({
+            "location": location, "maxDistance": range, "type": "thlmt:cocoa"});
+        if(existedTargets.length > 3) return;
+        /** setblock -121 -60 16 cocoa ["direction"=3,"age"=2]
+         * 寻找成熟（"age"=2）的可可豆(cocoa)，并生成带有方向标记（direction）的目标
+         */
+        const MAX = 3; // 单方向最大寻找距离
+        let xStart = Math.floor(location.x) - range;
+        let zStart = Math.floor(location.z) - range;
+        let y = Math.floor(location.y);
+        let length = 2*range + 1;
+        for(let ix = 0; ix < length; ix++){
+            for(let iz = 0; iz < length; iz++){
+                system.runTimeout(()=>{
+                    let x = xStart + ix;
+                    let z = zStart + iz;
+                    let _y = y;
+                    let count = 0;
+                    for(let iy = 0; iy < MAX; iy = iy > 0 ? -iy : 1 - iy){
+                        let block = dimension.getBlock(new Vector(x, _y + iy, z));
+                        if(block !== undefined && block.typeId === "minecraft:cocoa" && block.permutation.getState("age") === 2){
+                            this.place(dimension, block.location, block.permutation.getState("direction"))
+                            count++;
+                            if(count > 5) break;
                         }
                     }
                 }, (iz < range ? 4+8*(range - iz) : (iz-range)*8));

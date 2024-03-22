@@ -1,0 +1,39 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "thlmt:cocoa",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "properties": {
+        "thlmt:step": {"client_sync": false, "default": 0, "range": [0,15], "type": "int"},
+        "thlmt:direction": {"client_sync": false, "default": 0, "range": [0, 3], "type": "int"}
+      }
+    },
+    "component_groups": {
+      "despawn": { "minecraft:instant_despawn":{ "remove_child_entities": false } }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [ "thlmt:cocoa" ]
+      },
+      "minecraft:ageable": {
+        "duration": 60,
+        "grow_up": { "event": "despawn", "target": "self" }
+      },
+      "minecraft:damage_sensor": { 
+        "triggers": [
+          { "cause": "all", "deals_damage": false}
+        ]
+      },
+      "minecraft:collision_box": { "width": 0.0, "height": 0.0 },
+      "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+      "minecraft:persistent": {},
+      "minecraft:knockback_resistance": { "value": 1.0 },
+      "minecraft:physics": { "has_gravity": false,"has_collision": false, "push_towards_closest_space": false }
+    },
+    "events": {
+      "despawn":{ "add": { "component_groups": [ "despawn" ] } }
+    }
+  }
+}

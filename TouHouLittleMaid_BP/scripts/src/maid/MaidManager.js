@@ -21,7 +21,7 @@ import {DanmakuShoot}  from "../danmaku/DanmakuShoot";
 import {DanmakuColor}  from "../danmaku/DanmakuColor";
 import {DanmakuType}   from "../danmaku/DanmakuType";
 import { shoot as cherryShoot } from "../danmaku/custom/Cherry";
-import { MaidTarget, Melon } from "./MaidTarget";
+import { Cocoa, MaidTarget, Melon } from "./MaidTarget";
 
 const HOME_RADIUS=32;
 
@@ -395,7 +395,7 @@ export class MaidManager{
     static sitModeEvent(event){
         let maid = event.entity;
         let bag = EntityMaid.Backpack.getEntity(maid);
-        EntityMaid.dumpEntityBackpack(maid);// 转储
+        EntityMaid.Inventory.quitCheckMode(maid);// 转储 背包实体→女仆
         // 恢复先前的拾物模式
         if(maid.getDynamicProperty("temp_pick")){
             // 因为此时必定是关闭状态，所以只有先前为开时需要设置
@@ -416,7 +416,7 @@ export class MaidManager{
         maid.setDynamicProperty("temp_pick", pick);
         if(pick) EntityMaid.Pick.set(maid, false);
 
-        EntityMaid.dumpMaidBackpack(maid);// 转储 女仆→背包实体
+        EntityMaid.Inventory.checkMode(maid);// 转储 女仆→背包实体
         EntityMaid.Emote.backpack(maid);
         // bag.nameTag = maid.nameTag===""?"entity.touhou_little_maid:maid.name":maid.nameTag;
         MaidBackpack.show(bag);
@@ -449,6 +449,7 @@ export class MaidManager{
             let work = EntityMaid.Work.get(maid);
             switch(work){
                 case EntityMaid.Work.melon: Melon.stepEvent(maid); break;
+                case EntityMaid.Work.cocoa: Cocoa.stepEvent(maid); break;
                 default: break;
             }
             // 3步
@@ -467,10 +468,9 @@ export class MaidManager{
                 catch{}
                 // 扫描
                 try{
-                    MaidTarget.search(work, maid.dimension, maid.location, 15);
+                    MaidTarget.search(EntityMaid.Work.get(maid), maid.dimension, maid.location, 15);
                 }
                 catch{}
-                
             }
         }
         catch{ }
