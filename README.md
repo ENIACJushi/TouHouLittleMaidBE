@@ -15,3 +15,8 @@ A bedrock-edition Add-On transplanted by Java mod: TouHou Little Maid. (https://
 ## License
 - Code: [MIT](https://www.mit.edu/~amini/LICENSE.md)
 - Assets: [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
+
+## Thanks
+ - Stack elements in `基岩版开发者交流`. They provide a lot of technical inspiration and solutions.
+ - Sponsors: `第五感观`
