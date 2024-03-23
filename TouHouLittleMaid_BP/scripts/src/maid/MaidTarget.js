@@ -19,6 +19,7 @@ export class MaidTarget{
     }
     /**
      * 寻找甘蔗
+     * @param {Entity} maid 
      * @param {number} type
      * @param {Dimension} dimension
      * @param {Vector} location
@@ -26,18 +27,74 @@ export class MaidTarget{
      * @param {number} height
      * @returns {object}
      */
-    static search(type, dimension, location, range=6){
-        switch(type){
-            case EntityMaid.Work.sugar_cane: SugarCane.search(dimension, location, range); break;
-            case EntityMaid.Work.melon: Melon.search(dimension, location, range); break;
-            case EntityMaid.Work.cocoa: Cocoa.search(dimension, location, range); break;
+    static search(maid, range=6){
+        switch(EntityMaid.Work.get(maid)){
+            case EntityMaid.Work.sugar_cane: SugarCane.search(maid, range); break;
+            case EntityMaid.Work.melon: Melon.search(maid, range); break;
+            case EntityMaid.Work.cocoa: Cocoa.search(maid, range); break;
             default: break;
+        }
+    }
+}
+
+// 扫描速度控制
+class SpeedController{
+    /**
+     * 搜索开始前 判断是否进行搜索
+     * @param {Entity} maid 
+     * @param {number} [lackStep=5] 
+     * @param {number} [maxLack=3] 慢扫描时，每LACKSTEP次调用函数才进行一次扫描
+     * @param {boolean}
+     */
+    static beforeSearch(maid, maxLack=3, lackStep=5){
+        let lackCount = maid.getDynamicProperty("target_lack");
+        if(lackCount !== undefined && lackCount >= maxLack){
+            lackCount++;
+            if(lackCount >= maxLack + lackStep){
+                maid.setDynamicProperty("target_lack", maxLack);
+                return true;
+            }
+            else{
+                maid.setDynamicProperty("target_lack", lackCount);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 搜索完成后 计数
+        * 连续 maxLack 次扫描得到的目标数量小于 minCount，则进入慢模式，每 lackStep 次函数调用进行一次扫描
+        * 大于 minCount，则进入快扫描模式，每次函数调用都尝试进行扫描
+        * 进入慢扫描模式后 target_lack 就用来计算步数了，不再记录连续小于10的次数
+     * @param {Entity} maid 
+     * @param {number} count
+     * @param {number} [maxLack=3] 
+     * @param {number} [minCount=10] 
+     */
+    static afterSearch(maid, count, maxLack=3, minCount=10){
+        if(count < minCount){
+            let lackCount = maid.getDynamicProperty("target_lack");
+            if(lackCount === undefined){
+                maid.setDynamicProperty("target_lack", 1);
+            }
+            else if(lackCount < maxLack){
+                maid.setDynamicProperty("target_lack", lackCount+1);
+            }
+        }
+        else{
+            maid.setDynamicProperty("target_lack", 0);
         }
     }
 }
 
 // 甘蔗
 class SugarCane{
+    static maxLack = 3; // 进入慢扫描的连续缺目标次数
+    static lackStep = 5; // 慢扫描等待步数
+    static minCount = 10; // 缺目标的最大目标数
+    static maxCount = 40; // 单次扫描获取的最大目标数 到达该数量则停止扫描 确定标准为一个目标实体生命周期内，女仆能收集到的最大目标数
+
     /**
      * 放置目标, 位置应为整数方块坐标
      * @param {Dimension} dimension 
@@ -71,21 +128,26 @@ class SugarCane{
     }
     /**
      * 寻找甘蔗
-     * @param {Dimension} dimension 
-     * @param {Vector} location 
-     * @param {number} range 
-     * @param {number} height
+     * @param {Entity} maid
+     * @param {number} range
      * @returns {object} 
      */
-    static search(dimension, location, range=6){
+    static search(maid, range=6){
+        ///// 需求判断 /////
+        const dimension = maid.dimension;
+        const location = maid.location;
         /**
          * 获取范围内已经标定的点
-         * 若附近目标数少于3则开始扫描，TODO: 连续3次少于3且新得到的目标数量小于3，则进入慢模式，每三步一判断
+         * 若附近目标数少于3则开始扫描
          */
         let existedTargets = dimension.getEntities({
             "location": location, "maxDistance": range, "type": "thlmt:sugar_cane"});
         if(existedTargets.length > 3) return;
 
+        ///// 频率调整 /////
+        if(!SpeedController.beforeSearch(maid, this.maxLack, this.lackStep)) return;
+
+        ///// 搜索 /////
         /**
          * 获取方块耗时 0.01ms，一刻 50ms，尽量在10ms内完成搜索，即1000次查询
          * 一般来说，甘蔗地的起伏不会太大，设女仆位置的高度为 y，搜索 y-2 ~ y+3 就足够了，即6格高，对应面积 166 的 2D 区域，边长大约为 13
@@ -98,11 +160,12 @@ class SugarCane{
         let y = Math.floor(location.y);
         let xStart = Math.floor(location.x);
         let zStart = Math.floor(location.z);
+        let count = 0;
         const MAX = 3; // 单方向最大寻找距离
-        
-        for(let ix = -range; ix <= range; ix++){
-            for(let iz = -1*range; iz <= range; iz++){
-                system.runTimeout(()=>{
+        for(let ix = 0; ix < range; ix = ix>0 ? -ix : 1-ix){
+            system.runTimeout(()=>{
+                for(let iz = 0; iz < range; iz = iz>0 ? -iz : 1-iz){
+                    if(count > this.maxCount) return;
                     // 流程图：甘蔗查找算法.drawio
                     let x = xStart + ix;
                     let z = zStart + iz;
@@ -125,6 +188,7 @@ class SugarCane{
                                 if(!isTargetBlock(B-i)){ // B-i
                                     y = B-i+2
                                     this.place(dimension, new Vector(x, y, z)); // 查找成功, B-i+2 是目标点
+                                    count++;
                                     break;
                                 }
                             }
@@ -134,6 +198,7 @@ class SugarCane{
                             if(isTargetBlock(A + 1)){// A+1
                                 y = A+1;
                                 this.place(dimension, new Vector(x, y, z)); // 查找成功, A+1 是目标点
+                                count++;
                             }
                             // 查找失败, 一格甘蔗
                         }
@@ -151,6 +216,7 @@ class SugarCane{
                                             // 查找成功, B-i2+2 是目标点
                                             y = B-i2+2;
                                             this.place(dimension, new Vector(x, y, z));
+                                            count++;
                                             needUp = false;
                                             break;
                                         }
@@ -173,6 +239,7 @@ class SugarCane{
                                         // 查找成功, A+i 是目标点
                                         y = A+i;
                                         this.place(dimension, new Vector(x, y, z));
+                                        count++;
                                         break;
                                     }
                                     else{
@@ -184,14 +251,24 @@ class SugarCane{
                             // 查找失败, 次数用尽
                         }
                     }
-                }, (iz<0 ? 4-8*iz : iz*8));
-            }
+                }
+            }, (ix<0 ? 4-8*ix : ix*8));
         }
+
+        ///// 频率调整 /////
+        system.runTimeout(()=>{
+            SpeedController.afterSearch(maid, count, this.maxLack, this.minCount)
+        }, range*8 + 8);
     }
 }
 
 // 西瓜、南瓜
 export class Melon{
+    static maxLack = 3; // 进入慢扫描的连续缺目标次数
+    static lackStep = 5; // 慢扫描等待步数
+    static minCount = 8; // 缺目标的最大目标数
+    static maxCount = 20; // 单次扫描获取的最大目标数 到达该数量则停止扫描 确定标准为一个目标实体生命周期内，女仆能收集到的最大目标数
+    
     /**
      * 放置目标, 位置通常为整数方块坐标
      * @param {Dimension} dimension 
@@ -223,6 +300,7 @@ export class Melon{
             let step = target.getProperty("thlmt:step") + 1;
             if(step < neededStep){
                 target.setProperty("thlmt:step", step);
+                target.triggerEvent("life");
             }
             else{
                 const l = block.location;
@@ -263,20 +341,26 @@ export class Melon{
     }
     /**
      * 寻找瓜类
-     * @param {Dimension} dimension 
-     * @param {Vector} location 
-     * @param {number} range 
-     * @param {number} height
+     * @param {Entity} maid 
+     * @param {number} range
      * @returns {object} 
      */
-    static search(dimension, location, range=6){
+    static search(maid, range=6){
+        ///// 需求判断 /////
+        const dimension = maid.dimension;
+        const location = maid.location;
         let existedTargets = dimension.getEntities({
             "location": location, "maxDistance": range, "type": "thlmt:melon"});
         if(existedTargets.length > 3) return;
-            
+        
+        
+        ///// 频率调整 /////
+        if(!SpeedController.beforeSearch(maid, this.maxLack, this.lackStep)) return;
+
+        ///// 搜索 /////
         // 初始化扫描矩阵
-        let xStart = Math.floor(location.x) - range;
-        let zStart = Math.floor(location.z) - range;
+        let xStart = Math.floor(location.x);
+        let zStart = Math.floor(location.z);
         let y = Math.floor(location.y);
         let length = 2*range + 1;
 
@@ -286,10 +370,9 @@ export class Melon{
         }
         // 记录点位，搜索时跳过
         for(let target of existedTargets){
-            matrix[Math.floor(target.location.x) - xStart]
-                    [Math.floor(target.location.z) - zStart] = true;
+            matrix[Math.floor(target.location.x) - xStart + range]
+                    [Math.floor(target.location.z) - zStart + range] = true;
         }
-
 
         /**
          * 寻找成熟（"growth"=7）且方向（facing_direction）不为0的瓜蒂(melon_stem/pumpkin_stem)，从而定位瓜的位置
@@ -298,10 +381,12 @@ export class Melon{
          *  2：z-1； 3：z+1； 4：x-1； 5：x+1
          */
         const MAX = 3; // 单方向最大寻找距离
-        for(let ix = 0; ix < length; ix++){
-            for(let iz = 0; iz < length; iz++){
-                system.runTimeout(()=>{
-                    if(matrix[ix][iz] !== undefined) return;
+        let count = 0;
+        for(let ix = 0; ix < range; ix = ix>0 ? -ix : 1-ix){
+            system.runTimeout(()=>{
+                for(let iz = 0; iz < range; iz = iz>0 ? -iz : 1-iz){
+                    if(count > this.maxCount) return;
+                    if(matrix[ix+range][iz+range] !== undefined) continue;
                     let x = xStart + ix;
                     let z = zStart + iz;
                     let _y = y;
@@ -317,25 +402,29 @@ export class Melon{
                                         case 2:{
                                             location.z--;
                                             this.place(dimension, location);
-                                            if(iz > 0) matrix[ix][iz-1] = true;
+                                            count++;
+                                            if(iz > 0) matrix[ix+range][iz+range-1] = true;
                                             y = _y;
                                         }; break;
                                         case 3: {
                                             location.z++;
                                             this.place(dimension, location);
-                                            if(iz < length - 1) matrix[ix][iz+1] = true;
+                                            count++;
+                                            if(iz < length - 1) matrix[ix+range][iz+range+1] = true;
                                             y = _y;
                                         }; break;
                                         case 4: {
                                             location.x--;
                                             this.place(dimension, location);
-                                            if(ix > 0) matrix[ix-1][iz] = true;
+                                            count++;
+                                            if(ix > 0) matrix[ix+range-1][iz+range] = true;
                                             y = _y;
                                         }; break;
                                         case 5: {
                                             location.x++;
                                             this.place(dimension, location);
-                                            if(ix < length - 1) matrix[ix+1][iz] = true;
+                                            count++;
+                                            if(ix < length - 1) matrix[ix+range+1][iz+range] = true;
                                             y = _y;
                                         }; break;
                                         case 0: case 1: default: break;
@@ -343,18 +432,27 @@ export class Melon{
                                 }
                                 catch{}
                             }
-                            matrix[ix][iz] = true;
+                            matrix[ix+range][iz+range] = true;
                             break;
                         }
                     }
-                }, (iz < range ? 4+8*(range - iz) : (iz-range)*8));
-            }
+                }
+            }, (ix<0 ? 4-8*ix : ix*8));
         }
+        
+        ///// 频率调整 /////
+        system.runTimeout(()=>{
+            SpeedController.afterSearch(maid, count, this.maxLack, this.minCount)
+        }, range*8 + 8);
     }
 }
 
 // 可可豆
 export class Cocoa{
+    static maxLack = 3; // 进入慢扫描的连续缺目标次数
+    static lackStep = 5; // 慢扫描等待步数
+    static minCount = 8; // 缺目标的最大目标数
+    static maxCount = 20; // 单次扫描获取的最大目标数 到达该数量则停止扫描 确定标准为一个目标实体生命周期内，女仆能收集到的最大目标数
     /**
      * 放置目标, 位置通常为整数方块坐标
      * @param {Dimension} dimension 
@@ -371,7 +469,7 @@ export class Cocoa{
         }
         // 放置目标
         dimension.spawnEntity("thlmt:cocoa", 
-            new Vector(location.x + 0.5, location.y + 0.4, location.z + 0.5))
+            new Vector(location.x + 0.5, location.y + 0.5, location.z + 0.5))
             .setProperty("thlmt:direction", direction);
     }
     /**
@@ -392,6 +490,7 @@ export class Cocoa{
                 block.dimension.runCommand(`setblock ${l.x} ${l.y} ${l.z} air destroy`);
             }
             target.setProperty("thlmt:step", step);
+            target.triggerEvent("life");
         }
         else{
             // 目标方块已消失，补种
@@ -436,41 +535,49 @@ export class Cocoa{
     }
     /**
      * 寻找可可豆，整列寻找，每列最多5个
-     * @param {Dimension} dimension 
-     * @param {Vector} location 
-     * @param {number} range 
-     * @param {number} height
+     * @param {Entity} maid 
+     * @param {number} range
      * @returns {object} 
      */
-    static search(dimension, location, range=6){
+    static search(maid, range=6){
+        ///// 需求判断 /////
+        const dimension = maid.dimension;
+        const location = maid.location;
         let existedTargets = dimension.getEntities({
             "location": location, "maxDistance": range, "type": "thlmt:cocoa"});
         if(existedTargets.length > 3) return;
+
+        ///// 频率调整 /////
+        if(!SpeedController.beforeSearch(maid, this.maxLack, this.lackStep)) return;
+
         /** setblock -121 -60 16 cocoa ["direction"=3,"age"=2]
          * 寻找成熟（"age"=2）的可可豆(cocoa)，并生成带有方向标记（direction）的目标
          */
-        const MAX = 3; // 单方向最大寻找距离
-        let xStart = Math.floor(location.x) - range;
-        let zStart = Math.floor(location.z) - range;
+        let xStart = Math.floor(location.x);
+        let zStart = Math.floor(location.z);
         let y = Math.floor(location.y);
-        let length = 2*range + 1;
-        for(let ix = 0; ix < length; ix++){
-            for(let iz = 0; iz < length; iz++){
-                system.runTimeout(()=>{
+        let count = 0;
+        for(let ix = 0; ix < range; ix = ix>0 ? -ix : 1-ix){
+            system.runTimeout(()=>{
+                for(let iz = 0; iz < range; iz = iz>0 ? -iz : 1-iz){
+                    if(count > this.maxCount) return;
                     let x = xStart + ix;
                     let z = zStart + iz;
                     let _y = y;
-                    let count = 0;
-                    for(let iy = 0; iy < MAX; iy = iy > 0 ? -iy : 1 - iy){
+                    for(let iy = 4; iy > -2; iy--){
                         let block = dimension.getBlock(new Vector(x, _y + iy, z));
                         if(block !== undefined && block.typeId === "minecraft:cocoa" && block.permutation.getState("age") === 2){
                             this.place(dimension, block.location, block.permutation.getState("direction"))
                             count++;
-                            if(count > 5) break;
                         }
                     }
-                }, (iz < range ? 4+8*(range - iz) : (iz-range)*8));
-            }
+                }
+            }, (ix<0 ? 4-8*ix : ix*8));
         }
+
+        ///// 频率调整 /////
+        system.runTimeout(()=>{
+            SpeedController.afterSearch(maid, count, this.maxLack, this.minCount)
+        }, range*8 + 8);
     }
 }

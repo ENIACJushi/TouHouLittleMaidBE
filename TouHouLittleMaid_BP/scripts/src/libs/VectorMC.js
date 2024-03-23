@@ -87,6 +87,7 @@ export function length(vector){
  */
 export function getAnyVerticalVector(vector){
     if(vector.x==0 && vector.y==0){
+        
         if(vector.z==0) return undefined; // 向量为0，不符合函数要求
         // 由函数说明，z不为0，取与z轴垂直的x轴
         return new Vector(1,0,0);

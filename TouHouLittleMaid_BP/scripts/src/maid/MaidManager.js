@@ -468,7 +468,7 @@ export class MaidManager{
                 catch{}
                 // 扫描
                 try{
-                    MaidTarget.search(EntityMaid.Work.get(maid), maid.dimension, maid.location, 15);
+                    MaidTarget.search(maid, 15);
                 }
                 catch{}
             }

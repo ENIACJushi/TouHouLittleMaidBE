@@ -10,15 +10,12 @@
       }
     },
     "component_groups": {
-      "despawn": { "minecraft:instant_despawn":{ "remove_child_entities": false } }
+      "despawn": { "minecraft:instant_despawn":{ "remove_child_entities": false } },
+      "life": { "minecraft:ageable": { "duration": 60, "grow_up": { "event": "despawn", "target": "self" } } }
     },
     "components": {
       "minecraft:type_family": {
         "family": [ "thlmt:melon" ]
-      },
-      "minecraft:ageable": {
-        "duration": 60,
-        "grow_up": { "event": "despawn", "target": "self" }
       },
       "minecraft:damage_sensor": { 
         "triggers": [
@@ -32,7 +29,9 @@
       "minecraft:physics": { "has_gravity": false,"has_collision": false, "push_towards_closest_space": false }
     },
     "events": {
-      "despawn":{ "add": { "component_groups": [ "despawn" ] } }
+      "minecraft:entity_spawned": { "add": { "component_groups": ["life"] } },
+      "despawn":{ "add": { "component_groups": [ "despawn" ] } },
+      "life":{ "sequence": [ {"remove": { "component_groups": [ "life" ] }}, {"add": { "component_groups": [ "life" ] }} ] }
     }
   }
 }

@@ -11,19 +11,16 @@
       }
     },
     "component_groups": {
-      "despawn": { "minecraft:instant_despawn":{ "remove_child_entities": false } }
+      "despawn": { "minecraft:instant_despawn":{ "remove_child_entities": false } },
+      "life": { "minecraft:ageable": { "duration": 60, "grow_up": { "event": "despawn", "target": "self" } } }
     },
     "components": {
       "minecraft:type_family": {
         "family": [ "thlmt:cocoa" ]
       },
-      "minecraft:ageable": {
-        "duration": 60,
-        "grow_up": { "event": "despawn", "target": "self" }
-      },
       "minecraft:damage_sensor": { 
         "triggers": [
-          { "cause": "all", "deals_damage": false}
+          { "cause": "all", "deals_damage": false }
         ]
       },
       "minecraft:collision_box": { "width": 0.0, "height": 0.0 },
@@ -33,6 +30,8 @@
       "minecraft:physics": { "has_gravity": false,"has_collision": false, "push_towards_closest_space": false }
     },
     "events": {
+      "minecraft:entity_spawned": { "add": { "component_groups": ["life"] } },
+      "life":{ "sequence": [ {"remove": { "component_groups": [ "life" ] }}, {"add": { "component_groups": [ "life" ] }} ] },
       "despawn":{ "add": { "component_groups": [ "despawn" ] } }
     }
   }

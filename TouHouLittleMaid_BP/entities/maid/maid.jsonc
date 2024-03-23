@@ -406,7 +406,7 @@
       // 瓜类
       "mode:melon":{
         "minecraft:behavior.nearest_attackable_target": {
-          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 10.0, 
+          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 5.0, 
           "reselect_targets": false, "within_radius": 32, "scan_interval": 20,
           "entity_types": [ 
             { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:melon"} ] }, "max_dist": 32, "must_see": false }
@@ -423,8 +423,8 @@
       // 可可豆
       "mode:cocoa":{
         "minecraft:behavior.nearest_attackable_target": {
-          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 10.0, 
-          "reselect_targets": false, "within_radius": 32, "scan_interval": 20, "target_search_height": 5,
+          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 3.0, 
+          "reselect_targets": false, "within_radius": 32, "scan_interval": 20, "target_search_height": 4,
           "entity_types": [ 
             { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:cocoa"} ] }, "max_dist": 32, "must_see": false }
           ]
@@ -490,7 +490,7 @@
           "max_dist": 8,
           "goal_radius": 2,
           "speed_multiplier": 1.25,
-          
+          "search_height": 2,
           "can_pickup_any_item": true,
           "can_pickup_to_hand_or_equipment": false
         },
