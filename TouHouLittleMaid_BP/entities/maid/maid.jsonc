@@ -11,11 +11,6 @@
         // 背包
         "thlm:backpack_type"     :{"type": "int" , "default": 0    , "range":[0,3], "client_sync": true},
         "thlm:backpack_invisible":{"type": "bool", "default": false, "client_sync": true},
-        // 家 已改为动态属性
-        // "thlm:home_x"  :{"type": "int", "client_sync": false, "default": 0, "range": [-2147483648, 2147483647]},
-        // "thlm:home_y"  :{"type": "int", "client_sync": false, "default": 0, "range": [-2147483648, 2147483647]},
-        // "thlm:home_z"  :{"type": "int", "client_sync": false, "default": 0, "range": [-2147483648, 2147483647]},
-        // "thlm:home_dim":{"type": "int", "client_sync": false, "default": 0, "range": [0, 2]},
         // 表情
         "thlm:emote"             :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
         // 环境
@@ -571,14 +566,6 @@
           ]
         }
       },
-      // 环境音：打开
-      "sound:ambient":{
-        "minecraft:ambient_sound_interval": { "event_name": "breathe", "range": 20, "value": 15 } // 声音循环间隔
-      },
-      // 环境音：关闭
-      "sound:ambient_mute":{
-        "minecraft:ambient_sound_interval": { "event_name": "mute", "range": 32, "value": 16 }
-      },
       ///// 皮肤穷举 /////
       "skin:0":{"minecraft:variant": { "value": 0 }},"skin:1":{"minecraft:variant": { "value": 1 }},"skin:2":{"minecraft:variant": { "value": 2 }},"skin:3":{"minecraft:variant": { "value": 3 }},"skin:4":{"minecraft:variant": { "value": 4 }},"skin:5":{"minecraft:variant": { "value": 5 }},"skin:6":{"minecraft:variant": { "value": 6 }},"skin:7":{"minecraft:variant": { "value": 7 }},"skin:8":{"minecraft:variant": { "value": 8 }},"skin:9":{"minecraft:variant": { "value": 9 }},"skin:10":{"minecraft:variant": { "value": 10 }},"skin:11":{"minecraft:variant": { "value": 11 }},"skin:12":{"minecraft:variant": { "value": 12 }},"skin:13":{"minecraft:variant": { "value": 13 }},"skin:14":{"minecraft:variant": { "value": 14 }},"skin:15":{"minecraft:variant": { "value": 15 }},"skin:16":{"minecraft:variant": { "value": 16 }},"skin:17":{"minecraft:variant": { "value": 17 }},"skin:18":{"minecraft:variant": { "value": 18 }},"skin:19":{"minecraft:variant": { "value": 19 }},"skin:20":{"minecraft:variant": { "value": 20 }},
       "skin:21":{"minecraft:variant": { "value": 21 }},"skin:22":{"minecraft:variant": { "value": 22 }},"skin:23":{"minecraft:variant": { "value": 23 }},"skin:24":{"minecraft:variant": { "value": 24 }},"skin:25":{"minecraft:variant": { "value": 25 }},"skin:26":{"minecraft:variant": { "value": 26 }},"skin:27":{"minecraft:variant": { "value": 27 }},"skin:28":{"minecraft:variant": { "value": 28 }},"skin:29":{"minecraft:variant": { "value": 29 }},"skin:30":{"minecraft:variant": { "value": 30 }},"skin:31":{"minecraft:variant": { "value": 31 }},"skin:32":{"minecraft:variant": { "value": 32 }},"skin:33":{"minecraft:variant": { "value": 33 }},"skin:34":{"minecraft:variant": { "value": 34 }},"skin:35":{"minecraft:variant": { "value": 35 }},"skin:36":{"minecraft:variant": { "value": 36 }},"skin:37":{"minecraft:variant": { "value": 37 }},"skin:38":{"minecraft:variant": { "value": 38 }},"skin:39":{"minecraft:variant": { "value": 39 }},"skin:40":{"minecraft:variant": { "value": 40 }},
@@ -700,7 +687,6 @@
             "thlmm:maid_basic",
             "thlmm:maid_wild",
             "environment:simple",
-            "sound:ambient_mute",
             "backpack:default",
             "thlmm:lv1_basic"
           ]
@@ -717,8 +703,7 @@
         },
         "add": {
           "component_groups": [
-            "status:follow_on_tame",
-            "sound:ambient"
+            "status:follow_on_tame"
           ]
         }
       },
@@ -730,8 +715,7 @@
         },
         "add": {
           "component_groups": [
-            "status:follow_on_tame",
-            "sound:ambient"
+            "status:follow_on_tame"
           ]
         }
       },
@@ -744,10 +728,9 @@
           "thlmm:lv1_basic",
           "thlmm:lv1_tame",
           "status:follow_on_tame",
-          "sound:ambient",
           "thlmm:maid_tame"
         ]},
-        "add": { "component_groups": [ "sound:ambient_mute","thlmm:npc_basic" ] },
+        "add": { "component_groups": [ "thlmm:npc_basic" ] },
         "trigger": "thlmm:n",
         "set_property": { "thlm:work": -1 }
       },
@@ -795,7 +778,7 @@
         "remove": {"component_groups": ["status:follow_on_tame"]},
         "queue_command":{ "command": ["particle thlm:maid_angry ~~~"]}
       },
-
+      
       // 等级
       "api:lv_1_basic" : {"add": { "component_groups": [ "thlmm:lv1_basic" ] }}, "api:lv_1_basic_quit" : {"remove": { "component_groups": [ "thlmm:lv1_basic" ] }},
       "api:lv_1_tame"  : {"add": { "component_groups": [ "thlmm:lv1_tame"  ] }}, "api:lv_1_tame_quit"  : {"remove": { "component_groups": [ "thlmm:lv1_tame"  ] }},
@@ -862,10 +845,6 @@
       
       "environment:morning":{ "set_property":{"environment:daytime": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.morning @a ~~~"]}},
       "environment:night"  :{ "set_property":{"environment:daytime": 0}, "queue_command":{ "command": ["playsound mob.thlmm.maid.night @a ~~~"]}},
-
-      ///// 声音控制 /////
-      "sound:ambient":{ "remove":{"component_groups":["sound:ambient_mute"]}, "add":{"component_groups":["sound:ambient"]}},
-      "sound:ambient_mute":{ "add":{"component_groups":["sound:ambient_mute"]}, "remove":{"component_groups":["sound:ambient"]}},
 
       ///// 皮肤穷举 /////
       "skin:0":{"add":{"component_groups":["skin:0"]}},"skin:1":{"add":{"component_groups":["skin:1"]}},"skin:2":{"add":{"component_groups":["skin:2"]}},"skin:3":{"add":{"component_groups":["skin:3"]}},"skin:4":{"add":{"component_groups":["skin:4"]}},"skin:5":{"add":{"component_groups":["skin:5"]}},"skin:6":{"add":{"component_groups":["skin:6"]}},"skin:7":{"add":{"component_groups":["skin:7"]}},"skin:8":{"add":{"component_groups":["skin:8"]}},"skin:9":{"add":{"component_groups":["skin:9"]}},"skin:10":{"add":{"component_groups":["skin:10"]}},"skin:11":{"add":{"component_groups":["skin:11"]}},"skin:12":{"add":{"component_groups":["skin:12"]}},"skin:13":{"add":{"component_groups":["skin:13"]}},"skin:14":{"add":{"component_groups":["skin:14"]}},"skin:15":{"add":{"component_groups":["skin:15"]}},"skin:16":{"add":{"component_groups":["skin:16"]}},"skin:17":{"add":{"component_groups":["skin:17"]}},"skin:18":{"add":{"component_groups":["skin:18"]}},"skin:19":{"add":{"component_groups":["skin:19"]}},"skin:20":{"add":{"component_groups":["skin:20"]}},

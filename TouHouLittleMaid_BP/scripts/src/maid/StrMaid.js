@@ -63,10 +63,13 @@ export class StrMaid{
         // 拾物模式
         rawtext.push({"translate": "message.tlm.admin.maid.pick"});
         rawtext.push({"text": `${this.Pick.get(maidStr)}\n`});
+        // 静音模式
+        rawtext.push({"translate": "message.tlm.admin.maid.mute"});
+        rawtext.push({"text": `${this.Mute.get(maidStr)}\n`});
 
         return rawtext;
     }
-    // L O H S W B P N K
+    // L O H S W B P M N K
     // L 等级
     static Level = {
         /**
@@ -259,6 +262,29 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'P', str);
         }
     }
+    // M 静音模式
+    static Mute = {
+        /**
+         * 获取模式
+         * @param {string} maidStr
+         * @returns {boolean|undefined}
+         */
+        get(maidStr){
+            let str = StrHelper.getValue(maidStr, 'M', 1);
+            if(str === undefined) return undefined;
+            return StrHelper.str2bool(str);
+        },
+        /**
+         * 设置模式
+         * @param {string} maidStr
+         * @param {boolean} value
+         * @returns {string} New Maid String
+         */
+        set(maidStr, value){
+            let str = StrHelper.bool2str(value);
+            return StrHelper.setValue(maidStr, 'M', str);
+        }
+    }
     /**
      * N 字符串数据，放在最后，使用json数组格式存储： ["12",0,0]
      * 数据为空时，设为数字 0，因为只占一个字符的位置
@@ -346,7 +372,7 @@ export class StrMaid{
             }
             else{
                 // 若数组长度比数据量小，则补齐空字符串
-                for(let i = oldValue.length()-1; i < this.amount; i++){
+                for(let i = oldValue.length-1; i < this.amount; i++){
                     oldValue[i] = 0;
                 }
             }

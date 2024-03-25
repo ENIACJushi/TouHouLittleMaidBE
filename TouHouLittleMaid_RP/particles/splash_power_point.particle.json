@@ -66,8 +66,7 @@
         }
       },
       "minecraft:particle_appearance_tinting": {
-        "color": [ "variable.color.r", "variable.color.g", "variable.color.b", "variable.color.a" ]
-        // "color": [ "Math.Random(0, 255)", "Math.Random(0, 255)", "Math.Random(0, 255)", "variable.color.a" ]
+				"color": [1, 0, 0, 1]
       },
       "minecraft:particle_appearance_lighting": {}
     }

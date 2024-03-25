@@ -46,6 +46,9 @@ export class EntityMaid{
         // 拾物模式
         rawtext.push({"translate": "message.tlm.admin.maid.pick"});
         rawtext.push({"text": `${this.Pick.get(maid)}\n`});
+        // 静音模式
+        rawtext.push({"translate": "message.tlm.admin.maid.mute"});
+        rawtext.push({"text": `${this.Mute.get(maid)}\n`});
 
         return rawtext;
     }
@@ -303,6 +306,7 @@ export class EntityMaid{
         halfStr(){ return String.fromCodePoint(this.strOffset + 0x04); },
         fullStr(){ return String.fromCodePoint(this.strOffset + 0x05); }
     }
+    // 击杀数
     static Kill = {
         /**
          * 获取杀敌数
@@ -692,6 +696,26 @@ export class EntityMaid{
          */
         getType(maid){
             return maid.getProperty("thlm:backpack_type");
+        },
+        /**
+         * 创建一个背吧并背上
+         * @param {Entity} maid 
+         * @returns {Entity|undefined}
+         */
+        create(maid){
+            if(maid===undefined) return undefined;
+
+            var rideable = maid.getComponent("minecraft:rideable");
+            const rider = rideable.getRiders()[0];
+            if(rider === undefined){
+                // 生成背包
+                var backpack = MaidBackpack.create(maid, MaidBackpack.default, maid.dimension, maid.location);
+                EntityMaid.Backpack.setID(maid, backpack.id);
+
+                // 背上背包   无效：rideable.addRider(backpack);
+                maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
+                return backpack;
+            }
         }
     }
     // 表情
@@ -966,6 +990,41 @@ export class EntityMaid{
             container.swapItems(otherSlot, otherContainer);
         }
     }
+    // 静音模式
+    static Mute = {
+        /**
+         * 设置模式
+         * @param {Entity} maid 
+         * @param {boolean} value
+         */
+        set(maid, value){
+            DP.setBoolean(maid, "mute", value);
+        },
+        switchMode(maid){
+            this.set(maid, !this.get(maid));
+        },
+        /**
+         * 获取模式
+         * @param {Entity} maid 
+         * @returns {boolean}
+         */
+        get(maid){
+            let res = DP.getBoolean(maid, "mute");
+            if(res===undefined){
+                this.set(maid, false);
+                return false;
+            }
+            else{
+                return res;
+            }
+        },
+        getImg(is_mute){
+            return is_mute?"textures/gui/mute_activate.png":"textures/gui/mute_deactivate.png"
+        },
+        getLang(is_mute){
+            return is_mute?"gui.touhou_little_maid:button.mute.true.name":"gui.touhou_little_maid:button.mute.false.name"
+        }
+    }
     
     /// 字符化
     /**
@@ -995,6 +1054,8 @@ export class EntityMaid{
         // maidStr = StrMaid.Work.set(maidStr, this.Work.get(maid));
         // 拾物模式
         maidStr = StrMaid.Pick.set(maidStr, this.Pick.get(maid));
+        // 静音模式
+        maidStr = StrMaid.Mute.set(maidStr, this.Mute.get(maid));
         // 背包是否隐藏
         maidStr = StrMaid.backpackInvisibility.set(maidStr, this.Backpack.getInvisible(maid));
 
@@ -1016,14 +1077,8 @@ export class EntityMaid{
         if(backpack_id !== undefined){
             let backpack = world.getEntity(backpack_id);
             if(backpack !== undefined){
-                if(MaidBackpack.getType(backpack) === MaidBackpack.default){
-                    // 爆出物品
-                    MaidBackpack.dump(backpack, maid.location);
-                }
-                else{
-                    MaidBackpack.setInvisible(backpack, false);
-                    backpack.triggerEvent("api:grave");
-                }
+                MaidBackpack.setInvisible(backpack, false);
+                backpack.triggerEvent("api:grave");
             }
         }
         return maidStr;
@@ -1063,6 +1118,8 @@ export class EntityMaid{
         // this.Work.set(maid, StrMaid.Work.get(maidStr));
         // 拾物模式
         this.Pick.set(maid, StrMaid.Pick.get(maidStr));
+        // 静音模式
+        this.Mute.set(maid, StrMaid.Mute.get(maidStr));
         // 背包是否隐藏
         this.Backpack.setInvisible(maid, StrMaid.backpackInvisibility.get(maidStr));
 

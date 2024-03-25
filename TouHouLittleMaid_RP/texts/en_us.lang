@@ -51,6 +51,7 @@ message.tlm.admin.maid.health= Health -
 message.tlm.admin.maid.work= Work - 
 message.tlm.admin.maid.backpack= Hide Backpack - 
 message.tlm.admin.maid.pick= Pick - 
+message.tlm.admin.maid.mute= Mute - 
 
 message.tlm.admin.item.void=§cUsing this command requires a item in main hand.§r
 message.tlm.admin.item.not_supported=§cItems that are not supported should be props that can place maids.§r

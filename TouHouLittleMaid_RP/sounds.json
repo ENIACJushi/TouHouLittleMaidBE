@@ -3,11 +3,10 @@
       "entities" : {
          "thlmm:maid" : {
             "events" : {
-               "breathe": "mob.thlmm.maid.idle",
                "death"  : "mob.thlmm.maid.death",
                "hurt"   : "mob.thlmm.maid.hurt"
             },
-            "pitch" : [ 1.00, 1.10 ],
+            "pitch" : [ 1.00, 1.00 ],
             "volume" : 1.0
          }
       }

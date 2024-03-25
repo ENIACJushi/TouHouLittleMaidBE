@@ -105,6 +105,7 @@ message.tlm.admin.maid.health= 生命值 -
 message.tlm.admin.maid.work= 工作模式 - 
 message.tlm.admin.maid.backpack= 隐藏背包 - 
 message.tlm.admin.maid.pick= 拾物模式 - 
+message.tlm.admin.maid.mute= 静音模式 - 
 
 message.tlm.admin.item.void=§c使用此指令需要手持物品 §r
 message.tlm.admin.item.not_supported=§c不支持的物品, 应该为可以放置女仆的道具 §r
@@ -136,6 +137,8 @@ gui.touhou_little_maid:button.backpack.false.name=隐藏背包
 gui.touhou_little_maid:button.skin.name=切换模型
 gui.touhou_little_maid:button.pickup.true.name=拾物模式已开启
 gui.touhou_little_maid:button.pickup.false.name=拾物模式已关闭
+gui.touhou_little_maid:button.mute.true.name=静音模式已开启
+gui.touhou_little_maid:button.mute.false.name=静音模式已关闭
 gui.touhou_little_maid:left_panel.title=工作模式
 
 ##### 其它 #####

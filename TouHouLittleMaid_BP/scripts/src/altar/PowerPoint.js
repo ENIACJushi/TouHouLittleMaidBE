@@ -1,4 +1,4 @@
-import { Player, world, Dimension, Entity, Vector, MolangVariableMap, WorldInitializeAfterEvent,EntityTypes } from "@minecraft/server";
+import { Player, world, Dimension, Entity, Vector, WorldInitializeAfterEvent,EntityTypes } from "@minecraft/server";
 import * as Tool from "../libs/scarletToolKit"
 
 var gohei_scan = 0;
@@ -43,13 +43,6 @@ export default class PowerPoint {
             }
             
             this.summon_power_velocity(Math.ceil(Tool.getRandom(30, 90)), dimension, summon_location, [en.getVelocity().x/2, 0, en.getVelocity().z/2]);
-            // var molang = new MolangVariableMap();
-            // molang = molang.setColorRGBA("variable.color", {
-            //     alpha: 0,
-            //     blue: 61,
-            //     green: 255,
-            //     red: 75
-            // });
             dimension.spawnParticle("touhou_little_maid:splash_power_point", summon_location);
         }
         catch{}

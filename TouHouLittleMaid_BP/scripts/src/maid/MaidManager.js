@@ -133,12 +133,10 @@ export class MaidManager{
         
         // 导出胶片物品
         if(config["maid_death_bag"]){
-            if(MaidBackpack.getType(backpack) !== MaidBackpack.default){
-                let container = MaidBackpack.getContainer(backpack);
-                if(container.emptySlotsCount > 0){
-                    container.addItem(output_item);
-                    return;
-                }
+            let container = MaidBackpack.getContainer(backpack);
+            if(container.emptySlotsCount > 0){
+                container.addItem(output_item);
+                return;
             }
         }
         event.entity.dimension.spawnItem(output_item, event.entity.location);
@@ -410,16 +408,23 @@ export class MaidManager{
      */
     static inventoryModeEvent(event){
         let maid = event.entity;
+        // 获取背包，如果不存在或已成为坟墓，则召唤一个新的
         let bag = EntityMaid.Backpack.getEntity(maid);
-
-        let pick = EntityMaid.Pick.get(maid);
-        maid.setDynamicProperty("temp_pick", pick);
-        if(pick) EntityMaid.Pick.set(maid, false);
-
-        EntityMaid.Inventory.checkMode(maid);// 转储 女仆→背包实体
-        EntityMaid.Emote.backpack(maid);
-        // bag.nameTag = maid.nameTag===""?"entity.touhou_little_maid:maid.name":maid.nameTag;
-        MaidBackpack.show(bag);
+        if(bag===undefined || bag.getComponent("is_sheared")){
+            bag = EntityMaid.Backpack.create(maid);
+            maid.triggerEvent("thlmm:s");
+            maid.triggerEvent("on_tamed");
+        }
+        else{
+            let pick = EntityMaid.Pick.get(maid);
+            maid.setDynamicProperty("temp_pick", pick);
+            if(pick) EntityMaid.Pick.set(maid, false);
+    
+            EntityMaid.Inventory.checkMode(maid);// 转储 女仆→背包实体
+            EntityMaid.Emote.backpack(maid);
+            // bag.nameTag = maid.nameTag===""?"entity.touhou_little_maid:maid.name":maid.nameTag;
+            MaidBackpack.show(bag);
+        }
     }
     /**
      * 定时事件
@@ -452,7 +457,8 @@ export class MaidManager{
                 case EntityMaid.Work.cocoa: Cocoa.stepEvent(maid); break;
                 default: break;
             }
-            // 3步
+            // 使用质数 2 3 5 7 11 13 17 19
+            // 3步 - 9秒
             if(healStep % 3 === 0){
                 // 回血
                 try{
@@ -471,6 +477,18 @@ export class MaidManager{
                     MaidTarget.search(maid, 15);
                 }
                 catch{}
+            }
+            // 11步 - 33秒
+            else if(healStep % 11 === 0){
+                // 播放idle语音
+                if(!EntityMaid.Mute.get(maid)){
+                    system.runTimeout(()=>{
+                        try{
+                            EntityMaid.playSound(maid, "mob.thlmm.maid.idle");
+                        }
+                        catch{}
+                    }, Tool.getRandomInteger(0, 100));
+                }
             }
         }
         catch{ }

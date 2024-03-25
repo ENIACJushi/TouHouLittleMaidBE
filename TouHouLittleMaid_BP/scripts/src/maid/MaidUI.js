@@ -55,6 +55,7 @@ class MaidMenuSimple {
         let work_type = EntityMaid.Work.get(this.maid);
         let home_mode = EntityMaid.Home.getMode(this.maid);
         let mode_pick = EntityMaid.Pick.get(this.maid);
+        let mode_mute = EntityMaid.Mute.get(this.maid);
         let backpack_invisible = EntityMaid.Backpack.getInvisible(this.maid);
         let skin_pack_index    = EntityMaid.Skin.getPack(this.maid);
         let skin_index         = EntityMaid.Skin.getIndex(this.maid);
@@ -87,6 +88,10 @@ class MaidMenuSimple {
             .button({rawtext:[{translate: mode_pick
                 ? "gui.touhou_little_maid:button.pickup.true.name"
                 : "gui.touhou_little_maid:button.pickup.false.name"}]}, EntityMaid.Pick.getImg(mode_pick))
+            // 静音模式
+            .button({rawtext:[{translate: mode_mute
+                ? "gui.touhou_little_maid:button.mute.true.name"
+                : "gui.touhou_little_maid:button.mute.false.name"}]}, EntityMaid.Mute.getImg(mode_pick))
             // 选择模型
             .button({rawtext:[{translate: "gui.touhou_little_maid:button.skin.name"},{text: " | "}, skin_display]}, MaidSkin.getPackIcon(skin_pack_index))
 
@@ -108,6 +113,10 @@ class MaidMenuSimple {
                     system.runTimeout(()=>{this.main()},1);
                     break;
                 case 4:
+                    EntityMaid.Mute.switchMode(this.maid);
+                    system.runTimeout(()=>{this.main()},1);
+                    break;
+                case 5:
                     this.skinpackSelection();
                     break;
                 default:
@@ -195,6 +204,7 @@ class MaidMenuUI {
         let work_type = EntityMaid.Work.get(this.maid);
         let home_mode = EntityMaid.Home.getMode(this.maid);
         let pick_mode = EntityMaid.Pick.get(this.maid);
+        let mute_mode = EntityMaid.Mute.get(this.maid)
         let backpack_invisible = EntityMaid.Backpack.getInvisible(this.maid);
         let skin_pack_index = EntityMaid.Skin.getPack(this.maid);
         let skin_index = EntityMaid.Skin.getIndex(this.maid);
@@ -222,6 +232,8 @@ class MaidMenuUI {
             .button({ translate: EntityMaid.Ride.getLang(false)}, EntityMaid.Ride.getImg(false)) //ride 模式
             // 显示/隐藏背包
             .button(MaidBackpack.getButtonLang(backpack_invisible), MaidBackpack.getButtonImg(backpack_invisible)) // 隐藏背包
+            // 静音模式
+            .button({ translate: EntityMaid.Mute.getLang(pick_mode)}, EntityMaid.Mute.getImg(mute_mode)) //mute 模式
             // 选择模型
             .button({rawtext:[{translate: "gui.touhou_little_maid:button.skin.name"}, {text: " | "}, skin_display]}, "textures/gui/maid_skin.png") // 选择模型
         // 工作模式
@@ -238,9 +250,10 @@ class MaidMenuUI {
                     case 2: EntityMaid.Pick.set(this.maid, !pick_mode); system.runTimeout(()=>{this.main()},1); break; // 拾物模式
                     case 3: EntityMaid.Ride.switchMode(this.maid); system.runTimeout(()=>{this.main()},1); break; // 骑乘模式
                     case 4: EntityMaid.Backpack.setInvisible(this.maid, !backpack_invisible); system.runTimeout(()=>{this.main()},1); break; // 隐藏背包
-                    case 5: this.skinpackSelection(); break; // 模型选择
+                    case 5: EntityMaid.Mute.set(this.maid, !mute_mode); system.runTimeout(()=>{this.main()},1); break; // 静音模式
+                    case 6: this.skinpackSelection(); break; // 模型选择
                     default:// 工作模式选择
-                        EntityMaid.Work.set(this.maid, response.selection - 6);
+                        EntityMaid.Work.set(this.maid, response.selection - 7);
                         system.runTimeout(()=>{this.main()},2);
                         break;
                 }

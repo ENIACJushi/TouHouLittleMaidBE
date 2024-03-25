@@ -93,7 +93,7 @@
 			],
 			"textures": [ "Array.skins[query.variant]" ],
 			"part_visibility": [
-				{ "*": "!query.is_baby && !query.is_riding" }
+				{ "*": "query.variant==0 ? (!query.is_riding) : (!query.is_baby && !query.is_riding)" }
 			]
 		},
 		"controller.render.touhou_little_maid.maid.maid_backpack": {
