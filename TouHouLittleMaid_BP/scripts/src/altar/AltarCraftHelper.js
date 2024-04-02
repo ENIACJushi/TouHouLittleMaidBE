@@ -1,5 +1,5 @@
 import { Dimension, ItemStack, Player, Vector } from "@minecraft/server";
-import * as Tool from "../libs/scarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 import { recipeList } from "../../data/recipes/index"
 import { tagDefines } from "../../data/recipes/tag_define"
 import PowerPoint from "./PowerPoint";
@@ -153,10 +153,8 @@ export class AltarCraftHelper{
                             let lore = source_item.getLore();
                             if(lore.length === 0) return false; // 无lore
                             
-                            // 拼接lore字符串
-                            let strLore="";
-                            for(let temp of lore){ strLore += temp; }
-                            let strPure = Tool.loreStr2Pure(strLore);
+                            // 转换lore字符串
+                            let strPure = Tool.lore2Str(lore);
 
                             let maid = EntityMaid.fromStr(strPure, dimension, location, false);
                             maid.triggerEvent("api:reborn");

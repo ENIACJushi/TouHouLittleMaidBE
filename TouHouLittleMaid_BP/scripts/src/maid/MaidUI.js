@@ -1,7 +1,7 @@
 import * as mcui from '@minecraft/server-ui';
 import { system, world, Entity, Player } from "@minecraft/server"
 import { EntityMaid } from './EntityMaid';
-import { logger } from "../libs/scarletToolKit"
+import { logger } from "../libs/ScarletToolKit"
 import { MaidSkin } from './MaidSkin';
 import { config } from '../controller/Config';
 import { MaidBackpack } from './MaidBackpack';

@@ -1,5 +1,5 @@
 import { Player, world, system } from "@minecraft/server"
-import * as Tool from"./src/libs/scarletToolKit";
+import * as Tool from"./src/libs/ScarletToolKit";
 import * as mcui from "@minecraft/server-ui"
 import { StrMaid } from "./src/maid/StrMaid";
 

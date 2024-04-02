@@ -4,7 +4,7 @@ import { DanmakuColor as Color } from "../../../src/danmaku/DanmakuColor";
 import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
 import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";
 import { rotate_axis } from "../../../src/libs/vector3d";
-import * as Tool from "../../../src/libs/scarletToolKit"
+import * as Tool from "../../../src/libs/ScarletToolKit"
 
 // Java.asJSONCompatible 改为 export const SpellCard = 
 export const SpellCard = {

@@ -5,7 +5,7 @@
       "identifier": "thlmm:maid", "is_spawnable": true, "is_summonable": true, "is_experimental": false,
       "properties": {
         // 工作模式
-        "thlm:work" : {"type": "int", "default": 0, "range":[-1, 20], "client_sync": true},
+        "thlm:work" : {"type": "int", "default": 0, "range":[-20, 20], "client_sync": true},
         // 模型包
         "thlm:skin_pack"  : {"type": "int", "default": 0, "range":[0, 99999], "client_sync": true},
         // 背包
@@ -16,7 +16,9 @@
         // 环境
         "environment:temperature" :{"type": "int", "client_sync": true, "default": 0 , "range": [0, 5]}, // 0 正常  0 海  1 冷  2 热
         "environment:weather"     :{"type": "int", "client_sync": true, "default": 0 , "range": [0, 5]}, // 0 无天气  1 雨  1 雷电  2 雪
-        "environment:daytime"     :{"type": "int", "client_sync": true, "default": -1, "range": [-1, 1]} // 为了在生成时发出声音，默认设为-1
+        "environment:daytime"     :{"type": "int", "client_sync": true, "default": -1, "range": [-1, 1]}, // 为了在生成时发出声音，默认设为-1
+        // 缩放大小 仅用于雕塑
+        "thlm:scale": {"type": "float", "client_sync": true, "default": 1.0, "range": [0.0, 999.0]}
       }
     },
     "component_groups": {
@@ -671,17 +673,62 @@
         }
       },
 
-      ///////// 手办 基础属性 /////////
-      "thlmm:sculpture_basic":{
-
+      ///////// 手办/雕塑 基础属性 /////////
+      "thlmm:statues":{
+        "minecraft:type_family": {
+          "family": ["thlm:statues"]
+        },
+        "minecraft:knockback_resistance": { "value": 1.0 },
+        "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+        "minecraft:collision_box": { "width": 0, "height": 0},
+        "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false},
+        "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
+        "minecraft:persistent": { },
+        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false }
+      },
+      "thlmm:garage_kit_un_solid":{
+        "minecraft:type_family": { "family": ["thlm:garage_kit_un_solid"] },
+        "minecraft:timer": {
+          "time":[ 20, 40 ],
+          "looping": true,
+          "time_down_event": {
+            "event": "garage_kit_scan",
+            "target": "self"
+          }
+        },
+        "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false},
+        "minecraft:knockback_resistance": { "value": 1.0 },
+        "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+        "minecraft:collision_box": { "width": 0, "height": 0},
+        "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
+        "minecraft:persistent": { },
+        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false }
+      },
+      "thlmm:garage_kit_solid":{
+        "minecraft:type_family": { "family": ["thlm:garage_kit_solid"] },
+        "minecraft:knockback_resistance": { "value": 1.0 },
+        "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+        "minecraft:collision_box": { "width": 0, "height": 0},
+        "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false},
+        "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
+        "minecraft:persistent": { },
+        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false }
       }
     },
     "components": {
-      "minecraft:variant": { "value": 0 }
+      "minecraft:variant": { "value": 0 },
+      "minecraft:knockback_resistance": { "value": 1.0 },
+      "minecraft:collision_box": { "width": 0, "height": 0},
+      "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
+      "minecraft:persistent": { },
+      "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false }
     },
     "events": {
       ///// 基础事件 /////
       "minecraft:entity_spawned": {
+        "trigger": "thlmm:0"
+      },
+      "become_maid":{
         "add": {
           "component_groups": [
             "thlmm:maid_basic",
@@ -690,10 +737,19 @@
             "backpack:default",
             "thlmm:lv1_basic"
           ]
-        },
-        "trigger": "thlmm:0"
+        }
       },
-      
+      // 重生的女仆，等级交给脚本设置
+      "become_maid_reborn":{
+        "add": {
+          "component_groups": [
+            "thlmm:maid_basic",
+            "thlmm:maid_wild",
+            "environment:simple",
+            "backpack:default"
+          ]
+        }
+      },
       "despawn":{ "add": { "component_groups": [ "despawn" ] } },
       "on_tamed": {
         "remove": {
@@ -734,6 +790,57 @@
         "trigger": "thlmm:n",
         "set_property": { "thlm:work": -1 }
       },
+      "become_statues":{
+        "remove": { "component_groups": [
+          "thlmm:maid_basic",
+          "thlmm:maid_wild",
+          "environment:simple",
+          "backpack:default",
+          "thlmm:lv1_basic",
+          "thlmm:lv1_tame",
+          "status:follow_on_tame",
+          "thlmm:maid_tame"
+        ]},
+        "add": { "component_groups": [ "thlmm:statues" ] },
+        "set_property": { "thlm:work": -2 }
+      },
+      "become_garage_kit_un_solid":{
+        "remove": { "component_groups": [
+          "thlmm:maid_basic",
+          "thlmm:maid_wild",
+          "environment:simple",
+          "backpack:default",
+          "thlmm:lv1_basic",
+          "thlmm:lv1_tame",
+          "status:follow_on_tame",
+          "thlmm:maid_tame"
+        ]},
+        "add": { "component_groups": [ "thlmm:garage_kit_un_solid" ] },
+        "set_property": { "thlm:work": -3 }
+      },
+      "garage_kit_scan":{
+        "queue_command": { "command": "execute as @s at @s if block ~~-1~ fire run event entity @s become_garage_kit_solid"}
+      },
+      "become_garage_kit_solid":{
+        "sequence": [
+          {"trigger": "quit_maid"},
+          {
+            "remove": { "component_groups": [ "thlmm:garage_kit_un_solid" ] },
+            "add": { "component_groups": [ "thlmm:garage_kit_solid" ] },
+            "set_property": { "thlm:work": -4 },
+            "queue_command": {"command": [
+              "setblock ~~~ touhou_little_maid:garage_kit_block [\"thlm:solid\"=true]"
+            ]}
+          },
+          {
+            "filters": { "test": "is_family", "subject": "self", "value": "thlm:garage_kit_un_solid" },
+            "queue_command": {"command": [
+              "particle minecraft:egg_destroy_emitter"
+            ]}
+          }
+        ]
+        
+      },
 
       ///// 脚本事件 /////
       "thlmm:t" :{
@@ -754,6 +861,7 @@
       "thlmm:n" :{}, // NPC
       "thlmm:p" :{}, // Photo
       "thlmm:s" :{ "add": {"component_groups": ["thlmm:maid_tame_sit"]}, "remove": {"component_groups": ["thlmm:maid_tame_inventory"]} },
+      "thlmm:u": {}, // Statues destory
       "thlmm:0" :{}, // Spawn
       "thlmm:1" :{}, // smart slab
       "thlm:n": {}, // npc交互

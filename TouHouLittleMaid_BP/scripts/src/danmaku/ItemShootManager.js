@@ -9,7 +9,7 @@
 import { GoheiCherry } from "./item/GoheiCherry"
 
 import { ItemUseAfterEvent } from "@minecraft/server";
-import * as Tool from "../libs/scarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 
 export class ItemShootManager{
     constructor(){

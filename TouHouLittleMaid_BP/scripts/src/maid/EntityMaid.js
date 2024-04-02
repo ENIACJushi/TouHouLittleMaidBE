@@ -1,6 +1,6 @@
 import { Entity, EntityTypes, world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack, WorldInitializeAfterEvent, Block, Player, ContainerSlot } from "@minecraft/server";
 import { MaidBackpack } from "./MaidBackpack";
-import * as Tool from "../libs/scarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 import { config } from "../controller/Config"
 import { StrMaid } from "./StrMaid";
 import { emote } from "../../data/emote";
@@ -129,23 +129,24 @@ export class EntityMaid{
                 if(maid.getComponent("minecraft:is_tamed") !== undefined){
                     this.eventTamed(maid, level);
                 }
-            },1)
-            
-            DP.setInt(maid, "level");
+            },1);
+            DP.setInt(maid, "level", level);
         },
         /**
          * 触发基础事件
          * @param {Entity} maid
+         * @param {number} level 
          */
-        eventBasic(maid){
-            maid.triggerEvent(`api:lv_${this.get(maid)}_basic`);
+        eventBasic(maid, level){
+            maid.triggerEvent(`api:lv_${level}_basic`);
         },
         /**
          * 触发驯服事件
          * @param {Entity} maid
+         * @param {number} level 
          */
-        eventTamed(maid){
-            maid.triggerEvent(`api:lv_${this.get(maid)}_tame`);
+        eventTamed(maid, level){
+            maid.triggerEvent(`api:lv_${level}_tame`);
         },
         /**
          * 属性值获取
@@ -1025,7 +1026,89 @@ export class EntityMaid{
             return is_mute?"gui.touhou_little_maid:button.mute.true.name":"gui.touhou_little_maid:button.mute.false.name"
         }
     }
-    
+    // 雕塑状态
+    static Statues = {
+        scale:{
+            /**
+             * 设置缩放比例
+             * @param {Entity} maid 
+             * @param {Float} scale 
+             */
+            set(maid, scale){
+                maid.setProperty("thlm:scale", scale);
+            },
+            /**
+             * 获取缩放比例
+             * @param {Entity} maid 
+             * @returns {Float}
+             */
+            get(maid){
+                return maid.getProperty("thlm:scale");
+            }
+        },
+        space:{
+            /**
+             * 设置占位方块尺寸
+             * @param {Entity} maid
+             * @param {Vector} space 
+             */
+            set(maid, space){
+                DP.setVector(maid, "space", space);
+            },
+            /**
+             * 获取占位方块尺寸
+             * @param {Entity} maid 
+             * @returns {Vector|undefined}
+             */
+            get(maid){
+                return DP.getVector(maid, "space");
+            }
+        }
+    }
+    /**
+     * 初始化女仆实体为女仆
+     * @param {Entity} maid 
+     * @param {boolean} [reborn=true] 是否是重生的女仆
+     */
+    static init_maid(maid, reborn=false){
+        if(maid.getDynamicProperty("spawn_set")!==undefined) return;
+
+        // 添加女仆属性
+        maid.triggerEvent(reborn ? "become_maid_reborn" : "become_maid");
+        
+        if(!reborn){
+            // 设置动态属性
+            EntityMaid.initDynamicProperties(maid);
+            system.runTimeout(()=>{
+                if(EntityMaid.Work.get(maid)<0) return;
+                // 首次生成选择随机皮肤
+                if(!EntityMaid.Owner.has(maid)){
+                    EntityMaid.Skin.setRandom(maid);
+                }
+            },1);
+        }
+        // 生成默认背包 ，为脚本召唤背包预留2刻
+        system.runTimeout(()=>{
+            // 非正常女仆，不需要背包
+            if(EntityMaid.Work.get(maid)<0) return;
+            try{
+                if(maid===undefined) return;
+
+                var rideable = maid.getComponent("minecraft:rideable");
+                const rider = rideable.getRiders()[0];
+                if(rider === undefined){
+                    // 生成背包
+                    var backpack = MaidBackpack.create(maid, MaidBackpack.default, maid.dimension, maid.location);
+                    EntityMaid.Backpack.setID(maid, backpack.id);
+
+                    // 背上背包   无效：rideable.addRider(backpack);
+                    maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
+                }
+            }
+            catch{};
+        }, 2);
+        maid.setDynamicProperty("spawn_set", true);
+    }
     /// 字符化
     /**
      * 将女仆转为字符
@@ -1095,6 +1178,8 @@ export class EntityMaid{
     static fromStr(maidStr, dimension, location, set_health=false){
         /// 生成女仆 ///
         var maid = dimension.spawnEntity("thlmm:maid", location);
+        this.init_maid(maid, true);
+        
         /// 设置状态 ///
         // 等级
         this.Level.set(maid, StrMaid.Level.get(maidStr));
@@ -1172,30 +1257,17 @@ export class EntityMaid{
      */
     static toLore(maid){
         let strPure = this.toStr(maid);
-        return this.str2Lore(strPure);
-    }
-    /**
-     * 将纯净字符串转为物品lore
-     * @param {string} strPure 
-     * @returns {string[]}
-     */
-    static str2Lore(strPure){
-        let strLore = Tool.pureStr2Lore(strPure);
-        let lore =[];
-        while(true){
-            if(strLore.length > 50){
-                lore.push(strLore.slice(0, 50));
-                strLore = strLore.slice(50);
-            }
-            else{
-                lore.push(strLore);
-                break;
-            }
-        }
-        return lore;
+        return Tool.str2Lore(strPure);
     }
 
     /// 其它
+    /**
+     * 移除
+     * @param {Entity} maid 
+     */
+    static despawn(maid){
+        maid.triggerEvent("despawn");
+    }
     /**
      * 播放声音
      * @param {Entity} maid 

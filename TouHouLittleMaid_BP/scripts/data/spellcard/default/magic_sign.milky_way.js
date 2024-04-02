@@ -4,7 +4,7 @@ import { DanmakuColor as Color } from "../../../src/danmaku/DanmakuColor";
 import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
 import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";
 import { rotate_axis, add } from "../../../src/libs/vector3d";
-import * as Tool from "../../../src/libs/scarletToolKit"
+import * as Tool from "../../../src/libs/ScarletToolKit"
 
 /**
  * entity.getRotation()获取 [-180, 180]，对应(-180~180)的角度

@@ -1,6 +1,6 @@
 import { system, Entity,world,Vector,Dimension,Container, ItemStack } from "@minecraft/server";
 import { config } from "../controller/Config"
-import * as Tool from "../libs/scarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 import { EntityMaid } from "./EntityMaid";
 import * as Tag from "../libs/TagDataInterface"
 
@@ -30,30 +30,30 @@ export class MaidBackpack{
          * 初始化, 放在世界生成事件后
          */
         init(){
-            if(config["maid_death_bag"] === false){
-                var intervalID = system.runInterval(()=>{
-                    let players = world.getAllPlayers()
-                    let playerAmount = players.length;
-                    if(playerAmount > 0){
-                        if(this.get() === undefined){
-                            // 生成加载器
-                            for(let pl of players){
-                                if(pl.dimension.id === "minecraft:overworld"){
-                                    let entity = pl.dimension.spawnEntity("thlm:chunk_loader",
-                                        new Vector(pl.location.x, -64, pl.location.z));
-                                    entity.nameTag = "THLM_loader";
-                                    this.id = entity.id;
-                                    system.clearRun(intervalID);
-                                    return;
-                                }
-                            }
-                        }
-                        else{
-                            system.clearRun(intervalID);
-                        }
-                    }
-                }, 10);
-            }
+            // if(config["maid_death_bag"] === false){
+            //     var intervalID = system.runInterval(()=>{
+            //         let players = world.getAllPlayers()
+            //         let playerAmount = players.length;
+            //         if(playerAmount > 0){
+            //             if(this.get() === undefined){
+            //                 // 生成加载器
+            //                 for(let pl of players){
+            //                     if(pl.dimension.id === "minecraft:overworld"){
+            //                         let entity = pl.dimension.spawnEntity("thlm:chunk_loader",
+            //                             new Vector(pl.location.x, -64, pl.location.z));
+            //                         entity.nameTag = "THLM_loader";
+            //                         this.id = entity.id;
+            //                         system.clearRun(intervalID);
+            //                         return;
+            //                     }
+            //                 }
+            //             }
+            //             else{
+            //                 system.clearRun(intervalID);
+            //             }
+            //         }
+            //     }, 10);
+            // }
         },
         /**
          * 获取区块加载器

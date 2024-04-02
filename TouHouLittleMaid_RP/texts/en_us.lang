@@ -1,4 +1,4 @@
-message.tlm.player_join1=§e[TLM] Touhou Little Maid 1.0.3
+message.tlm.player_join1=§e[TLM] Touhou Little Maid 1.0.4
 message.tlm.player_join2=§e Visit mcmod.cn for complete tutorial.
 
 ##### UI #####
@@ -18,6 +18,8 @@ item.touhou_little_maid:power_point=Power Point
 item.touhou_little_maid:camera=Aya's Camera
 item.touhou_little_maid:photo=Photo
 item.touhou_little_maid:film=Film
+item.touhou_little_maid:chisel=Chisel
+item.touhou_little_maid:garage_kit=Garage Kit
 
 item.touhou_little_maid:hakurei_gohei_cherry=Sakura Gohei
 item.touhou_little_maid:hakurei_gohei_crafting_table=Hakurei's Gohei (Inactive)
@@ -68,8 +70,8 @@ message.tlm.admin.set.kill.out_of_range=§cError: Invalid kill amount.§r
 ## message.touhou_little_maid:extinguisher.player_cannot_use.name=Your lack of knowledge does not know how to use this item
 ## message.touhou_little_maid:owner_maid_num.can_not_add.name=You can no longer tame maids, you have reached the limit (%d/%d)
 ## message.touhou_little_maid:photo.have_no_nbt_data.name=This damnable photo don't have NBT data.
-## message.touhou_little_maid:chisel.hit_block_error.name=Please right click on the clay block
-## message.touhou_little_maid:chisel.offhand_not_photo.name=Please have a photo of the maid in your offhand
+message.touhou_little_maid:chisel.hit_block_error.name=Please right click on the clay block
+message.touhou_little_maid:chisel.offhand_not_photo.name=Please have a photo of the maid in your offhand
 
 
 action.interact.camera=Photo
@@ -561,7 +563,6 @@ item.touhou_little_maid:item_magnet_bauble=§6Item Magnet
 item.touhou_little_maid:mute_bauble=§6Mute Bauble
 item.touhou_little_maid:entity_placeholder=Spawn ???
 item.touhou_little_maid:substitute_jizo=Substitute Jizo
-item.touhou_little_maid:chisel=Chisel
 item.touhou_little_maid:trumpet=Trumpet
 item.touhou_little_maid:wireless_io=§6Gap
 item.touhou_little_maid:chair_show=Chair Display
@@ -569,7 +570,6 @@ tile.touhou_little_maid:altar_log_block.name=altar
 tile.touhou_little_maid:altar_platform_block.name=altar
 tile.touhou_little_maid:altar_torii_block.name=altar
 tile.touhou_little_maid:maid_bed.name=Maid Bed
-tile.touhou_little_maid:garage_kit.name=Garage Kit
 tile.touhou_little_maid:maid_beacon.name=Shrine Lamp
 tooltips.touhou_little_maid:chair.place.desc.name=Right click on the top of the block to place it.
 tooltips.touhou_little_maid:chair.destroy.desc.name=Shift left hit can destroy it.

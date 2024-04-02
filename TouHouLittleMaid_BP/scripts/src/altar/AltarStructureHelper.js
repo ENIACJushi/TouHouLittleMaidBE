@@ -1,6 +1,6 @@
 import { MultiBlockStructrueManager } from "../libs/MultiBlockStructrueManager";
 import { system,Block, Dimension, Direction, Entity, ItemStack, Player, Vector } from "@minecraft/server";
-import * as Tool from"../libs/scarletToolKit";
+import * as Tool from"../libs/ScarletToolKit";
 import { altarCraft } from "./AltarCraftHelper";
 
 export class AltarStructureHelper extends MultiBlockStructrueManager{
@@ -73,7 +73,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
     /**
      * Generate blocks and entities
      * @param {Dimension} dimension 
-     * @param {Vector3} blockLocation
+     * @param {Vector} blockLocation
      * @param {Direction} blockFace 
      */
     activate(dimension, blockLocation, blockFace){

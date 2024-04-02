@@ -1,5 +1,5 @@
 import { world, system } from "@minecraft/server";
-import { getRandomInteger } from "../libs/scarletToolKit";
+import { getRandomInteger } from "../libs/ScarletToolKit";
 
 export class MaidSkin{
     static DEFAULTAMOUNT = 1; // 默认模型包数量
@@ -151,6 +151,18 @@ export class MaidSkin{
      */
     static getSkinDisplayName(id, index){
         return {translate: `model.${id}.${index}.name`}
+    }
+    /**
+     * 输入 translate文本（`model.${id}.${index}.name`）， 获取皮肤信息
+     * @param {String} translate 
+     * @returns {{ pack: number; index: number; }}
+     */
+    static decodeName(translate){
+        let str = translate.split('.');
+        return {
+            pack: Number(str[1]),
+            index: Number(str[2])
+        }
     }
     /**
      * 获取作者

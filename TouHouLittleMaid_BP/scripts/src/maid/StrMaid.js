@@ -21,7 +21,7 @@
     Tool.logger(`backpackInvisibility:${StrMaid.backpackInvisibility.get(info)}`);
  */
 
-import * as Tool from "../libs/scarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 import { EntityMaid } from "./EntityMaid";
 
 export class StrMaid{

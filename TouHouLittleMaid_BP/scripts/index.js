@@ -1,10 +1,10 @@
-import { world, system, MolangVariableMap } from "@minecraft/server"
+import { world, system, MolangVariableMap, EquipmentSlot } from "@minecraft/server"
 import { altarStructure } from "./src/altar/AltarStructureHelper";
 import experiment from "./experiment"
 import PowerPoint from "./src/altar/PowerPoint"
 import * as Danmaku from "./src/danmaku/DanmakuManager"
 import { CustomSpellCardManger } from "./src/danmaku/CustomSpellCardManger";
-import * as Tool from"./src/libs/scarletToolKit";
+import * as Tool from"./src/libs/ScarletToolKit";
 import { itemShootManager } from "./src/danmaku/ItemShootManager";
 import { ConfigHelper } from "./src/controller/Config";
 import { GoldMicrowaver } from "./src/blocks/GoldMicrowaver";
@@ -13,6 +13,7 @@ import { MaidSkin } from "./src/maid/MaidSkin";
 import { MaidTarget } from "./src/maid/MaidTarget"
 
 import { CommandManager } from './src/controller/Command'
+import { GarageKit } from "./src/blocks/GarageKit";
 
 if(true){
     // World Initialize
@@ -155,6 +156,8 @@ class thlm {
                             // case "gold_microwaver_item": GoldMicrowaver.placeEvent(event); break;
                             case "photo": MaidManager.photoOnUseEvent(event); break;
                             case "smart_slab_has_maid": MaidManager.smartSlabOnUseEvent(event); break;
+                            case "chisel": GarageKit.activate(event); break;
+                            case "garage_kit": GarageKit.placeEvent(event);
                             default:{
                                 //// 御币使用事件 ////
                                 if(itemName.substring(0,13) === "hakurei_gohei"){
@@ -208,7 +211,7 @@ class thlm {
         // Trigger Event
         world.beforeEvents.dataDrivenEntityTriggerEvent.subscribe(event => {
             system.run(()=>{
-                // Tool.logger(event.id)
+                Tool.logger(event.id)
                 // const {entity, id, modifiers} = data;
                 if(event.id.substring(0, 4) == "thlm"){
                     switch(event.id.substring(4, 5)){
@@ -249,6 +252,7 @@ class thlm {
                                 case "p": MaidManager.onPhotoEvent(event);        break; // p Photo
                                 case "s": MaidManager.sitModeEvent(event);        break; // s Sit mode
                                 case "t": MaidManager.timerEvent(event);          break; // t Timer
+                                case "u": GarageKit.scan(event);                  break;  // u statues destroy
                                 case "0": MaidManager.onSpawnEvent(event);        break; // 0 Spawn
                                 case "1": MaidManager.onSmartSlabRecycleEvent(event); break;// 1 Smart slab
                                 default: break;
@@ -289,7 +293,7 @@ class thlm {
         });
         // Death Event
         world.afterEvents.entityDie.subscribe(event =>{
-            let killer = event.damageSource.damagingEntity
+            let killer = event.damageSource.damagingEntity;
             if(killer !== undefined){
                 if(killer.typeId === "thlmm:maid"){
                     MaidManager.killEvent(event);
@@ -309,6 +313,7 @@ class thlm {
                 }
             });
         });
+
         //// Block ////
         // Place
         world.afterEvents.playerPlaceBlock.subscribe(event=>{
@@ -368,7 +373,24 @@ class thlm {
                 }
             });
         });
-        // Power Point Scan
-        system.runInterval(()=>{ PowerPoint.scan_tick(); }, 10);
+
+        // 玩家主手物品检测
+        system.runInterval(()=>{
+            for(let pl of world.getAllPlayers()){
+                let item = pl.getComponent("equippable").getEquipment(EquipmentSlot.Mainhand);
+                if(item!==undefined){
+                    if(item.typeId.substring(0, 18) === "touhou_little_maid"){
+                        let name = item.typeId.substring(19);
+                        switch(name){
+                            default:{
+                                if(name.substring(0, 13) == "hakurei_gohei"){
+                                    PowerPoint.show(pl);
+                                }
+                            }; break;
+                        }
+                    }
+                }
+            }
+        }, 15);
     }
 }

@@ -5,7 +5,7 @@ import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
 import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";
 import { getRotationVector } from "../../../src/danmaku/scirpt/Functions";
 import { rotate_axis, add } from "../../../src/libs/vector3d";
-import * as Tool from "../../../src/libs/scarletToolKit"
+import * as Tool from "../../../src/libs/ScarletToolKit"
 
 // 金符「Metal Fatigue」
 

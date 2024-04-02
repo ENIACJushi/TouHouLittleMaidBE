@@ -1,6 +1,6 @@
 // 发现mc自己有向量运算方法后，修改原来的基于数组的方法
 import { Direction, Vector } from "@minecraft/server";
-import { logger } from "./scarletToolKit";
+import { logger } from "./ScarletToolKit";
 /**
  * 
  * @param {Vector} v1 
@@ -60,6 +60,10 @@ export function getDirectionByView2D(view){
             return temp ? Direction.West : Direction.North;
         }
     }
+}
+
+export function getDirectionByRotation(view){
+    
 }
 
 /**

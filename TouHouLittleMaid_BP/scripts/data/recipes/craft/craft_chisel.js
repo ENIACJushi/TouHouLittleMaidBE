@@ -21,16 +21,16 @@ export const recipe = {
       "tag": "forge:rods/wooden"
     },
     {
-      "tag": "forge:ingots/iron"
+      "item": "minecraft:iron_ingot"
     },
     {
-      "tag": "forge:ingots/iron"
+      "item": "minecraft:iron_ingot"
     },
     {
-      "tag": "forge:dyes/yellow"
+      "item": "minecraft:yellow_dye"
     },
     {
-      "tag": "forge:dyes/red"
+      "item": "minecraft:red_dye"
     }
   ]
 }

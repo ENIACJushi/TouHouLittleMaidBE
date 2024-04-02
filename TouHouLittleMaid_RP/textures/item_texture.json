@@ -27,7 +27,9 @@
     "touhou_little_maid.dragon_skull":{"textures":"textures/items/microwaver/dragon_skull"},
     "touhou_little_maid.magic_powder":{"textures":"textures/items/microwaver/magic_powder"},
     "touhou_little_maid.warden_skull": {"textures":"textures/items/warden_skull"},
-    "touhou_little_maid.npc_tool": {"textures":"textures/items/npc_maid_tool"}
+    "touhou_little_maid.npc_tool": {"textures":"textures/items/npc_maid_tool"},
+    "touhou_little_maid.chisel":{"textures":"textures/items/chisel"},
+    "touhou_little_maid.garage_kit": {"textures":"textures/items/garage_kit"}
     
   }
 }

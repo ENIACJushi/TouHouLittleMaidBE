@@ -1,7 +1,7 @@
 import { ItemStack, Player } from "@minecraft/server";
 import { spellCardList } from "../../data/spellcard/CustomSpellCardEntry"
 import { ItemDefinitionTriggeredBeforeEvent } from "@minecraft/server";
-import * as Tool from "../libs/scarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 
 export class CustomSpellCardManger{
     /**

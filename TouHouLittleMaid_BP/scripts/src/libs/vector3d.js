@@ -1,5 +1,5 @@
 
-import * as Tool from "./scarletToolKit"
+import * as Tool from "./ScarletToolKit"
 
 //////////////////// 向量操作 ////////////////////
 // 数乘 a * n, n 为数

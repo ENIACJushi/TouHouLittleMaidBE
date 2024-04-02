@@ -7,8 +7,8 @@ import { Dimension, Entity, Vector, system } from "@minecraft/server";
 import {DanmakuColor} from "./DanmakuColor";
 import {DanmakuType} from "./DanmakuType";
 import * as Vec from "../libs/vector3d";
-import { getRandom } from "../libs/scarletToolKit"
-import * as Tool from "../libs/scarletToolKit"
+import { getRandom } from "../libs/ScarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 
 export class EntityDanmaku{
     /**

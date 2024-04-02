@@ -38,7 +38,6 @@
 			}
 		},
 
-
 		"controller.render.touhou_little_maid.maid_basic": {
 			"arrays": {
 				"textures": {
@@ -55,7 +54,7 @@
 				}
 			},
 			"part_visibility": [
-				{ "blink": "!q.is_in_ui" }
+				{ "blink": "!q.is_in_ui && q.property('thlm:work')>=-1" }
 			],
 			"geometry": "Array.geos[q.property('thlm:skin_pack')==0?q.variant+1:0]",
 			"materials": [
@@ -125,7 +124,6 @@
 			]
 		},
 
-
 		"controller.render.touhou_little_maid.maid.emote": {
 			"arrays": {
 				"textures": {
@@ -158,6 +156,17 @@
 					"1 / v.emote_frame"
 				]
 			}
+		},
+
+		"controller.render.touhou_little_maid.maid.statue_base": {
+			"geometry": "Geometry.statue_base",
+			"materials": [
+				{ "*": "Material.default" }
+			],
+			"textures": [ "Texture.statue_base" ],
+			"part_visibility": [
+				{ "*": "!q.is_in_ui && q.property('thlm:work')<-1" }
+			]
 		}
 	}
 }

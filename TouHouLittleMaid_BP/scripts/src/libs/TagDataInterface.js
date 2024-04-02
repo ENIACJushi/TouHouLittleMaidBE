@@ -1,5 +1,5 @@
 import { Entity } from "@minecraft/server";
-import { logger } from "./scarletToolKit";
+import { logger } from "./ScarletToolKit";
 
 /**
  * 获取tag数据 最多获取一个

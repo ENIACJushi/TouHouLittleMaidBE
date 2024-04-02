@@ -1,3 +1,4 @@
+## 放在entities/danmaku使用
 import os
 import re
 

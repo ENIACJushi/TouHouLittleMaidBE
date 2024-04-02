@@ -1,6 +1,6 @@
 import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerBeforeEvent, Entity, ItemStack, Player } from "@minecraft/server";
 import { getDirectionByView2D, toString } from "../libs/VectorMC";
-import { logger, getPlayerMainHand, setPlayerMainHand } from "../libs/scarletToolKit";
+import { logger, getPlayerMainHand, setPlayerMainHand } from "../libs/ScarletToolKit";
 
 
 export class GoldMicrowaver{

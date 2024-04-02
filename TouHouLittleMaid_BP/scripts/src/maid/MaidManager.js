@@ -10,7 +10,7 @@
  *  thlmo:<主人生物id>
  */
 import { Direction, ItemStack, world, Entity, Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent } from "@minecraft/server";
-import * as Tool from "../libs/scarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
 import { MaidBackpack } from "./MaidBackpack";
@@ -38,34 +38,8 @@ export class MaidManager{
      */
     static onSpawnEvent(event){
         let maid = event.entity;
-        
-        // 设置动态属性
-        EntityMaid.initDynamicProperties(maid);
-        system.runTimeout(()=>{
-            // 首次生成选择随机皮肤
-            if(!EntityMaid.Owner.has(maid)){
-                EntityMaid.Skin.setRandom(maid);
-            }
-        },1);
-        // 生成默认背包 ，为脚本召唤背包预留2刻
-        system.runTimeout(()=>{
-            try{
-                let maid = event.entity;
-                if(maid===undefined) return;
 
-                var rideable = maid.getComponent("minecraft:rideable");
-                const rider = rideable.getRiders()[0];
-                if(rider === undefined){
-                    // 生成背包
-                    var backpack = MaidBackpack.create(maid, MaidBackpack.default, maid.dimension, maid.location);
-                    EntityMaid.Backpack.setID(maid, backpack.id);
-
-                    // 背上背包   无效：rideable.addRider(backpack);
-                    maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
-                }
-            }
-            catch{};
-        }, 2);
+        EntityMaid.init_maid(maid);
     }
     
     /**
@@ -75,6 +49,9 @@ export class MaidManager{
     static onPhotoEvent(event){
         let maid = event.entity;
         if(maid===undefined) return;
+
+        let owner = EntityMaid.Owner.get(maid);
+        if(owner === undefined) return;
 
         let lore = EntityMaid.toLore(maid);
         
@@ -86,7 +63,7 @@ export class MaidManager{
         location.y += 0.5;
         let output_item = new ItemStack("touhou_little_maid:photo", 1);
         output_item.setLore(lore);
-        if(maid.dimension.spawnItem(output_item, maid.location) !== undefined){
+        if(maid.dimension.spawnItem(output_item, owner.location) !== undefined){
             // 清除女仆
             EntityMaid.Pick.set(maid, false);// 避免捡完东西被消除
             maid.triggerEvent("despawn");
@@ -132,14 +109,11 @@ export class MaidManager{
         output_item.setLore(lore);
         
         // 导出胶片物品
-        if(config["maid_death_bag"]){
-            let container = MaidBackpack.getContainer(backpack);
-            if(container.emptySlotsCount > 0){
-                container.addItem(output_item);
-                return;
-            }
+        let container = MaidBackpack.getContainer(backpack);
+        if(container.emptySlotsCount > 0){
+            container.addItem(output_item);
+            return;
         }
-        event.entity.dimension.spawnItem(output_item, event.entity.location);
     }
     /**
      * 根据方块和一个方向获得可以放置女仆的位置
@@ -198,10 +172,8 @@ export class MaidManager{
         location.x+=0.5;
         location.z+=0.5;
 
-        // 拼接lore字符串
-        let strLore="";
-        for(let temp of lore){ strLore += temp; }
-        let strPure = Tool.loreStr2Pure(strLore);
+        // 转换lore
+        let strPure = Tool.lore2Str(lore);
 
         // 使用者不是主人
         if(StrMaid.Owner.getId(strPure) !== event.source.id) return;
@@ -214,16 +186,19 @@ export class MaidManager{
         Tool.setPlayerMainHand(event.source);
         
         // 如果最近的玩家是主人，直接设置主人
-        let closestPlayer = dimension.getPlayers({"closest":1, "location": location})[0];
-        if(closestPlayer.id === player.id){
-            maid.getComponent("tameable").tame();
-        }
-        // 否则给予玩家一个苹果，自己驯服
-        else{
-            let apple = new ItemStack("minecraft:apple", 1);
-            apple.nameTag="§cApple!"
-            event.source.dimension.spawnItem(apple, event.source.location);
-        }
+        system.runTimeout(()=>{
+            let closestPlayer = dimension.getPlayers({"closest":1, "location": location})[0];
+            if(closestPlayer.id === player.id){
+                maid.getComponent("tameable").tame();
+            }
+            // 否则给予玩家一个苹果，自己驯服
+            else{
+                let apple = new ItemStack("minecraft:apple", 1);
+                apple.nameTag="§cApple!"
+                event.source.dimension.spawnItem(apple, event.source.location);
+            }
+        }, 1);
+        
     }
     /**
      * 魂符使用事件
@@ -258,10 +233,8 @@ export class MaidManager{
         }
         else{
             try{
-                // 拼接lore字符串
-                let str="";
-                for(let temp of lore){ str += temp; }
-                str = Tool.loreStr2Pure(str);
+                // 转换lore
+                str = Tool.lore2Str(lore);
 
                 // 使用者不是主人
                 if(StrMaid.Owner.getId(str) !== event.source.id) return;
@@ -278,17 +251,19 @@ export class MaidManager{
         // 转换物品
         Tool.setPlayerMainHand(event.source, new ItemStack("touhou_little_maid:smart_slab_empty", 1));
         
-        // 如果最近的玩家是主人，直接设置主人
-        let closestPlayer = dimension.getPlayers({"closest":1, "location": location})[0];
-        if(closestPlayer.id === player.id){
-            maid.getComponent("tameable").tame();
-        }
-        // 否则给予玩家一个苹果，自己驯服
-        else{
-            let apple = new ItemStack("minecraft:apple", 1);
-            apple.nameTag="§cApple!"
-            event.source.dimension.spawnItem(apple, event.source.location);
-        }
+        system.runTimeout(()=>{
+            // 如果最近的玩家是主人，直接设置主人
+            let closestPlayer = dimension.getPlayers({"closest":1, "location": location})[0];
+            if(closestPlayer.id === player.id){
+                maid.getComponent("tameable").tame();
+            }
+            // 否则给予玩家一个苹果，自己驯服
+            else{
+                let apple = new ItemStack("minecraft:apple", 1);
+                apple.nameTag="§cApple!"
+                event.source.dimension.spawnItem(apple, event.source.location);
+            }
+        }, 1);
     }
     /**
      * 女仆驯服寻主事件
@@ -314,7 +289,7 @@ export class MaidManager{
                 backpack.getComponent("tameable").tame();
                 // 添加组件
                 maid.triggerEvent("api:follow_on_tame_over");
-                EntityMaid.Level.eventTamed(maid);
+                EntityMaid.Level.eventTamed(maid, EntityMaid.Level.get(maid));
 
                 // 设置主人
                 EntityMaid.Owner.setID(maid, player.id);
@@ -576,9 +551,8 @@ export class MaidManager{
                 let location = maid.getHeadLocation()
                 let direction = new Vector(target.location.x - location.x,
                     target.location.y - location.y,
-                    target.location.z - location.z)
-                let centerDamage = basicDamage*(config["maid_damage"]/100);
-                cherryShoot(maid, location, direction, centerDamage, centerDamage/3, 1);
+                    target.location.z - location.z);
+                cherryShoot(maid, location, direction, basicDamage, basicDamage/3, 1);
                 return;
             }
 
@@ -604,7 +578,7 @@ export class MaidManager{
                         let shoot = DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
                         .setOwnerID(EntityMaid.Owner.getID(maid))
                         .setRandomColor().setRandomType()
-                        .setDamage((distanceFactor + basicDamage + 0.5)*(config["maid_damage"]/100)*delta/amount).setGravity(0)
+                        .setDamage((distanceFactor + basicDamage + 0.5)*delta/amount).setGravity(0)
                         .setVelocity(0.5 * (distanceFactor + 1))
                         .setInaccuracy(0.02).setFanNum(12).setYawTotal(Math.PI/2).setLifeTime(30)
                         for(let i = 0; i < amount; i++){
@@ -619,13 +593,13 @@ export class MaidManager{
                         var aimDanmakuShoot_small = DanmakuShoot.create().setWorld(maid.dimension)
                         .setThrower(maid).setTarget(maid.target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
                         .setColor(DanmakuColor.RANDOM).setType(DanmakuType.STAR)
-                        .setDamage((distanceFactor + basicDamage + 0.5)*(config["maid_damage"]/100)*delta/18).setGravity(0).setLifeTime(40)
+                        .setDamage((distanceFactor + basicDamage + 0.5)*delta/18).setGravity(0).setLifeTime(40)
                         .setVelocity(0.5 * (distanceFactor + 1)).setInaccuracy(Math.PI/7);
                         
                         var aimDanmakuShoot_big =DanmakuShoot.create().setWorld(maid.dimension)
                         .setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0]).setLifeTime(45)
                         .setColor(DanmakuColor.RANDOM).setType(DanmakuType.BIG_STAR)
-                        .setDamage((distanceFactor + basicDamage + 0.5)*(config["maid_damage"]/100)*delta/10).setGravity(0)
+                        .setDamage((distanceFactor + basicDamage + 0.5)*delta/10).setGravity(0)
                         .setVelocity(0.5 * (distanceFactor + 1)).setInaccuracy(Math.PI/15);
                         for(let i=0; i<5;i++){
                             system.runTimeout(()=>{
@@ -653,7 +627,7 @@ export class MaidManager{
                 const amount = 4;
                 let shoot = DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
                     .setOwnerID(EntityMaid.Owner.getID(maid))
-                    .setDamage((distanceFactor + basicDamage)*(config["maid_damage"]/100)/amount).setGravity(0)
+                    .setDamage((distanceFactor + basicDamage)/amount).setGravity(0)
                     .setVelocity(0.5 * (distanceFactor + 1))
                     .setInaccuracy(0.05);
                 

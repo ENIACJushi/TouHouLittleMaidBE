@@ -1,4 +1,4 @@
-message.tlm.player_join1=§e[TLM] 车万女仆 1.0.3
+message.tlm.player_join1=§e[TLM] 车万女仆 1.0.4
 message.tlm.player_join2=§e 访问 mcmod.cn 获取全部教程。
 
 ##### UI #####
@@ -58,6 +58,8 @@ item.touhou_little_maid:maid_backpack_big=大背包
 item.touhou_little_maid:photo=照片
 item.touhou_little_maid:film=胶片
 item.touhou_little_maid:smart_slab=魂符
+item.touhou_little_maid:chisel=凿子
+item.touhou_little_maid:garage_kit=手办
 
 item.touhou_little_maid:hakurei_gohei_cherry=樱之御币
 item.touhou_little_maid:hakurei_gohei=博丽的御币
@@ -125,8 +127,8 @@ message.tlm.admin.set.kill.out_of_range=§c设置失败, 杀敌数无效。§r
 ## message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
 ## message.touhou_little_maid:owner_maid_num.can_not_add.name=你无法再驯服女仆，你已经达到了上限（%d/%d）
 ## message.touhou_little_maid:photo.have_no_nbt_data.name=这该死的照片没有 NBT 数据
-## message.touhou_little_maid:chisel.hit_block_error.name=请右击粘土块
-## message.touhou_little_maid:chisel.offhand_not_photo.name=请副手持有一张女仆照片
+message.touhou_little_maid:chisel.hit_block_error.name=请右击粘土块
+message.touhou_little_maid:chisel.offhand_not_photo.name=请副手持有一张女仆照片
 
 action.interact.camera=照相
 action.interact.thlm.npc=变为 NPC
@@ -601,7 +603,6 @@ item.touhou_little_maid:item_magnet_bauble=§6物品磁铁
 item.touhou_little_maid:mute_bauble=§6禁言饰品
 item.touhou_little_maid:entity_placeholder=生成？？？
 item.touhou_little_maid:substitute_jizo=替身地藏
-item.touhou_little_maid:chisel=凿子
 item.touhou_little_maid:trumpet=小号
 item.touhou_little_maid:wireless_io=§6隙间
 item.touhou_little_maid:chair_show=坐垫显示器
@@ -609,7 +610,6 @@ tile.touhou_little_maid:altar_log_block.name=祭坛
 tile.touhou_little_maid:altar_platform_block.name=祭坛
 tile.touhou_little_maid:altar_torii_block.name=祭坛
 tile.touhou_little_maid:maid_bed.name=女仆床
-tile.touhou_little_maid:garage_kit.name=手办
 tile.touhou_little_maid:maid_beacon.name=神社庭灯
 
 

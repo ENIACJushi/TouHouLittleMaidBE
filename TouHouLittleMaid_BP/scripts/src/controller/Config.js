@@ -1,7 +1,8 @@
 import { world, system, Entity } from "@minecraft/server";
-import * as Tool from "../libs/scarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 export var config={
     /**
+     * 已弃用
      * true ：阵亡时在原地生成背包
      * false：不生成背包，在复活时物品会自动回到女仆身上
      * 建议多人游戏时设为true
@@ -12,10 +13,8 @@ export var config={
     "ui_enable"     : 1,   // 是否启用特殊UI
     "fairy_damage"  : 100, // 妖精女仆弹幕攻击力的倍数因子，伤害最后会乘上(这个数/100)
     "maid_damage"   : 100, // 女仆弹幕攻击力的倍数因子，伤害最后会乘上(这个数/100)
-    "danmaku_damage": 6,   // 弹幕的默认伤害，对玩家使用普通御币发射的弹幕有效
+    "danmaku_damage": 6,   // 弹幕的默认伤害，弹幕没有设置伤害时生效，目前只对玩家使用普通御币发射的弹幕有效
     "player_damage" : 100  // 玩家弹幕攻击力的倍数因子，伤害最后会乘上(这个数/100)
-    // "": 0 // 寻主方式  0：放置后需要手动驯服  1：放之后自动产生主人
-
 }
 
 const config_lock = 1;// 锁定的配置项数量,锁定配置项总放在最前

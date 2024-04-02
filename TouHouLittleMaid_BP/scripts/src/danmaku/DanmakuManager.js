@@ -1,5 +1,5 @@
 
-import * as Tool from "../libs/scarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 import * as Vec from "../libs/vector3d"
 import { ItemDefinitionTriggeredBeforeEvent, ItemStack, EntityTypes, ItemUseOnBeforeEvent,
      world, Entity, Vector, Dimension, DataDrivenEntityTriggerBeforeEvent, WorldInitializeAfterEvent, system
@@ -203,6 +203,7 @@ const AIMED_SHOT_PROBABILITY = 0.8; //java 0.9
  * @param {Entity} fairy 
  */
 export function fairy_shoot(fairy){
+    if(fairy===undefined) return;
     let target = fairy.target
     if(target != undefined){
         let distanceFactor = Vec.length([
@@ -219,13 +220,13 @@ export function fairy_shoot(fairy){
         if (Math.random() <= AIMED_SHOT_PROBABILITY) {
             let temp = DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet([0,1,0])
                     .setTargetOffSet([0,1,0]).setTarget(fairy.target).setRandomColor().setRandomType()
-                    .setDamage((config["fairy_damage"]/100)*(distanceFactor + 1)).setGravity(0)
+                    .setDamage((distanceFactor + 1)).setGravity(0)
                     .setVelocity(0.2 * (distanceFactor + 1))
                     .setInaccuracy(0.05).aimedShot();
         } else {
             DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
                     .setTarget(fairy.target).setRandomColor().setRandomType()
-                    .setDamage((config["fairy_damage"]/100)*(distanceFactor + 1.5)).setGravity(0)
+                    .setDamage((distanceFactor + 1.5)).setGravity(0)
                     .setVelocity(0.2 * (distanceFactor + 1))
                     .setInaccuracy(0.02).setFanNum(3).setYawTotal(Math.PI / 6)
                     .fanShapedShot();

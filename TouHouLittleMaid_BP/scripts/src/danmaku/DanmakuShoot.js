@@ -7,7 +7,7 @@ import {DanmakuColor} from "./DanmakuColor"
 import {DanmakuType} from "./DanmakuType"
 import {EntityDanmaku} from "./EntityDanmaku"
 import * as Vec from "../libs/vector3d"
-import * as Tool from "../libs/scarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 
 export class DanmakuShoot{
     static RANDOM      = Math.random();

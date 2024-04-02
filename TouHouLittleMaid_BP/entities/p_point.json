@@ -33,16 +33,13 @@
         },
         "scan":{
           "minecraft:entity_sensor": {
-            "sensor_range": 8,
-            "relative_range": false,
-            "minimum_count": 1,
-            "maximum_count": 99,
+            "sensor_range": 8, 
+            "event": "thlm:pps",
             "event_filters": {
-              "any_of":[
+              "all_of": [
                 { "test": "distance_to_nearest_player", "subject" : "self", "operator": "<", "value" : 8}
-              ]
-            },
-            "event": "thlm:pps"
+              ] 
+            }
           }
         }
       },

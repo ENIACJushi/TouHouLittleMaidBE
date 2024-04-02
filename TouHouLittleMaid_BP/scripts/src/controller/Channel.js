@@ -1,5 +1,5 @@
 import { system, world } from "@minecraft/server";
-import * as Tool from "../libs/scarletToolKit"
+import * as Tool from "../libs/ScarletToolKit"
 /**
  * 管理scriptevent传递消息的接口，有一个接收者，即主行为包，可以有多个发送者，发送者初始化时需要注册发送者ID
  * 每条信息的最大长度为2048

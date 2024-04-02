@@ -1,6 +1,6 @@
 import { Entity, EntityDamageCause, world } from "@minecraft/server";
 import { EntityMaid } from "../maid/EntityMaid";
-import { logger } from "../libs/scarletToolKit";
+import { logger } from "../libs/ScarletToolKit";
 import { config } from "../controller/Config";
 /**
  * 对弹幕实体的通用操作接口
@@ -114,6 +114,13 @@ export class DanmakuInterface{
             let damage = danmaku.getDynamicProperty("damage");
             if(damage === undefined) damage = config.danmaku_damage;
             if(damage !== 0){
+                // 伤害倍率
+                switch(source.typeId){
+                    case "minecraft:player": damage*(config.player_damage/100); break;
+                    case "thlmm:maid"      : damage*(config.maid_damage/100); break;
+                    case "touhou_little_maid:fairy": damage*(config.fairy_damage/100); break;
+                    default: break;
+                }
                 if(target.applyDamage(damage, damageOptions)){
                     return true;
                 }

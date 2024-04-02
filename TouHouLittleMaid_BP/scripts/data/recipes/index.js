@@ -9,6 +9,7 @@ import {recipe as craft_maid_backpack_big} from "./craft/craft_maid_backpack_big
 import {recipe as craft_maid_backpack_middle} from "./craft/craft_maid_backpack_middle"
 import {recipe as craft_maid_backpack_small} from "./craft/craft_maid_backpack_small"
 import {recipe as reborn_maid} from "./spawn/reborn_maid"
+import {recipe as craft_chisel} from "./craft/craft_chisel"
 
 // Bedrock feature
 import {recipe as repair_hakurei_gohei} from "./bedrock/repair_hakurei_gohei"
@@ -16,7 +17,6 @@ import {recipe as gohei_cherry} from "./bedrock/gohei_cherry"
 import {recipe as maid_upgrade} from "./bedrock/upgrade_1"
 
 // NOT ADDED
-import {recipe as craft_chisel} from "./craft/craft_chisel"
 import {recipe as craft_drown_protect_bauble} from "./craft/craft_drown_protect_bauble"
 import {recipe as craft_explosion_protect_bauble} from "./craft/craft_explosion_protect_bauble"
 import {recipe as craft_extinguisher} from "./craft/craft_extinguisher"
@@ -47,5 +47,6 @@ export const recipeList = [
     spawn_box,
     craft_maid_backpack_small,
     craft_maid_backpack_middle,
-    craft_maid_backpack_big
+    craft_maid_backpack_big,
+    craft_chisel
 ]

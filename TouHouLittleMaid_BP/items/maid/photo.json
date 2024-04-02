@@ -12,6 +12,7 @@
         "minecraft:display_name": {
           "value": "item.touhou_little_maid:photo"
         },
+        "minecraft:allow_off_hand": true,
         "minecraft:hand_equipped": true,
         "minecraft:foil": true,
         "minecraft:on_use_on": {

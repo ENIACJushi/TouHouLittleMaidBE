@@ -1,6 +1,6 @@
 import { EntityHitEntityAfterEvent, Entity, Dimension, Vector, Block, system } from "@minecraft/server";
 import { EntityMaid } from "./EntityMaid";
-import { logger, pointInArea_3D } from "../libs/scarletToolKit";
+import { logger, pointInArea_3D } from "../libs/ScarletToolKit";
 
 export class MaidTarget{
     /**

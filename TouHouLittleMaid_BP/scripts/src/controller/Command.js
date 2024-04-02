@@ -1,5 +1,5 @@
 import { ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
-import * as Tool from"../libs/scarletToolKit";
+import * as Tool from"../libs/ScarletToolKit";
 import { StrMaid } from "../maid/StrMaid";
 import { MaidSkin } from "../maid/MaidSkin";
 import { ConfigHelper } from "./Config";
@@ -87,11 +87,9 @@ export class CommandManager{
                     case "touhou_little_maid:smart_slab_has_maid":
                     case "touhou_little_maid:photo":
                     case "touhou_little_maid:film":
-                        // 拼接lore字符串
+                        // 转换lore
                         let lore = item.getLore();
-                        let strLore="";
-                        for(let temp of lore){ strLore += temp; }
-                        let strPure = Tool.loreStr2Pure(strLore);
+                        let strPure = Tool.lore2Str(lore);
                         source.sendMessage(
                             {rawtext:StrMaid.formatOutput(strPure)});
                         break;
@@ -188,11 +186,9 @@ export class CommandManager{
                         case "touhou_little_maid:smart_slab_has_maid":
                         case "touhou_little_maid:photo":
                         case "touhou_little_maid:film":{
-                            // 拼接lore字符串
+                            // 转换lore
                             let lore = item.getLore();
-                            let strLore="";
-                            for(let temp of lore){ strLore += temp; }
-                            let strPure = Tool.loreStr2Pure(strLore);
+                            let strPure = Tool.lore2Str(lore);
 
                             // 进行修改
                             let input = event.message.substring(4);
@@ -233,7 +229,7 @@ export class CommandManager{
                                 source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.lack_colon"}]});
                                 return;
                             }
-                            item.setLore(EntityMaid.str2Lore(strPure));
+                            item.setLore(Tool.str2Lore(strPure));
                             Tool.setPlayerMainHand(source, item);
 
                             // 修改后信息
@@ -254,21 +250,6 @@ export class CommandManager{
      * @param {ScriptEventCommandMessageAfterEvent} event
      */
     static test(event){
-        // 获取一个最近的女仆
-        let source = event.sourceEntity;
-        if(source === undefined || source.typeId !== "minecraft:player") return;
-
-        let maid = source.dimension.getEntities({"location": source.location, "type": "thlmm:maid", "closest": 1})[0];
-        if(maid===undefined){
-            source.sendMessage({rawtext:[{translate: "message.tlm.admin.maid.not_found"}]});
-            return;
-        }
-
-        // 清空动态属性
-        maid.setDynamicProperty("home");
-        maid.setDynamicProperty("home_dim");
-        maid.setDynamicProperty("level");
-        maid.setDynamicProperty("kill");
-        maid.setDynamicProperty("pick");
+        
     }
 }

@@ -1,7 +1,5 @@
 import { Player, world, Dimension, Entity, Vector, WorldInitializeAfterEvent,EntityTypes } from "@minecraft/server";
-import * as Tool from "../libs/scarletToolKit"
-
-var gohei_scan = 0;
+import * as Tool from "../libs/ScarletToolKit"
 
 export default class PowerPoint {
     //////// INIT ////////
@@ -59,23 +57,6 @@ export default class PowerPoint {
         en.dimension.spawnEntity("touhou_little_maid:p_point", en.location).triggerEvent("init_p3");
         en.dimension.spawnEntity("touhou_little_maid:p_point", en.location).triggerEvent("init_p3");
     }
-    /**
-     * Scan tick of Power Point System
-     */
-    static scan_tick(){
-        let gohei = false;
-        if(gohei_scan >= 1){
-            gohei = true;
-            gohei_scan = 0
-        }
-        else{
-            gohei_scan ++;
-        }
-        for(let pl of world.getPlayers()){
-            if(gohei) this.scan_gohei(pl);
-            // this.scan_power_point(pl);
-        }
-    }
     
     /**
      * Scan power point near the player
@@ -106,12 +87,8 @@ export default class PowerPoint {
      * Show power number to player by title at action bar
      * @param {Player} pl 
      */
-    static scan_gohei(pl){
-        let playerContainer2 = pl.getComponent("inventory").container;
-        let item = playerContainer2.getItem(pl.selectedSlot);
-        if(item && item.typeId.substring(0, 32) == "touhou_little_maid:hakurei_gohei") {
-            Tool.title_player_actionbar(pl.name, `§cP: ${ (this.get_power_number(pl.name)/100).toFixed(2) }`);
-        }
+    static show(pl){
+        Tool.title_player_actionbar(pl.name, `§cP: ${ (this.get_power_number(pl.name)/100).toFixed(2) }`);
     }
     
     /**
@@ -124,7 +101,7 @@ export default class PowerPoint {
         let player_id = en.getDynamicProperty("target");
         if(player_id===undefined){
             const results = en.dimension.getPlayers({"closest": 1});
-            if(results.length === 1){
+            if(results.length >= 1){
                 pl = results[0];
                 en.setDynamicProperty("target", pl.id);
             }

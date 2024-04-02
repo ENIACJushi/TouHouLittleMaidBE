@@ -29,6 +29,7 @@ export function logger_debug(str){
     world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
 }
 
+
 ////////// Math //////////
 export function getRandom(min = 0, max = 1){
     if(min < max) return (min + Math.random() * (max - min));
@@ -166,7 +167,7 @@ export function dim_int2string(index){
  * 将纯净字符串转为隐形lore字符串
  * @param {string} str 
  */
-export function pureStr2Lore(strPure){
+export function str2Hide(strPure){
     let strLore = "";
     for(let i=0; i<strPure.length; i++){
         strLore += '§' + strPure[i];
@@ -174,15 +175,40 @@ export function pureStr2Lore(strPure){
     return strLore;
 }
 /**
- * 将隐形lore字符串转为纯净字符串
- * @param {string} str 
+ * 将纯净字符串转为隐形物品lore
+ * @param {string} strPure 
+ * @returns {string[]}
  */
-export function loreStr2Pure(strPure){
-    let strLore = "";
-    for(let i=1; i<strPure.length; i+=2){
-        strLore += strPure[i];
+export function str2Lore(strPure){
+    let strLore = str2Hide(strPure);
+    let lore =[];
+    while(true){
+        if(strLore.length > 50){
+            lore.push(strLore.slice(0, 50));
+            strLore = strLore.slice(50);
+        }
+        else{
+            lore.push(strLore);
+            break;
+        }
     }
-    return strLore;
+    return lore;
+}
+/**
+ * 将隐形lore字符串转为纯净字符串
+ * @param {string[]} str 
+ */
+export function lore2Str(lore){
+    // 拼接
+    let strLore="";
+    for(let temp of lore){ strLore += temp; };
+
+    // 转换
+    let strPure = "";
+    for(let i=1; i<strLore.length; i+=2){
+        strPure += strLore[i];
+    }
+    return strPure;
 }
 ////////// Command //////////
 /**
@@ -235,9 +261,7 @@ export function testEntitySpeed(){
  * Test Entity MAX and MIN speed (abs).
  * 
  * Used in spawn event:
- * scheduling.setTickTimeout(() =>{ 
-        Tool.testEntityMSpeed(entity);
-    }, 1, "test");
+ * Tool.testEntityMSpeed(entity);
  */
 var vec = [0,0,0];
 var vecn = [10,10,10];

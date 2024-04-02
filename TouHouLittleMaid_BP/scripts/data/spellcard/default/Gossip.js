@@ -4,7 +4,7 @@ import { DanmakuColor } from "../../../src/danmaku/DanmakuColor";
 import { DanmakuType } from "../../../src/danmaku/DanmakuType";
 import { Entity, ItemStack } from "@minecraft/server";
 import { system } from "@minecraft/server";
-import { getRandom } from "../../../src/libs/scarletToolKit";
+import { getRandom } from "../../../src/libs/ScarletToolKit";
 
 export const SpellCard = {
     // 释放该符卡的物品id，必须以thlms为开头

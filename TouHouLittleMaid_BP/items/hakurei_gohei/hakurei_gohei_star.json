@@ -2,7 +2,7 @@
   "format_version": "1.18.0",
   "minecraft:item": {
     "description": {
-      "category": "",
+      "category": "none",
       "identifier": "touhou_little_maid:hakurei_gohei_star"
     },
     "components": {
