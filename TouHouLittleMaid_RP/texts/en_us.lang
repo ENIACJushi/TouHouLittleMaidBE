@@ -69,7 +69,8 @@ message.tlm.admin.set.kill.out_of_range=§cError: Invalid kill amount.§r
 ## message.touhou_little_maid:change_model.disabled.name=Model switch is disabled.
 ## message.touhou_little_maid:extinguisher.player_cannot_use.name=Your lack of knowledge does not know how to use this item
 ## message.touhou_little_maid:owner_maid_num.can_not_add.name=You can no longer tame maids, you have reached the limit (%d/%d)
-## message.touhou_little_maid:photo.have_no_nbt_data.name=This damnable photo don't have NBT data.
+## Garage kit
+message.touhou_little_maid:photo.have_no_nbt_data.name=This damnable photo don't have NBT data.
 message.touhou_little_maid:chisel.hit_block_error.name=Please right click on the clay block
 message.touhou_little_maid:chisel.offhand_not_photo.name=Please have a photo of the maid in your offhand
 

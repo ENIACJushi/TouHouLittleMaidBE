@@ -1,7 +1,7 @@
 import { ItemUseOnBeforeEvent, EquipmentSlot, Block, Direction, Vector, system, Dimension, Entity, ItemStack, DataDrivenEntityTriggerAfterEvent, BlockPermutation, Player } from "@minecraft/server";
 import { StrMaid } from "../maid/StrMaid";
 import { getDirectionByView2D} from "../libs/VectorMC";
-import { getRandomInteger, logger, lore2Str, str2Lore, title_player_actionbar_object, title_player_actionbar_translate } from "../libs/ScarletToolKit";
+import { ActionbarMessage, getRandomInteger, logger, lore2Str, str2Lore, title_player_actionbar_object, title_player_actionbar_translate } from "../libs/ScarletToolKit";
 import { EntityMaid } from "../maid/EntityMaid";
 import { MaidSkin } from "../maid/MaidSkin";
 import { Watch } from "../libs/SecondWatch"
@@ -28,23 +28,32 @@ export class GarageKit{
         let player = event.source;
         let block = event.block;
         // 必须对黏土使用
-        if(!isClay(block)) return;
+        if(!isClay(block)){
+            ActionbarMessage.translate(player, "message.touhou_little_maid:chisel.hit_block_error.name"); // 请右击粘土块
+            return;
+        }
 
         // 检测副手物品
         let equippable = player.getComponent("minecraft:equippable");
         let offhand = equippable.getEquipment(EquipmentSlot.Offhand);
-        if(offhand === undefined) return;
+        if(offhand === undefined){
+            ActionbarMessage.translate(player, "message.touhou_little_maid:chisel.offhand_not_photo.name"); // 请副手持有一张女仆照片
+            return;
+        }
         let skin;
         switch(offhand.typeId){
             case "touhou_little_maid:photo":
                 // 获取女仆编号
                 let lore = offhand.getLore();
                 if(lore === undefined){
+                    ActionbarMessage.translate(player, "message.touhou_little_maid:photo.have_no_nbt_data.name"); // 这该死的照片没有 NBT 数据
                     return;
                 }
                 skin = StrMaid.Skin.get(lore2Str(lore))
                 break;
-            default: return;
+            default:
+                ActionbarMessage.translate(player, "message.touhou_little_maid:chisel.offhand_not_photo.name"); // 请副手持有一张女仆照片
+                return;
         }
 
         // 匹配和生成黏土结构 从左下角开始

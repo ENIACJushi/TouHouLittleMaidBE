@@ -234,6 +234,33 @@ export function title_player_actionbar(name, text){
 export function title_player_actionbar_translate(name, text){
     world.getDimension("overworld").runCommand(`titleraw ${playerCMDName(name)} actionbar {"rawtext":[{"translate":"${text}"}]}`);
 }
+
+export class ActionbarMessage{
+    /**
+     * 发送一条物品栏上方的翻译信息
+     * @param {Player} pl 
+     * @param {string} key 
+     */
+    static translate(pl, key){
+        pl.dimension.runCommand(`titleraw ${playerCMDName(pl.name)} actionbar {"rawtext":[{"translate":"${key}"}]}`);
+    }
+    /**
+     * 发送一条物品栏上方的文本信息
+     * @param {Player} pl 
+     * @param {string} text 
+     */
+    static text(pl, text){
+        pl.dimension.runCommand(`titleraw ${playerCMDName(pl.name)} actionbar {"rawtext":[{"text":"${text}"}]}`);
+    }
+    /**
+     * 发送一条物品栏上方的rawtext信息
+     * @param {Player} pl 
+     * @param {Object} object 
+     */
+    static text(pl, object){
+        pl.dimension.runCommand(`titleraw ${playerCMDName(name)} actionbar ${JSON.stringify(object)}`);
+    }
+}
 export function title_player_actionbar_object(name, object){
     world.getDimension("overworld").runCommand(`titleraw ${playerCMDName(name)} actionbar ${JSON.stringify(object)}`);
 }

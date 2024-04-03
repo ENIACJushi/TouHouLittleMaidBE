@@ -205,10 +205,10 @@ export class MaidManager{
      * @param {ItemUseOnBeforeEvent} event 
      */
     static smartSlabOnUseEvent(event){
-        let item = event.itemStack;
-        let lore = item.getLore();
-        
-        // 检测放置位置是否有两格空间
+        let lore = event.itemStack.getLore();
+        if(lore.length === 0) return; // 无lore
+
+        //// 检测放置位置是否有两格空间 ////
         const player = event.source;
         const dimension = player.dimension;
         let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
@@ -234,7 +234,7 @@ export class MaidManager{
         else{
             try{
                 // 转换lore
-                str = Tool.lore2Str(lore);
+                let str = Tool.lore2Str(lore);
 
                 // 使用者不是主人
                 if(StrMaid.Owner.getId(str) !== event.source.id) return;
@@ -242,7 +242,6 @@ export class MaidManager{
                 // 放置
                 maid = EntityMaid.fromStr(str, dimension, location, true);
                 maid.triggerEvent("api:reborn");
-                maid.getComponent("tameable").tame()
             }
             catch{}
         }

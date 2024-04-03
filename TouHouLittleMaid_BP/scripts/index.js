@@ -157,7 +157,7 @@ class thlm {
                             case "photo": MaidManager.photoOnUseEvent(event); break;
                             case "smart_slab_has_maid": MaidManager.smartSlabOnUseEvent(event); break;
                             case "chisel": GarageKit.activate(event); break;
-                            case "garage_kit": GarageKit.placeEvent(event);
+                            case "garage_kit": GarageKit.placeEvent(event); break;
                             default:{
                                 //// 御币使用事件 ////
                                 if(itemName.substring(0,13) === "hakurei_gohei"){
@@ -211,7 +211,7 @@ class thlm {
         // Trigger Event
         world.beforeEvents.dataDrivenEntityTriggerEvent.subscribe(event => {
             system.run(()=>{
-                Tool.logger(event.id)
+                // Tool.logger(event.id);
                 // const {entity, id, modifiers} = data;
                 if(event.id.substring(0, 4) == "thlm"){
                     switch(event.id.substring(4, 5)){

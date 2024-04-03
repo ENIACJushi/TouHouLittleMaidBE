@@ -46,6 +46,15 @@ task.touhou_little_maid:feed_animal.desc.name=女仆会主动繁殖周围的动�
 task.touhou_little_maid:extinguishing.desc.name=女仆会主动扑灭周围的火
 task.touhou_little_maid:extinguishing.condition.has_extinguisher.name=主手持有灭火器
 
+gui.touhou_little_maid:button.backpack.true.name=显示背包
+gui.touhou_little_maid:button.backpack.false.name=隐藏背包
+gui.touhou_little_maid:button.skin.name=切换模型
+gui.touhou_little_maid:button.pickup.true.name=拾物模式已开启
+gui.touhou_little_maid:button.pickup.false.name=拾物模式已关闭
+gui.touhou_little_maid:button.mute.true.name=静音模式已开启
+gui.touhou_little_maid:button.mute.false.name=静音模式已关闭
+gui.touhou_little_maid:left_panel.title=工作模式
+
 ##### 物品 #####
 item.spawn_egg.entity.thlmm:maid.name=生成 小女仆
 item.spawn_egg.entity.touhou_little_maid:fairy.name=女仆妖精刷怪蛋
@@ -93,6 +102,21 @@ message.touhou_little_maid.altar.upgrade.kill=女仆杀敌数不够
 message.touhou_little_maid.altar.upgrade.success=升级成功！
 message.touhou_little_maid:photo.not_suitable_for_place_maid.name=这该死的地方不能放置女仆
 
+
+## message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止
+## message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
+## message.touhou_little_maid:owner_maid_num.can_not_add.name=你无法再驯服女仆，你已经达到了上限（%d/%d）
+
+## 手办
+message.touhou_little_maid:photo.have_no_nbt_data.name=这该死的照片没有 NBT 数据
+message.touhou_little_maid:chisel.hit_block_error.name=请右击粘土块
+message.touhou_little_maid:chisel.offhand_not_photo.name=请副手持有一张女仆照片
+
+action.interact.camera=照相
+action.interact.thlm.npc=变为 NPC
+action.interact.thlm.npc_remove=清除 NPC
+
+## 管理命令
 message.tlm.command.must_player=这个指令必须由玩家执行
 message.tlm.admin.maid_info=女仆信息:
 message.tlm.admin.maid.not_found=未找到女仆
@@ -123,25 +147,6 @@ message.tlm.admin.set.kill.success=§e设置杀敌数: §r
 message.tlm.admin.set.kill.out_of_range=§c设置失败, 杀敌数无效。§r
 
 
-## message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止
-## message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
-## message.touhou_little_maid:owner_maid_num.can_not_add.name=你无法再驯服女仆，你已经达到了上限（%d/%d）
-## message.touhou_little_maid:photo.have_no_nbt_data.name=这该死的照片没有 NBT 数据
-message.touhou_little_maid:chisel.hit_block_error.name=请右击粘土块
-message.touhou_little_maid:chisel.offhand_not_photo.name=请副手持有一张女仆照片
-
-action.interact.camera=照相
-action.interact.thlm.npc=变为 NPC
-action.interact.thlm.npc_remove=清除 NPC
-
-gui.touhou_little_maid:button.backpack.true.name=显示背包
-gui.touhou_little_maid:button.backpack.false.name=隐藏背包
-gui.touhou_little_maid:button.skin.name=切换模型
-gui.touhou_little_maid:button.pickup.true.name=拾物模式已开启
-gui.touhou_little_maid:button.pickup.false.name=拾物模式已关闭
-gui.touhou_little_maid:button.mute.true.name=静音模式已开启
-gui.touhou_little_maid:button.mute.false.name=静音模式已关闭
-gui.touhou_little_maid:left_panel.title=工作模式
 
 ##### 其它 #####
 danmaku.pellet.name=§a点弹

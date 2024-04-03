@@ -257,6 +257,7 @@
       "part_visibility": [
 				{ "blink": "!q.is_in_ui" }
 			],
+      
       "geometry": "Array.geos[q.property('thlm:skin_pack')==0?q.variant+1:0]",
       "materials": [
         { "*": "Material.default" },
