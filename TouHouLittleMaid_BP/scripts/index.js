@@ -1,4 +1,4 @@
-import { world, system, MolangVariableMap, EquipmentSlot } from "@minecraft/server"
+import { world, system, MolangVariableMap, EquipmentSlot, GameMode } from "@minecraft/server"
 import { altarStructure } from "./src/altar/AltarStructureHelper";
 import experiment from "./experiment"
 import PowerPoint from "./src/altar/PowerPoint"
@@ -161,7 +161,7 @@ class thlm {
                             default:{
                                 //// 御币使用事件 ////
                                 if(itemName.substring(0,13) === "hakurei_gohei"){
-                                    if(player.isSneaking) Danmaku.gohei_transform(event); // 切换弹种
+                                    if(player.isSneaking) Danmaku.gohei_transform(event, itemName.substring(14)); // 切换弹种
                                     else if(block.typeId == "minecraft:red_wool")         // 祭坛激活
                                         altarStructure.activate(player.dimension, event.block.location, event.blockFace);
                                 }
@@ -171,32 +171,15 @@ class thlm {
                 }
             });
         });
-
-        // Trigger Event
-        world.beforeEvents.itemDefinitionEvent.subscribe(event => {
-            system.run(()=>{
-                if(event.eventName.substring(0, 5) == "thlm:"){
-                    switch(event.eventName.substring(5)){
-                        // hakurei gohei activate - hakurei gohei (crafting table) transform to true gohei
-                        case "hga": Danmaku.gohei_activate(event); break;
-                        // spell card
-                        case "sc":  CustomSpellCardManger.onSpellCardUseEvent(event); break;
-                        // item shoot
-                        case "is":  itemShootManager.itemShootEvent(event); break;
-                        default: break;
-                    }
-                }
-            })
-        });
         
         // 物品使用事件
-        world.afterEvents.itemUse.subscribe(event=>{
+        world.beforeEvents.itemUse.subscribe(event=>{
             system.run(()=>{
                 let item = event.itemStack;
                 if(item.typeId.substring(0, 18) === "touhou_little_maid"){
-                    switch(item.typeId.substring(20)){
+                    switch(item.typeId.substring(19)){
                         case "hakurei_gohei_crafting_table": Danmaku.gohei_activate(event); break;
-                        case "hakurei_gohei_cherry": itemShootManager.itemShootEvent(event);
+                        case "hakurei_gohei_cherry": itemShootManager.itemShootEvent(event); break;
                         default: break;
                     }
                 }
@@ -392,5 +375,20 @@ class thlm {
                 }
             }
         }, 15);
+
+        // P点扫描
+        system.runInterval(()=>{
+            for(let pl of world.getAllPlayers()){
+                PowerPoint.scan_power_point(pl);
+            }
+        }, 20);
+
+
+        // 创造模式方块实体破坏检测
+        system.runInterval(()=>{
+            for(let pl of world.getPlayers({"gameMode":GameMode.creative})){
+                pl.runCommand("function touhou_little_maid/check");
+            }
+        }, 80);
     }
 }

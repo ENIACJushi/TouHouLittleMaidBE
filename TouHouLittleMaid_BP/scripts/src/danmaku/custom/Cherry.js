@@ -12,7 +12,7 @@ const PI = 180/Math.PI
  * @param {number} damage
  * @param {number} piercing 穿透力
  */
-export function shoot(entity, location, direction, damageCenter=9, damageArea=3, piercing=6){
+export function shoot(entity, location, direction, damageCenter=9, damageArea=3, piercing=3){
     const dimension = entity.dimension;
     // 发射中心弹幕 中心弹幕只是用来展示粒子，实际伤害在这里就会施加
     let danmaku = dimension.spawnEntity("thlmc:danmaku_custom_cherry", location);
@@ -55,7 +55,7 @@ export function shoot(entity, location, direction, damageCenter=9, damageArea=3,
             });
         }
     }
-
+    
     /// 范围伤害 ///
     system.runTimeout(()=>{
         var areaAttackList=[];

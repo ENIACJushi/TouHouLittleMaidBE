@@ -250,6 +250,9 @@ export class CommandManager{
      * @param {ScriptEventCommandMessageAfterEvent} event
      */
     static test(event){
-        
+        let pl = event.sourceEntity;
+        Tool.logger("test")
+        pl.postClientMessage("id", "value")
     }
+    
 }

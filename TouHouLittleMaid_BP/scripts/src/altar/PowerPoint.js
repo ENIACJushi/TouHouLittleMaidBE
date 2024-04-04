@@ -58,13 +58,13 @@ export default class PowerPoint {
         en.dimension.spawnEntity("touhou_little_maid:p_point", en.location).triggerEvent("init_p3");
     }
     
-    /**
-     * Scan power point near the player
-     * 弃用，移至数驱
-     * @param {Player} pl 
-     */
+    
     static power_point_distance = 8;
     static power_point_max_speed = 1;
+    /**
+     * Scan power point near the player
+     * @param {Player} pl 
+     */
     static scan_power_point(pl){
         const results = pl.dimension.getEntities({
             type: 'touhou_little_maid:p_point',
@@ -78,7 +78,8 @@ export default class PowerPoint {
                     en.triggerEvent("scan_start");
                     en.setDynamicProperty("target", pl.id);
                 }
-            }catch{
+            }
+            catch{
             }
         }
     }

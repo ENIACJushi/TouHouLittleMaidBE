@@ -12,6 +12,6 @@ export const GoheiCherry = {
         let direction = entity.getViewDirection();
         let location = entity.getHeadLocation();
         
-        shoot(entity, location, direction, 9, 3, 6);
+        shoot(entity, location, direction, 9, 3, 3);
     }
 }

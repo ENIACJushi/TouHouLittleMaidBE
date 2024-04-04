@@ -9,7 +9,7 @@
  *  thlmm:<女仆id>
  *  thlmo:<主人生物id>
  */
-import { Direction, ItemStack, world, Entity, Vector, DataDrivenEntityTriggerBeforeEvent, ItemDefinitionTriggeredBeforeEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent } from "@minecraft/server";
+import { Direction, ItemStack, world, Entity, Vector, DataDrivenEntityTriggerBeforeEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent } from "@minecraft/server";
 import * as Tool from "../libs/ScarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
@@ -206,7 +206,6 @@ export class MaidManager{
      */
     static smartSlabOnUseEvent(event){
         let lore = event.itemStack.getLore();
-        if(lore.length === 0) return; // 无lore
 
         //// 检测放置位置是否有两格空间 ////
         const player = event.source;

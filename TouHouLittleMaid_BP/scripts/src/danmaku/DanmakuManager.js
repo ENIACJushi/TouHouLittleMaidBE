@@ -1,7 +1,7 @@
 
 import * as Tool from "../libs/ScarletToolKit"
 import * as Vec from "../libs/vector3d"
-import { ItemDefinitionTriggeredBeforeEvent, ItemStack, EntityTypes, ItemUseOnBeforeEvent,
+import { ItemStack, EntityTypes, ItemUseOnBeforeEvent,
      world, Entity, Vector, Dimension, DataDrivenEntityTriggerBeforeEvent, WorldInitializeAfterEvent, system
     ,EntityDamageCause, 
     ProjectileHitEntityAfterEvent,
@@ -144,9 +144,10 @@ const GoheiPrefix = "touhou_little_maid:hakurei_gohei_";
 const GoheiDefault = DanmakuType.PELLET;
 /**
  * 激活由工作台合成的御币
- * @param {ItemUseAfterEvent} ev 
+ * @param {ItemUseOnBeforeEvent} ev 
  */
 export function gohei_activate(ev){
+    Tool.logger("a")
     try{
         let pl = ev.source;
         let slot = pl.selectedSlot
@@ -167,31 +168,37 @@ export function gohei_activate(ev){
 /**
  * 切换御币弹种
  * @param {ItemUseOnBeforeEvent} ev 
+ * @param {string} itemName 去除前缀的物品名称，如 touhou_little_maid:hakurei_gohei_crafting_table → crafting_table
  */
-export function gohei_transform(ev){
+export function gohei_transform(ev, danmakuName){
     let origin_item = ev.itemStack;
-    for(let i = 0; i < GoheiSequence.length; i++){
-        let name = DanmakuType.getName(GoheiSequence[i]);
-        if(GoheiPrefix + name === ev.itemStack.typeId){
-            // Get index
-            let index = i + 1;
-            if(index >= GoheiSequence.length) index = 0;
-            
-            // Create item
-            let itemStack = new ItemStack(GoheiPrefix + DanmakuType.getName(GoheiSequence[index]), 1);
-            itemStack.getComponent("minecraft:enchantable").addEnchantments(
-                origin_item.getComponent("minecraft:enchantable").getEnchantments()
-                );
-            itemStack.getComponent("minecraft:durability").damage = origin_item.getComponent("minecraft:durability").damage;
-            itemStack.setLore(origin_item.getLore());
-            itemStack.nameTag = origin_item.nameTag;
-
-            // Set item
-            let player = ev.source;
-            player.getComponent("inventory").container.setItem(player.selectedSlot, itemStack);
-
-            // Send message
-            player.sendMessage({rawtext:[{translate: "message.touhou_little_maid:hakurei_gohei.switch"}, {translate: `danmaku.${DanmakuType.getName(GoheiSequence[index])}.name`}]});
+    if(danmakuName === "crafting_table"){
+        gohei_activate(ev);
+    }
+    else{
+        for(let i = 0; i < GoheiSequence.length; i++){
+            let name = DanmakuType.getName(GoheiSequence[i]);
+            if(name === danmakuName){
+                // Get index
+                let index = i + 1;
+                if(index >= GoheiSequence.length) index = 0;
+                
+                // Create item
+                let itemStack = new ItemStack(GoheiPrefix + DanmakuType.getName(GoheiSequence[index]), 1);
+                itemStack.getComponent("minecraft:enchantable").addEnchantments(
+                    origin_item.getComponent("minecraft:enchantable").getEnchantments()
+                    );
+                itemStack.getComponent("minecraft:durability").damage = origin_item.getComponent("minecraft:durability").damage;
+                itemStack.setLore(origin_item.getLore());
+                itemStack.nameTag = origin_item.nameTag;
+    
+                // Set item
+                let player = ev.source;
+                player.getComponent("inventory").container.setItem(player.selectedSlot, itemStack);
+    
+                // Send message
+                player.sendMessage({rawtext:[{translate: "message.touhou_little_maid:hakurei_gohei.switch"}, {translate: `danmaku.${DanmakuType.getName(GoheiSequence[index])}.name`}]});
+            }
         }
     }
 }

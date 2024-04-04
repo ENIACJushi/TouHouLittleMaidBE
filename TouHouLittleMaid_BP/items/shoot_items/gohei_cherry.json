@@ -15,7 +15,7 @@
       },
       "minecraft:cooldown": {
         "category": "gohei_cherry",
-        "duration": 0.8
+        "duration": 0.6
       },
       "minecraft:repairable": {
         "repair_items": [
