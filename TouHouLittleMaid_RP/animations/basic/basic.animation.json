@@ -12,13 +12,21 @@
 		"animation.touhou_little_maid.basic.wing": {
 			"loop": true,
 			"bones": {
-				"wingLeft": { "rotation": [0, "-10-math.cos(q.life_time * 75) * 15", 0] },
-				"wingLeft_": { "rotation": [0, "-10-math.cos(q.life_time * 75) * 15", 0] },
-				"wingRight": { "rotation": [0, "math.cos(q.life_time * 75) * 15 + 10", 0] },
-				"wingRight_": { "rotation": [0, "math.cos(q.life_time * 75) * 15 + 10", 0] }
+				"wingLeft": {
+					"rotation": [0, "-10-math.cos(q.life_time * 75) * 15", 0]
+				},
+				"wingLeft_": {
+					"rotation": [0, "-10-math.cos(q.life_time * 75) * 15", 0]
+				},
+				"wingRight": {
+					"rotation": [0, "math.cos(q.life_time * 75) * 15 + 10", 0]
+				},
+				"wingRight_": {
+					"rotation": [0, "math.cos(q.life_time * 75) * 15 + 10", 0]
+				}
 			}
 		},
-		"animation.touhou_little_maid.basic.hair_swing":{
+		"animation.touhou_little_maid.basic.hair_swing": {
 			"loop": true,
 			"bones": {
 				"hair": {
@@ -26,20 +34,20 @@
 				}
 			}
 		},
-		"animation.touhou_little_maid.basic.walk":{
-			"loop":true,
+		"animation.touhou_little_maid.basic.walk": {
+			"loop": true,
 			"bones": {
-				"armLeft" : {
-					"rotation" : [ "variable.tcos0", 0.0, 0.0 ]
+				"LeftArm": {
+					"rotation": ["variable.tcos0", 0, 0]
 				},
-				"legLeft" : {
-					"rotation" : [ "variable.tcos0 * -1.4", 0.0, 0.0 ]
+				"LeftLeg": {
+					"rotation": ["variable.tcos0 * -1.4", 0, 0]
 				},
-				"armRight" : {
-					"rotation" : [ "-variable.tcos0", 0.0, 0.0 ]
+				"RightArm": {
+					"rotation": ["-variable.tcos0", 0, 0]
 				},
-				"legRight" : {
-					"rotation" : [ "variable.tcos0 * 1.4", 0.0, 0.0 ]
+				"RightLeg": {
+					"rotation": ["variable.tcos0 * 1.4", 0, 0]
 				}
 			}
 		}

@@ -102,7 +102,6 @@ message.touhou_little_maid.altar.upgrade.kill=女仆杀敌数不够
 message.touhou_little_maid.altar.upgrade.success=升级成功！
 message.touhou_little_maid:photo.not_suitable_for_place_maid.name=这该死的地方不能放置女仆
 
-
 ## message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止
 ## message.touhou_little_maid:extinguisher.player_cannot_use.name=你匮乏的知识并不了解这物品该如何使用
 ## message.touhou_little_maid:owner_maid_num.can_not_add.name=你无法再驯服女仆，你已经达到了上限（%d/%d）

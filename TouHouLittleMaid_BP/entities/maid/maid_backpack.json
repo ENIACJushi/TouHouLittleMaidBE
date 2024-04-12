@@ -96,6 +96,16 @@
       }
     },
     "components": {
+      "minecraft:behavior.float":{},
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0,
+        "breathes_air": true,
+        "breathes_lava": true,
+        "breathes_solids": true,
+        "breathes_water": true,
+        "generates_bubbles": false
+      },
       "minecraft:tameable": {
         "probability": 1
       },
