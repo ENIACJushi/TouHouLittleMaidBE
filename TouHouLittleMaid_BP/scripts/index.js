@@ -142,6 +142,7 @@ class thlm {
                             //// 黄金微波炉 ////
                             case "gold_microwaver":{
                                 GoldMicrowaver.interactEvent(event);
+                                event.cancel=true;
                             }; break;
                             default: break;
                         }
@@ -152,10 +153,10 @@ class thlm {
                         let itemName = itemStack.typeId.substring(19);
                         switch(itemName){
                             // case "gold_microwaver_item": GoldMicrowaver.placeEvent(event); break;
-                            case "photo": MaidManager.Interact.photoOnUseEvent(event); break;
-                            case "smart_slab_has_maid": MaidManager.Interact.smartSlabOnUseEvent(event); break;
-                            case "chisel": GarageKit.activate(event); break;
-                            case "garage_kit": GarageKit.placeEvent(event); break;
+                            case "photo": MaidManager.Interact.photoOnUseEvent(event); event.cancel=true; break;
+                            case "smart_slab_has_maid": MaidManager.Interact.smartSlabOnUseEvent(event); event.cancel=true; break;
+                            case "chisel": GarageKit.activate(event); event.cancel=true; break;
+                            case "garage_kit": GarageKit.placeEvent(event); event.cancel=true; break;
                             default:{
                                 //// 御币使用事件 ////
                                 if(itemName.substring(0,13) === "hakurei_gohei"){
@@ -163,6 +164,7 @@ class thlm {
                                     else if(block.typeId == "minecraft:red_wool")         // 祭坛激活
                                         altarStructure.activate(player.dimension, event.block.location, event.blockFace);
                                 }
+                                event.cancel=true;
                             }; break;
                         }
                     }

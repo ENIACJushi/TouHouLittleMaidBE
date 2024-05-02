@@ -1,4 +1,4 @@
-import { ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
+import { ScriptEventCommandMessageAfterEvent, system, world } from "@minecraft/server";
 import * as Tool from"../libs/ScarletToolKit";
 import { StrMaid } from "../maid/StrMaid";
 import { MaidSkin } from "../maid/MaidSkin";
@@ -12,6 +12,7 @@ export class CommandManager{
      * @returns 
      */
     static scriptEvent(event){
+        
         // 不要求使用者为玩家的命令，返回值均在世界范围广播
         switch(event.id){
             case "thlm:skin_set": this.setSkin(event); break;
