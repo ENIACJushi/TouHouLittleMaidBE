@@ -3,12 +3,13 @@
  * 这里的一些方法只是为了保持接口一致而提供的，只是帮助定义和发射弹幕的工具类而不是弹幕本身
  * (Override方法是用于定义实体的，全部不提供)
  */
-import { Dimension, Entity, Vector, system } from "@minecraft/server";
+import { Dimension, Entity, system } from "@minecraft/server";
+import { Vector } from "../libs/VectorMC";
 import {DanmakuColor} from "./DanmakuColor";
 import {DanmakuType} from "./DanmakuType";
 import * as Vec from "../libs/vector3d";
-import { getRandom } from "../libs/ScarletToolKit"
-import * as Tool from "../libs/ScarletToolKit"
+import { getRandom } from "../libs/ScarletToolKit";
+import * as Tool from "../libs/ScarletToolKit";
 
 export class EntityDanmaku{
     /**

@@ -2,7 +2,7 @@
  * TODO: 实现重力 gravity
  */
 
-import { Dimension, Entity, Vector } from "@minecraft/server";
+import { Dimension, Entity } from "@minecraft/server";
 import {DanmakuColor} from "./DanmakuColor"
 import {DanmakuType} from "./DanmakuType"
 import {EntityDanmaku} from "./EntityDanmaku"

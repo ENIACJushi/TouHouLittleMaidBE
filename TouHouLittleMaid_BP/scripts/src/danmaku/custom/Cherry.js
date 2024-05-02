@@ -1,8 +1,7 @@
-import { Entity, ItemStack, Vector } from "@minecraft/server";
+import { Entity } from "@minecraft/server";
+import { Vector, VectorMC } from "../../libs/VectorMC";
 import { system } from "@minecraft/server";
 import { DanmakuInterface } from "../DanmakuInterface";
-import * as VectorMC from "../../libs/VectorMC";
-
 const PI = 180/Math.PI
 /**
  * 
@@ -60,7 +59,7 @@ export function shoot(entity, location, direction, damageCenter=9, damageArea=3,
     system.runTimeout(()=>{
         var areaAttackList=[];
         DanmakuInterface.setDamage(danmaku, damageArea);
-        let offset = VectorMC.getAnyVerticalVector(direction).normalized();
+        let offset = VectorMC.normalized(VectorMC.getAnyVerticalVector(direction));
         const radius = 0.7;
         offset.x*=radius;
         offset.y*=radius;
@@ -69,10 +68,10 @@ export function shoot(entity, location, direction, damageCenter=9, damageArea=3,
         const count = 6;// 分割次数
         const rotateOnce = 2*Math.PI/(count);
         for(let i=0; i<count; i++){
-            var areaVictims = dimension.getEntitiesFromRay(Vector.add(location, offset),
+            var areaVictims = dimension.getEntitiesFromRay(VectorMC.add(location, offset),
                 direction,{ "maxDistance": distance });
             offset = VectorMC.rotate_axis(offset, direction, rotateOnce);
-            // dimension.spawnEntity("thlmd:danmaku_basic_ball", Vector.add(location, offset));
+            // dimension.spawnEntity("thlmd:danmaku_basic_ball", VectorMC.add(location, offset));
             for(let victim of areaVictims){
                 if(attacklist[victim.entity.id]===undefined){
                     attacklist[victim.entity.id]=true;

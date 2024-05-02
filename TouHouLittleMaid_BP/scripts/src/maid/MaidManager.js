@@ -9,7 +9,8 @@
  *  thlmm:<女仆id>
  *  thlmo:<主人生物id>
  */
-import { Direction, ItemStack, world, Entity, Vector, DataDrivenEntityTriggerBeforeEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent } from "@minecraft/server";
+import { Direction, ItemStack, world, DataDrivenEntityTriggerAfterEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent } from "@minecraft/server";
+import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
@@ -22,6 +23,7 @@ import {DanmakuColor}  from "../danmaku/DanmakuColor";
 import {DanmakuType}   from "../danmaku/DanmakuType";
 import { shoot as cherryShoot } from "../danmaku/custom/Cherry";
 import { Cocoa, MaidTarget, Melon } from "./MaidTarget";
+import { isBadContainerBlock } from "../../data/BadContainerBlocks";
 
 const HOME_RADIUS=32;
 
@@ -34,7 +36,7 @@ export class MaidManager{
     }
     /**
      * 女仆生成事件
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
      */
     static onSpawnEvent(event){
         let maid = event.entity;
@@ -44,7 +46,7 @@ export class MaidManager{
     
     /**
      * 女仆被拍照事件
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
      */
     static onPhotoEvent(event){
         let maid = event.entity;
@@ -71,7 +73,7 @@ export class MaidManager{
     }
     /**
      * 女仆被魂符收回事件
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
      */
     static onSmartSlabRecycleEvent(event){
         let maid = event.entity;
@@ -97,7 +99,7 @@ export class MaidManager{
     }
     /**
      * 女仆寄事件
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
      */
     static onDeathEvent(event){
         let maid = event.entity;
@@ -161,6 +163,9 @@ export class MaidManager{
         let lore = event.itemStack.getLore();
         if(lore.length === 0) return; // 无lore
  
+        //// 检测被交互的方块是否会复制物品 ////
+        if(isBadContainerBlock(event.block.typeId)) return;
+
         //// 检测放置位置是否有两格空间 ////
         const player = event.source;
         const dimension = player.dimension;
@@ -206,6 +211,9 @@ export class MaidManager{
      */
     static smartSlabOnUseEvent(event){
         let lore = event.itemStack.getLore();
+
+        //// 检测被交互的方块是否会复制物品 ////
+        if(isBadContainerBlock(event.block.typeId)) return;
 
         //// 检测放置位置是否有两格空间 ////
         const player = event.source;
@@ -268,7 +276,7 @@ export class MaidManager{
      * 因为 1.没有实体交互事件 2.实体触发器事件没有发动者 3.脚本无法获取主人 4.若与实体交互成功，则物品使用事件不会触发
      * 所以 让女仆自行紧跟主人并扫描，直到脚本获取到主人
      * 对于曾经有主人的女仆，当跟随到的主人与记录不符时会重新回到重生时的野生状态
-     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     * @param {DataDrivenEntityTriggerAfterEvent} event
      */
     static onTameFollowSuccess(event){
         const results = event.entity.dimension.getPlayers({
@@ -313,7 +321,7 @@ export class MaidManager{
     }
     /**
      * 主人与女仆交互事件
-     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     * @param {DataDrivenEntityTriggerAfterEvent} event
      */
     static onInteractEvent(event){
         let maid = event.entity;
@@ -330,7 +338,7 @@ export class MaidManager{
 
     /**
      * 回家事件
-     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     * @param {DataDrivenEntityTriggerAfterEvent} event
      */
     static returnHomeEvent(event){
         // 比较维度
@@ -361,7 +369,7 @@ export class MaidManager{
     }
     /**
      * 模式切换为坐下，此时主人状态由潜行切换到站立
-     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     * @param {DataDrivenEntityTriggerAfterEvent} event
      */
     static sitModeEvent(event){
         let maid = event.entity;
@@ -377,7 +385,7 @@ export class MaidManager{
     }
     /**
      * 模式切换为背包操作，此时主人状态由站立切换到潜行
-     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     * @param {DataDrivenEntityTriggerAfterEvent} event
      */
     static inventoryModeEvent(event){
         let maid = event.entity;
@@ -401,7 +409,7 @@ export class MaidManager{
     }
     /**
      * 定时事件
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
      */
     static timerEvent(event){
         const STEP_MAX = 1000;
@@ -469,7 +477,7 @@ export class MaidManager{
     }
     /**
      * 开盒，生成一只随机女仆
-     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     * @param {DataDrivenEntityTriggerAfterEvent} event
      */
     static boxOpenEvent(event){
         let box = event.entity;
@@ -479,7 +487,7 @@ export class MaidManager{
     }
     /**
      * 坟墓受击
-     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     * @param {DataDrivenEntityTriggerAfterEvent} event
      */
     static graveAttackEvent(event){
         let backpack = event.entity;
@@ -502,7 +510,7 @@ export class MaidManager{
     }
     /**
      * 背包种类切换
-     * @param {DataDrivenEntityTriggerBeforeEvent} event
+     * @param {DataDrivenEntityTriggerAfterEvent} event
      * @param {number} typeNew 1, 2, 3 
      */
     static backpackTypeChangeEvent(event, typeNew){
@@ -533,7 +541,7 @@ export class MaidManager{
     }
     /**
      * 弹幕攻击
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
      */
     static danmakuAttack(event){
         const AIMED_SHOT_PROBABILITY = 0.8; //java 0.9
@@ -639,13 +647,13 @@ export class MaidManager{
     }
     /**
      * 等级设置
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
      */
     static setLevelEvent(event){
         let maid = event.entity;
         if(maid===undefined) return;
 
-        let level = parseInt(event.id.substring(7));
+        let level = parseInt(event.eventId.substring(7));
         EntityMaid.Level.set(maid, level);
     }
     /**
@@ -660,7 +668,7 @@ export class MaidManager{
     }
     /**
      * 女仆成为 NPC
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
      */
     static onNPCEvent(event){
         let maid = event.entity;
@@ -671,7 +679,7 @@ export class MaidManager{
     }
     /**
      * NPC 交互
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
      */
     static NPCInteract(event){
         let maid = event.entity;

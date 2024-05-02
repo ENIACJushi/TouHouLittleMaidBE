@@ -1,23 +1,17 @@
 
 import * as Tool from "../libs/ScarletToolKit"
 import * as Vec from "../libs/vector3d"
-import { ItemStack, EntityTypes, ItemUseOnBeforeEvent,
-     world, Entity, Vector, Dimension, DataDrivenEntityTriggerBeforeEvent, WorldInitializeAfterEvent, system
-    ,EntityDamageCause, 
-    ProjectileHitEntityAfterEvent,
-    ProjectileHitBlockAfterEventSignal,
-    ProjectileHitBlockAfterEvent,
-    ItemUseAfterEvent} from "@minecraft/server";
-
+import { ItemStack, EntityTypes, ItemUseOnBeforeEvent, world, Entity, WorldInitializeAfterEvent, system,
+       ProjectileHitEntityAfterEvent, ProjectileHitBlockAfterEvent,
+       EnchantmentTypes} from "@minecraft/server";
 import {DanmakuColor}  from "./DanmakuColor";
 import {DanmakuType}   from "./DanmakuType";
 import {EntityDanmaku} from "./EntityDanmaku";
 import {DanmakuShoot}  from "./DanmakuShoot";
-import { EntityMaid } from "../maid/EntityMaid";
 import { config } from "../controller/Config";
 import { GoheiCherry } from "./item/GoheiCherry";
 import { DanmakuInterface } from "./DanmakuInterface";
-import * as VectorMC from "../libs/VectorMC"
+import { VectorMC } from "../libs/VectorMC"
 /**
  * 初始化动态属性
  * @param {WorldInitializeAfterEvent} e 
@@ -147,20 +141,19 @@ const GoheiDefault = DanmakuType.PELLET;
  * @param {ItemUseOnBeforeEvent} ev 
  */
 export function gohei_activate(ev){
-    Tool.logger("a")
-    try{
-        let pl = ev.source;
-        let slot = pl.selectedSlot
-        let container = pl.getComponent("inventory").container;
-        let item = container.getItem(slot);
+    let pl = ev.source;
+    let slot = pl.selectedSlot
+    let container = pl.getComponent("inventory").container;
+    let item = container.getItem(slot);
 
-        if(item && item.typeId == GoheiPrefix + "crafting_table") {
-            let itemStack = new ItemStack(GoheiPrefix + DanmakuType.getName(GoheiDefault), 1);
-            let ench_list = itemStack.getComponent("minecraft:enchantable");
-            ench_list.addEnchantment({type: "infinity", level: 1});
-            // itemStack.getComponent("minecraft:enchantments").enchantments = ench_list;
-            container.setItem(slot, itemStack);
-        }
+    if(item && item.typeId == GoheiPrefix + "crafting_table") {
+        let itemStack = new ItemStack(GoheiPrefix + DanmakuType.getName(GoheiDefault), 1);
+        let ench_list = itemStack.getComponent("minecraft:enchantable");
+        ench_list.addEnchantment({type: EnchantmentTypes.get("infinity"), level: 1});
+        container.setItem(slot, itemStack);
+    }
+    try{
+        
     }
     catch{}
 }

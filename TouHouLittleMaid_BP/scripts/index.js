@@ -1,4 +1,4 @@
-import { world, system, MolangVariableMap, EquipmentSlot, GameMode } from "@minecraft/server"
+import { world, system, EquipmentSlot, GameMode } from "@minecraft/server"
 import { altarStructure } from "./src/altar/AltarStructureHelper";
 import experiment from "./experiment"
 import PowerPoint from "./src/altar/PowerPoint"
@@ -154,8 +154,8 @@ class thlm {
                         let itemName = itemStack.typeId.substring(19);
                         switch(itemName){
                             // case "gold_microwaver_item": GoldMicrowaver.placeEvent(event); break;
-                            case "photo": MaidManager.photoOnUseEvent(event); break;
-                            case "smart_slab_has_maid": MaidManager.smartSlabOnUseEvent(event); break;
+                            case "photo": MaidManager.photoOnUseEvent(event);event.cancel=true; break;
+                            case "smart_slab_has_maid": MaidManager.smartSlabOnUseEvent(event); event.cancel=true; break;
                             case "chisel": GarageKit.activate(event); break;
                             case "garage_kit": GarageKit.placeEvent(event); break;
                             default:{
@@ -192,15 +192,15 @@ class thlm {
 
         //// Entity ////
         // Trigger Event
-        world.beforeEvents.dataDrivenEntityTriggerEvent.subscribe(event => {
+        world.afterEvents.dataDrivenEntityTrigger.subscribe(event => {
             system.run(()=>{
-                // Tool.logger(event.id);
+                // Tool.logger(event.eventId);
                 // const {entity, id, modifiers} = data;
-                if(event.id.substring(0, 4) == "thlm"){
-                    switch(event.id.substring(4, 5)){
+                if(event.eventId.substring(0, 4) == "thlm"){
+                    switch(event.eventId.substring(4, 5)){
                         // 通用事件前缀
                         case ":":
-                            switch(event.id.substring(5)){
+                            switch(event.eventId.substring(5)){
                                 // at: altar_tick
                                 case "at" : altarStructure.deactivateEvent(event.entity); break;
                                 // af: altar_refresh
@@ -223,7 +223,7 @@ class thlm {
                             }; break;
                         // 女仆专用事件
                         case "m":
-                            switch(event.id.substring(6, 7)){
+                            switch(event.eventId.substring(6, 7)){
                                 case "a": MaidManager.danmakuAttack(event);       break; // a Danmaku Attack
                                 case "d": MaidManager.onDeathEvent(event);        break; // d Death
                                 case "f": MaidManager.onTameFollowSuccess(event); break; // f Follow on tamed
@@ -243,7 +243,7 @@ class thlm {
                             break;
                         // 女仆背包专用事件
                         case "b":
-                            switch(event.id.substring(6)){
+                            switch(event.eventId.substring(6)){
                                 // g: grave
                                 case "g" : MaidManager.graveAttackEvent(event); break;
                                 // t0: type 0 (default)
@@ -257,7 +257,7 @@ class thlm {
                             }
                             break;
                         case "w":
-                            switch(event.id.substring(6, 7)){
+                            switch(event.eventId.substring(6, 7)){
                                 case "d" : GoldMicrowaver.despawnEvent(event); break; // d Despawn
                                 case "f" : GoldMicrowaver.finishEvent(event); break; // f finish
                                 case "i" : GoldMicrowaver.interactEventNoItem(event); break;// i interact(NO Item, Not Sneaking)

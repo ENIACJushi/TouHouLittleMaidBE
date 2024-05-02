@@ -1,6 +1,5 @@
-import { Entity, ItemStack, Vector } from "@minecraft/server";
+import { Entity, ItemStack } from "@minecraft/server";
 import { shoot } from "../custom/Cherry";
-import { config } from "../../controller/Config";
 
 export const GoheiCherry = {
     id : "touhou_little_maid:hakurei_gohei_cherry",

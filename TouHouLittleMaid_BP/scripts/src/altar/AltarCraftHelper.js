@@ -1,4 +1,5 @@
-import { Dimension, ItemStack, Player, Vector } from "@minecraft/server";
+import { Dimension, EnchantmentTypes, ItemStack, Player } from "@minecraft/server";
+import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 import { recipeList } from "../../data/recipes/index"
 import { tagDefines } from "../../data/recipes/tag_define"
@@ -126,7 +127,7 @@ export class AltarCraftHelper{
                         let ench_list = output_item.getComponent("minecraft:enchantable")
                         for(let key in itemInfo["Enchantments"]){
                             ench_list.addEnchantment({
-                                type: key, 
+                                type: EnchantmentTypes.get(key), 
                                 level: itemInfo["Enchantments"][key]
                             });
                         }

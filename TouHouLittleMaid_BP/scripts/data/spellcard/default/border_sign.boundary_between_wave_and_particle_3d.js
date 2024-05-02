@@ -6,7 +6,7 @@
 // var Type = Java.type("com.github.tartaricacid.touhoulittlemaid.danmaku.DanmakuType");
 
 import { Dimension, Entity, system } from "@minecraft/server";
-import { Vector as Vec3d } from "@minecraft/server";
+import { Vector as Vec3d } from "../../../src/libs/VectorMC";
 import { DanmakuColor as Color } from "../../../src/danmaku/DanmakuColor";
 import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
 import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";

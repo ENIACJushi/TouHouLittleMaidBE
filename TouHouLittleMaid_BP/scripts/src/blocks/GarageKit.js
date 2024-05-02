@@ -1,6 +1,6 @@
-import { ItemUseOnBeforeEvent, EquipmentSlot, Block, Direction, Vector, system, Dimension, Entity, ItemStack, DataDrivenEntityTriggerAfterEvent, BlockPermutation, Player } from "@minecraft/server";
+import { ItemUseOnBeforeEvent, EquipmentSlot, Block, Direction, system, Dimension, Entity, ItemStack, DataDrivenEntityTriggerAfterEvent, BlockPermutation, Player } from "@minecraft/server";
+import { Vector } from "../libs/VectorMC";
 import { StrMaid } from "../maid/StrMaid";
-import { getDirectionByView2D} from "../libs/VectorMC";
 import { ActionbarMessage, getRandomInteger, logger, lore2Str, str2Lore, title_player_actionbar_object, title_player_actionbar_translate } from "../libs/ScarletToolKit";
 import { EntityMaid } from "../maid/EntityMaid";
 import { MaidSkin } from "../maid/MaidSkin";

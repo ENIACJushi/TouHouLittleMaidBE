@@ -1,4 +1,5 @@
-import { Entity, Vector } from "@minecraft/server";
+import { Entity } from "@minecraft/server";
+import { Vector } from "./VectorMC";
 import * as Tag from "./TagDataInterface"
 
 /**

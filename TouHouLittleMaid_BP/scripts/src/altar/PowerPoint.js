@@ -1,4 +1,5 @@
-import { Player, world, Dimension, Entity, Vector, WorldInitializeAfterEvent,EntityTypes } from "@minecraft/server";
+import { Player, world, Dimension, Entity, WorldInitializeAfterEvent,EntityTypes } from "@minecraft/server";
+import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 
 export default class PowerPoint {

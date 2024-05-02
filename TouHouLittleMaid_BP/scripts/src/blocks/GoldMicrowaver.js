@@ -1,5 +1,5 @@
-import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerBeforeEvent, Entity, ItemStack, Player } from "@minecraft/server";
-import { getDirectionByView2D, toString } from "../libs/VectorMC";
+import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerAfterEvent, Entity, ItemStack, Player } from "@minecraft/server";
+import { VectorMC } from "../libs/VectorMC";
 import { logger, getPlayerMainHand, setPlayerMainHand } from "../libs/ScarletToolKit";
 
 
@@ -238,7 +238,7 @@ export class GoldMicrowaver{
 
         // 决定方向 xz
         let view = player.getViewDirection();
-        let direction = getDirectionByView2D(view);
+        let direction = VectorMC.getDirectionByView2D(view);
         let directionNum = 0;
         switch(direction){
             case Direction.North: directionNum = 1; break;
@@ -294,7 +294,7 @@ export class GoldMicrowaver{
     }
     /** 
      * 交互事件 空手
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
     */
     static interactEventNoItem(event){
         let waver = event.entity;
@@ -303,7 +303,7 @@ export class GoldMicrowaver{
     }
     /** 
      * 交互事件 空手潜行
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
     */
     static interactEventNoItemSneaking(event){
         let waver = event.entity;
@@ -458,7 +458,7 @@ export class GoldMicrowaver{
     }
     /** 
      * 销毁事件
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
     */
     static despawnEvent(event){
         let microwaver = event.entity;
@@ -475,7 +475,7 @@ export class GoldMicrowaver{
     }
     /** 
      * 完成事件 用于设置方块的 status
-     * @param {DataDrivenEntityTriggerBeforeEvent} event 
+     * @param {DataDrivenEntityTriggerAfterEvent} event 
     */
      static finishEvent(event){
         let waver = event.entity;

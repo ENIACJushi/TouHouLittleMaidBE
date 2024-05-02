@@ -1,4 +1,5 @@
-import { EntityHitEntityAfterEvent, Entity, Dimension, Vector, Block, system } from "@minecraft/server";
+import { EntityHitEntityAfterEvent, Entity, Dimension, system } from "@minecraft/server";
+import { Vector } from "../libs/VectorMC";
 import { EntityMaid } from "./EntityMaid";
 import { logger, pointInArea_3D } from "../libs/ScarletToolKit";
 

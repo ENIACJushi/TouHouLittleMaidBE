@@ -1,6 +1,5 @@
-import { system, Entity,world,Vector,Dimension,Container, ItemStack } from "@minecraft/server";
-import { config } from "../controller/Config"
-import * as Tool from "../libs/ScarletToolKit"
+import { Entity,world,Dimension,Container, ItemStack } from "@minecraft/server";
+import { Vector } from "../libs/VectorMC";
 import { EntityMaid } from "./EntityMaid";
 import * as Tag from "../libs/TagDataInterface"
 

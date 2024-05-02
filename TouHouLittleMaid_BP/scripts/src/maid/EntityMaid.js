@@ -1,7 +1,7 @@
-import { Entity, EntityTypes, world,Vector,Dimension,system, EntityHealthComponent, Container, ItemStack, WorldInitializeAfterEvent, Block, Player, ContainerSlot } from "@minecraft/server";
+import { Entity, world, Dimension,system, EntityHealthComponent, Container, ItemStack, Block, Player, ContainerSlot } from "@minecraft/server";
+import { Vector } from "../libs/VectorMC";
 import { MaidBackpack } from "./MaidBackpack";
-import * as Tool from "../libs/ScarletToolKit"
-import { config } from "../controller/Config"
+import * as Tool from "../libs/ScarletToolKit";
 import { StrMaid } from "./StrMaid";
 import { emote } from "../../data/emote";
 import { MaidSkin } from "./MaidSkin";
