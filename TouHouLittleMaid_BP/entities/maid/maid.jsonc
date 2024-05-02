@@ -11,8 +11,6 @@
         // 背包
         "thlm:backpack_type"     :{"type": "int" , "default": 0    , "range":[0,3], "client_sync": true},
         "thlm:backpack_invisible":{"type": "bool", "default": false, "client_sync": true},
-        // 正在坐下
-        "thlm:is_sitting": {"type": "bool", "default": false, "client_sync": true},
         // 表情
         "thlm:emote"             :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
         // 环境
@@ -38,32 +36,12 @@
             "target": "self"
           }
         },
-        "minecraft:inside_block_notifier": {
-          "block_list": [
-            {
-              "block": {
-                "name":  "minecraft:water"
-              },
-              "entered_block_event": {
-                "event": "enter_swim",
-                "target": "self"
-              },
-              "exited_block_event": {
-                "event": "enter_swim",
-                "target": "self"
-              }
-            }
-          ]
-        },
-        "minecraft:underwater_movement": {
-          "value": 0.06
-        },
         ///// 基础属性 /////
-        "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": false },
         "minecraft:health"       : { "value": 40, "max": 40 },
         "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
         "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
         "minecraft:loot"         : { "table": "loot_tables/empty.json" },
+        "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": true },
         "minecraft:on_death"     : { "event": "thlmm:d", "target": "self" },
         "minecraft:movement"     : { "value": 0.25 },
         "minecraft:physics"      : { },
@@ -77,7 +55,7 @@
         
         ///// 交互属性 /////
         "minecraft:rideable": {
-          "controlling_seat": 0,
+          "controlling_seat": 1,
           "crouching_skip_interact": true,
           "family_types": ["thlm:maid_backpack"],
           "interact_text": "",
@@ -99,13 +77,9 @@
   
         ///// AI属性 /////
         
-        "minecraft:behavior.hurt_by_target": { "priority": 4 }
-      },
-      // 站起时移动属性
-      "thlmm:maid_basic_stand_movement":{
-        "minecraft:water_movement": { "drag_factor": 0.9},
-        "minecraft:jump.static": { },
-        "minecraft:can_climb": { },
+        "minecraft:behavior.hurt_by_target": { "priority": 4 },
+  
+        // 基本移动
         "minecraft:navigation.walk": {
           "can_path_over_water": true,
           "avoid_damage_blocks": true,
@@ -113,6 +87,12 @@
           "avoid_portals": true
         },
         "minecraft:movement.basic": { },
+        "minecraft:water_movement": { "drag_factor": 0.9},
+        "minecraft:jump.static": { },
+        "minecraft:can_climb": { },
+        "minecraft:behavior.float": { "priority": 2 },
+        "minecraft:behavior.stay_while_sitting": { "priority": 3 },
+  
         "minecraft:behavior.mount_pathing": {
           "priority": 3,
           "speed_multiplier": 1.25,
@@ -123,9 +103,6 @@
           "priority": 8,
           "speed_multiplier": 1.0
         }
-      },
-      // 坐下时移动属性
-      "thlmm:maid_basic_sit_movement":{
       },
       "thlmm:maid_wild": {
         "minecraft:behavior.panic": { "priority": 1, "speed_multiplier": 1.25 },
@@ -150,10 +127,10 @@
         }
       },
       "thlmm:maid_tame": {
+        "minecraft:sittable": {},
         "minecraft:is_tamed": {},
         "minecraft:interact": {
           "interactions": [
-            // 相机
             {
               "cooldown": 2.5,
               "use_item": false,
@@ -172,7 +149,6 @@
                 "target": "self"
               }
             },
-            // 魂符
             {
               "cooldown": 2.5,
               "use_item": false,
@@ -190,47 +166,6 @@
                 "target": "self"
               }
             },
-            // 坐下 站立状态交互
-            {
-              "cooldown": 0.2,
-              "use_item": false,
-              "interact_text": "action.interact.sit",
-              "vibration": "none",
-              "on_interact": {
-                "filters": {
-                  "all_of": [
-                    { "test": "has_equipment", "operator":"not", "subject": "other", "domain": "hand", "value": "minecraft:name_tag"},
-                    { "test": "bool_property", "value": false, "domain": "thlm:is_sitting"}, 
-                    { "test": "is_family", "subject": "other", "value": "player" },
-                    { "test": "is_owner", "subject": "other", "value": true },
-                    { "test": "is_sneaking", "subject": "other", "value": false }
-                  ]
-                },
-                "event": "thlmm:v",
-                "target": "self"
-              }
-            },
-            // 站起 站立状态交互
-            {
-              "cooldown": 0.2,
-              "use_item": false,
-              "interact_text": "action.interact.stand",
-              "vibration": "none",
-              "on_interact": {
-                "filters": {
-                  "all_of": [
-                    { "test": "has_equipment", "operator":"not", "subject": "other", "domain": "hand", "value": "minecraft:name_tag"},
-                    { "test": "bool_property", "value": true, "domain": "thlm:is_sitting"}, 
-                    { "test": "is_family", "subject": "other", "value": "player" },
-                    { "test": "is_owner", "subject": "other", "value": true },
-                    { "test": "is_sneaking", "subject": "other", "value": false }
-                  ]
-                },
-                "event": "thlmm:w",
-                "target": "self"
-              }
-            },
-            // 转化为 NPC
             {
               "cooldown": 2.5,
               "use_item": false,
@@ -251,13 +186,8 @@
           ]
         }
       },
-      "thlmm:maid_float": {
-        "minecraft:behavior.float": { "priority": 2 }
-      },
-
-      // 非潜行交互 坐下/站起/命名
+      // 右键坐下/站起
       "thlmm:maid_tame_sit":{
-        "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": true },
         "minecraft:entity_sensor": {
           "sensor_range": 6,
           "relative_range": false,
@@ -277,9 +207,8 @@
           "event": "thlmm:i"
         }
       },
-      // 潜行交互 打开背包/不可命名
+      // 右键打开背包
       "thlmm:maid_tame_inventory":{
-        "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": false },
         "minecraft:entity_sensor": {
           "sensor_range": 6,
           "relative_range": false,
@@ -337,7 +266,6 @@
       ///// 工作模式 /////
       // 战斗索敌
       "mode:searching_melee_attack":{
-        "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 6, "must_see": true,
           "reselect_targets": true, "within_radius": 16, "scan_interval": 10,
@@ -389,7 +317,6 @@
         }
       },
       "mode:searching_danmaku_attack":{
-        "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 4, "must_see": true, "must_reach": false,
           "reselect_targets": true, "within_radius": 16, "scan_interval": 10,
@@ -398,26 +325,8 @@
           ] }, "max_dist": 16, "must_see": true } ]
         },
         "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 1.25 },
-        "minecraft:behavior.hurt_by_target": {
-          "priority": 3,
-          "entity_types": {
-            "filters":{ "all_of": [
-              {"test": "has_component","subject": "other","value": "is_tamed", "operator": "not"},
-              {"test": "is_family","subject": "other","value": "maid", "operator": "!="},
-              {"test": "is_family","subject": "other","value": "player", "operator": "!="}
-            ] }
-          }
-        },
-        "minecraft:behavior.owner_hurt_by_target": {
-          "priority": 1,
-          "entity_types": {
-            "filters":{ "all_of": [
-              {"test": "has_component","subject": "other","value": "is_tamed", "operator": "not"},
-              {"test": "is_family","subject": "other","value": "maid", "operator": "!="},
-              {"test": "is_family","subject": "other","value": "player", "operator": "!="}
-            ] }
-          }
-        },
+        "minecraft:behavior.hurt_by_target": { "priority": 3 },
+        "minecraft:behavior.owner_hurt_by_target": { "priority": 1 },
         "minecraft:behavior.owner_hurt_target"   : {
           "priority": 2,
           "entity_types": {
@@ -443,20 +352,21 @@
       },
       // 空闲
       "mode:idle":{
-        "minecraft:type_family"  : { "family": [ "maid", "mob" ] }
-      },
-      "mode:idle_stand":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
         "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 1.25 }
       },
       // 近战
       "mode:attack_lv1":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
         "minecraft:behavior.melee_attack": { "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25, "cooldown_time": 0.9 }
       },
       "mode:attack_lv2":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
         "minecraft:behavior.melee_attack": { "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25, "cooldown_time": 0.8 }
       },
       // 弹幕攻击
       "mode:danmaku_attack":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
         "minecraft:behavior.ranged_attack": { "priority": 5, "attack_interval_min": 0.3, "attack_interval_max": 0.3, "attack_radius": 16.0,"attack_radius_min": 5 }
       },
       // 农耕
@@ -526,16 +436,11 @@
       },
 
       ///// 背包类别 /////
-      "backpack:default_sneaking":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "restrict_to_owner": true} },
-      "backpack:small_sneaking":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 12, "restrict_to_owner": true} },
-      "backpack:middle_sneaking":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 24, "restrict_to_owner": true} },
-      "backpack:big_sneaking":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 36, "restrict_to_owner": true} },
-
-      "backpack:default":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "private": true} },
+      "backpack:default":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "restrict_to_owner": true} },
       "backpack:small":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 12, "private": true} },
       "backpack:middle":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 24, "private": true} },
       "backpack:big":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 36, "private": true} },
-      
+
       ///// 跟随类别 /////
       // 拐走后跟随
       "status:follow_on_tame":{
@@ -776,6 +681,7 @@
         "minecraft:knockback_resistance": { "value": 1.0 },
         "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
         "minecraft:collision_box": { "width": 0, "height": 0},
+        "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false},
         "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
         "minecraft:persistent": { },
         "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false }
@@ -790,6 +696,7 @@
             "target": "self"
           }
         },
+        "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false},
         "minecraft:knockback_resistance": { "value": 1.0 },
         "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
         "minecraft:collision_box": { "width": 0, "height": 0},
@@ -802,6 +709,7 @@
         "minecraft:knockback_resistance": { "value": 1.0 },
         "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
         "minecraft:collision_box": { "width": 0, "height": 0},
+        "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false},
         "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
         "minecraft:persistent": { },
         "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false }
@@ -824,8 +732,6 @@
         "add": {
           "component_groups": [
             "thlmm:maid_basic",
-            "thlmm:maid_basic_stand_movement",
-            "thlmm:maid_stand_nameable",
             "thlmm:maid_wild",
             "environment:simple",
             "backpack:default",
@@ -833,17 +739,11 @@
           ]
         }
       },
-      "enter_swim":{ },
-      "exit_swim":{  },
-      "enter_float":{ "add": { "component_groups": ["thlmm:maid_float"] } },
-      "exit_float":{ "remove": { "component_groups": ["thlmm:maid_float"] } },
       // 重生的女仆，等级交给脚本设置
       "become_maid_reborn":{
         "add": {
           "component_groups": [
             "thlmm:maid_basic",
-            "thlmm:maid_basic_stand_movement",
-            "thlmm:maid_stand_nameable",
             "thlmm:maid_wild",
             "environment:simple",
             "backpack:default"
@@ -878,8 +778,6 @@
       "become_npc":{
         "remove": { "component_groups": [
           "thlmm:maid_basic",
-          "thlmm:maid_basic_stand_movement",
-          "thlmm:maid_basic_sit_movement",
           "thlmm:maid_wild",
           "environment:simple",
           "backpack:default",
@@ -895,8 +793,6 @@
       "become_statues":{
         "remove": { "component_groups": [
           "thlmm:maid_basic",
-          "thlmm:maid_basic_stand_movement",
-          "thlmm:maid_basic_sit_movement",
           "thlmm:maid_wild",
           "environment:simple",
           "backpack:default",
@@ -911,8 +807,6 @@
       "become_garage_kit_un_solid":{
         "remove": { "component_groups": [
           "thlmm:maid_basic",
-          "thlmm:maid_basic_stand_movement",
-          "thlmm:maid_basic_sit_movement",
           "thlmm:maid_wild",
           "environment:simple",
           "backpack:default",
@@ -952,79 +846,22 @@
       "thlmm:t" :{
         "sequence": [
           // 回家
-          { "trigger": "thlmm:h", "filters": { "all_of": [
-              { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },
-              { "test": "has_component", "subject": "self", "operator": "==", "value": "minecraft:is_baby" } ]
-          } },
+          { "filters": { "test": "has_component", "subject": "self", "operator": "==", "value": "minecraft:is_baby" }, "trigger": "thlmm:h" },
           // 弹幕攻击
-          { "trigger": "thlmm:a", "filters": { "all_of": [
-            { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },
-            { "test": "int_property", "value": 2, "operator":"==", "domain": "thlm:work" } ]
-          } }
+          { "filters": {"test": "int_property", "value": 2, "operator":"==", "domain": "thlm:work"}, "trigger": "thlmm:a"}
         ]
       },// timer 每3秒一次的定时事件 
       "thlmm:a": {}, // danmaku Attack
       "thlmm:d" :{}, // Death
       "thlmm:f" :{}, // Follow on tamed
       "thlmm:h" :{}, // Home
-      "thlmm:i" :{ "sequence": [ // 退出坐下模式 进入查包模式
-        { "remove": {"component_groups": ["thlmm:maid_tame_sit"]},  "add": {"component_groups": ["thlmm:maid_tame_inventory"]} },
-        { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 0},
-          "add": { "component_groups": [ "backpack:default_sneaking" ] }, "remove": { "component_groups": [ "backpack:default" ] },
-          "queue_command": {"command":"say s1"}  },
-        { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 1},
-          "add": { "component_groups": [ "backpack:small_sneaking" ] }, "remove": { "component_groups": [ "backpack:small" ] } },
-        { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 2},
-          "add": { "component_groups": [ "backpack:middle_sneaking" ] }, "remove": { "component_groups": [ "backpack:middle" ] } },
-        { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 3},
-          "add": { "component_groups": [ "backpack:big_sneaking" ] }, "remove": { "component_groups": [ "backpack:big" ] } }
-      ] },
+      "thlmm:i" :{ "remove": {"component_groups": ["thlmm:maid_tame_sit"]}, "add": {"component_groups": ["thlmm:maid_tame_inventory"]} },
       "thlmm:l1":{}, "thlmm:l2" :{}, "thlmm:l3" :{}, "thlmm:l4" :{}, "thlmm:l5" :{}, "thlmm:l6" :{}, // Level 1~6
       "thlmm:m" :{}, // Master interact
       "thlmm:n" :{}, // NPC
       "thlmm:p" :{}, // Photo
-      "thlmm:s" :{ "sequence": [ // 退出坐下模式 进入查包模式
-        { "remove": {"component_groups": ["thlmm:maid_tame_inventory"]}, "add": {"component_groups": ["thlmm:maid_tame_sit"]} },
-        { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 0},
-          "remove": { "component_groups": [ "backpack:default_sneaking" ] }, "add": { "component_groups": [ "backpack:default" ] },
-          "queue_command": {"command":"say s2"} },
-        { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 1},
-          "remove": { "component_groups": [ "backpack:small_sneaking" ] }, "add": { "component_groups": [ "backpack:small" ] } },
-        { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 2},
-          "remove": { "component_groups": [ "backpack:middle_sneaking" ] }, "add": { "component_groups": [ "backpack:middle" ] } },
-        { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 3},
-          "remove": { "component_groups": [ "backpack:big_sneaking" ] }, "add": { "component_groups": [ "backpack:big" ] } }
-      ] },
+      "thlmm:s" :{ "add": {"component_groups": ["thlmm:maid_tame_sit"]}, "remove": {"component_groups": ["thlmm:maid_tame_inventory"]} },
       "thlmm:u": {}, // Statues destory
-      // 坐下
-      "thlmm:v":{
-        "sequence": [
-          {"set_property": { "thlm:is_sitting": true }},
-          // 切换移动属性
-          { "remove": { "component_groups": [ "thlmm:maid_basic_stand_movement"]}, 
-            "add": { "component_groups": [ "thlmm:maid_basic_sit_movement"]}},
-          // 工作模式 
-          { "filters": {"test": "int_property", "domain": "thlm:work", "value": 1}, // 近战模式 去除索敌
-            "remove": { "component_groups": [ "mode:searching_melee_attack" ]} },
-          { "filters": {"test": "int_property", "domain": "thlm:work", "value": 2}, // 弹幕模式 去除索敌
-            "add": { "component_groups": [ "mode:searching_danmaku_attack" ]} }
-          // 农作模式由脚本取消扫描
-        ]
-      },
-      // 站起
-      "thlmm:w":{
-        "sequence": [
-          {"set_property": { "thlm:is_sitting": false }},
-          // 切换移动属性
-          { "add": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]},
-            "remove": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}},
-          // 工作模式 
-          { "filters": {"test": "int_property", "domain": "thlm:work", "value": 1}, // 近战模式 恢复索敌
-            "add": { "component_groups": [ "mode:searching_melee_attack" ]} },
-          { "filters": {"test": "int_property", "domain": "thlm:work", "value": 2}, // 弹幕模式 恢复索敌
-            "add": { "component_groups": [ "mode:searching_danmaku_attack" ]} }
-        ]
-      },
       "thlmm:0" :{}, // Spawn
       "thlmm:1" :{}, // smart slab
       "thlm:n": {}, // npc交互

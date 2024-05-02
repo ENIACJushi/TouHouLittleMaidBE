@@ -758,57 +758,44 @@ export class EntityMaid{
         cake (maid){ this.set(maid, 6); } // 蛋糕 6
     }
     // 背包
-    static Inventory = class{
-        static default = 0;
-        static small   = 1;
-        static middle  = 2;
-        static big     = 3;
-        static nameTags = [
-            "§t§h§l§m§d§r",
-            "§t§h§l§m§s§r",
-            "§t§h§l§m§m§r",
-            "§t§h§l§m§b§r"
-        ]
-        /**
-         * 获取查包模式的前缀
-         * @param {number} maid 
-         */
-        static getNamePrefix(maid){
-            return this.nameTags[this.getType(maid)];
-        }
-        /**
-         * 获取背包类型
-         * @param {Entity} maid
-         * @return {number}
-         */
-        static getType(maid){
-            return maid.getProperty("thlm:backpack_type");
-        }
+    static Inventory = {
         /**
          * 是否处于主人查包模式
          * @param {Entity} maid 
          * @returns {boolean}
          */
-        static isCheckMode(maid){
+        isCheckMode(maid){
             return maid.getDynamicProperty("inv_check")===true;
-        }
+        },
         /**
          * 主人查包模式
-         * 修改女仆的名称
+         *  将女仆背包的内容转移到实体背包
+         *  若实体背包内存在物品，则将其丢弃
          * @param {Entity} maid 
          * @returns {boolean}
          */
-        static checkMode(maid){
-            let name = maid.nameTag;
-            if(name===""){
-                maid.nameTag = this.getNamePrefix(maid);
-            }
-            else{
-                maid.nameTag = this.getNamePrefix(maid) + name;
+        checkMode(maid){
+            let backpack = EntityMaid.Backpack.getContainer(maid);
+            if(backpack === undefined) return false;
+            
+            let maidContainer = maid.getComponent("inventory").container;
+            for(let i = 0; i < maidContainer.size; i++){
+                let maidItem = maidContainer.getItem(i);
+                if(maidItem !== undefined){
+                    // 若实体背包内存在物品，则将其丢弃
+                    let backpackItem = backpack.getItem(i);
+                    if(backpackItem !== undefined){
+                        maid.dimension.spawnItem(backpackItem, maid.location);
+                        backpack.setItem(i);
+                    }
+                    // 将女仆背包的内容转移到实体背包
+                    backpack.setItem(i, maidItem);
+                    maidContainer.setItem(i);
+                }
             }
             maid.setDynamicProperty("inv_check", true);
             return true;
-        }
+        },
         /**
          * 退出主人查包模式
          *  将实体背包内容转移到女仆背包
@@ -816,27 +803,36 @@ export class EntityMaid{
          * @param {Entity} maid
          * @returns {boolean}
          */
-        static quitCheckMode(maid){
-            let name = maid.nameTag;
-            if(name === this.getNamePrefix(maid)){
-                maid.nameTag = "";
-            }
-            else{
-                maid.nameTag = name.substring(12)
+        quitCheckMode(maid){
+            let backpack = EntityMaid.Backpack.getContainer(maid);
+            if(backpack === undefined) return false;
+            
+            let maidContainer = maid.getComponent("inventory").container;
+            for(let i = 0; i < maidContainer.size; i++){
+                let backpackItem = backpack.getItem(i);
+                if(backpackItem !== undefined){
+                    let maidItem = maidContainer.getItem(i);
+                    if(maidItem !== undefined){
+                        maid.dimension.spawnItem(maidItem, maid.location);
+                        maidContainer.setItem(i);
+                    }
+                    maidContainer.setItem(i, backpackItem);
+                    backpack.setItem(i);
+                }
             }
             maid.setDynamicProperty("inv_check", false);
             return true;
-        }
+        },
         /**
          * 获取背包 container
          * @param {Entity} maid 
          * @returns {undefined | Container}
          */
-        static getContainer(maid){
+        getContainer(maid){
             return this.isCheckMode(maid)
                 ? EntityMaid.Backpack.getContainer(maid) // 主人操作背包状态 访问背包实体
                 : maid.getComponent("inventory").container; // 通常状态 直接访问
-        }
+        },
         /**
          * 添加物品 可以和现有的同种物品堆叠
          *  若全部添加成功，返回-1
@@ -845,12 +841,12 @@ export class EntityMaid{
          * @param {ItemStack} itemStack
          * @returns {ItemStack|undefined}
          */
-        static addItem(maid, itemStack){
+        addItem(maid, itemStack){
             let container = this.getContainer(maid);
             if(container === undefined) return 0;
 
             return container.addItem(itemStack);
-        }
+        },
         /**
          * 移除物品 数量由count指定，itemStack中的数量不被考虑
          *  若成功移除则返回true
@@ -860,7 +856,7 @@ export class EntityMaid{
          * @param {number} count
          * @returns {true|number}
          */
-        static removeItem(maid, itemStack, count){
+        removeItem(maid, itemStack, count){
             let container = this.getContainer(maid);
             if(container === undefined) return false;
 
@@ -887,7 +883,7 @@ export class EntityMaid{
 
             }
             return left;
-        }
+        },
         /**
          * 移除物品 类型符合即可移除 数量由count指定
          *  若成功移除则返回true
@@ -897,7 +893,7 @@ export class EntityMaid{
          * @param {number} count
          * @returns {true|number}
          */
-        static removeItem_type(maid, typeId, count){
+        removeItem_type(maid, typeId, count){
             let container = this.getContainer(maid);
             if(container === undefined) return false;
 
@@ -924,39 +920,39 @@ export class EntityMaid{
 
             }
             return left;
-        }
+        },
         /**
          * 清除所有物品
          * @param {Entity} maid 
          */
-        static clearAll(maid){
+        clearAll(maid){
             let container = this.getContainer(maid);
             if(container === undefined) return false;
             
             container.clearAll();
-        }
+        },
         /**
          * 获取某个栏位的物品
          * @param {number} slot
          * @returns {ItemStack | undefined} 
          */
-        static getItem(maid, slot){
+        getItem(maid, slot){
             let container = this.getContainer(maid);
             if(container === undefined) return undefined;
 
             return container.getItem(slot);
-        }
+        },
         /**
          * 获取某个栏位的对象
          * @param {number} slot
          * @returns {ContainerSlot | undefined} 
          */
-        static getSlot(maid, slot){
+        getSlot(maid, slot){
             let container = this.getContainer(maid);
             if(container === undefined) return undefined;
 
             return container.getSlot(slot);
-        }
+        },
         /**
          * 移动物品到容器
          * @param {Entity} maid 
@@ -964,31 +960,31 @@ export class EntityMaid{
          * @param {number} toSlot 
          * @param {Container} toContainer 
          */
-        static moveItem(maid, fromSlot, toSlot, toContainer){
+        moveItem(maid, fromSlot, toSlot, toContainer){
             let container = this.getContainer(maid);
             if(container === undefined) return;
 
             container.moveItem(fromSlot, toSlot, toContainer);
-        }
+        },
         /**
          * 设置某个栏位的物品
          * @param {Entity} maid 
          * @param {number} slot 
          * @param {ItemStack|undefined} itemStack 
          */
-        static setItem(maid, slot, itemStack=undefined){
+        setItem(maid, slot, itemStack=undefined){
             let container = this.getContainer(maid);
             if(container === undefined) return undefined;
 
             container.setItem(slot, itemStack);
-        }
+        },
         /**
          * 与其它容器交换物品
          * @param {Entity} maid 
          * @param {number} otherSlot 
          * @param {Container} otherContainer 
          */
-        static swapItems(maid, otherSlot, otherContainer){
+        swapItems(maid, otherSlot, otherContainer){
             let container = this.getContainer(maid);
             if(container === undefined) return undefined;
 
@@ -1091,6 +1087,26 @@ export class EntityMaid{
                 }
             },1);
         }
+        // 生成默认背包 ，为脚本召唤背包预留2刻
+        system.runTimeout(()=>{
+            // 非正常女仆，不需要背包
+            if(EntityMaid.Work.get(maid)<0) return;
+            try{
+                if(maid===undefined) return;
+
+                var rideable = maid.getComponent("minecraft:rideable");
+                const rider = rideable.getRiders()[0];
+                if(rider === undefined){
+                    // 生成背包
+                    var backpack = MaidBackpack.create(maid, MaidBackpack.default, maid.dimension, maid.location);
+                    EntityMaid.Backpack.setID(maid, backpack.id);
+
+                    // 背上背包   无效：rideable.addRider(backpack);
+                    maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
+                }
+            }
+            catch{};
+        }, 2);
         maid.setDynamicProperty("spawn_set", true);
     }
     /// 字符化

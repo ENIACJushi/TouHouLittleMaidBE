@@ -26,7 +26,7 @@ if(true){
             // Danmaku.init_dynamic_properties(e);
             // EntityMaid.initDynamicProperties(e);
             
-            MaidManager.Core.init();
+            MaidManager.init();
             MaidSkin.initScoreboard();
             
         });
@@ -76,6 +76,8 @@ class thlm {
                 max = Math.max(max, event.damage);
                 min = Math.min(min, event.damage);
                 Tool.logger(` Hit: ${count.toFixed(2)} | MIN: ${min.toFixed(2)} | MAX:${max.toFixed(2)} | DPH :${average1.toFixed(2)} | DPS: ${average2.toFixed(2)}`)
+
+                
         });
         }
 
@@ -142,7 +144,6 @@ class thlm {
                             //// 黄金微波炉 ////
                             case "gold_microwaver":{
                                 GoldMicrowaver.interactEvent(event);
-                                event.cancel=true;
                             }; break;
                             default: break;
                         }
@@ -153,10 +154,10 @@ class thlm {
                         let itemName = itemStack.typeId.substring(19);
                         switch(itemName){
                             // case "gold_microwaver_item": GoldMicrowaver.placeEvent(event); break;
-                            case "photo": MaidManager.Interact.photoOnUseEvent(event); event.cancel=true; break;
-                            case "smart_slab_has_maid": MaidManager.Interact.smartSlabOnUseEvent(event); event.cancel=true; break;
-                            case "chisel": GarageKit.activate(event); event.cancel=true; break;
-                            case "garage_kit": GarageKit.placeEvent(event); event.cancel=true; break;
+                            case "photo": MaidManager.photoOnUseEvent(event); break;
+                            case "smart_slab_has_maid": MaidManager.smartSlabOnUseEvent(event); break;
+                            case "chisel": GarageKit.activate(event); break;
+                            case "garage_kit": GarageKit.placeEvent(event); break;
                             default:{
                                 //// 御币使用事件 ////
                                 if(itemName.substring(0,13) === "hakurei_gohei"){
@@ -164,7 +165,6 @@ class thlm {
                                     else if(block.typeId == "minecraft:red_wool")         // 祭坛激活
                                         altarStructure.activate(player.dimension, event.block.location, event.blockFace);
                                 }
-                                event.cancel=true;
                             }; break;
                         }
                     }
@@ -194,7 +194,7 @@ class thlm {
         // Trigger Event
         world.beforeEvents.dataDrivenEntityTriggerEvent.subscribe(event => {
             system.run(()=>{
-                Tool.logger(event.id);
+                // Tool.logger(event.id);
                 // const {entity, id, modifiers} = data;
                 if(event.id.substring(0, 4) == "thlm"){
                     switch(event.id.substring(4, 5)){
@@ -224,21 +224,20 @@ class thlm {
                         // 女仆专用事件
                         case "m":
                             switch(event.id.substring(6, 7)){
-                                case "a": MaidManager.Shedule .danmakuAttack(event);       break; // a Danmaku Attack
-                                case "d": MaidManager.Core    .onDeathEvent(event);        break; // d Death
-                                case "f": MaidManager.Core    .onTameFollowSuccess(event); break; // f Follow on tamed
-                                case "h": MaidManager.Shedule .returnHomeEvent(event);     break; // h Home
-                                case "i": MaidManager.Interact.inventoryModeEvent(event);  break; // i Inventory mode
-                                case "l": MaidManager          .setLevelEvent(event);      break; // l Level
-                                case "m": MaidManager.Interact.onInteractEvent(event);     break; // m Master interact
-                                case "n": MaidManager          .onNPCEvent(event);         break; // n NPC
-                                case "p": MaidManager.Interact.onPhotoEvent(event);        break; // p Photo
-                                case "s": MaidManager.Interact.sitModeEvent(event);        break; // s Sit mode
-                                case "t": MaidManager.Shedule .timerEvent(event);          break; // t Timer
-                                case "u": GarageKit           .scan(event);                break; // u statues destroy
-                                case "v": MaidManager.Interact.onSitEvent(event);          break; // v enter sit
-                                case "0": MaidManager.Core    .onSpawnEvent(event);        break; // 0 Spawn
-                                case "1": MaidManager.Interact.onSmartSlabRecycleEvent(event); break;// 1 Smart slab
+                                case "a": MaidManager.danmakuAttack(event);       break; // a Danmaku Attack
+                                case "d": MaidManager.onDeathEvent(event);        break; // d Death
+                                case "f": MaidManager.onTameFollowSuccess(event); break; // f Follow on tamed
+                                case "h": MaidManager.returnHomeEvent(event);     break; // h Home
+                                case "i": MaidManager.inventoryModeEvent(event);  break; // i Inventory mode
+                                case "l": MaidManager.setLevelEvent(event);       break; // l Level
+                                case "m": MaidManager.onInteractEvent(event);     break; // m Master interact
+                                case "n": MaidManager.onNPCEvent(event);          break; // n NPC
+                                case "p": MaidManager.onPhotoEvent(event);        break; // p Photo
+                                case "s": MaidManager.sitModeEvent(event);        break; // s Sit mode
+                                case "t": MaidManager.timerEvent(event);          break; // t Timer
+                                case "u": GarageKit.scan(event);                  break;  // u statues destroy
+                                case "0": MaidManager.onSpawnEvent(event);        break; // 0 Spawn
+                                case "1": MaidManager.onSmartSlabRecycleEvent(event); break;// 1 Smart slab
                                 default: break;
                             }
                             break;
@@ -246,15 +245,15 @@ class thlm {
                         case "b":
                             switch(event.id.substring(6)){
                                 // g: grave
-                                case "g" : MaidManager.Core.graveAttackEvent(event); break;
+                                case "g" : MaidManager.graveAttackEvent(event); break;
                                 // t0: type 0 (default)
-                                case "t0" : MaidManager.Interact.backpackTypeChangeEvent(event, 0); break;
+                                case "t0" : MaidManager.backpackTypeChangeEvent(event, 0); break;
                                 // t1: type 1 (small)
-                                case "t1" : MaidManager.Interact.backpackTypeChangeEvent(event, 1); break;
+                                case "t1" : MaidManager.backpackTypeChangeEvent(event, 1); break;
                                 // t2: type 2 (middle)
-                                case "t2" : MaidManager.Interact.backpackTypeChangeEvent(event, 2); break;
+                                case "t2" : MaidManager.backpackTypeChangeEvent(event, 2); break;
                                 // t3: type 3 (big)
-                                case "t3" : MaidManager.Interact.backpackTypeChangeEvent(event, 3); break;
+                                case "t3" : MaidManager.backpackTypeChangeEvent(event, 3); break;
                             }
                             break;
                         case "w":
@@ -280,7 +279,7 @@ class thlm {
             let killer = event.damageSource.damagingEntity;
             if(killer !== undefined){
                 if(killer.typeId === "thlmm:maid"){
-                    MaidManager.Shedule.killEvent(event);
+                    MaidManager.killEvent(event);
                 }
             }
         });

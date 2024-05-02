@@ -147,6 +147,7 @@ const GoheiDefault = DanmakuType.PELLET;
  * @param {ItemUseOnBeforeEvent} ev 
  */
 export function gohei_activate(ev){
+    Tool.logger("a")
     try{
         let pl = ev.source;
         let slot = pl.selectedSlot
