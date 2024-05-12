@@ -1,8 +1,27 @@
 
 -----
+本次更新没有更改资源包，可以只换行为包。
+#### 版本适配
+- 文件名 `scarletToolKit.js` 修改为 `ScarletToolKit.js`
+- 删除 `Vector` 接口：
+  - 使用自制向量类`Vector`取代先前提供的接口，以便使用`new Vector()`；
+  - 原先外挂的向量运算整合进自制向量工具类`VectorMC`，自制向量工具类的所有方法均为静态方法。更新相应引入；
+  - 原先`Vector`对象自带的`length()`、`normalized()`、`add()`转交工具类运算；
+  - 将所有从 `@minecraft/server` 引入的 `Vector` 改为 `libs/Vector.js` 引入
+  - 补充向量运算 和（`add`）、数乘（`multiply`）、外积（`cross`），以填补被移除的 ` Vector` 运算的空缺
 
+- 将 ` DataDrivenEntityTrigger` 由 `beforeEvents` 改为 `afterEvent`
+  - 更改订阅写法
+    -  类型名 DataDrivenEntityTriggerBeforeEvent 改为 DataDrivenEntityTriggerAfterEvent
+  - `event.id` 改为 `event.eventId`: 对`index.js` 和 `MaidManager.js`
+
+- 附魔属性指定方法由 `字符` 转为 `EnchantmentTypes.get()`
+
+#### 特性修复
+- 对陶罐、物品展示框、发光物品展示框使用照片和魂符会导致物品被复制；
 ## 计划
 
+p点获取方式改为getscore
 √ 补充弹幕攻击的目标白名单
 
 尝试去除背包实体

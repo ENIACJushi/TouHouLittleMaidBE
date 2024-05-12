@@ -11,9 +11,9 @@ import { GoldMicrowaver } from "./src/blocks/GoldMicrowaver";
 import { MaidManager } from "./src/maid/MaidManager";
 import { MaidSkin } from "./src/maid/MaidSkin";
 import { MaidTarget } from "./src/maid/MaidTarget"
-
 import { CommandManager } from './src/controller/Command'
 import { GarageKit } from "./src/blocks/GarageKit";
+
 
 if(true){
     // World Initialize

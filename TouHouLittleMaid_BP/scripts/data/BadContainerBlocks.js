@@ -7,6 +7,5 @@ const BadContainerBlocks = [
 ]
 
 export function isBadContainerBlock(typeId){
-    logger(typeId)
     return BadContainerBlocks.includes(typeId);
 }
