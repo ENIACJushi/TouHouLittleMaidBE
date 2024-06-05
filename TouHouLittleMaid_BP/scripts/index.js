@@ -226,7 +226,7 @@ class thlm {
                             }; break;
                         // 女仆专用事件
                         case "m":
-                            switch(event.id.substring(6, 7)){
+                            switch(event.eventId.substring(6, 7)){
                                 case "a": MaidManager.Shedule .danmakuAttack(event);       break; // a Danmaku Attack
                                 case "d": MaidManager.Core    .onDeathEvent(event);        break; // d Death
                                 case "f": MaidManager.Core    .onTameFollowSuccess(event); break; // f Follow on tamed
