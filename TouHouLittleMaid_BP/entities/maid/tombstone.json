@@ -1,0 +1,56 @@
+{
+  "format_version": "1.18.10",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "touhou_little_maid:tombstone",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "properties": {
+        "thlm:dimension" : {"type": "int", "default": 0, "range":[0, 64], "client_sync": true}
+      }
+    },
+    "component_groups": {
+      "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } }
+    },
+    "components": {
+      "minecraft:inventory":{"container_type": "inventory", "inventory_size": 64, "private": true },
+      "minecraft:physics": {"has_collision": true,"has_gravity": false},
+      "minecraft:collision_box": { "width": 0.3, "height": 0.5 },
+      "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false },
+      "minecraft:type_family": { "family": ["thlm:tombstone"] },
+      "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+      "minecraft:persistent": {},
+      "minecraft:knockback_resistance": { "value": 1.0 },
+      "minecraft:damage_sensor": {
+        "triggers": [
+          {
+            "on_damage": {
+              "filters": { "all_of": [ {"test": "is_family","subject": "damager","value": "player"} ] },
+              "event": "thlmb:g",
+              "target": "self"
+            },
+            "deals_damage": false
+          },
+          {
+            "cause": "all",
+            "deals_damage": false
+          }
+        ]
+      },
+      "minecraft:behavior.float":{},
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0,
+        "breathes_air": true,
+        "breathes_lava": true,
+        "breathes_solids": true,
+        "breathes_water": true,
+        "generates_bubbles": false
+      }
+    },
+    "events": {
+      "despawn":{ "add": { "component_groups": [ "despawn" ] } },
+      "thlmb:g": {}
+    }
+  }
+}

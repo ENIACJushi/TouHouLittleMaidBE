@@ -55,6 +55,8 @@ gui.touhou_little_maid:button.mute.true.name=静音模式已开启
 gui.touhou_little_maid:button.mute.false.name=静音模式已关闭
 gui.touhou_little_maid:left_panel.title=工作模式
 
+
+
 ##### 物品 #####
 item.spawn_egg.entity.thlmm:maid.name=生成 小女仆
 item.spawn_egg.entity.touhou_little_maid:fairy.name=女仆妖精刷怪蛋
@@ -93,6 +95,7 @@ entity.touhou_little_maid:danmaku.name=弹幕
 entity.touhou_little_maid:box.name=蛋糕盒
 entity.touhou_little_maid:throw_power_point.name=P 点
 entity.touhou_little_maid:debug_fairy.name=弹幕测试妖精女仆
+entity.touhou_little_maid:tombstone.name=墓碑
 
 ##### 提示 #####
 message.touhou_little_maid:hakurei_gohei.switch=切换弹种： 
@@ -101,6 +104,7 @@ message.touhou_little_maid.altar.upgrade.notfound=没有找到符合等级条件
 message.touhou_little_maid.altar.upgrade.kill=女仆杀敌数不够
 message.touhou_little_maid.altar.upgrade.success=升级成功！
 message.touhou_little_maid:photo.not_suitable_for_place_maid.name=这该死的地方不能放置女仆
+
 
 
 ## message.touhou_little_maid:change_model.disabled.name=模型切换功能已被禁止

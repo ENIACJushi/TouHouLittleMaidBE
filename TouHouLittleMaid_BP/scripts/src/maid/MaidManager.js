@@ -57,21 +57,26 @@ export class MaidManager{
             let output_item = new ItemStack("touhou_little_maid:film", 1);
             output_item.setLore(lore);
             
-            // 导出胶片物品
-            // TODO: 没用背包的女仆补一个背包再导出
-            let backpack = EntityMaid.Backpack.getEntity(maid);
-            if(backpack !== undefined){
-                let container = MaidBackpack.getContainer(backpack);
-                if(container.emptySlotsCount > 0){
-                    container.addItem(output_item);
-                    return;
-                }
-                else{
-                    maid.dimension.spawnItem(output_item, maid.location);
+            // 转移背包物品
+            let tombstone = maid.dimension.spawnEntity("touhou_little_maid:tombstone", maid.location);
+            let stoneContainer = tombstone.getComponent("inventory").container;
+            let maidContainer = maid.getComponent("inventory").container;
+
+            for(let i = 0; i < maidContainer.size; i++){
+                let maidItem = maidContainer.getItem(i);
+                if(maidItem !== undefined){
+                    stoneContainer.setItem(i, maidItem);
+                    maidContainer.setItem(i);
                 }
             }
-            else{
-                maid.dimension.spawnItem(output_item, maid.location);
+            
+            // 放入胶片
+            stoneContainer.addItem(output_item);
+            
+            // 命名
+            let ownerName = EntityMaid.Owner.getName(maid);;
+            if(ownerName !== undefined){
+                tombstone.nameTag = "§aOwner\n§e" + ownerName;
             }
         }
         /**
@@ -120,24 +125,20 @@ export class MaidManager{
          * 坟墓受击
          * @param {DataDrivenEntityTriggerAfterEvent} event
          */
-        static graveAttackEvent(event){
-            let backpack = event.entity;
-            let backpackL = backpack.location;
-            let owenerID = MaidBackpack.getOwnerID(backpack);
-            if(owenerID !== undefined){
-                // 当主人在附近时，在主人位置开包
-                let owner = world.getEntity(owenerID);
-                if(owner !== undefined){
-                    if(Tool.pointInArea_2D(owner.location.x, owner.location.z,
-                        backpackL.x - 5, backpackL.z - 5, backpackL.x + 5, backpackL.z + 5)){
-                            MaidBackpack.dump(backpack, owner.location);
-                    }
+        static tombstoneAttackEvent(event){
+            let tombstone = event.entity;
+            let dimension = tombstone.dimension;
+            let container = tombstone.getComponent("inventory").container;
+
+            for(let i = 0; i < container.size; i++){
+                let item = container.getItem(i)
+                if(item !== undefined){
+                    dimension.spawnItem(item.clone(), tombstone.location);
+                    container.setItem(i);
                 }
             }
-            else{
-                // 没有主人id，所有人都可以开包
-                MaidBackpack.dump(backpack, backpack.location);
-            }
+
+            tombstone.triggerEvent("despawn");
         }
     }
     ///// 交互事件 /////

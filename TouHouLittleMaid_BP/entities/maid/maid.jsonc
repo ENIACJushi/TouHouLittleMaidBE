@@ -76,19 +76,6 @@
         "minecraft:behavior.look_at_player": { "priority": 9, "look_distance": 6.0, "probability": 0.02 },
         
         ///// 交互属性 /////
-        "minecraft:rideable": {
-          "controlling_seat": 0,
-          "crouching_skip_interact": true,
-          "family_types": ["thlm:maid_backpack"],
-          "interact_text": "",
-          "pull_in_entities": false,
-          "rider_can_interact": false,
-          "seat_count": 1,
-          "seats":[{
-            "position": [0,0,0],
-            "lock_rider_rotation": 1
-          }]
-        },
         "minecraft:healable": {
           "items": [
             {"item": "cake", "heal_amount": 20},
@@ -848,7 +835,6 @@
           "component_groups": [
             "thlmm:maid_basic",
             "thlmm:maid_basic_stand_movement",
-            "thlmm:maid_stand_nameable",
             "thlmm:maid_wild",
             "environment:simple",
             "backpack:default",
@@ -866,7 +852,6 @@
           "component_groups": [
             "thlmm:maid_basic",
             "thlmm:maid_basic_stand_movement",
-            "thlmm:maid_stand_nameable",
             "thlmm:maid_wild",
             "environment:simple",
             "backpack:default"
@@ -1002,8 +987,8 @@
       "thlmm:i" :{ "sequence": [ // 退出坐下模式 进入查包模式
         { "remove": {"component_groups": ["thlmm:maid_tame_sit"]},  "add": {"component_groups": ["thlmm:maid_tame_inventory"]} },
         { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 0},
-          "add": { "component_groups": [ "backpack:default_sneaking" ] }, "remove": { "component_groups": [ "backpack:default" ] },
-          "queue_command": {"command":"say s1"}  },
+          "add": { "component_groups": [ "backpack:default_sneaking" ] }, "remove": { "component_groups": [ "backpack:default" ] }
+        },
         { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 1},
           "add": { "component_groups": [ "backpack:small_sneaking" ] }, "remove": { "component_groups": [ "backpack:small" ] } },
         { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 2},
@@ -1018,8 +1003,8 @@
       "thlmm:s" :{ "sequence": [ // 退出坐下模式 进入查包模式
         { "remove": {"component_groups": ["thlmm:maid_tame_inventory"]}, "add": {"component_groups": ["thlmm:maid_tame_sit"]} },
         { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 0},
-          "remove": { "component_groups": [ "backpack:default_sneaking" ] }, "add": { "component_groups": [ "backpack:default" ] },
-          "queue_command": {"command":"say s2"} },
+          "remove": { "component_groups": [ "backpack:default_sneaking" ] }, "add": { "component_groups": [ "backpack:default" ] }
+        },
         { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 1},
           "remove": { "component_groups": [ "backpack:small_sneaking" ] }, "add": { "component_groups": [ "backpack:small" ] } },
         { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 2},

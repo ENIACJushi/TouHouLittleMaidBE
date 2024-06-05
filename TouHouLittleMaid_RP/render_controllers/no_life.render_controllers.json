@@ -111,6 +111,22 @@
 				"a": 0.0
 			},
 			"ignore_lighting": true
+		},
+		
+		"controller.render.touhou_little_maid.tombstone": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.default",
+						"Texture.the_end",
+						"Texture.the_nether",
+						"Texture.twilight_forest"
+					]
+				}
+			},
+			"geometry": "Geometry.default",
+			"materials": [ { "*": "Material.default" } ],
+			"textures": [ "Array.skins[q.property('thlm:dimension')]" ]
 		}
 	}
 }

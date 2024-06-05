@@ -1,0 +1,28 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "touhou_little_maid:tombstone",
+      "materials": {
+        "default": "entity_emissive_alpha"
+      },
+      "textures": {
+        "default": "textures/entity/tombstone/tombstone",
+        "the_end": "textures/entity/tombstone/tombstone_the_end",
+        "the_nether": "textures/entity/tombstone/tombstone_the_nether",
+        "twilight_forest": "textures/entity/tombstone/tombstone_twilight_forest"
+      },
+      "geometry": {
+        "default": "geometry.touhou_little_maid.tombstone"
+      },
+      "queryable_geometry": "",
+      "render_controllers": [
+        "controller.render.touhou_little_maid.tombstone"
+      ],
+      "spawn_egg": {
+        "base_color": "#ffffff",
+        "overlay_color": "#ca0011"
+      }
+    }
+  }
+}

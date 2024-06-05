@@ -249,7 +249,7 @@ class thlm {
                         case "b":
                             switch(event.eventId.substring(6)){
                                 // g: grave
-                                case "g" : MaidManager.Core.graveAttackEvent(event); break;
+                                case "g" : MaidManager.Core.tombstoneAttackEvent(event); break;
                                 // t0: type 0 (default)
                                 case "t0" : MaidManager.Interact.backpackTypeChangeEvent(event, 0); break;
                                 // t1: type 1 (small)
