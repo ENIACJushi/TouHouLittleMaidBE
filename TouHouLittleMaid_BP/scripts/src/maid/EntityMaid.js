@@ -1279,4 +1279,26 @@ export class EntityMaid{
         if(block===undefined || block.isAir) return true;
         return false;
     }
+    /**
+     * 是否处于坐下状态
+     * @param {Entity} maid
+     * @returns {boolean}
+     */
+    static isSitting(maid){
+        return maid.getProperty('thlm:is_sitting');
+    }
+    /**
+     * 坐下
+     * @param {Entity} maid
+     */
+    static sitDown(maid){
+        maid.triggerEvent("thlmm:v");
+    }
+    /**
+     * 站起
+     * @param {Entity} maid
+     */
+    static standUp(maid){
+        maid.triggerEvent("thlmm:w");
+    }
 }

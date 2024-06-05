@@ -981,10 +981,13 @@
       "thlmm:t" :{
         "sequence": [
           // 回家
-          { "trigger": "thlmm:h", "filters": { "all_of": [
+          {
+            "trigger": "thlmm:h", 
+            "filters": { "all_of": [
               { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },
-              { "test": "has_component", "subject": "self", "operator": "==", "value": "minecraft:is_baby" } ]
-          } },
+              { "test": "has_component", "subject": "self", "operator": "==", "value": "minecraft:is_baby" }
+            ]}
+          },
           // 弹幕攻击
           { "trigger": "thlmm:a", "filters": { "all_of": [
             { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },

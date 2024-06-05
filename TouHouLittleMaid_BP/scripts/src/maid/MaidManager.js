@@ -510,9 +510,11 @@ export class MaidManager{
                         }
                     }
                     catch{}
-                    // 扫描
+                    // 扫描 坐下时不执行
                     try{
-                        MaidTarget.search(maid, 15);
+                        if(!EntityMaid.isSitting(maid)){
+                            MaidTarget.search(maid, 15);
+                        }
                     }
                     catch{}
                 }
