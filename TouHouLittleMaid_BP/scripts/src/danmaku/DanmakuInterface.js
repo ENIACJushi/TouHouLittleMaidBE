@@ -116,9 +116,9 @@ export class DanmakuInterface{
             if(damage !== 0){
                 // 伤害倍率
                 switch(source.typeId){
-                    case "minecraft:player": damage*(config.player_damage/100); break;
-                    case "thlmm:maid"      : damage*(config.maid_damage/100); break;
-                    case "touhou_little_maid:fairy": damage*(config.fairy_damage/100); break;
+                    case "minecraft:player": damage = damage*(config.player_damage/100); break;
+                    case "thlmm:maid"      : damage = damage*(config.maid_damage/100); break;
+                    case "touhou_little_maid:fairy": damage = damage*(config.fairy_damage/100); break;
                     default: break;
                 }
                 if(target.applyDamage(damage, damageOptions)){

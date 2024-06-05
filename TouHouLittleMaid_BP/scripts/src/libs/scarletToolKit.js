@@ -6,8 +6,8 @@
    *  Date        :  2023.02.17                   *
   \* -------------------------------------------- */
 
-import { world, Entity, Dimension,Player, ItemStack } from "@minecraft/server";
-import { Vector } from "./VectorMC";
+  import { world, Entity, Dimension,Player, ItemStack } from "@minecraft/server";
+  import { Vector } from "./VectorMC";
 
 ////////// Logger //////////
 export function logger(str){
