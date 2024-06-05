@@ -307,7 +307,7 @@
           {"blink" : "query.property('thlm:work') >= -1"},
           "wing",
           "look_at_target",
-          "walk",
+          {"walk" : "!query.property('thlm:is_sitting')"},
           "emote",
           "controller_sit",
           "beg"

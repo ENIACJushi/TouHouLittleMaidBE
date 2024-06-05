@@ -371,9 +371,15 @@ export class MaidManager{
          */
         static onSitEvent(event){
             let maid = event.entity;
+
+            maid.teleport(maid.location, {"keepVelocity": false})
+            
             // 清除水平动量
-            let speed = maid.getVelocity();
-            maid.applyImpulse(new Vector(-speed.x, 0, -speed.z));
+            system.runTimeout(()=>{
+                let speed = maid.getVelocity();
+                maid.applyImpulse(new Vector(-speed.x, 0, -speed.z));
+                maid.clearVelocity();
+            },1);
         }
         /**
          * 模式切换为坐下，此时主人状态由潜行切换到站立

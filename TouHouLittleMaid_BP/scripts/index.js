@@ -232,9 +232,9 @@ class thlm {
                                 case "f": MaidManager.Core    .onTameFollowSuccess(event); break; // f Follow on tamed
                                 case "h": MaidManager.Shedule .returnHomeEvent(event);     break; // h Home
                                 case "i": MaidManager.Interact.inventoryModeEvent(event);  break; // i Inventory mode
-                                case "l": MaidManager          .setLevelEvent(event);      break; // l Level
+                                case "l": MaidManager         .setLevelEvent(event);      break; // l Level
                                 case "m": MaidManager.Interact.onInteractEvent(event);     break; // m Master interact
-                                case "n": MaidManager          .onNPCEvent(event);         break; // n NPC
+                                case "n": MaidManager         .onNPCEvent(event);         break; // n NPC
                                 case "p": MaidManager.Interact.onPhotoEvent(event);        break; // p Photo
                                 case "s": MaidManager.Interact.sitModeEvent(event);        break; // s Sit mode
                                 case "t": MaidManager.Shedule .timerEvent(event);          break; // t Timer

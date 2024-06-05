@@ -103,7 +103,7 @@
       },
       // 站起时移动属性
       "thlmm:maid_basic_stand_movement":{
-        "minecraft:water_movement": { "drag_factor": 0.9},
+        "minecraft:water_movement": { "drag_factor": 0.9 },
         "minecraft:jump.static": { },
         "minecraft:can_climb": { },
         "minecraft:navigation.walk": {
@@ -126,7 +126,69 @@
       },
       // 坐下时移动属性
       "thlmm:maid_basic_sit_movement":{
+        "minecraft:navigation.walk": {
+          "can_walk": false
+        },
+        "minecraft:behavior.random_stroll": {
+          "priority": 8,
+          "speed_multiplier": 0.0
+        },
+        "minecraft:movement.basic": { },
+        "minecraft:behavior.mount_pathing": {
+          "priority": 3,
+          "speed_multiplier": 0.0,
+          "target_dist": 0,
+          "track_target": true
+        }
       },
+      // 正常跟随（站立）
+      "status:follow_standard":{
+        "minecraft:behavior.follow_owner": {
+          "priority": 6,
+          "speed_multiplier": 1.25,
+          "start_distance": 10,
+          "stop_distance": 3,
+          "can_teleport": true
+        }
+      },
+      // 正常跟随（坐下）
+      "status:follow_sit":{
+        "minecraft:behavior.follow_owner": {
+          "priority": 6,
+          "speed_multiplier": 0.0,
+          "start_distance": 10,
+          "stop_distance": 3,
+          "can_teleport": false
+        }
+      },
+      // 拐走后跟随
+      "status:follow_on_tame":{
+        "minecraft:is_tamed": { },
+        "minecraft:behavior.follow_owner": {
+          "priority": 0,
+          "speed_multiplier": 1.4,
+          "start_distance": 1,
+          "stop_distance": 1,
+          "can_teleport": true
+        },
+        "minecraft:entity_sensor": {
+          "sensor_range": 1,
+          "relative_range": false,
+          "minimum_count": 1,
+          "maximum_count": 2,
+          "event_filters": {
+            "all_of": [
+              { "test": "is_owner", "subject": "other", "value": true }
+            ]
+          },
+          "event": "thlmm:f"
+        }
+      },
+      // 守家模式
+      "status:home":{
+        "minecraft:is_baby": {}
+      },
+
       "thlmm:maid_wild": {
         "minecraft:behavior.panic": { "priority": 1, "speed_multiplier": 1.25 },
         "minecraft:tameable": {
@@ -535,45 +597,6 @@
       "backpack:small":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 12, "private": true} },
       "backpack:middle":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 24, "private": true} },
       "backpack:big":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 36, "private": true} },
-      
-      ///// 跟随类别 /////
-      // 拐走后跟随
-      "status:follow_on_tame":{
-        "minecraft:is_tamed": { },
-        "minecraft:behavior.follow_owner": {
-          "priority": 0,
-          "speed_multiplier": 1.4,
-          "start_distance": 1,
-          "stop_distance": 1,
-          "can_teleport": true
-        },
-        "minecraft:entity_sensor": {
-          "sensor_range": 1,
-          "relative_range": false,
-          "minimum_count": 1,
-          "maximum_count": 2,
-          "event_filters": {
-            "all_of": [
-              { "test": "is_owner", "subject": "other", "value": true }
-            ]
-          },
-          "event": "thlmm:f"
-        }
-      },
-      // 正常跟随
-      "status:follow_standard":{
-        "minecraft:behavior.follow_owner": {
-          "priority": 6,
-          "speed_multiplier": 1.25,
-          "start_distance": 10,
-          "stop_distance": 3,
-          "can_teleport": true
-        }
-      },
-      // 守家模式
-      "status:home":{
-        "minecraft:is_baby": {}
-      },
 
       ///// 拾物模式 /////
       "mode:pick":{
@@ -886,6 +909,8 @@
           "thlmm:lv1_basic",
           "thlmm:lv1_tame",
           "status:follow_on_tame",
+          "status:follow_standard",
+          "status:follow_sit",
           "thlmm:maid_tame"
         ]},
         "add": { "component_groups": [ "thlmm:npc_basic" ] },
@@ -903,6 +928,8 @@
           "thlmm:lv1_basic",
           "thlmm:lv1_tame",
           "status:follow_on_tame",
+          "status:follow_standard",
+          "status:follow_sit",
           "thlmm:maid_tame"
         ]},
         "add": { "component_groups": [ "thlmm:statues" ] },
@@ -919,6 +946,8 @@
           "thlmm:lv1_basic",
           "thlmm:lv1_tame",
           "status:follow_on_tame",
+          "status:follow_standard",
+          "status:follow_sit",
           "thlmm:maid_tame"
         ]},
         "add": { "component_groups": [ "thlmm:garage_kit_un_solid" ] },
@@ -999,10 +1028,16 @@
       // 坐下
       "thlmm:v":{
         "sequence": [
-          {"set_property": { "thlm:is_sitting": true }},
-          // 切换移动属性
-          { "remove": { "component_groups": [ "thlmm:maid_basic_stand_movement"]}, 
-            "add": { "component_groups": [ "thlmm:maid_basic_sit_movement"]}},
+          { "set_property": { "thlm:is_sitting": true }},
+          { // 切换移动属性
+            "remove": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]}, 
+            "add": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
+          },
+          { // 不处于家模式，还需要取消主人跟随
+            "filters": { "test": "has_component", "subject": "self", "operator": "not", "value": "minecraft:is_baby" },
+            "remove": { "component_groups": [ "status:follow_standard" ]}, 
+            "add": { "component_groups": [ "status:follow_sit" ]}
+          },
           // 工作模式 
           { "filters": {"test": "int_property", "domain": "thlm:work", "value": 1}, // 近战模式 去除索敌
             "remove": { "component_groups": [ "mode:searching_melee_attack" ]} },
@@ -1015,9 +1050,15 @@
       "thlmm:w":{
         "sequence": [
           {"set_property": { "thlm:is_sitting": false }},
-          // 切换移动属性
-          { "add": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]},
-            "remove": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}},
+          { // 切换移动属性
+            "add": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]},
+            "remove": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
+          },
+          { // 不处于家模式，还需要恢复主人跟随
+            "filters": { "test": "has_component", "subject": "self", "operator": "not", "value": "minecraft:is_baby" },
+            "add": { "component_groups": [ "status:follow_standard" ]}, 
+            "remove": { "component_groups": [ "status:follow_sit" ]}
+          },
           // 工作模式 
           { "filters": {"test": "int_property", "domain": "thlm:work", "value": 1}, // 近战模式 恢复索敌
             "add": { "component_groups": [ "mode:searching_melee_attack" ]} },
@@ -1036,8 +1077,23 @@
         "remove": { "component_groups": [ "thlmm:maid_wild" ] }
       },
       // 跟随类型
-      "api:status_follow"  :{"add"   : {"component_groups": ["status:follow_standard"]}, "remove": {"component_groups": ["status:home"]}},
-      "api:status_home"    :{"add"   : {"component_groups": ["status:home"]}, "remove": {"component_groups": ["status:follow_standard"]}},
+      "api:status_follow"  :{
+        "sequence": [
+          {  "remove": {"component_groups": ["status:home"]} },
+          {
+            "filters": { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },
+            "add"   : {"component_groups": ["status:follow_standard"]}
+          },
+          {
+            "filters": { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },
+            "add"   : {"component_groups": ["status:follow_sit"]}
+          }
+        ]
+      },
+      "api:status_home"    :{
+        "add"   : {"component_groups": ["status:home"]}, 
+        "remove": {"component_groups": ["status:follow_standard", "status:follow_sit"]}
+      },
       "api:follow_on_tame_over":{
         "add": {"component_groups": [ "thlmm:maid_tame", "status:follow_standard", "thlmm:maid_tame_sit"]}, 
         "remove": {"component_groups": ["status:follow_on_tame"]},
