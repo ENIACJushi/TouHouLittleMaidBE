@@ -492,21 +492,8 @@ export class MaidManager{
     static graveAttackEvent(event){
         let backpack = event.entity;
         let backpackL = backpack.location;
-        let owenerID = MaidBackpack.getOwnerID(backpack);
-        if(owenerID !== undefined){
-            // 当主人在附近时，在主人位置开包
-            let owner = world.getEntity(owenerID);
-            if(owner !== undefined){
-                if(Tool.pointInArea_2D(owner.location.x, owner.location.z,
-                    backpackL.x - 5, backpackL.z - 5, backpackL.x + 5, backpackL.z + 5)){
-                        MaidBackpack.dump(backpack, owner.location);
-                }
-            }
-        }
-        else{
-            // 没有主人id，所有人都可以开包
-            MaidBackpack.dump(backpack, backpack.location);
-        }
+        
+        MaidBackpack.dump(backpack, backpackL);
     }
     /**
      * 背包种类切换
