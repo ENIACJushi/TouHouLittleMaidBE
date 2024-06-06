@@ -18,6 +18,7 @@ export class CommandManager{
             case "thlm:config"  : this.config(event) ; break;
             case "thlm:admin"   : this.admin(event)  ; break;
             case "thlm:test"    : this.test(event)   ; break;
+            case "thlm:info"    : this.info(event)   ; break;
             default: break;
         }
     }
@@ -254,5 +255,27 @@ export class CommandManager{
         Tool.logger("test")
         pl.postClientMessage("id", "value")
     }
-    
+    /**
+     * 信息函数
+     * @param {ScriptEventCommandMessageAfterEvent} event
+     */
+    static info(event){
+        let pl = event.sourceEntity;
+        
+        // 视线方块
+        let block = pl.getBlockFromViewDirection().block;
+        if(block!==undefined){
+            let info = `block: ${block.typeId}`;
+            let states = block.permutation.getAllStates()
+            for(let key in states){
+                info += `\n ${key} - ${states[key]}`;
+            }
+            pl.sendMessage(info);
+        }
+        
+        // 手持物品
+        let item = Tool.getPlayerMainHand(pl);
+        if(item!==undefined) pl.sendMessage(`item: ${item.typeId}`);
+        
+    }
 }

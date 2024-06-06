@@ -1,8 +1,8 @@
-import { EntityHitEntityAfterEvent, Entity, Dimension, system } from "@minecraft/server";
+import { EntityHitEntityAfterEvent, Entity, Dimension, system, BlockPermutation } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import { EntityMaid } from "./EntityMaid";
 import { logger, pointInArea_3D } from "../libs/ScarletToolKit";
-import { farmBlocks } from "../../data/FarmBlocks";
+import { farmBlocks } from "../../data/FarmBlocks/index";
 
 export class MaidTarget{
     /**
@@ -31,10 +31,43 @@ export class MaidTarget{
      */
     static search(maid, range=6){
         switch(EntityMaid.Work.get(maid)){
+            case EntityMaid.Work.farm: Farm.search(maid, range); break;
             case EntityMaid.Work.sugar_cane: SugarCane.search(maid, range); break;
             case EntityMaid.Work.melon: Melon.search(maid, range); break;
             case EntityMaid.Work.cocoa: Cocoa.search(maid, range); break;
             default: break;
+        }
+    }
+    /**
+     * 因为不能穿墙攻击 使用脚本定时获取目标
+     * 竖直方向最大高度差为5格
+     * 事件每3秒触发一次
+     * @param {Entity} maid 
+     * @param {number} work 
+     */
+    static stepEvent(maid, work){
+        for(let i = 0; i < 3; i++){
+            system.runTimeout(()=>{
+                if(maid === undefined) return;
+                try{
+                    let target = maid.target;
+                    if(target !== undefined){
+                        if(pointInArea_3D(
+                                target.location.x, target.location.y, target.location.z,
+                                maid.location.x - 2, maid.location.y - 5, maid.location.z - 2,
+                                maid.location.x + 2, maid.location.y + 5, maid.location.z + 2
+                            )){
+                            switch(work){
+                                case EntityMaid.Work.farm:  Farm.acquire(target, maid); break;
+                                case EntityMaid.Work.melon: Melon.acquire(target, maid); break;
+                                case EntityMaid.Work.cocoa: Cocoa.acquire(target, maid); break;
+                                default: break;
+                            }
+                        }
+                    }
+                }
+                catch{}
+            }, i*20);
         }
     }
 }
@@ -101,6 +134,7 @@ export class Farm{
      * 放置收获目标, 位置应为整数方块坐标
      * @param {Dimension} dimension 
      * @param {Vector} location 
+     * @returns {Entity}
      */
     static placeCorp(dimension, location){
         // 若该位置已经有目标，则不放置
@@ -114,11 +148,13 @@ export class Farm{
         let target = dimension.spawnEntity("thlmt:farm", 
             new Vector(location.x + 0.5, location.y + 0.2, location.z + 0.5));
         target.setDynamicProperty("is_seed", false);
+        return target;
     }
     /**
      * 放置种植目标, 位置应为整数方块坐标
      * @param {Dimension} dimension
      * @param {Vector} location
+     * @returns {Entity}
      */
     static placeSeed(dimension, location){
         // 若该位置已经有目标，则不放置
@@ -132,6 +168,7 @@ export class Farm{
         let target = dimension.spawnEntity("thlmt:farm", 
             new Vector(location.x + 0.5, location.y + 0.2, location.z + 0.5));
         target.setDynamicProperty("is_seed", true);
+        return target;
     }
     /**
      * 收集/种植作物
@@ -141,24 +178,105 @@ export class Farm{
     static acquire(target, maid){
         let location = target.location;
         const dimension = target.dimension;
+
+        let selfBlock = dimension.getBlock(location);
+        
         if(target.getDynamicProperty("is_seed") === true){
-            // 种植
-            // 检查九宫格内作物类型
-            dimension.getBlocks(new )
+            ///// 种植 /////
+            // 地块已经有作物了，退出
+            if(selfBlock !== undefined && selfBlock.typeId !== "minecraft:air"){
+                target.triggerEvent("despawn");
+                return;
+            }
+            
+            let type = target.getDynamicProperty("crop");
+            let replant = false;
 
+            if(type === undefined){
+                // 未指定类型 检查四个相邻方块的类型
+                let names = {};
+                for(let delta of [[-1,0],[1,0],[0,-1],[0,1]]){
+                    let block = dimension.getBlock(new Vector(location.x + delta[0], location.y, location.z + delta[1]));
+                    if(block !== undefined){
+                        if(names[block.typeId] === undefined) names[block.typeId] = 1;
+                        else names[block.typeId] ++;
+                    }
+                }
+                let max = 0;
+                for(let key in names){
+                    if(names[key] > max){
+                        // 是否能种在方块上
+                        farmBlocks.getLand()
+                        type = key;
+                        max = names[key];
+                    }
+                }
+            }
+            else{
+                replant = true;
+            }
 
+            // 种植（规定类型）
+            if(type !== undefined){
+                let info = farmBlocks.getCorp(type);
+                if(info !== undefined){
+                    if(EntityMaid.Backpack.removeItem_type(maid, info.seed, 1) === true){
+                        let seedInfo = farmBlocks.getSeed(info.seed);
+                        dimension.setBlockPermutation(location, 
+                            BlockPermutation.resolve(seedInfo.block, seedInfo.state));
+                        target.triggerEvent("despawn");
+                        return;
+                    }
+                }
+            }
+
+            // 补种失败，进入冷却
+            if(replant){
+                if(!target.getProperty("thlmt:cooldown")){
+                    target.triggerEvent("despawn"); // 进入30秒的攻击冷却
+                    // 必须新建一个，否则仇恨无法消除
+                    let newTarget = dimension.spawnEntity("thlmt:farm", location);
+                    newTarget.setDynamicProperty("is_seed", true);
+                    newTarget.setDynamicProperty("crop", type);
+                    newTarget.triggerEvent("cooldown");
+                    return;
+                }
+            }
+
+            // 种植（规定类型的执行失败 -> 尝试不规定类型）
+            let landBlock = dimension.getBlock(new Vector(location.x, location.y-1, location.z));
+            if(landBlock !== undefined && landBlock.typeId !== "minecraft:air"){
+                let seedList = farmBlocks.getLand(landBlock.typeId);
+                if(seedList !== undefined){
+                    for(let seed of seedList){
+                        if(EntityMaid.Backpack.removeItem_type(maid, seed, 1)){
+                            let info = farmBlocks.getSeed(seed);
+                            dimension.setBlockPermutation(location, 
+                                BlockPermutation.resolve(info.block, info.state));
+                            target.triggerEvent("despawn");
+                            return;
+                        }
+                    }
+                }
+            }
+            target.triggerEvent("despawn");
         }
         else{
-            // 收获
-            target.dimension.getBlocks()
+            // 收获 被收获的方块应该是成熟的作物
+            let cropName = selfBlock.typeId;
+            let info = farmBlocks.getCorp(cropName);
+            if(info!==undefined && selfBlock.permutation.matches(cropName, info.state)){
+                // 破坏
+                dimension.runCommand(`setblock ${location.x} ${location.y} ${location.z} air destroy`);
+                // 目标点转为补种
+                target.triggerEvent("life");
+                target.setDynamicProperty("is_seed", true);
+                target.setDynamicProperty("crop", cropName);
+            }
+            else{
+                target.triggerEvent("despawn");
+            }
         }
-        let block = target.dimension.getBlock(target.location);
-        if(block !== undefined && block.typeId === "minecraft:reeds"){
-            const l = block.location;
-            block.dimension.runCommand(`setblock ${l.x} ${l.y} ${l.z} air destroy`);
-        }
-        // 无论是否成功破坏，都清除目标
-        target.triggerEvent("despawn");
     }
     /**
      * 寻找作物
@@ -191,6 +309,8 @@ export class Farm{
          * 如果先找到耕地，当查找方向为向下(-1/-2)，直接跳过，若为向上，则自行向上搜索一格，然后跳过
          * 
          * 耕地作物通常种植在同一高度，所以搜索开始的高度设为上一次成功查找的高度
+         * 
+         * 无论是标记耕地还是作物，目标点总是会放在作物应该在的位置
          */
         let y = Math.floor(location.y);
         let xStart = Math.floor(location.x);
@@ -204,20 +324,20 @@ export class Farm{
                     let x = xStart + ix;
                     let z = zStart + iz;
                     let A = y; // A A+1 A+2 A-1 A-2
-
+                    let upAir = false; // 上方方块是否为空气，用在向下搜索的判断中
 
                     // 向上搜索
                     for(let i = 0; i <= 2; i++){
                         let block = dimension.getBlock(new Vector(x, A+i, z));
-                        
+                        if(i===0) upAir = (block.typeId === "minecraft:air" || block === undefined);
                         // 耕地判断
                         if(farmBlocks.getLand(block.typeId) !== undefined){
                             // 是耕地，找上方一格
                             y = A+i;
                             let block = dimension.getBlock(new Vector(x, A+i+1, z));
                             if(block === undefined){
-                                // TODO 上方一格为空，放置种植标记
-                                this.placeSeed(dimension, new Vector(x, A-i, z));
+                                // 上方一格为空，放置种植标记
+                                this.placeSeed(dimension, new Vector(x, A+i+1, z));
                                 break;
                             }
                             // 上方一格不为空，进行作物判断
@@ -253,9 +373,10 @@ export class Farm{
                         // 耕地判断
                         if(farmBlocks.getLand(block.typeId) !== undefined){
                             // 是耕地，在上方放置种植标记
-                            this.placeSeed(dimension, new Vector(x, A-i+1, z));
+                            if(upAir) this.placeSeed(dimension, new Vector(x, A-i+1, z));
                             break;
                         }
+
                         // 作物判断
                         let corpInfo = farmBlocks.getCorp(block.typeId);
                         if(corpInfo !== undefined){
@@ -274,6 +395,7 @@ export class Farm{
                             }
                             break;
                         }
+                        upAir = (block.typeId === "minecraft:air" || block === undefined);
                     }
                 }
             }, (ix<0 ? 4-8*ix : ix*8));
@@ -513,31 +635,6 @@ export class Melon{
         }
     }
     /**
-     * 因为不能穿墙攻击 使用脚本定时获取目标
-     * 事件每3秒触发一次
-     * @param {Entity} maid 
-     */
-    static stepEvent(maid){
-        for(let i = 0; i < 3; i++){
-            system.runTimeout(()=>{
-                try{
-                    if(maid === undefined) return;
-                    let target = maid.target;
-                    if(target !== undefined){
-                        if(pointInArea_3D(
-                                target.location.x, target.location.y, target.location.z,
-                                maid.location.x - 2, maid.location.y - 2, maid.location.z - 2,
-                                maid.location.x + 2, maid.location.y + 2, maid.location.z + 2
-                            )){
-                            this.acquire(target, maid);
-                        }
-                    }
-                }
-                catch{}
-            }, i*20);
-        }
-    }
-    /**
      * 寻找瓜类
      * @param {Entity} maid 
      * @param {number} range
@@ -705,32 +802,7 @@ export class Cocoa{
             target.triggerEvent("despawn");
         }
     }
-    /**
-     * 因为不能穿墙攻击 使用脚本定时获取目标
-     * 竖直方向最大高度差为5格
-     * 事件每3秒触发一次
-     * @param {Entity} maid 
-     */
-    static stepEvent(maid){
-        for(let i = 0; i < 3; i++){
-            system.runTimeout(()=>{
-                try{
-                    if(maid === undefined) return;
-                    let target = maid.target;
-                    if(target !== undefined){
-                        if(pointInArea_3D(
-                                target.location.x, target.location.y, target.location.z,
-                                maid.location.x - 2, maid.location.y - 5, maid.location.z - 2,
-                                maid.location.x + 2, maid.location.y + 5, maid.location.z + 2
-                            )){
-                            this.acquire(target, maid);
-                        }
-                    }
-                }
-                catch{}
-            }, i*20);
-        }
-    }
+    
     /**
      * 寻找可可豆，整列寻找，每列最多5个
      * @param {Entity} maid 

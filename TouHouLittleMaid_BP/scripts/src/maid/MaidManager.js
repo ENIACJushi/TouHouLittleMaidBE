@@ -20,7 +20,7 @@ import {DanmakuShoot}  from "../danmaku/DanmakuShoot";
 import {DanmakuColor}  from "../danmaku/DanmakuColor";
 import {DanmakuType}   from "../danmaku/DanmakuType";
 import { shoot as cherryShoot } from "../danmaku/custom/Cherry";
-import { Cocoa, MaidTarget, Melon } from "./MaidTarget";
+import { Cocoa, Farm, MaidTarget, Melon } from "./MaidTarget";
 import { isBadContainerBlock } from "../../data/BadContainerBlocks";
 
 const HOME_RADIUS=32;
@@ -517,8 +517,9 @@ export class MaidManager{
                 // 每次
                 let work = EntityMaid.Work.get(maid);
                 switch(work){
-                    case EntityMaid.Work.melon: Melon.stepEvent(maid); break;
-                    case EntityMaid.Work.cocoa: Cocoa.stepEvent(maid); break;
+                    case EntityMaid.Work.farm : 
+                    case EntityMaid.Work.melon:
+                    case EntityMaid.Work.cocoa: MaidTarget.stepEvent(maid, work); break;
                     default: break;
                 }
                 // 使用质数 2 3 5 7 11 13 17 19

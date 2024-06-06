@@ -6,17 +6,21 @@
       "is_spawnable": false,
       "is_summonable": true,
       "properties": {
-        "thlmt:step": {"client_sync": false, "default": 0, "range": [0,15], "type": "int"}
+        "thlmt:step": {"client_sync": false, "default": 0, "range": [0,15], "type": "int"},
+        "thlmt:cooldown": {"client_sync": false, "default": false, "type": "bool"}
       }
     },
     "component_groups": {
       "despawn": { "minecraft:instant_despawn":{ "remove_child_entities": false } },
-      "life": { "minecraft:ageable": { "duration": 60, "grow_up": { "event": "despawn", "target": "self" } } }
+      "life": { 
+        "minecraft:type_family": { "family": [ "thlmt:farm" ] },
+        "minecraft:ageable": { "duration": 60, "grow_up": { "event": "despawn", "target": "self" } }
+      },
+      "cooldown": {
+        "minecraft:ageable": { "duration": 30, "grow_up": { "event": "finish_cooldown", "target": "self" } }
+      }
     },
     "components": {
-      "minecraft:type_family": {
-        "family": [ "thlmt:farm" ]
-      },
       "minecraft:damage_sensor": { 
         "triggers": [
           { "cause": "all", "deals_damage": false }
@@ -30,6 +34,16 @@
     },
     "events": {
       "minecraft:entity_spawned": { "add": { "component_groups": ["life"] } },
+      "cooldown":{
+        "set_property": { "thlmt:cooldown": true },
+        "remove": { "component_groups": [ "life" ] },
+        "add": { "component_groups": [ "cooldown" ] }
+      },
+      "finish_cooldown":{
+        "set_property": { "thlmt:cooldown": false },
+        "remove": { "component_groups": [ "cooldown" ] },
+        "add": { "component_groups": [ "life" ] }
+      },
       "life":{ "sequence": [ {"remove": { "component_groups": [ "life" ] }}, {"add": { "component_groups": [ "life" ] }} ] },
       "despawn":{ "add": { "component_groups": [ "despawn" ] } }
     }
