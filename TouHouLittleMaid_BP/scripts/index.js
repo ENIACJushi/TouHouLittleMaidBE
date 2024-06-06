@@ -240,6 +240,7 @@ class thlm {
                                 case "t": MaidManager.Shedule .timerEvent(event);          break; // t Timer
                                 case "u": GarageKit           .scan(event);                break; // u statues destroy
                                 case "v": MaidManager.Interact.onSitEvent(event);          break; // v enter sit
+                                case "w": MaidManager.Interact.onStandEvent(event);        break; // v enter sit
                                 case "0": MaidManager.Core    .onSpawnEvent(event);        break; // 0 Spawn
                                 case "1": MaidManager.Interact.onSmartSlabRecycleEvent(event); break;// 1 Smart slab
                                 default: break;

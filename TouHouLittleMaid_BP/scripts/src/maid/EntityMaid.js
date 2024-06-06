@@ -1,4 +1,4 @@
-import { Entity, world, Dimension,system, EntityHealthComponent, Container, ItemStack, Block, Player, ContainerSlot } from "@minecraft/server";
+import { Entity, world, Dimension,system, EntityHealthComponent, Container, ItemStack, Block, Player, ContainerSlot, EntityRemoveAfterEvent } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit";
 import { StrMaid } from "./StrMaid";
@@ -380,7 +380,7 @@ export class EntityMaid{
          * @param {boolean} value
          */
         set(maid, value){
-            maid.triggerEvent(value?"api:mode_pick":"api:mode_quit_pick");
+            maid.triggerEvent(value ? "api:mode_pick" : "api:mode_quit_pick");
             DP.setBoolean(maid, "pick", value);
         },
         switchMode(maid){
@@ -520,6 +520,21 @@ export class EntityMaid{
             system.runTimeout(()=>{
                 maid.triggerEvent(this.getEventName(maid, type, false));
             },1); // 有些工作模式存在相同的组件，避免删除
+        },
+        /**
+         * 离开工作模式
+         * @param {Entity} maid
+         */
+        quit(maid){
+            maid.triggerEvent(this.getEventName(maid, this.get(maid), true));
+        },
+        /**
+         * 进入工作模式 用来恢复站立状态的工作
+         * @param {Entity} maid 
+         * @param {number} type
+         */
+        enter(maid, type){
+            maid.triggerEvent(this.getEventName(maid, type));
         },
         /**
          * 获取名称

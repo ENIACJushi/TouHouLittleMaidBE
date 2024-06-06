@@ -498,7 +498,6 @@
             {"test": "is_family","subject": "other","value": "monster"}
           ] }, "max_dist": 16, "must_see": true } ]
         },
-        "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 1.25 },
         "minecraft:behavior.hurt_by_target": {
           "priority": 3,
           "entity_types": {
@@ -558,7 +557,17 @@
       },
       // 弹幕攻击
       "mode:danmaku_attack":{
-        "minecraft:behavior.ranged_attack": { "priority": 5, "attack_interval_min": 0.3, "attack_interval_max": 0.3, "attack_radius": 16.0,"attack_radius_min": 5 }
+        "minecraft:behavior.ranged_attack": {
+          "priority": 5, "attack_interval_min": 0.3, "attack_interval_max": 0.3, "attack_radius": 16.0,"attack_radius_min": 5
+        },
+        "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 1.25 }
+      },
+      "mode:danmaku_attack_sit":{
+        "minecraft:behavior.ranged_attack": {
+          "priority": 5, "attack_interval_min": 0.3, "attack_interval_max": 0.3, "attack_radius": 16.0,"attack_radius_min": 5,
+          "speed_multiplier": 0
+        },
+        "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 0 }
       },
       // 农耕
       "mode:farm_lv1":{
@@ -644,6 +653,24 @@
           "max_dist": 8,
           "goal_radius": 2,
           "speed_multiplier": 1.25,
+          "search_height": 2,
+          "can_pickup_any_item": true,
+          "can_pickup_to_hand_or_equipment": false
+        },
+        "minecraft:shareables": {
+          "singular_pickup": true,
+          "all_items": true,
+          "items": [
+            {"item": "minecraft:apple", "want_amount": 1111}
+          ]
+        }
+      },
+      "mode:pick_sit": {
+        "minecraft:behavior.pickup_items": {
+          "priority": 5,
+          "max_dist": 8,
+          "goal_radius": 2,
+          "speed_multiplier": 0,
           "search_height": 2,
           "can_pickup_any_item": true,
           "can_pickup_to_hand_or_equipment": false
@@ -1027,7 +1054,6 @@
           },
           // 弹幕攻击
           { "trigger": "thlmm:a", "filters": { "all_of": [
-            { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },
             { "test": "int_property", "value": 2, "operator":"==", "domain": "thlm:work" } ]
           } }
         ]
@@ -1078,11 +1104,11 @@
             "remove": { "component_groups": [ "status:follow_standard" ]}, 
             "add": { "component_groups": [ "status:follow_sit" ]}
           },
-          // 工作模式 
-          { "filters": {"test": "int_property", "domain": "thlm:work", "value": 1}, // 近战模式 去除索敌
-            "remove": { "component_groups": [ "mode:searching_melee_attack" ]} },
-          { "filters": {"test": "int_property", "domain": "thlm:work", "value": 2}, // 弹幕模式 去除索敌
-            "add": { "component_groups": [ "mode:searching_danmaku_attack" ]} }
+          // 工作模式 | 近战、农业模式 交给脚本执行
+          { "filters": {"test": "int_property", "domain": "thlm:work", "value": 2}, // 弹幕模式 切换索敌（不跟随）
+            "remove": { "component_groups": [ "mode:danmaku_attack"]},
+            "add": { "component_groups": ["mode:danmaku_attack_sit"]}
+          }
           // 农作模式由脚本取消扫描
         ]
       },
@@ -1099,11 +1125,10 @@
             "add": { "component_groups": [ "status:follow_standard" ]}, 
             "remove": { "component_groups": [ "status:follow_sit" ]}
           },
-          // 工作模式 
-          { "filters": {"test": "int_property", "domain": "thlm:work", "value": 1}, // 近战模式 恢复索敌
-            "add": { "component_groups": [ "mode:searching_melee_attack" ]} },
+          // 工作模式 | 近战、农业模式 拾物模式 交给脚本执行
           { "filters": {"test": "int_property", "domain": "thlm:work", "value": 2}, // 弹幕模式 恢复索敌
-            "add": { "component_groups": [ "mode:searching_danmaku_attack" ]} }
+            "add": { "component_groups": [ "mode:danmaku_attack" ]},
+            "remove": { "component_groups": [ "mode:danmaku_attack_sit" ] } }
         ]
       },
       "thlmm:0" :{}, // Spawn
@@ -1116,13 +1141,13 @@
       "thlmb:t2": {},
       "thlmb:t3": {},
       
-      ///// 脚本接口 /////
-      // 曾有主人的生成
+      //////// 脚本接口 ////////
+      //// 曾有主人的生成 ////
       "api:reborn":{
         "add": { "component_groups": [ "thlmm:reborn" ] },
         "remove": { "component_groups": [ "thlmm:maid_wild" ] }
       },
-      // 跟随类型
+      //// 跟随类型 ////
       "api:status_follow"  :{
         "sequence": [
           {  "remove": {"component_groups": ["status:home"]} },
@@ -1152,40 +1177,80 @@
         "queue_command":{ "command": ["particle thlm:maid_angry ~~~"]}
       },
       
-      // 等级
+      //// 等级 ////
       "api:lv_1_basic" : {"add": { "component_groups": [ "thlmm:lv1_basic" ] }}, "api:lv_1_basic_quit" : {"remove": { "component_groups": [ "thlmm:lv1_basic" ] }},
       "api:lv_1_tame"  : {"add": { "component_groups": [ "thlmm:lv1_tame"  ] }}, "api:lv_1_tame_quit"  : {"remove": { "component_groups": [ "thlmm:lv1_tame"  ] }},
       "api:lv_2_basic" : {"add": { "component_groups": [ "thlmm:lv2_basic" ] }}, "api:lv_2_basic_quit" : {"remove": { "component_groups": [ "thlmm:lv2_basic" ] }},
       "api:lv_2_tame"  : {"add": { "component_groups": [ "thlmm:lv2_tame"  ] }}, "api:lv_2_tame_quit"  : {"remove": { "component_groups": [ "thlmm:lv2_tame"  ] }},
 
-      // 工作模式
+      //// 工作模式 ////
       "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}, "set_property":{"thlm:work": 0}}]},
       "api:mode_quit_idle":  {"sequence": [{"remove": {"component_groups": ["mode:idle"]}}]},
-      "api:mode_attack_lv1"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv1", "mode:searching_melee_attack"]}, "set_property":{"thlm:work": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
+      "api:mode_attack_lv1":{"sequence": [
+        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false},
+          "add": { "component_groups": [ "mode:searching_melee_attack", "mode:attack_lv1" ] } },
+        { "set_property":{"thlm:work": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]
+      },
       "api:mode_quit_attack_lv1":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv1", "mode:searching_melee_attack"]}}]},
-      "api:mode_attack_lv2"     :{"sequence": [{"add"   : {"component_groups": ["mode:attack_lv2", "mode:searching_melee_attack"]}, "set_property":{"thlm:work": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]},
+      "api:mode_attack_lv2"     :{"sequence": [
+        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false},
+          "add": { "component_groups": [ "mode:searching_melee_attack", "mode:attack_lv2" ] } },
+        { "set_property":{"thlm:work": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]
+      },
       "api:mode_quit_attack_lv2":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv2", "mode:searching_melee_attack"]}}]},
-      "api:mode_danmaku_attack"       :{"sequence": [{"add"   : {"component_groups": ["mode:danmaku_attack", "mode:searching_danmaku_attack"]}, "set_property":{"thlm:work": 2}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}}]},
-      "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack", "mode:searching_danmaku_attack"]}}]},
-
-      "api:mode_farm_lv1"       :{"sequence": [{"add"   : {"component_groups": ["mode:farm_lv1"]}, "set_property":{"thlm:work": 3}}]},
+      "api:mode_danmaku_attack"       :{"sequence": [
+        {
+          "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false},
+          "add"   : {"component_groups": ["mode:danmaku_attack", "mode:searching_danmaku_attack"]}
+        },
+        {
+          "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": true},
+          "add"   : {"component_groups": ["mode:danmaku_attack_sit", "mode:searching_danmaku_attack"]}
+        },
+        {
+          "set_property":{"thlm:work": 2},
+          "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}
+        }
+      ]},
+      "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack", "mode:danmaku_attack_sit", "mode:searching_danmaku_attack"]}}]},
+      // 耕地
+      "api:mode_farm_lv1"       :{"sequence": [
+        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:farm_lv1"]} },
+        { "set_property":{"thlm:work": 3}}]
+      },
       "api:mode_quit_farm_lv1"  :{"sequence": [{"remove": {"component_groups": ["mode:farm_lv1"]}}]},
-      "api:mode_farm_lv2"       :{"sequence": [{"add"   : {"component_groups": ["mode:farm_lv2"]}, "set_property":{"thlm:work": 3}}]},
+      "api:mode_farm_lv2"       :{"sequence": [
+        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:farm_lv2"]} },
+        { "set_property":{"thlm:work": 3}}]
+      },
       "api:mode_quit_farm_lv2"  :{"sequence": [{"remove": {"component_groups": ["mode:farm_lv2"]}}]},
-
-      
-      "api:mode_sugar_cane"          :  {"sequence": [{"add"   : {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 4}}]},
+      // 甘蔗
+      "api:mode_sugar_cane"          :  {"sequence": [
+        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:sugar_cane"]} },
+        { "set_property":{"thlm:work": 4}}]
+      },
       "api:mode_quit_sugar_cane"     :  {"sequence": [{"remove": {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 4}}]},
-      "api:mode_melon"          :  {"sequence": [{"add"   : {"component_groups": ["mode:melon"]}, "set_property":{"thlm:work": 5}}]},
+      // 瓜类
+      "api:mode_melon"          :  {"sequence": [
+        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:melon"]} },
+        { "set_property":{"thlm:work": 5}}]
+      },
       "api:mode_quit_melon"     :  {"sequence": [{"remove": {"component_groups": ["mode:melon"]}, "set_property":{"thlm:work": 5}}]},
-      "api:mode_cocoa"          :  {"sequence": [{"add"   : {"component_groups": ["mode:cocoa"]}, "set_property":{"thlm:work": 6}}]},
+      // 可可
+      "api:mode_cocoa"          :  {"sequence": [
+        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:cocoa"]} },
+        { "set_property":{"thlm:work": 6}}]
+      },
       "api:mode_quit_cocoa"     :  {"sequence": [{"remove": {"component_groups": ["mode:cocoa"]}, "set_property":{"thlm:work": 6}}]},
       
-      // 拾物模式
-      "api:mode_pick"     :{ "add"    : {"component_groups": ["mode:pick"] } },
-      "api:mode_quit_pick":{ "remove" : {"component_groups": ["mode:pick"] } },
+      //// 拾物模式 ////
+      "api:mode_pick"     :{ "sequence": [
+        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:pick"] }  , "remove": {"component_groups": ["mode:pick_sit"] } },
+        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": true}, "add": {"component_groups": ["mode:pick_sit"]}, "remove": {"component_groups": ["mode:pick"] } }]
+      },
+      "api:mode_quit_pick":{ "remove" : {"component_groups": ["mode:pick", "mode:pick_sit"] } },
 
-      // 背包类型
+      //// 背包类型 ////
       "api:backpack_default" :{ "add":{"component_groups":["backpack:default"]}, "set_property":{"thlm:backpack_type": 0}},
       "api:backpack_small"   :{ "add":{"component_groups":["backpack:small"  ]}, "set_property":{"thlm:backpack_type": 1}},
       "api:backpack_middle"  :{ "add":{"component_groups":["backpack:middle" ]}, "set_property":{"thlm:backpack_type": 2}},

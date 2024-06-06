@@ -370,15 +370,41 @@ export class MaidManager{
          */
         static onSitEvent(event){
             let maid = event.entity;
-
-            maid.teleport(maid.location, {"keepVelocity": false})
             
-            // 清除水平动量
-            system.runTimeout(()=>{
-                let speed = maid.getVelocity();
-                maid.applyImpulse(new Vector(-speed.x, 0, -speed.z));
-                maid.clearVelocity();
-            },1);
+            // 工作模式
+            switch(EntityMaid.Work.get(maid)){
+                case EntityMaid.Work.attack    : EntityMaid.Work.quit(maid); break; // 取消近战模式
+                case EntityMaid.Work.farm      : EntityMaid.Work.quit(maid); break; // 退出农作模式
+                case EntityMaid.Work.sugar_cane: EntityMaid.Work.quit(maid); break; // 退出甘蔗模式
+                case EntityMaid.Work.melon     : EntityMaid.Work.quit(maid); break; // 退出瓜类模式
+                case EntityMaid.Work.cocoa     : EntityMaid.Work.quit(maid); break; // 退出可可模式
+            }
+
+            // 拾物模式
+            if(EntityMaid.Pick.get(maid)){
+                EntityMaid.Pick.set(maid, true);
+            }
+        }
+        /**
+         * 女仆站起事件
+         * @param {DataDrivenEntityTriggerAfterEvent} event
+         */
+        static onStandEvent(event){
+            let maid = event.entity;
+            
+            // 工作模式
+            switch(EntityMaid.Work.get(maid)){
+                case EntityMaid.Work.attack    : EntityMaid.Work.enter(maid, EntityMaid.Work.attack    ); break; // 恢复近战模式
+                case EntityMaid.Work.farm      : EntityMaid.Work.enter(maid, EntityMaid.Work.farm      ); break; // 恢复农作模式
+                case EntityMaid.Work.sugar_cane: EntityMaid.Work.enter(maid, EntityMaid.Work.sugar_cane); break; // 恢复甘蔗模式
+                case EntityMaid.Work.melon     : EntityMaid.Work.enter(maid, EntityMaid.Work.melon     ); break; // 恢复瓜类模式
+                case EntityMaid.Work.cocoa     : EntityMaid.Work.enter(maid, EntityMaid.Work.cocoa     ); break; // 恢复可可模式
+            }
+
+            // 拾物模式
+            if(EntityMaid.Pick.get(maid)){
+                EntityMaid.Pick.set(maid, true);
+            }
         }
         /**
          * 模式切换为坐下，此时主人状态由潜行切换到站立
