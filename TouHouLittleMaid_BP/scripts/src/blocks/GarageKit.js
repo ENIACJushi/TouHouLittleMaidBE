@@ -264,6 +264,9 @@ export class GarageKit{
      * @param {ItemUseOnBeforeEvent} event 
      */
     static placeEvent(event){
+        // 检测被交互的方块是否会复制物品
+        if(isBadContainerBlock(event.block.typeId)) return;
+
         // 决定位置  PS: faceLocation 是交互面上被点的坐标
         let location = event.block.location;
         switch(event.blockFace){
