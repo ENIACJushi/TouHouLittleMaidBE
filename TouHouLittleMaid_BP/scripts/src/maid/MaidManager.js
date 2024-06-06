@@ -51,7 +51,7 @@ export class MaidManager{
             let maid = event.entity;
             if(maid===undefined) return;
 
-            let lore = EntityMaid.toLore(maid);
+            let lore = EntityMaid.toLore(maid, false);
             let output_item = new ItemStack("touhou_little_maid:film", 1);
             output_item.setLore(lore);
             

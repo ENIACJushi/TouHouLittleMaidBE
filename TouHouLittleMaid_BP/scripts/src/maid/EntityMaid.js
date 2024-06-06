@@ -20,7 +20,7 @@ export class EntityMaid{
         rawtext.push({"text":"\n"});
         // 女仆名称
         rawtext.push({"translate": "message.tlm.admin.maid.name"});
-        rawtext.push({"text": `${this.getName(maid)}\n`});
+        rawtext.push({"text": `${this.getNameTag(maid)}\n`});
         // 主人名称
         rawtext.push({"translate": "message.tlm.admin.maid.owner.name"});
         rawtext.push({"text": `${this.Owner.getName(maid)}\n`});
@@ -1085,9 +1085,10 @@ export class EntityMaid{
     /**
      * 将女仆转为字符
      * @param {Entity} maid 
+     * @param {boolean} [dump=true] 
      * @returns {string}
      */
-    static toStr(maid){
+    static toStr(maid, dump=true){
         let maidStr = "";
         /// 记录女仆状态 ///
         // 主人id, 可为空（野生女仆）
@@ -1121,11 +1122,11 @@ export class EntityMaid{
             // 主人名称
             maidStr = StrMaid.Str.setOwnerName(maidStr, this.Owner.getName(maid));
             // 女仆名称
-            if(this.getName(maid) !== "") maidStr = StrMaid.Str.setMaidName(maidStr, this.getName(maid));
+            if(this.getNameTag(maid) !== "") maidStr = StrMaid.Str.setMaidName(maidStr, this.getNameTag(maid));
         }
 
         // 爆出物品
-        this.Backpack.dump(maid);
+        if(dump) this.Backpack.dump(maid);
 
         return maidStr;
         
@@ -1190,10 +1191,11 @@ export class EntityMaid{
      * 将女仆转为物品lore
      * 会自动清除背包
      * @param {Entity} maid
+     * @param {boolean} [dump=true] 
      * @returns {string} lore
      */
-    static toLore(maid){
-        let strPure = this.toStr(maid);
+    static toLore(maid, dump=true){
+        let strPure = this.toStr(maid, dump);
         return Tool.str2Lore(strPure);
     }
 

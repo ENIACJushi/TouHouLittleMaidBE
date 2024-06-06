@@ -195,12 +195,7 @@ class MaidMenuUI {
     constructor(player, maid){
         this.player = player;
         this.maid = maid;
-
-        
         this.maid_name = EntityMaid.getNameTag(maid);
-        if(this.maid_name === ""){
-            this.maid_name = { translate: "entity.touhou_little_maid:maid.name"};
-        }
     }
     main(){
         ///// 收集基础信息 /////
