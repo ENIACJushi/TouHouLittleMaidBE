@@ -497,7 +497,7 @@ export class Cocoa{
             // 目标方块已消失，补种
             if(block.typeId === "minecraft:air"){
                 // 消耗
-                if(EntityMaid.Inventory.removeItem_type(maid, "minecraft:cocoa_beans", 1) === true){
+                if(EntityMaid.Backpack.removeItem_type(maid, "minecraft:cocoa_beans", 1) === true){
                     // 放置
                     let direction = target.getProperty("thlmt:direction");
                     const l = block.location;

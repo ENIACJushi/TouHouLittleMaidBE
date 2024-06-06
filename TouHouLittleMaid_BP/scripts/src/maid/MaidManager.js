@@ -386,7 +386,7 @@ export class MaidManager{
          */
         static sitModeEvent(event){
             let maid = event.entity;
-            EntityMaid.Inventory.quitCheckMode(maid);
+            EntityMaid.Backpack.quitCheckMode(maid);
             EntityMaid.Emote.set(maid, 0);
         }
         /**
@@ -395,7 +395,7 @@ export class MaidManager{
          */
         static inventoryModeEvent(event){
             let maid = event.entity;
-            EntityMaid.Inventory.checkMode(maid); 
+            EntityMaid.Backpack.checkMode(maid); 
             EntityMaid.Emote.backpack(maid);
         }
         /**

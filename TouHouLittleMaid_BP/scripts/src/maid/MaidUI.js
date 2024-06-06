@@ -48,15 +48,8 @@ class MaidMenuSimple {
         this.maid = maid;
 
         // 名称为空时，使用默认名
-        if(EntityMaid.Inventory.isCheckMode(maid)){
-            if(maid.nameTag === EntityMaid.Inventory.getNamePrefix(maid)){
-                this.maid_name = { translate: "entity.touhou_little_maid:maid.name"};
-            }
-            else{
-                this.maid_name = maid.nameTag;
-            }
-        }
-        else if(maid.nameTag === ""){
+        this.maid_name = EntityMaid.getNameTag(maid);
+        if(this.maid_name === ""){
             this.maid_name = { translate: "entity.touhou_little_maid:maid.name"};
         }
     }
@@ -204,12 +197,9 @@ class MaidMenuUI {
         this.maid = maid;
 
         
-        if(EntityMaid.Inventory.isCheckMode(maid) && 
-            maid.nameTag === EntityMaid.Inventory.getNamePrefix(maid)){
-            this.maid_name = "";
-        }
-        else{
-            this.maid_name = maid.nameTag;
+        this.maid_name = EntityMaid.getNameTag(maid);
+        if(this.maid_name === ""){
+            this.maid_name = { translate: "entity.touhou_little_maid:maid.name"};
         }
     }
     main(){

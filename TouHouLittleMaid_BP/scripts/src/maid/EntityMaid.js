@@ -20,7 +20,7 @@ export class EntityMaid{
         rawtext.push({"text":"\n"});
         // 女仆名称
         rawtext.push({"translate": "message.tlm.admin.maid.name"});
-        rawtext.push({"text": `${maid.nameTag}\n`});
+        rawtext.push({"text": `${this.getName(maid)}\n`});
         // 主人名称
         rawtext.push({"translate": "message.tlm.admin.maid.owner.name"});
         rawtext.push({"text": `${this.Owner.getName(maid)}\n`});
@@ -690,10 +690,18 @@ export class EntityMaid{
             "§t§h§l§m§b§r"
         ]
         /**
+         * 是否处于查包模式
+         * @param {Entity} maid 
+         * @returns {boolean}
+         */
+        static isCheckMode(maid){
+            return maid.getDynamicProperty("inv_check")===true;
+        }
+        /**
          * 获取查包模式的前缀
          * @param {number} maid 
          */
-        static getUINamePrefix(maid){
+        static getNamePrefix(maid){
             return this.nameTags[this.getType(maid)];
         }
         /**
@@ -703,31 +711,21 @@ export class EntityMaid{
          * @returns {boolean}
          */
         static checkMode(maid){
-            let name = maid.nameTag;
-            if(name===""){
-                maid.nameTag = this.getUINamePrefix(maid);
-            }
-            else{
-                maid.nameTag = this.getUINamePrefix(maid) + name;
-            }
+            maid.setDynamicProperty("name", maid.nameTag);
             maid.setDynamicProperty("inv_check", true);
+
+            maid.nameTag = this.getNamePrefix(maid);
             return true;
         }
         /**
          * 退出主人查包模式
-         *  将实体背包内容转移到女仆背包
-         *  若女仆背包内存在物品，则将其丢弃
          * @param {Entity} maid
          * @returns {boolean}
          */
         static quitCheckMode(maid){
-            let name = maid.nameTag;
-            if(name === this.getUINamePrefix(maid)){
-                maid.nameTag = "";
-            }
-            else{
-                maid.nameTag = name.substring(12)
-            }
+            maid.nameTag = maid.getDynamicProperty("name");
+
+            maid.setDynamicProperty("name");
             maid.setDynamicProperty("inv_check", false);
             return true;
         }
@@ -1123,7 +1121,7 @@ export class EntityMaid{
             // 主人名称
             maidStr = StrMaid.Str.setOwnerName(maidStr, this.Owner.getName(maid));
             // 女仆名称
-            if(maid.nameTag!=="") maidStr = StrMaid.Str.setMaidName(maidStr, maid.nameTag);
+            if(this.getName(maid) !== "") maidStr = StrMaid.Str.setMaidName(maidStr, this.getName(maid));
         }
 
         // 爆出物品
@@ -1255,5 +1253,15 @@ export class EntityMaid{
      */
     static standUp(maid){
         maid.triggerEvent("thlmm:w");
+    }
+    /**
+     * 获取名称
+     * @param {Entity} maid 
+     */
+    static getNameTag(maid){
+        if(this.Backpack.isCheckMode(maid)){
+            return maid.getDynamicProperty("name");
+        }
+        return maid.nameTag;
     }
 }
