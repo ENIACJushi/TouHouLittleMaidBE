@@ -630,6 +630,10 @@ export class EntityMaid{
     }    
     // 背包
     static Backpack = class{
+        static default = 0;
+        static small   = 1;
+        static middle  = 2;
+        static big     = 3;
         static capacityList = [6, 12, 24, 36];
         static nameList = [
             "default",
@@ -677,105 +681,8 @@ export class EntityMaid{
         static setType(maid, type){
             maid.triggerEvent(`api:backpack_${this.getName(type)}`);
         }
-        /**
-         * 获取某种类型的背包容量
-         * @param {number} type 
-         * @returns {number}
-         */
-        static getCapacity(type){
-            return this.capacityList[type];
-        }
-        /**
-         * 获取某种类型的背包名称
-         * @param {number} type 
-         * @returns {string}
-         */
-        static getName(type){
-            return this.nameList[type];
-        }
-        /**
-         * 获取某种类型的背包名称
-         * @param {number} type 
-         * @returns {string}
-         */
-        static getItemName(type){
-            return `touhou_little_maid:maid_backpack_${this.getName(type)}`;
-        }
-        /**
-         * 在指定位置将背包释放
-         * @param {Entity} maid 
-         * @param {Vector} location 
-         */
-        static dump(maid, location=maid.location){
-            // 释放包内物品
-            let dimension = maid.dimension;
-            let container = this.getContainer(maid);
 
-            for(let i = 0; i < container.size; i++){
-                let item = container.getItem(i)
-                if(item !== undefined){
-                    dimension.spawnItem(item.clone(), location);
-                    container.setItem(i);
-                }
-            }
-        }
-        /**
-         * 获取UI按钮名称
-         */
-        static getButtonLang(invisible){
-            return invisible?"gui.touhou_little_maid:button.backpack.true.name":"gui.touhou_little_maid:button.backpack.false.name"
-        }
-        /**
-         * 获取UI按钮图像
-         */
-        static getButtonImg(invisible){
-            return invisible?"textures/gui/maid_backpack_deactivate.png":"textures/gui/maid_backpack_activate.png"
-        }
-    }
-    // 表情
-    static Emote = {
-        timeout:undefined,
-        /**
-         * 获取当前表情ID
-         * @param {Entity} maid 
-         * @returns {number}
-         */
-        get(maid){
-            return maid.getProperty("thlm:emote");
-        },
-        /**
-         * 设置表情ID
-         * @param {Entity} maid 
-         * @param {number} index 
-         */
-        set(maid, index){
-            if(this.timeout !== undefined){
-                system.clearRun(this.timeout);
-                this.timeout=undefined;
-            }
-            let value = index;
-            if(emote[index] !== undefined){
-                value += 1000*emote[index][0];
-                value += 1000000*emote[index][1];
-                this.timeout = system.runTimeout(()=>{
-                    this.set(maid, 0);
-                }, emote[index][2]);
-            }
-            maid.setProperty("thlm:emote", value);
-        },
-        // 背包 起始位置1
-        backpack(maid){
-            this.set(maid, 1 + EntityMaid.Backpack.getType(maid));
-        },
-        apple(maid){ this.set(maid, 5); }, // 苹果 5
-        cake (maid){ this.set(maid, 6); } // 蛋糕 6
-    }
-    // 背包
-    static Inventory = class{
-        static default = 0;
-        static small   = 1;
-        static middle  = 2;
-        static big     = 3;
+        ///// 查包管理 /////
         static nameTags = [
             "§t§h§l§m§d§r",
             "§t§h§l§m§s§r",
@@ -786,24 +693,8 @@ export class EntityMaid{
          * 获取查包模式的前缀
          * @param {number} maid 
          */
-        static getNamePrefix(maid){
+        static getUINamePrefix(maid){
             return this.nameTags[this.getType(maid)];
-        }
-        /**
-         * 获取背包类型
-         * @param {Entity} maid
-         * @return {number}
-         */
-        static getType(maid){
-            return maid.getProperty("thlm:backpack_type");
-        }
-        /**
-         * 是否处于主人查包模式
-         * @param {Entity} maid 
-         * @returns {boolean}
-         */
-        static isCheckMode(maid){
-            return maid.getDynamicProperty("inv_check")===true;
         }
         /**
          * 主人查包模式
@@ -814,10 +705,10 @@ export class EntityMaid{
         static checkMode(maid){
             let name = maid.nameTag;
             if(name===""){
-                maid.nameTag = this.getNamePrefix(maid);
+                maid.nameTag = this.getUINamePrefix(maid);
             }
             else{
-                maid.nameTag = this.getNamePrefix(maid) + name;
+                maid.nameTag = this.getUINamePrefix(maid) + name;
             }
             maid.setDynamicProperty("inv_check", true);
             return true;
@@ -831,7 +722,7 @@ export class EntityMaid{
          */
         static quitCheckMode(maid){
             let name = maid.nameTag;
-            if(name === this.getNamePrefix(maid)){
+            if(name === this.getUINamePrefix(maid)){
                 maid.nameTag = "";
             }
             else{
@@ -840,16 +731,8 @@ export class EntityMaid{
             maid.setDynamicProperty("inv_check", false);
             return true;
         }
-        /**
-         * 获取背包 container
-         * @param {Entity} maid 
-         * @returns {undefined | Container}
-         */
-        static getContainer(maid){
-            return this.isCheckMode(maid)
-                ? EntityMaid.Backpack.getContainer(maid) // 主人操作背包状态 访问背包实体
-                : maid.getComponent("inventory").container; // 通常状态 直接访问
-        }
+
+        ///// 辅助函数 /////
         /**
          * 添加物品 可以和现有的同种物品堆叠
          *  若全部添加成功，返回-1
@@ -1007,6 +890,100 @@ export class EntityMaid{
 
             container.swapItems(otherSlot, otherContainer);
         }
+
+        ///// 数据函数 /////
+        /**
+         * 获取某种类型的背包容量
+         * @param {number} type 
+         * @returns {number}
+         */
+        static getCapacity(type){
+            return this.capacityList[type];
+        }
+        /**
+         * 获取某种类型的背包名称
+         * @param {number} type 
+         * @returns {string}
+         */
+        static getName(type){
+            return this.nameList[type];
+        }
+        /**
+         * 获取某种类型的背包名称
+         * @param {number} type 
+         * @returns {string}
+         */
+        static getItemName(type){
+            return `touhou_little_maid:maid_backpack_${this.getName(type)}`;
+        }
+        /**
+         * 在指定位置将背包释放
+         * @param {Entity} maid 
+         * @param {Vector} location 
+         */
+        static dump(maid, location=maid.location){
+            // 释放包内物品
+            let dimension = maid.dimension;
+            let container = this.getContainer(maid);
+
+            for(let i = 0; i < container.size; i++){
+                let item = container.getItem(i)
+                if(item !== undefined){
+                    dimension.spawnItem(item.clone(), location);
+                    container.setItem(i);
+                }
+            }
+        }
+        /**
+         * 获取UI按钮名称
+         */
+        static getButtonLang(invisible){
+            return invisible?"gui.touhou_little_maid:button.backpack.true.name":"gui.touhou_little_maid:button.backpack.false.name"
+        }
+        /**
+         * 获取UI按钮图像
+         */
+        static getButtonImg(invisible){
+            return invisible?"textures/gui/maid_backpack_deactivate.png":"textures/gui/maid_backpack_activate.png"
+        }
+    }
+    // 表情
+    static Emote = {
+        timeout:undefined,
+        /**
+         * 获取当前表情ID
+         * @param {Entity} maid 
+         * @returns {number}
+         */
+        get(maid){
+            return maid.getProperty("thlm:emote");
+        },
+        /**
+         * 设置表情ID
+         * @param {Entity} maid 
+         * @param {number} index 
+         */
+        set(maid, index){
+            if(this.timeout !== undefined){
+                system.clearRun(this.timeout);
+                this.timeout=undefined;
+            }
+            let value = index;
+            if(emote[index] !== undefined){
+                value += 1000*emote[index][0];
+                value += 1000000*emote[index][1];
+                this.timeout = system.runTimeout(()=>{
+                    this.set(maid, 0);
+                }, emote[index][2]);
+            }
+            maid.setProperty("thlm:emote", value);
+        },
+        // 背包 起始位置1
+        backpack(maid){
+            this.set(maid, 1 + EntityMaid.Backpack.getType(maid));
+        },
+        apple(maid){ this.set(maid, 5); }, // 苹果 5
+        cake (maid){ this.set(maid, 6); } // 蛋糕 6
     }
     // 静音模式
     static Mute = {
