@@ -89,6 +89,11 @@ class SpeedController{
     }
 }
 
+// 耕地作物
+export class Farm{
+
+}
+
 // 甘蔗
 class SugarCane{
     static maxLack = 3; // 进入慢扫描的连续缺目标次数
