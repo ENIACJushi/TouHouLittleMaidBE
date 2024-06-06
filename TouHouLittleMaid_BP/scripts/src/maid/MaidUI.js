@@ -4,7 +4,6 @@ import { EntityMaid } from './EntityMaid';
 import { logger } from "../libs/ScarletToolKit"
 import { MaidSkin } from './MaidSkin';
 import { config } from '../controller/Config';
-import { MaidBackpack } from './MaidBackpack';
 
 /**
  * 打开主菜单
@@ -94,7 +93,7 @@ class MaidMenuSimple {
             // 显示/隐藏背包
             .button({rawtext:[{translate: backpack_invisible
                 ? "gui.touhou_little_maid:button.backpack.true.name"
-                : "gui.touhou_little_maid:button.backpack.false.name"}]}, MaidBackpack.getButtonImg(backpack_invisible))
+                : "gui.touhou_little_maid:button.backpack.false.name"}]}, EntityMaid.Backpack.getButtonImg(backpack_invisible))
             // 拾物模式
             .button({rawtext:[{translate: mode_pick
                 ? "gui.touhou_little_maid:button.pickup.true.name"
@@ -250,7 +249,7 @@ class MaidMenuUI {
             // 骑乘模式（未实现）
             .button({ translate: EntityMaid.Ride.getLang(false)}, EntityMaid.Ride.getImg(false)) //ride 模式
             // 显示/隐藏背包
-            .button(MaidBackpack.getButtonLang(backpack_invisible), MaidBackpack.getButtonImg(backpack_invisible)) // 隐藏背包
+            .button(EntityMaid.Backpack.getButtonLang(backpack_invisible), EntityMaid.Backpack.getButtonImg(backpack_invisible)) // 隐藏背包
             // 静音模式
             .button({ translate: EntityMaid.Mute.getLang(pick_mode)}, EntityMaid.Mute.getImg(mute_mode)) //mute 模式
             // 选择模型

@@ -718,12 +718,18 @@ export class EntityMaid{
                     container.setItem(i);
                 }
             }
-            
-            // 生成背包物品
-            // let backpackItem = this.type2ItemName(this.getType(maid))
-            // if(backpackItem !== undefined){
-            //     dimension.spawnItem(new ItemStack(backpackItem, 1), location);
-            // }
+        }
+        /**
+         * 获取UI按钮名称
+         */
+        static getButtonLang(invisible){
+            return invisible?"gui.touhou_little_maid:button.backpack.true.name":"gui.touhou_little_maid:button.backpack.false.name"
+        }
+        /**
+         * 获取UI按钮图像
+         */
+        static getButtonImg(invisible){
+            return invisible?"textures/gui/maid_backpack_deactivate.png":"textures/gui/maid_backpack_activate.png"
         }
     }
     // 表情

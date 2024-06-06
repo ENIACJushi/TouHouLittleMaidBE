@@ -72,30 +72,11 @@
         "minecraft:collision_box": {
           "width": 0.3,
           "height": 0.5
-        },
-        "minecraft:damage_sensor": {
-          "triggers": [
-            {
-              "on_damage": {
-                "filters": {
-                  "all_of": [
-                    {"test": "is_family","subject": "damager","value": "player"}
-                  ]
-                },
-                "event": "thlmb:g",
-                "target": "self"
-              },
-              "deals_damage": false
-            },
-            {
-              "cause": "all",
-              "deals_damage": false
-            }
-          ]
         }
       }
     },
     "components": {
+      "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 64, "private": true},
       "minecraft:behavior.float":{},
       "minecraft:breathable": {
         "total_supply": 15,
@@ -113,53 +94,27 @@
         "always_show": false,
         "allow_name_tag_renaming": false
       },
-      "minecraft:type_family": {
-        "family": ["thlm:maid_backpack"]
-      },
-      "minecraft:interact": {
-        "interactions": [
+      "minecraft:type_family": { "family": ["thlm:maid_backpack"] },
+      "minecraft:damage_sensor": {
+        "triggers": [
           {
-            "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
-            "interact_text": "action.interact.maid_backpack_carry",
-            "on_interact": {
-              "filters": {"all_of": [
-                { "test": "is_family", "subject": "other", "value": "player" },
-                { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:maid_backpack_small"},
-                { "test" : "has_component", "value": "minecraft:is_sheared", "operator": "!="},
-                { "test" : "is_variant", "value": 1, "operator": "!="}
-              ]},
-              "event": "thlmb:t1", "target": "self"
-            }
+            "on_damage": {
+              "filters": {
+                "all_of": [
+                  {"test": "is_family","subject": "damager","value": "player"}
+                ]
+              },
+              "event": "thlmb:g",
+              "target": "self"
+            },
+            "deals_damage": false
           },
           {
-            "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
-            "interact_text": "action.interact.maid_backpack_carry",
-            "on_interact": {
-              "filters": {"all_of": [
-                { "test": "is_family", "subject": "other", "value": "player" },
-                { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:maid_backpack_middle"},
-                { "test" : "has_component", "value": "minecraft:is_sheared", "operator": "!="},
-                { "test" : "is_variant", "value": 2, "operator": "!="}
-              ]},
-              "event": "thlmb:t2", "target": "self"
-            }
-          },
-          {
-            "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
-            "interact_text": "action.interact.maid_backpack_carry",
-            "on_interact": {
-              "filters": {"all_of": [
-                { "test": "is_family", "subject": "other", "value": "player" },
-                { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:maid_backpack_big"},
-                { "test" : "has_component", "value": "minecraft:is_sheared", "operator": "!="},
-                { "test" : "is_variant", "value": 3, "operator": "!="}
-              ]},
-              "event": "thlmb:t3", "target": "self"
-            }
+            "cause": "all",
+            "deals_damage": false
           }
         ]
       },
-      "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
       "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
       "minecraft:persistent": {},
       "minecraft:knockback_resistance": { "value": 1.0 }
