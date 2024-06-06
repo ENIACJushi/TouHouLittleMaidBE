@@ -279,6 +279,58 @@
                 "target": "self"
               }
             },
+            // 更换背包 无
+            {
+              "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
+              "interact_text": "action.interact.maid_backpack_carry",
+              "on_interact": {
+                "filters": {"all_of": [
+                  { "test": "is_family", "subject": "other", "value": "player" },
+                  { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "minecraft:shears"},
+                  { "test" : "int_property", "domain": "thlm:backpack_type", "value": 1, "operator": ">="}
+                ]},
+                "event": "thlmb:t0", "target": "self"
+              }
+            },
+            // 更换背包 小
+            {
+              "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
+              "interact_text": "action.interact.maid_backpack_carry",
+              "on_interact": {
+                "filters": {"all_of": [
+                  { "test": "is_family", "subject": "other", "value": "player" },
+                  { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:maid_backpack_small"},
+                  { "test" : "int_property", "domain": "thlm:backpack_type", "value": 1, "operator": "!="}
+                ]},
+                "event": "thlmb:t1", "target": "self"
+              }
+            },
+            // 更换背包 中
+            {
+              "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
+              "interact_text": "action.interact.maid_backpack_carry",
+              "on_interact": {
+                "filters": {"all_of": [
+                  { "test": "is_family", "subject": "other", "value": "player" },
+                  { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:maid_backpack_middle"},
+                  { "test" : "int_property", "domain": "thlm:backpack_type", "value": 2, "operator": "!="}
+                ]},
+                "event": "thlmb:t2", "target": "self"
+              }
+            },
+            // 更换背包 大
+            {
+              "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
+              "interact_text": "action.interact.maid_backpack_carry",
+              "on_interact": {
+                "filters": {"all_of": [
+                  { "test": "is_family", "subject": "other", "value": "player" },
+                  { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:maid_backpack_big"},
+                  { "test" : "int_property", "domain": "thlm:backpack_type", "value": 3, "operator": "!="}
+                ]},
+                "event": "thlmb:t3", "target": "self"
+              }
+            },
             // 转化为 NPC
             {
               "cooldown": 2.5,
@@ -1058,6 +1110,12 @@
       "thlmm:1" :{}, // smart slab
       "thlm:n": {}, // npc交互
 
+      // 发起背包切换
+      "thlmb:t0": {},
+      "thlmb:t1": {},
+      "thlmb:t2": {},
+      "thlmb:t3": {},
+      
       ///// 脚本接口 /////
       // 曾有主人的生成
       "api:reborn":{

@@ -406,15 +406,15 @@ export class MaidManager{
          * @param {number} typeNew 1, 2, 3 
          */
         static backpackTypeChangeEvent(event, typeNew){
-            let backpack = event.entity;
-            let typeOld = MaidBackpack.getType(backpack);
-            let dimension = backpack.dimension;
-            let location = backpack.location;
+            let maid = event.entity;
+            let typeOld = EntityMaid.Backpack.getType(maid);
+            let dimension = maid.dimension;
+            let location = maid.location;
 
+            // 将多余的物品丢出
             if(typeOld > typeNew){
-                // 将多余的物品丢出
-                let container = MaidBackpack.getContainer(backpack);
-                for(let i = MaidBackpack.capacityList[typeNew]; i < MaidBackpack.capacityList[typeOld]; i++){
+                let container = EntityMaid.Backpack.getContainer(maid);
+                for(let i = EntityMaid.Backpack.getCapacity(typeNew); i < EntityMaid.Backpack.getCapacity(typeOld); i++){
                     let item = container.getItem(i);
                     if(item !== undefined){
                         dimension.spawnItem(item, location);
@@ -422,13 +422,14 @@ export class MaidManager{
                     }
                 }
             }
+            
             // 升级
-            MaidBackpack.setType(backpack, typeNew);
-            system.runTimeout(()=>{EntityMaid.Emote.backpack(MaidBackpack.getMaid(backpack));},1)
+            EntityMaid.Backpack.setType(maid, typeNew);
+            system.runTimeout(()=>{EntityMaid.Emote.backpack(maid);},1); // 延迟1刻等待修改生效
             
             // 返还旧背包
-            if(typeOld !== MaidBackpack.default){
-                dimension.spawnItem(new ItemStack(MaidBackpack.type2ItemName(typeOld), 1), location);
+            if(typeOld !== 0){
+                dimension.spawnItem(new ItemStack(EntityMaid.Backpack.getItemName(typeOld), 1), location);
             }
         }
     }

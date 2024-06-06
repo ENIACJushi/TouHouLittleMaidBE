@@ -630,93 +630,77 @@ export class EntityMaid{
         }
     }    
     // 背包（实体）
-    static Backpack = {
-        /**
-         * 获取背包ID
-         * @param {Entity} maid 
-         * @returns {string|undefined}
-         */
-        getID(maid){
-            return Tag.get(maid, "thlmb:");
-        },
-        /**
-         * 设置背包id
-         * @param {Entity} maid 
-         * @param {string} id 
-         */
-        setID(maid, id){
-            Tag.del(maid, "thlmb:");
-            Tag.set(maid, "thlmb:", id);
-        },
-
+    static Backpack = class{
+        static capacityList = [6, 12, 24, 36];
+        static nameList = [
+            "default",
+            "small",
+            "middle",
+            "big"
+        ]
         /**
          * 获取背包是否隐藏
          * @param {Entity} maid 
          * @returns {boolean}
          */
-        getInvisible(maid){
+        static getInvisible(maid){
             return maid.getProperty("thlm:backpack_invisible");
-        },
+        }
         /**
          * 设置背包是否隐藏
          * @param {Entity} maid
          * @param {boolean} target
          */
-        setInvisible(maid, value){
+        static setInvisible(maid, value){
             return maid.setProperty("thlm:backpack_invisible", value);
-        },
-
-        /**
-         * 获取背包实体
-         * @param {Entity} maid 
-         * @returns {Entity|undefined}
-         */
-        getEntity(maid){
-            let id = this.getID(maid);
-            if(id !== undefined){
-                return world.getEntity(id);
-            }
-            return undefined;
-        },
+        }
         /**
          * 获取背包内容
          * @param {Entity} maid 
          * @returns {Container|undefined}
          */
-        getContainer(maid){
-            let backpack = this.getEntity(maid);
-            if(backpack !== undefined){
-                return MaidBackpack.getContainer(backpack);
-            }
-            return undefined;
-        },
+        static getContainer(maid){
+            return maid.getComponent("inventory").container;
+        }
         /**
          * 获取背包类型（大小）
          * @param {Entity} maid
          * @returns {number} 0~3 
          */
-        getType(maid){
+        static getType(maid){
             return maid.getProperty("thlm:backpack_type");
-        },
+        }
         /**
-         * 创建一个背吧并背上
-         * @param {Entity} maid 
-         * @returns {Entity|undefined}
+         * 设置背包类型（大小）
+         * @param {Entity} maid
+         * @returns {number} 0~3 
          */
-        create(maid){
-            if(maid===undefined) return undefined;
-
-            var rideable = maid.getComponent("minecraft:rideable");
-            const rider = rideable.getRiders()[0];
-            if(rider === undefined){
-                // 生成背包
-                var backpack = MaidBackpack.create(maid, MaidBackpack.default, maid.dimension, maid.location);
-                EntityMaid.Backpack.setID(maid, backpack.id);
-
-                // 背上背包   无效：rideable.addRider(backpack);
-                maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
-                return backpack;
-            }
+        static setType(maid, type){
+            maid.triggerEvent(`api:backpack_${this.getName(type)}`);
+        }
+        /**
+         * 获取某种类型的背包容量
+         * @param {number} type 
+         * @returns {number}
+         */
+        static getCapacity(type){
+            return this.capacityList[type];
+        }
+        /**
+         * 获取某种类型的背包名称
+         * @param {number} type 
+         * @returns {string}
+         */
+        static getName(type){
+            return this.nameList[type];
+        }
+        /**
+         * 获取某种类型的背包名称
+         * @param {number} type 
+         * @returns {string}
+         */
+        static getItemName(type){
+            return `touhou_little_maid:maid_backpack_${this.getName(type)}`;
         }
     }
     // 表情
