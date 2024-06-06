@@ -2,6 +2,7 @@ import { EntityHitEntityAfterEvent, Entity, Dimension, system } from "@minecraft
 import { Vector } from "../libs/VectorMC";
 import { EntityMaid } from "./EntityMaid";
 import { logger, pointInArea_3D } from "../libs/ScarletToolKit";
+import { farmBlocks } from "../../data/FarmBlocks";
 
 export class MaidTarget{
     /**
@@ -89,9 +90,200 @@ class SpeedController{
     }
 }
 
-// 耕地作物
+// 耕地作物 thlmt:farm
 export class Farm{
+    static maxLack = 3; // 进入慢扫描的连续缺目标次数
+    static lackStep = 5; // 慢扫描等待步数
+    static minCount = 10; // 缺目标的最大目标数
+    static maxCount = 64; // 单次扫描获取的最大目标数 到达该数量则停止扫描 确定标准为一个目标实体生命周期内，女仆能收集到的最大目标数
 
+    /**
+     * 放置收获目标, 位置应为整数方块坐标
+     * @param {Dimension} dimension 
+     * @param {Vector} location 
+     */
+    static placeCorp(dimension, location){
+        // 若该位置已经有目标，则不放置
+        let entities = dimension.getEntitiesAtBlockLocation(location);
+        for(let entity of entities){
+            if(entity.typeId === "thlmt:farm"){
+                return;
+            }
+        }
+        // 放置目标
+        let target = dimension.spawnEntity("thlmt:farm", 
+            new Vector(location.x + 0.5, location.y + 0.2, location.z + 0.5));
+        target.setDynamicProperty("is_seed", false);
+    }
+    /**
+     * 放置种植目标, 位置应为整数方块坐标
+     * @param {Dimension} dimension
+     * @param {Vector} location
+     */
+    static placeSeed(dimension, location){
+        // 若该位置已经有目标，则不放置
+        let entities = dimension.getEntitiesAtBlockLocation(location);
+        for(let entity of entities){
+            if(entity.typeId === "thlmt:farm"){
+                return;
+            }
+        }
+        // 放置目标
+        let target = dimension.spawnEntity("thlmt:farm", 
+            new Vector(location.x + 0.5, location.y + 0.2, location.z + 0.5));
+        target.setDynamicProperty("is_seed", true);
+    }
+    /**
+     * 收集/种植作物
+     * @param {Entity} target 
+     * @param {Entity} maid 
+     */
+    static acquire(target, maid){
+        let location = target.location;
+        const dimension = target.dimension;
+        if(target.getDynamicProperty("is_seed") === true){
+            // 种植
+            // 检查九宫格内作物类型
+            dimension.getBlocks(new )
+
+
+        }
+        else{
+            // 收获
+            target.dimension.getBlocks()
+        }
+        let block = target.dimension.getBlock(target.location);
+        if(block !== undefined && block.typeId === "minecraft:reeds"){
+            const l = block.location;
+            block.dimension.runCommand(`setblock ${l.x} ${l.y} ${l.z} air destroy`);
+        }
+        // 无论是否成功破坏，都清除目标
+        target.triggerEvent("despawn");
+    }
+    /**
+     * 寻找作物
+     * @param {Entity} maid
+     * @param {number} range
+     * @returns {object} 
+     */
+    static search(maid, range=6){
+        ///// 需求判断 /////
+        const dimension = maid.dimension;
+        const location = maid.location;
+        /**
+         * 获取范围内已经标定的点
+         * 若附近目标数少于6则开始扫描
+         */
+        let existedTargets = dimension.getEntities({
+            "location": location, "maxDistance": range, "type": "thlmt:sugar_cane"});
+        if(existedTargets.length > 6) return;
+
+        ///// 频率调整 /////
+        if(!SpeedController.beforeSearch(maid, this.maxLack, this.lackStep)) return;
+
+        ///// 搜索 /////
+        /**
+         * 一般来说，耕地的起伏不会太大，设女仆位置的高度为 y，搜索 y-2 ~ y+2 就足够了，即5格高，对应面积 166 的 2D 区域，边长大约为 13
+         * 
+         * 搜索顺序：0  1  2  -1  -2
+         * 
+         * 如果先找到作物，就判断生长阶段是否符合要求，不符合就直接跳过
+         * 如果先找到耕地，当查找方向为向下(-1/-2)，直接跳过，若为向上，则自行向上搜索一格，然后跳过
+         * 
+         * 耕地作物通常种植在同一高度，所以搜索开始的高度设为上一次成功查找的高度
+         */
+        let y = Math.floor(location.y);
+        let xStart = Math.floor(location.x);
+        let zStart = Math.floor(location.z);
+        let count = 0;
+        for(let ix = 0; ix < range; ix = ix>0 ? -ix : 1-ix){
+            system.runTimeout(()=>{
+                for(let iz = 0; iz < range; iz = iz>0 ? -iz : 1-iz){
+                    if(count > this.maxCount) return;
+
+                    let x = xStart + ix;
+                    let z = zStart + iz;
+                    let A = y; // A A+1 A+2 A-1 A-2
+
+
+                    // 向上搜索
+                    for(let i = 0; i <= 2; i++){
+                        let block = dimension.getBlock(new Vector(x, A+i, z));
+                        
+                        // 耕地判断
+                        if(farmBlocks.getLand(block.typeId) !== undefined){
+                            // 是耕地，找上方一格
+                            y = A+i;
+                            let block = dimension.getBlock(new Vector(x, A+i+1, z));
+                            if(block === undefined){
+                                // TODO 上方一格为空，放置种植标记
+                                this.placeSeed(dimension, new Vector(x, A-i, z));
+                                break;
+                            }
+                            // 上方一格不为空，进行作物判断
+                            block = dimension.getBlock(new Vector(x, A+i+1, z));
+                        }
+
+                        // 作物判断
+                        let corpInfo = farmBlocks.getCorp(block.typeId);
+                        if(corpInfo !== undefined){
+                            // 是作物，判断是否成熟（无论成不成熟都结束扫描）
+                            let mature = true;
+                            for(let key in corpInfo.state){
+                                if(block.permutation.getState(key) !== corpInfo.state[key]){
+                                    mature = false;
+                                    break;
+                                }
+                            }
+
+                            if(mature){
+                                // 已成熟，放置收获标记
+                                this.placeCorp(dimension, new Vector(x, A+i, z));
+                            }
+                            break;
+                        }
+
+                        // 都不是，继续找
+                    }
+
+                    // 向下搜索
+                    for(let i = 1; i <= 2; i++){
+                        let block = dimension.getBlock(new Vector(x, A-i, z));
+                        
+                        // 耕地判断
+                        if(farmBlocks.getLand(block.typeId) !== undefined){
+                            // 是耕地，在上方放置种植标记
+                            this.placeSeed(dimension, new Vector(x, A-i+1, z));
+                            break;
+                        }
+                        // 作物判断
+                        let corpInfo = farmBlocks.getCorp(block.typeId);
+                        if(corpInfo !== undefined){
+                            // 是作物，判断是否成熟（无论成不成熟都结束扫描）
+                            let mature = true;
+                            for(let key in corpInfo.state){
+                                if(block.permutation.getState(key) !== corpInfo.state[key]){
+                                    mature = false;
+                                    break;
+                                }
+                            }
+
+                            if(mature){
+                                // 已成熟，放置收获标记
+                                this.placeCorp(dimension, new Vector(x, A-i, z));
+                            }
+                            break;
+                        }
+                    }
+                }
+            }, (ix<0 ? 4-8*ix : ix*8));
+        }
+
+        ///// 频率调整 /////
+        system.runTimeout(()=>{
+            SpeedController.afterSearch(maid, count, this.maxLack, this.minCount)
+        }, range*8 + 8);
+    }
 }
 
 // 甘蔗

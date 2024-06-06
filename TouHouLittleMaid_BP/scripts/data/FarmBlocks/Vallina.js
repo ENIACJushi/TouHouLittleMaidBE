@@ -6,6 +6,6 @@ export const Data = {
     },
 
     seeds: { // 定义种子种出的方块，以及需要在何种方块上种植
-        "minecraft:carrot": {"block": "minecraft:carrots", "state": {"growth": 7}, "land": ["minecraft:dirt"]}
+        "minecraft:carrot": {"block": "minecraft:carrots", "state": {"growth": 0}, "land": ["minecraft:dirt"]}
     }
 }

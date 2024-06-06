@@ -570,26 +570,21 @@
         "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 0 }
       },
       // 农耕
-      "mode:farm_lv1":{
-        "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
-        "minecraft:behavior.harvest_farm_block": {
-          "priority": 7,
-          "search_cooldown_max_seconds": 2,
-          "search_count": 0,
-          "search_height":3, "search_range": 20
+      "mode:farm":{
+        "minecraft:behavior.nearest_attackable_target": {
+          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 5.0, 
+          "reselect_targets": false, "within_radius": 32, "scan_interval": 20,
+          "entity_types": [ 
+            { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:farm"} ] }, "max_dist": 32, "must_see": false }
+          ]
         },
-        "minecraft:behavior.fertilize_farm_block": { "priority": 8, "search_cooldown_max_seconds": 2 }
-      },
-      "mode:farm_lv2":{
-        "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
-        "minecraft:behavior.harvest_farm_block": {
-          "priority": 7,
-          "search_cooldown_max_seconds": 2,
-          "search_count": 0,
-          "search_height":3,
-          "search_range": 20
-        },
-        "minecraft:behavior.fertilize_farm_block": { "priority": 8, "search_cooldown_max_seconds": 2 }
+        "minecraft:behavior.ranged_attack": {
+          "priority": 6,
+          "attack_interval_min": 0.8,
+          "attack_interval_max": 0.8,
+          "attack_radius": 2.1,
+          "attack_radius_min": 0.9
+        }
       },
       // 甘蔗
       "mode:sugar_cane":{
@@ -1214,16 +1209,11 @@
       ]},
       "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack", "mode:danmaku_attack_sit", "mode:searching_danmaku_attack"]}}]},
       // 耕地
-      "api:mode_farm_lv1"       :{"sequence": [
-        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:farm_lv1"]} },
+      "api:mode_farm"       :{"sequence": [
+        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:farm"]} },
         { "set_property":{"thlm:work": 3}}]
       },
-      "api:mode_quit_farm_lv1"  :{"sequence": [{"remove": {"component_groups": ["mode:farm_lv1"]}}]},
-      "api:mode_farm_lv2"       :{"sequence": [
-        { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:farm_lv2"]} },
-        { "set_property":{"thlm:work": 3}}]
-      },
-      "api:mode_quit_farm_lv2"  :{"sequence": [{"remove": {"component_groups": ["mode:farm_lv2"]}}]},
+      "api:mode_quit_farm"  :{"sequence": [{"remove": {"component_groups": ["mode:farm"]}}]},
       // 甘蔗
       "api:mode_sugar_cane"          :  {"sequence": [
         { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:sugar_cane"]} },

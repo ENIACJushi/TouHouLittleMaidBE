@@ -554,7 +554,7 @@ export class EntityMaid{
             result += this.getName(type);
             
             // 受等级影响的类型
-            if(type === this.farm || type === this.attack){
+            if(type === this.attack){
                 result += `_lv${EntityMaid.Level.get(maid)}`;
             }
             return result;
