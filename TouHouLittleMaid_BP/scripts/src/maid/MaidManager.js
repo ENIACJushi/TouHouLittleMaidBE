@@ -14,8 +14,6 @@ import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
-import { MaidBackpack } from "./MaidBackpack";
-import { config } from "../controller/Config"
 import { StrMaid } from "./StrMaid";
 import * as Vec from "../libs/vector3d"
 import {DanmakuShoot}  from "../danmaku/DanmakuShoot";
@@ -34,7 +32,7 @@ export class MaidManager{
          * 初始化事件
          */
         static init(){
-            MaidBackpack.loader.init();
+            
         }
         /**
          * 女仆生成事件

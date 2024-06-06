@@ -239,6 +239,29 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'B', str);
         }
     }
+    // C 背包类型
+    static backpackType = {
+        /**
+         * 获取背包类型
+         * @param {string} maidStr
+         * @returns {number|undefined}
+         */
+        get(maidStr){
+            let str = StrHelper.getValue(maidStr, 'C', 2);
+            if(str === undefined) return undefined;
+            return StrHelper.str2int(str.slice(0, 2));
+        },
+        /**
+         * 设置背包类型
+         * @param {string} maidStr
+         * @param {number} type
+         * @returns {string} New Maid String
+         */
+        set(maidStr, type){
+            let str = StrHelper.int2str(type);
+            return StrHelper.setValue(maidStr, 'C', str);
+        }
+    }
     // P 拾物模式
     static Pick = {
         /**

@@ -1,6 +1,5 @@
 import { Entity, world, Dimension,system, EntityHealthComponent, Container, ItemStack, Block, Player, ContainerSlot } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
-import { MaidBackpack } from "./MaidBackpack";
 import * as Tool from "../libs/ScarletToolKit";
 import { StrMaid } from "./StrMaid";
 import { emote } from "../../data/emote";
@@ -629,7 +628,7 @@ export class EntityMaid{
             return [x, y, z, Tool.dim_int2string(dim)];
         }
     }    
-    // 背包（实体）
+    // 背包
     static Backpack = class{
         static capacityList = [6, 12, 24, 36];
         static nameList = [
@@ -701,6 +700,30 @@ export class EntityMaid{
          */
         static getItemName(type){
             return `touhou_little_maid:maid_backpack_${this.getName(type)}`;
+        }
+        /**
+         * 在指定位置将背包释放
+         * @param {Entity} maid 
+         * @param {Vector} location 
+         */
+        static dump(maid, location=maid.location){
+            // 释放包内物品
+            let dimension = maid.dimension;
+            let container = this.getContainer(maid);
+
+            for(let i = 0; i < container.size; i++){
+                let item = container.getItem(i)
+                if(item !== undefined){
+                    dimension.spawnItem(item.clone(), location);
+                    container.setItem(i);
+                }
+            }
+            
+            // 生成背包物品
+            // let backpackItem = this.type2ItemName(this.getType(maid))
+            // if(backpackItem !== undefined){
+            //     dimension.spawnItem(new ItemStack(backpackItem, 1), location);
+            // }
         }
     }
     // 表情
@@ -1109,6 +1132,8 @@ export class EntityMaid{
         maidStr = StrMaid.Mute.set(maidStr, this.Mute.get(maid));
         // 背包是否隐藏
         maidStr = StrMaid.backpackInvisibility.set(maidStr, this.Backpack.getInvisible(maid));
+        // 背包等级
+        maidStr = StrMaid.backpackType.set(maidStr, this.Backpack.getType(maid));
 
         // 字符类数据最后设置
         if(o_id !== undefined){
@@ -1117,21 +1142,10 @@ export class EntityMaid{
             // 女仆名称
             if(maid.nameTag!=="") maidStr = StrMaid.Str.setMaidName(maidStr, maid.nameTag);
         }
-        /**
-         * 打包背包
-         * 正常情况不会为空，以防万一假设可为空
-         * b: backpack,背包大小
-         * bi: backpack id, 临时背包的生物id
-         */ 
-        EntityMaid.Inventory.checkMode(maid);// 转储 女仆→背包实体
-        let backpack_id = this.Backpack.getID(maid);
-        if(backpack_id !== undefined){
-            let backpack = world.getEntity(backpack_id);
-            if(backpack !== undefined){
-                MaidBackpack.setInvisible(backpack, false);
-                backpack.triggerEvent("api:grave");
-            }
-        }
+
+        // 爆出物品
+        this.Backpack.dump(maid);
+
         return maidStr;
         
     }
@@ -1175,7 +1189,12 @@ export class EntityMaid{
         this.Mute.set(maid, StrMaid.Mute.get(maidStr));
         // 背包是否隐藏
         this.Backpack.setInvisible(maid, StrMaid.backpackInvisibility.get(maidStr));
-
+        // 背包类型
+        let backpackType = StrMaid.backpackType.get(maidStr);
+        if(backpackType !== undefined && backpackType > 0 && backpackType <= 3){
+            this.Backpack.setType(maid, backpackType);
+        }
+        
         // 字符数据
         // 女仆名称
         let maidName = StrMaid.Str.getMaidName(maidStr);
@@ -1185,37 +1204,6 @@ export class EntityMaid{
         if(ownerName!==undefined){ this.Owner.setName(maid, ownerName)};
 
         return maid;
-
-        /**
-         * 获取背包（弃用）
-         * l: location, 位置
-         * b: backpack,背包大小
-         * bi: backpack id, 临时背包的生物id
-         */
-        if(infos["b"] !== undefined){
-            // 生成新包
-            var new_backpack = MaidBackpack.create(maid, infos["b"], dimension, location);
-            // 隐藏包（因为无法正常渲染）
-            MaidBackpack.setInvisible(new_backpack, true);
-
-            // 寻找旧包(保存到常加载区域的方案)
-            let old_id = infos["bi"];
-            if(old_id !== undefined){
-                system.runTimeout(()=>{
-                    let old_backpack = world.getEntity(old_id);
-                    if(old_backpack !== undefined){
-                        MaidBackpack.copy(old_backpack, new_backpack);
-                        old_backpack.triggerEvent("despawn");
-                    }
-                }, 1);// 延迟是为了背包初始化
-            }
-           
-
-            // 背上包
-            system.runTimeout(()=>{
-                maid.runCommand("ride @e[c=1,type=touhou_little_maid:maid_backpack] start_riding @s");
-            }, 1);
-        }
     }
     /**
      * 将女仆转为物品lore
