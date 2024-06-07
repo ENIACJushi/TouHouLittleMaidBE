@@ -90,7 +90,7 @@ export default class PowerPoint {
      * @param {Player} pl 
      */
     static show(pl){
-        Tool.title_player_actionbar(pl.name, `§cP: ${ (this.get_power_number(pl.name)/100).toFixed(2) }`);
+        Tool.title_player_actionbar(pl.name, `§cP: ${ (this.get_power_number(pl)/100).toFixed(2) }`);
     }
     
     /**
@@ -136,7 +136,7 @@ export default class PowerPoint {
                     && -2 < delta_y && delta_y < 1)
                 {
                     // PS. Fariy loot: 2*0p + 2*2p (16 points)
-                    let point_score = this.get_power_number(pl.name);
+                    let point_score = this.get_power_number(pl);
     
                     // If this power point has tag, add by tag number
                     let is_taged = false;
@@ -205,17 +205,14 @@ export default class PowerPoint {
     }
     /**
      * Get player power point number in scoreboard (xxx)
-     * @param {string} name
+     * @param {Player} player
      * @returns {interger}
      */
-    static get_power_number(name){
-        let scores = world.scoreboard.getObjective("p").getScores()
-        for(let s of scores){
-            if(s.participant.displayName == name){
-                return s.score;
-            }
-        }
-        world.getDimension("overworld").runCommand(`scoreboard players add ${Tool.playerCMDName(name)} p 0`);
+    static get_power_number(player){
+        let score = world.scoreboard.getObjective("p").getScore(player);
+        if(score !== undefined) return score;
+
+        world.getDimension("overworld").runCommand(`scoreboard players add ${Tool.playerCMDName(player.name)} p 0`);
         return 0;
     }
     

@@ -49,6 +49,7 @@ export class MaidTarget{
         for(let i = 0; i < 3; i++){
             system.runTimeout(()=>{
                 if(maid === undefined) return;
+                try{
                     let target = maid.target;
                     if(target !== undefined){
                         if(pointInArea_3D(
@@ -64,7 +65,6 @@ export class MaidTarget{
                             }
                         }
                     }
-                try{
                 }
                 catch{}
             }, i*20);
@@ -179,7 +179,6 @@ export class Farm{
      * @returns 
      */
     static plantSeed(maid, location, seedName, landName){
-        logger(seedName);
         if(EntityMaid.Backpack.removeItem_type(maid, seedName, 1) === true){
             let seedInfos = farmBlocks.getSeed(seedName);
             if(seedInfos !== undefined){
