@@ -394,6 +394,31 @@ export class EntityMaid{
         get(maid){
             return DP.getBoolean(maid, "pick");
         },
+        /**
+         * 吸取范围内的物品
+         * @param {Entity} maid
+         * @param {number} range
+         */
+        magnet(maid, range){
+            let container = EntityMaid.Backpack.getContainer(maid);
+
+            let items = maid.dimension.getEntities({"location": maid.location, "type": "minecraft:item", "maxDistance": range});
+            for(let item of items){
+                let itemStack = item.getComponent("minecraft:item").itemStack;
+                let beforeAmount = itemStack.amount;
+
+                let result = container.addItem(itemStack);
+                if(result===undefined){
+                    item.dimension.spawnParticle("touhou_little_maid:item_get", item.location);
+                    item.remove();
+                }
+                else if(beforeAmount !== result.amount){
+                    item.dimension.spawnItem(result, item.location).clearVelocity();
+                    item.dimension.spawnParticle("touhou_little_maid:item_get", item.location);
+                    item.remove();
+                }
+            }
+        },
         getImg(is_open){
             return is_open?"textures/gui/pick_activate.png":"textures/gui/pick_deactivate.png"
         },

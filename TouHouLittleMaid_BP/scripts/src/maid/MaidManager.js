@@ -498,7 +498,7 @@ export class MaidManager{
             const STEP_MAX = 1000;
             let maid = event.entity; 
             if(maid===undefined) return;
-            try{
+            
                 ///// 步数计算 一步3秒 /////
                 let healStep = maid.getDynamicProperty("step");
                 // 计时量未初始化 立即初始化
@@ -516,12 +516,16 @@ export class MaidManager{
                 ///// 取模决定执行任务 /////
                 // 每次
                 let work = EntityMaid.Work.get(maid);
-                switch(work){
+                switch(work){ // 农业扫描
                     case EntityMaid.Work.farm : 
                     case EntityMaid.Work.melon:
                     case EntityMaid.Work.cocoa: MaidTarget.stepEvent(maid, work); break;
                     default: break;
                 }
+                if(world.gameRules.mobGriefing === false && EntityMaid.Pick.get(maid) === true){ // 无生物破坏的拾物模式
+                    EntityMaid.Pick.magnet(maid, 5);
+                }
+                try{
                 // 使用质数 2 3 5 7 11 13 17 19
                 // 3步 - 9秒
                 if(healStep % 3 === 0){
