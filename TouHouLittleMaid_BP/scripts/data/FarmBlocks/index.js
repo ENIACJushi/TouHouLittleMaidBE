@@ -1,8 +1,10 @@
 import { BlockPermutation, ItemStack } from "@minecraft/server";
 import { Data as Vallina } from "./Vallina";
+import { Data as FarmersDelight } from "./FarmersDelight";
+import { Data as CornDelight } from "./CornDelight";
 import { logger } from "../../src/libs/ScarletToolKit";
 
-var checkList = [Vallina]
+var checkList = [Vallina, FarmersDelight, CornDelight];
 
 
 class FarmBlocks{
@@ -17,7 +19,7 @@ class FarmBlocks{
         for(let addonData of checkList){
             try{
                 new ItemStack(addonData.tester, 1);
-                // logger("添加了一个模组" + addonData.tester);
+                logger("添加了一个模组" + addonData.tester);
         
                 for(let crop in addonData.crops){
                     this.addCrop(crop, addonData.crops[crop]);
@@ -50,7 +52,7 @@ class FarmBlocks{
     /**
      * 获取作物信息
      * @param {string} name 
-     * @returns {{state:object; seed: string}}}
+     * @returns {{state:object; seed: string; keep: {block:string; state:object; loot:string} | undefined}}}
      */
     getCorp(name){
         return this.Data.crops[name];

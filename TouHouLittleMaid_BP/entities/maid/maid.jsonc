@@ -38,23 +38,25 @@
             "target": "self"
           }
         },
-        "minecraft:inside_block_notifier": {
-          "block_list": [
-            {
-              "block": {
-                "name":  "minecraft:water"
-              },
-              "entered_block_event": {
-                "event": "enter_swim",
-                "target": "self"
-              },
-              "exited_block_event": {
-                "event": "enter_swim",
-                "target": "self"
-              }
-            }
-          ]
-        },
+        "minecraft:behavior.float": { "priority": 2 },
+        // TODO: 潜水逻辑
+        // "minecraft:inside_block_notifier": {
+        //   "block_list": [
+        //     {
+        //       "block": {
+        //         "name":  "minecraft:water"
+        //       },
+        //       "entered_block_event": {
+        //         "event": "enter_swim",
+        //         "target": "self"
+        //       },
+        //       "exited_block_event": {
+        //         "event": "enter_swim",
+        //         "target": "self"
+        //       }
+        //     }
+        //   ]
+        // },
         "minecraft:underwater_movement": {
           "value": 0.06
         },
@@ -351,9 +353,6 @@
             }
           ]
         }
-      },
-      "thlmm:maid_float": {
-        "minecraft:behavior.float": { "priority": 2 }
       },
 
       // 非潜行交互 坐下/站起/命名
@@ -916,10 +915,6 @@
           ]
         }
       },
-      "enter_swim":{ },
-      "exit_swim":{  },
-      "enter_float":{ "add": { "component_groups": ["thlmm:maid_float"] } },
-      "exit_float":{ "remove": { "component_groups": ["thlmm:maid_float"] } },
       // 重生的女仆，等级交给脚本设置
       "become_maid_reborn":{
         "add": {

@@ -49,7 +49,6 @@ export class MaidTarget{
         for(let i = 0; i < 3; i++){
             system.runTimeout(()=>{
                 if(maid === undefined) return;
-                try{
                     let target = maid.target;
                     if(target !== undefined){
                         if(pointInArea_3D(
@@ -65,6 +64,7 @@ export class MaidTarget{
                             }
                         }
                     }
+                    try{
                 }
                 catch{}
             }, i*20);
@@ -249,7 +249,7 @@ export class Farm{
                 let seedList = farmBlocks.getLand(landBlock.typeId);
                 if(seedList !== undefined){
                     for(let seed of seedList){
-                        if(EntityMaid.Backpack.removeItem_type(maid, seed, 1)){
+                        if(EntityMaid.Backpack.removeItem_type(maid, seed, 1) === true){
                             let info = farmBlocks.getSeed(seed);
                             dimension.setBlockPermutation(location, 
                                 BlockPermutation.resolve(info.block, info.state));
@@ -262,16 +262,24 @@ export class Farm{
             target.triggerEvent("despawn");
         }
         else{
-            // 收获 被收获的方块应该是成熟的作物
+            ///// 收获 ///// 
+            // 被收获的方块应该是成熟的作物
             let cropName = selfBlock.typeId;
             let info = farmBlocks.getCorp(cropName);
             if(info!==undefined && selfBlock.permutation.matches(cropName, info.state)){
-                // 破坏
-                dimension.runCommand(`setblock ${location.x} ${location.y} ${location.z} air destroy`);
-                // 目标点转为补种
-                target.triggerEvent("life");
-                target.setDynamicProperty("is_seed", true);
-                target.setDynamicProperty("crop", cropName);
+                if(info.keep===undefined){
+                    dimension.runCommand(`setblock ${location.x} ${location.y} ${location.z} air destroy`);
+                    // 目标点转为补种
+                    target.triggerEvent("life");
+                    target.setDynamicProperty("is_seed", true);
+                    target.setDynamicProperty("crop", cropName);
+                }
+                else{
+                    target.runCommand(`loot spawn ~~~ loot "${info.keep.loot}"`);
+                    dimension.setBlockPermutation(target.location, BlockPermutation.resolve(info.keep.block, info.keep.state));
+                    // 不需要补种
+                    target.triggerEvent("despawn");
+                }
             }
             else{
                 target.triggerEvent("despawn");

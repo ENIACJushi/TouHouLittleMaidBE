@@ -40,7 +40,6 @@
         "add": { "component_groups": [ "cooldown" ] }
       },
       "finish_cooldown":{
-        "set_property": { "thlmt:cooldown": false },
         "remove": { "component_groups": [ "cooldown" ] },
         "add": { "component_groups": [ "life" ] }
       },
