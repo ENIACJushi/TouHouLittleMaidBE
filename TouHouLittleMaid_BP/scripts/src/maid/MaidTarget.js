@@ -64,7 +64,7 @@ export class MaidTarget{
                             }
                         }
                     }
-                    try{
+                try{
                 }
                 catch{}
             }, i*20);
@@ -171,6 +171,30 @@ export class Farm{
         return target;
     }
     /**
+     * 给定种子名称，种植一个作物
+     * @param {Entity} maid
+     * @param {Vector} location
+     * @param {string} seedName
+     * @param {string} landName
+     * @returns 
+     */
+    static plantSeed(maid, location, seedName, landName){
+        logger(seedName);
+        if(EntityMaid.Backpack.removeItem_type(maid, seedName, 1) === true){
+            let seedInfos = farmBlocks.getSeed(seedName);
+            if(seedInfos !== undefined){
+                for(let seedInfo of seedInfos){
+                    if(seedInfo.land.includes(landName)){
+                        maid.dimension.setBlockPermutation(location, 
+                            BlockPermutation.resolve(seedInfo.block, seedInfo.state));
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    /**
      * 收集/种植作物
      * @param {Entity} target 
      * @param {Entity} maid 
@@ -180,6 +204,7 @@ export class Farm{
         const dimension = target.dimension;
 
         let selfBlock = dimension.getBlock(location);
+        let landBlock = dimension.getBlock(new Vector(location.x, location.y-1, location.z));
         
         if(target.getDynamicProperty("is_seed") === true){
             ///// 种植 /////
@@ -218,12 +243,9 @@ export class Farm{
 
             // 种植（规定类型）
             if(type !== undefined){
-                let info = farmBlocks.getCorp(type);
-                if(info !== undefined){
-                    if(EntityMaid.Backpack.removeItem_type(maid, info.seed, 1) === true){
-                        let seedInfo = farmBlocks.getSeed(info.seed);
-                        dimension.setBlockPermutation(location, 
-                            BlockPermutation.resolve(seedInfo.block, seedInfo.state));
+                let corpInfo = farmBlocks.getCorp(type);
+                if(corpInfo !== undefined){
+                    if(this.plantSeed(maid, location, corpInfo.seed, landBlock.typeId)){
                         target.triggerEvent("despawn");
                         return;
                     }
@@ -244,15 +266,11 @@ export class Farm{
             }
 
             // 种植（规定类型的执行失败 -> 尝试不规定类型）
-            let landBlock = dimension.getBlock(new Vector(location.x, location.y-1, location.z));
             if(landBlock !== undefined && landBlock.typeId !== "minecraft:air"){
                 let seedList = farmBlocks.getLand(landBlock.typeId);
                 if(seedList !== undefined){
                     for(let seed of seedList){
-                        if(EntityMaid.Backpack.removeItem_type(maid, seed, 1) === true){
-                            let info = farmBlocks.getSeed(seed);
-                            dimension.setBlockPermutation(location, 
-                                BlockPermutation.resolve(info.block, info.state));
+                        if(this.plantSeed(maid, location, seed, landBlock.typeId)){
                             target.triggerEvent("despawn");
                             return;
                         }

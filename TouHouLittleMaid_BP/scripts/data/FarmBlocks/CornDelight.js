@@ -8,7 +8,7 @@ export const Data = {
 
     seeds: { // 定义种子种出的方块（block，state），以及需要在何种方块（land）上种植
         // 玉米
-        "corn_delight:corn_seeds" : {
-            "block": "corn_delight:corn_crop" , "state": {"corn_delight:growth": 0, "corn_delight:upper": false}, "land": ["minecraft:farmland", "farmersdelight:rich_soil_farmland"]}
+        "corn_delight:corn_seeds" : [{
+            "block": "corn_delight:corn_crop" , "state": {"corn_delight:growth": 0, "corn_delight:upper": false}, "land": ["minecraft:farmland", "farmersdelight:rich_soil_farmland"]}]
     }
 }

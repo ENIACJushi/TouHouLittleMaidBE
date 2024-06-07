@@ -40,13 +40,24 @@ class FarmBlocks{
     
     // 添加种子信息
     addSeed(key, value){
-        this.Data.seeds[key] = value;
-        // 耕地
-        for(let land of value.land){
-            if(this.Data.lands[land] === undefined) this.Data.lands[land] = [];
-            this.Data.lands[land].push(key);
-            this.landList.push(key);
+        if(this.Data.seeds[key] === undefined){
+            this.Data.seeds[key] = value;
         }
+        else{
+            for(let data of value){
+                this.Data.seeds[key].push(data);
+            }
+        }
+
+        // 耕地
+        for(let data of value){
+            for(let land of data.land){
+                if(this.Data.lands[land] === undefined) this.Data.lands[land] = [];
+                this.Data.lands[land].push(key);
+                this.landList.push(land);
+            }
+        }
+        
     }
 
     /**
@@ -61,12 +72,12 @@ class FarmBlocks{
     /**
      * 获取种子信息
      * @param {string} name
-     * @returns {{block:string; state:object; land: string[]}}}
+     * @returns {{block:string; state:object; land: string[]}[]}
      */
     getSeed(name){
         return this.Data.seeds[name];
     }
-
+    
     /**
      * 获取耕地能种植的种子列表
      * @param {string} name 

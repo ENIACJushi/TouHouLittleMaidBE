@@ -581,8 +581,8 @@
           "priority": 6,
           "attack_interval_min": 0.8,
           "attack_interval_max": 0.8,
-          "attack_radius": 2.1,
-          "attack_radius_min": 0.9
+          "attack_radius": 1.9,
+          "attack_radius_min": 1.0
         }
       },
       // 甘蔗

@@ -9,19 +9,19 @@ export const Data = {
 
         "minecraft:nether_wart": {"state": {"age": 3}, "seed": "minecraft:nether_wart"    },
 
-        "minecraft:torchflower": {"state": {}, "seed": "minecraft:torchflower_seeds"      },
+        "minecraft:torchflower": {"state": undefined, "seed": "minecraft:torchflower_seeds"      },
         "minecraft:pitcher_crop": {"state": {"upper_block_bit": false, "growth": 4}, "seed": "minecraft:pitcher_pod"}
     },
 
     seeds: { // 定义种子种出的方块（block，state），以及需要在何种方块（land）上种植
-        "minecraft:carrot"        : {"block": "minecraft:carrots" , "state": {"growth": 0}, "land": ["minecraft:farmland", "farmersdelight:rich_soil_farmland"]},
-        "minecraft:wheat_seeds"   : {"block": "minecraft:wheat"   , "state": {"growth": 0}, "land": ["minecraft:farmland", "farmersdelight:rich_soil_farmland"]},
-        "minecraft:beetroot_seeds": {"block": "minecraft:beetroot", "state": {"growth": 0}, "land": ["minecraft:farmland", "farmersdelight:rich_soil_farmland"]},
-        "minecraft:potato"        : {"block": "minecraft:potatoes", "state": {"growth": 0}, "land": ["minecraft:farmland", "farmersdelight:rich_soil_farmland"]},
+        "minecraft:carrot"        : [{"block": "minecraft:carrots" , "state": {"growth": 0}, "land": ["minecraft:farmland"]}],
+        "minecraft:wheat_seeds"   : [{"block": "minecraft:wheat"   , "state": {"growth": 0}, "land": ["minecraft:farmland"]}],
+        "minecraft:beetroot_seeds": [{"block": "minecraft:beetroot", "state": {"growth": 0}, "land": ["minecraft:farmland"]}],
+        "minecraft:potato"        : [{"block": "minecraft:potatoes", "state": {"growth": 0}, "land": ["minecraft:farmland"]}],
         
-        "minecraft:nether_wart"   : {"block": "minecraft:nether_wart", "state": {"age": 0}, "land": ["minecraft:soul_sand"]},
+        "minecraft:nether_wart"   : [{"block": "minecraft:nether_wart", "state": {"age": 0}, "land": ["minecraft:soul_sand"]}],
         
-        "minecraft:torchflower_seeds": {"block": "minecraft:torchflower_crop", "state": {"growth": 0}, "land": ["minecraft:farmland", "farmersdelight:rich_soil_farmland"]},
-        "minecraft:pitcher_pod"   : {"block": "minecraft:pitcher_crop", "state": {"upper_block_bit": false, "growth": 0}, "land": ["minecraft:farmland", "farmersdelight:rich_soil_farmland"]}
+        "minecraft:torchflower_seeds": [{"block": "minecraft:torchflower_crop", "state": {"growth": 0}, "land": ["minecraft:farmland"]}],
+        "minecraft:pitcher_pod"   : [{"block": "minecraft:pitcher_crop", "state": {"upper_block_bit": false, "growth": 0}, "land": ["minecraft:farmland"]}]
     }
 }

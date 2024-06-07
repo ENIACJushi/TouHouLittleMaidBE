@@ -523,7 +523,9 @@ export class MaidManager{
                     default: break;
                 }
                 if(world.gameRules.mobGriefing === false && EntityMaid.Pick.get(maid) === true){ // 无生物破坏的拾物模式
-                    EntityMaid.Pick.magnet(maid, 5);
+                    system.runTimeout(()=>{
+                        EntityMaid.Pick.magnet(maid, 5);
+                    }, 2);// 延迟执行，更及时地捡起农作物
                 }
                 try{
                 // 使用质数 2 3 5 7 11 13 17 19
