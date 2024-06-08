@@ -19,6 +19,14 @@
 					"rotation": [0, 22.5, 0]
 				}
 			}
+		},
+		"animation.touhou_little_maid.fairy_headwear": {
+			"loop": true,
+			"bones": {
+				"head": {
+					"scale": [1.2, 1.2, 1.2]
+				}
+			}
 		}
 	}
 }

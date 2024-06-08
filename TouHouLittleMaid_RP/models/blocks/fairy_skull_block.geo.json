@@ -1,0 +1,129 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.touhou_little_maid.fairy_skull_block_down",
+				"texture_width": 32,
+				"texture_height": 18,
+				"visible_bounds_width": 4,
+				"visible_bounds_height": 5.5,
+				"visible_bounds_offset": [0, 2.25, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 13.5, 0],
+					"rotation": [90, 0, 0]
+				},
+				{
+					"name": "head",
+					"parent": "root",
+					"pivot": [0, 9.5, -1.5],
+					"cubes": [
+						{"origin": [-4, 9.5, -5.5], "size": [8, 8, 8], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "les2",
+					"parent": "head",
+					"pivot": [0, 9.5, -1.5],
+					"cubes": [
+						{"origin": [-4.5, 17, -2.5], "size": [9, 1, 1], "uv": [0, 16]},
+						{"origin": [-2.5, 17.5, -1.5], "size": [5, 1, 0], "uv": [22, 16]},
+						{"origin": [2.5, 17.25, -2.5], "size": [1, 1, 1], "uv": [0, 6]},
+						{"origin": [0.5, 17.5, -2.5], "size": [1, 1, 1], "uv": [4, 6]},
+						{"origin": [-1.5, 17.5, -2.5], "size": [1, 1, 1], "uv": [4, 2]},
+						{"origin": [-3.5, 17.25, -2.5], "size": [1, 1, 1], "uv": [4, 4]},
+						{"origin": [-5, 15, -1.501], "size": [1, 1, 0], "uv": [0, 0]},
+						{"origin": [-4.75, 16, -2.5], "size": [1, 1, 1], "uv": [0, 2]},
+						{"origin": [4, 15, -1.501], "size": [1, 1, 0], "uv": [2, 0]},
+						{"origin": [3.75, 16, -2.5], "size": [1, 1, 1], "uv": [0, 4]}
+					]
+				}
+			]
+		},
+		{
+			"description": {
+				"identifier": "geometry.touhou_little_maid.fairy_skull_block_up",
+				"texture_width": 32,
+				"texture_height": 18,
+				"visible_bounds_width": 4,
+				"visible_bounds_height": 5.5,
+				"visible_bounds_offset": [0, 2.25, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "head",
+					"parent": "root",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-4, 0, -4], "size": [8, 8, 8], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "les",
+					"parent": "head",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-4.5, 7.5, -1], "size": [9, 1, 1], "uv": [0, 16]},
+						{"origin": [-2.5, 8, 0], "size": [5, 1, 0], "uv": [22, 16]},
+						{"origin": [2.5, 7.75, -1], "size": [1, 1, 1], "uv": [0, 6]},
+						{"origin": [0.5, 8, -1], "size": [1, 1, 1], "uv": [4, 6]},
+						{"origin": [-1.5, 8, -1], "size": [1, 1, 1], "uv": [4, 2]},
+						{"origin": [-3.5, 7.75, -1], "size": [1, 1, 1], "uv": [4, 4]},
+						{"origin": [-5, 5.5, -0.001], "size": [1, 1, 0], "uv": [0, 0]},
+						{"origin": [-4.75, 6.5, -1], "size": [1, 1, 1], "uv": [0, 2]},
+						{"origin": [4, 5.5, -0.001], "size": [1, 1, 0], "uv": [2, 0]},
+						{"origin": [3.75, 6.5, -1], "size": [1, 1, 1], "uv": [0, 4]}
+					]
+				}
+			]
+		},
+		{
+			"description": {
+				"identifier": "geometry.touhou_little_maid.fairy_skull_block_side",
+				"texture_width": 32,
+				"texture_height": 18,
+				"visible_bounds_width": 4,
+				"visible_bounds_height": 5.5,
+				"visible_bounds_offset": [0, 2.25, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 4, 5.5]
+				},
+				{
+					"name": "head2",
+					"parent": "root",
+					"pivot": [0, 4, 4],
+					"cubes": [
+						{"origin": [-4, 4, 0], "size": [8, 8, 8], "uv": [0, 0]}
+					]
+				},
+				{
+					"name": "les2",
+					"parent": "head2",
+					"pivot": [0, 4, 4],
+					"cubes": [
+						{"origin": [-4.5, 11.5, 3], "size": [9, 1, 1], "uv": [0, 16]},
+						{"origin": [-2.5, 12, 4], "size": [5, 1, 0], "uv": [22, 16]},
+						{"origin": [2.5, 11.75, 3], "size": [1, 1, 1], "uv": [0, 6]},
+						{"origin": [0.5, 12, 3], "size": [1, 1, 1], "uv": [4, 6]},
+						{"origin": [-1.5, 12, 3], "size": [1, 1, 1], "uv": [4, 2]},
+						{"origin": [-3.5, 11.75, 3], "size": [1, 1, 1], "uv": [4, 4]},
+						{"origin": [-5, 9.5, 3.999], "size": [1, 1, 0], "uv": [0, 0]},
+						{"origin": [-4.75, 10.5, 3], "size": [1, 1, 1], "uv": [0, 2]},
+						{"origin": [4, 9.5, 3.999], "size": [1, 1, 0], "uv": [2, 0]},
+						{"origin": [3.75, 10.5, 3], "size": [1, 1, 1], "uv": [0, 4]}
+					]
+				}
+			]
+		}
+	]
+}

@@ -1,10 +1,9 @@
 import { Dimension, Entity, system } from "@minecraft/server";
-import { Vector as Vec3d } from "../../../src/libs/VectorMC";
+import { Vector, VectorMC } from "../../../src/libs/VectorMC";
 import { DanmakuColor as Color } from "../../../src/danmaku/DanmakuColor";
 import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
 import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";
 import { getRotationVector } from "../../../src/danmaku/scirpt/Functions";
-import { rotate_axis, add } from "../../../src/libs/vector3d";
 import * as Tool from "../../../src/libs/ScarletToolKit"
 
 // 金符「Metal Fatigue」
@@ -26,22 +25,22 @@ export const SpellCard = {
     spellCard: function (world, entity) {
         // 第一波角度和后面不一致
         for (var j = 0; j < 8; j++) {
-            var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset([0,0.8,0])
+            var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset(new Vector(0,0.8,0))
                 .setDanmakuType(Type.BIG_BALL).setColor(Color.YELLOW);
-            let direction = rotate_axis([0,0,1], [0,-1,0], Tool.angle2raduis(entity.getRotation().y + 15 + 45 * j));
+            let direction = VectorMC.rotate_axis(new Vector(0,0,1), new Vector(0,-1,0), Tool.angle2raduis(entity.getRotation().y + 15 + 45 * j));
             danmaku.setLifeTime(31);
-            danmaku.shoot(direction[0], direction[1], direction[2], 0.2, 0);
+            danmaku.shoot(direction, 0.2, 0);
         }
 
         system.runTimeout(()=>{
             for (var i = 0; i < 8; i++) {
                 for (var j = 0; j < 8; j++) {
-                    var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset([0,0.8,0])
+                    var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset(new Vector(0,0.8,0))
                         .setDanmakuType(Type.BIG_BALL).setColor(Color.YELLOW);
-                    var pos = getRotationVector(0, 0, 5.6, 15 + 45 * i, -0.1, entity);
+                    var pos = getRotationVector(new Vector(0, 0, 5.6), 15 + 45 * i, -0.1, entity);
                     danmaku.setThrowerLocation(pos);
-                    let direction = rotate_axis([0,0,1], [0,-1,0], Tool.angle2raduis(entity.getRotation().y + 45 * j));
-                    danmaku.shoot(direction[0], direction[1], direction[2], 0.2, 0);
+                    let direction = VectorMC.rotate_axis(new Vector(0,0,1), new Vector(0,-1,0), Tool.angle2raduis(entity.getRotation().y + 45 * j));
+                    danmaku.shoot(direction, 0.2, 0);
                 }
             }
         }, 30);
@@ -51,23 +50,23 @@ export const SpellCard = {
         for (var k = 0; k < 5; k++) {
             system.runTimeout(()=>{
                 for (var j = 0; j < 8; j++) {
-                    var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset([0,0.8,0])
+                    var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset(new Vector(0,0.8,0))
                         .setDanmakuType(Type.BIG_BALL).setColor(Color.YELLOW);
-                    let direction = rotate_axis([0,0,1], [0,-1,0], Tool.angle2raduis(entity.getRotation().y + 30 + 45 * j));
+                    let direction = VectorMC.rotate_axis(new Vector(0,0,1), new Vector(0,-1,0), Tool.angle2raduis(entity.getRotation().y + 30 + 45 * j));
                     danmaku.setLifeTime(31);
-                    danmaku.shoot(direction[0], direction[1], direction[2], 0.2, 0);
+                    danmaku.shoot(direction, 0.2, 0);
                 }
             }, 20 * (k + 1));
 
             system.runTimeout(()=>{
                 for (var i = 0; i < 8; i++) {
                     for (var j = 0; j < 8; j++) {
-                        var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset([0,0.8,0])
+                        var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset(new Vector(0,0.8,0))
                             .setDanmakuType(Type.BIG_BALL).setColor(Color.YELLOW);
-                        var pos = getRotationVector(0, 0, 5.6, 30 + 45 * i, -0.1, entity);
+                        var pos = getRotationVector(new Vector(0, 0, 5.6), 30 + 45 * i, -0.1, entity);
                         danmaku.setThrowerLocation(pos);
-                        let direction = rotate_axis([0,0,1], [0,-1,0], Tool.angle2raduis(entity.getRotation().y + 30 + 45 * j));
-                        danmaku.shoot(direction[0], direction[1], direction[2], 0.2, 0);
+                        let direction = VectorMC.rotate_axis(new Vector(0,0,1), new Vector(0,-1,0), Tool.angle2raduis(entity.getRotation().y + 30 + 45 * j));
+                        danmaku.shoot(direction, 0.2, 0);
                     }
                 }
             }, 30 + 20 * (k + 1));

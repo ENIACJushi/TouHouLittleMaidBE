@@ -1,6 +1,5 @@
 
 import * as Tool from "../libs/ScarletToolKit"
-import * as Vec from "../libs/vector3d"
 import { ItemStack, EntityTypes, ItemUseOnBeforeEvent, world, Entity, WorldInitializeAfterEvent, system,
     ProjectileHitEntityAfterEvent, ProjectileHitBlockAfterEvent,
     EnchantmentTypes} from "@minecraft/server";
@@ -11,7 +10,7 @@ import {DanmakuShoot}  from "./DanmakuShoot";
 import { config } from "../controller/Config";
 import { GoheiCherry } from "./item/GoheiCherry";
 import { DanmakuInterface } from "./DanmakuInterface";
-import { VectorMC } from "../libs/VectorMC"
+import { Vector, VectorMC } from "../libs/VectorMC"
 /**
  * 初始化动态属性
  * @param {WorldInitializeAfterEvent} e 
@@ -205,31 +204,22 @@ export function fairy_shoot(fairy){
     if(fairy===undefined) return;
     let target = fairy.target
     if(target != undefined){
-        let distanceFactor = Vec.length([
-            fairy.location.x - fairy.target.location.x,
-            fairy.location.y - fairy.target.location.y,
-            fairy.location.z - fairy.target.location.z,
-        ]) / 8;
-        // DanmakuShoot.create().setWorld(fairy.dimension)
-        //     .setThrower(fairy).setTarget(target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
-        //     .setRandomColor().setType(DanmakuType.BALL).setDamage(2).setGravity(0)
-        //     .setVelocity(0.2).setInaccuracy(0)
-        //     .setFanNum(3).setYawTotal(Math.PI / 6)
-        //     .fanShapedShot();
-        if (Math.random() <= AIMED_SHOT_PROBABILITY) {
-            let temp = DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet([0,1,0])
-                    .setTargetOffSet([0,1,0]).setTarget(fairy.target).setRandomColor().setRandomType()
-                    .setDamage((distanceFactor + 1)).setGravity(0)
-                    .setVelocity(0.2 * (distanceFactor + 1))
-                    .setInaccuracy(0.05).aimedShot();
-        } else {
-            DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
-                    .setTarget(fairy.target).setRandomColor().setRandomType()
-                    .setDamage((distanceFactor + 1.5)).setGravity(0)
-                    .setVelocity(0.2 * (distanceFactor + 1))
-                    .setInaccuracy(0.02).setFanNum(3).setYawTotal(Math.PI / 6)
-                    .fanShapedShot();
-        }
+        let distance = VectorMC.length({
+            x: fairy.location.x - fairy.target.location.x,
+            y: fairy.location.y - fairy.target.location.y,
+            z: fairy.location.z - fairy.target.location.z
+        });
+
+        let distanceFactor = distance / 8;
+        let speed = 0.3 * (distanceFactor + 1);
+        
+        // 我们在 MC 加入了预瞄桂
+        DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, 1, 0))
+                .setTarget(fairy.target).setRandomColor().setRandomType()
+                .setDamage(distanceFactor + 1.5).setGravity(0)
+                .setVelocity(speed).enablePreJudge()
+                .setInaccuracy(0.02).setFanNum(3).setYawTotal(Math.PI / 6)
+                .fanShapedShot();
     }
 }
 var laserRadius = 0;
@@ -250,7 +240,7 @@ export function debug_shoot(entity){
         switch(type){
             case 0:{// 米字弹幕
                 let fanDanmaku = DanmakuShoot.create().setWorld(entity.dimension)
-                .setThrower(entity).setTarget(target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
+                .setThrower(entity).setTarget(target).setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, 1, 0))
                 .setRandomColor().setType(DanmakuType.BALL).setDamage(6).setGravity(0)
                 .setVelocity(0.6).setInaccuracy(0)
                 .setFanNum(17).setYawTotal(Math.PI / 4)
@@ -263,7 +253,7 @@ export function debug_shoot(entity){
             }; break;
             case 1:{// 带sigma的自机狙
                 var aimDanmakuShoot =DanmakuShoot.create().setWorld(entity.dimension)
-                .setThrower(entity).setTarget(target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
+                .setThrower(entity).setTarget(target).setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, 1, 0))
                 .setColor(DanmakuColor.random()).setType(DanmakuType.BALL)
                 .setDamage(6).setGravity(0)
                 .setVelocity(0.6).setInaccuracy(Math.PI/30);
@@ -276,7 +266,7 @@ export function debug_shoot(entity){
             }; break;
             case 2:{// 多层弹幕
                 let fanDanmaku = DanmakuShoot.create().setWorld(entity.dimension)
-                .setThrower(entity).setTarget(target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
+                .setThrower(entity).setTarget(target).setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, 1, 0))
                 .setRandomColor().setType(DanmakuType.BALL).setDamage(6).setGravity(0)
                 .setVelocity(0.6).setInaccuracy(0)
                 .setFanNum(17).setYawTotal(Math.PI / 4)
@@ -289,12 +279,12 @@ export function debug_shoot(entity){
             } break;
             case 3:{// 带sigma的自机狙（星型）
                 var aimDanmakuShoot_small =DanmakuShoot.create().setWorld(entity.dimension)
-                    .setThrower(entity).setTarget(target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
+                    .setThrower(entity).setTarget(target).setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, 1, 0))
                     .setColor(DanmakuColor.RANDOM).setType(DanmakuType.STAR)
                     .setDamage(6).setGravity(0)
                     .setVelocity(0.8).setInaccuracy(Math.PI/7);
                 var aimDanmakuShoot_big =DanmakuShoot.create().setWorld(entity.dimension)
-                    .setThrower(entity).setTarget(target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
+                    .setThrower(entity).setTarget(target).setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, 1, 0))
                     .setColor(DanmakuColor.RANDOM).setType(DanmakuType.BIG_STAR)
                     .setDamage(6).setGravity(0)
                     .setVelocity(0.6).setInaccuracy(Math.PI/15);
@@ -321,7 +311,7 @@ export function debug_shoot(entity){
             };break;
             case 5:{// 激光 伪
                 var danmakuShoot =DanmakuShoot.create().setWorld(entity.dimension)
-                    .setThrower(entity).setTarget(target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,1,0])
+                    .setThrower(entity).setTarget(target).setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, 1, 0))
                     .setColor(DanmakuColor.RED).setType(DanmakuType.GLOWEY_BALL)
                     .setDamage(0).setGravity(0)
                     .setVelocity(0.1);
@@ -337,7 +327,7 @@ export function debug_shoot(entity){
                 if(laserIsShooting) return;
                 laserIsShooting=true;
                 let danmaku = new EntityDanmaku(entity.dimension, entity)
-                    .setDamage(1).setGravityVelocity(0.2).setThrowerOffset([0,1,0])
+                    .setDamage(1).setGravityVelocity(0.2).setThrowerOffset(new Vector(0, 1, 0))
                     .setDanmakuType(DanmakuType.GLOWEY_BALL).setColor(DanmakuColor.RED);
                 
                 let direction = entity.getViewDirection();

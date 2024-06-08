@@ -571,7 +571,7 @@
       // 农耕
       "mode:farm":{
         "minecraft:behavior.nearest_attackable_target": {
-          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 5.0, 
+          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 5.0,
           "reselect_targets": false, "within_radius": 32, "scan_interval": 20,
           "entity_types": [ 
             { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:farm"} ] }, "max_dist": 32, "must_see": false }
@@ -579,10 +579,11 @@
         },
         "minecraft:behavior.ranged_attack": {
           "priority": 6,
+          "speed_multiplier": 0.8,
           "attack_interval_min": 0.8,
           "attack_interval_max": 0.8,
           "attack_radius": 1.9,
-          "attack_radius_min": 1.0
+          "attack_radius_min": 0
         }
       },
       // 甘蔗

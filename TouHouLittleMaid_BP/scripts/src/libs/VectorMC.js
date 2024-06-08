@@ -45,6 +45,15 @@ export class VectorMC{
         return new Vector( v1.x + v2.x, v1.y + v2.y, v1.z + v2.z );
     }
     /**
+     * 减 v1 - v2
+     * @param {Vector} v1 
+     * @param {Vector} v2 
+     * @returns {Vector}
+     */
+    static sub(v1, v2){
+        return new Vector( v1.x - v2.x, v1.y - v2.y, v1.z - v2.z );
+    }
+    /**
      * 数乘
      * @param {Vector} v 
      * @param {number} n 
@@ -73,6 +82,15 @@ export class VectorMC{
             a.z * b.x - a.x * b.z,
             a.x * b.y - a.y * b.x)
     }
+    /**
+     * 等于
+     * @param {Vector} a 
+     * @param {Vector} b
+     * @returns {boolean}
+     */
+    static equals(a, b){
+        return a.x===b.x && a.y===b.y && a.z===b.z;
+    }
 
     ////// 二级运算 //////
     /**
@@ -98,7 +116,16 @@ export class VectorMC{
     static toString(vector){
         return `x:${vector.x},y:${vector.y},z:${vector.z}`
     }
-
+    /**
+     * 为了兼容旧库，移植而来。效率应该可以提升
+     * @param {number} speed 
+     * @param {Vector} direction 
+     * @returns 
+     */
+    static getVector_speed_direction(speed, direction){
+        let k = Math.sqrt((speed*speed)/(direction.x*direction.x + direction.y*direction.y + direction.z*direction.z));
+        return new Vector(direction.x*k, direction.y*k, direction.z*k);
+    }
     ////// 高级运算 //////
     /**
      * 获取向量(0,1,0))到v2的欧拉角（仅z,x，弧度制）
@@ -159,4 +186,26 @@ export class VectorMC{
             }
         }
     }
+    /**
+     * 预瞄桂
+     * @param {Vector} A 点 A 的位置
+     * @param {Vector} B 点 B 的位置
+     * @param {Number} Va_len A 发射的直线弹射物的速率
+     * @param {Vector} Vb B 的速度
+     * @returns {Vector} A 发射的直线弹射物的速度
+     */
+    static preJudge(A, B, Va_len, Vb){
+        let BA = this.sub(A, B);
+        let BA_len = this.length(BA);
+
+        let Vb_comp2_len = this.dot(Vb, BA) / BA_len;
+        let Vb_comp2 = this.multiply(BA, Vb_comp2_len / BA_len);
+        let Va_comp1 = this.sub(Vb, Vb_comp2); // Va_comp1 = Vb_comp1
+
+        let Va_comp2_len = Math.sqrt(Va_len*Va_len - (Va_comp1.x*Va_comp1.x + Va_comp1.y*Va_comp1.y + Va_comp1.z*Va_comp1.z));
+        let Va_comp2 = this.multiply(this.multiply(BA, -1), Va_comp2_len / BA_len);
+
+        return this.add(Va_comp1, Va_comp2); // Va
+    }
 }
+

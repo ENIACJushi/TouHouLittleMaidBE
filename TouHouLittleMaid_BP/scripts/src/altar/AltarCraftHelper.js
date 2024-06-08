@@ -36,7 +36,7 @@ export class AltarCraftHelper{
      */
     matchRecipes(player, itemStacks, outputDimension, outputLocation){
         let amount = itemStacks.length;
-        let power = PowerPoint.get_power_number(player.name);
+        let power = PowerPoint.get_power_number(player);
         if(1 <= amount && amount <= 6){
             for(let recipe of this.recipes[amount - 1]){
                 if(this.matchRecipe(itemStacks, recipe["ingredients"])){

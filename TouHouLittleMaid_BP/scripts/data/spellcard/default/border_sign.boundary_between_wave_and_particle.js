@@ -1,9 +1,8 @@
 import { Dimension, Entity, system } from "@minecraft/server";
-import { Vector as Vec3d } from "../../../src/libs/VectorMC";
+import { Vector, VectorMC } from "../../../src/libs/VectorMC";
 import { DanmakuColor as Color } from "../../../src/danmaku/DanmakuColor";
 import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
 import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";
-import { rotate_axis } from "../../../src/libs/vector3d";
 import * as Tool from "../../../src/libs/ScarletToolKit"
 
 // Java.asJSONCompatible 改为 export const SpellCard = 
@@ -29,15 +28,15 @@ export const SpellCard = {
                 for (var j = 0; j < 9; j++) {
                     // 原初始化参数：世界 实体, damage, gravity, type, color，除了前两个均要另外设置
                     var danmaku = new Danmaku(shooter.dimension, shooter).setDamage(2)
-                        .setDanmakuType(Type.PETAL).setColor(Color.MAGENTA).setThrowerLocation([
+                        .setDanmakuType(Type.PETAL).setColor(Color.MAGENTA).setThrowerLocation(new Vector(
                             shooter.location.x, shooter.location.y+1, shooter.location.z
-                        ])
+                        ))
                     
                     // 原发射参数 entityThrower, rotationPitchIn, rotationYawIn, pitchOffset, velocity, inaccuracy
                     // 旋转角设置
-                    let direction = rotate_axis([0,0,1], [0,-1,0], Tool.angle2raduis(- 40 * j + 5 * Math.pow($times / 4, 2)))
+                    let direction = VectorMC.rotate_axis(new Vector(0,0,1), new Vector(0, -1, 0), Tool.angle2raduis(- 40 * j + 5 * Math.pow($times / 4, 2)))
                     // danmaku.setAxisRotation_direction();
-                    danmaku.shoot(direction[0], direction[1], direction[2], 0.4, 0);
+                    danmaku.shoot(direction, 0.4, 0);
                     // world.spawnDanmaku(danmaku);
                 }
             };

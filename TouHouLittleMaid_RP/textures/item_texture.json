@@ -29,7 +29,10 @@
     "touhou_little_maid.warden_skull": {"textures":"textures/items/warden_skull"},
     "touhou_little_maid.npc_tool": {"textures":"textures/items/npc_maid_tool"},
     "touhou_little_maid.chisel":{"textures":"textures/items/chisel"},
-    "touhou_little_maid.garage_kit": {"textures":"textures/items/garage_kit"}
+    "touhou_little_maid.garage_kit": {"textures":"textures/items/garage_kit"},
     
+    "touhou_little_maid.fairy_headwear_0": {"textures":"textures/items/fairy_headwear_0"},
+    "touhou_little_maid.fairy_headwear_1": {"textures":"textures/items/fairy_headwear_1"},
+    "touhou_little_maid.fairy_headwear_2": {"textures":"textures/items/fairy_headwear_2"}
   }
 }

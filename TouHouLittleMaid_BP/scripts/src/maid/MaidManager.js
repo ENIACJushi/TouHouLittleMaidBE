@@ -10,12 +10,11 @@
  *  thlmo:<主人生物id>
  */
 import { Direction, ItemStack, world, DataDrivenEntityTriggerAfterEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent } from "@minecraft/server";
-import { Vector } from "../libs/VectorMC";
+import { Vector, VectorMC } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
 import { StrMaid } from "./StrMaid";
-import * as Vec from "../libs/vector3d"
 import {DanmakuShoot}  from "../danmaku/DanmakuShoot";
 import {DanmakuColor}  from "../danmaku/DanmakuColor";
 import {DanmakuType}   from "../danmaku/DanmakuType";
@@ -601,11 +600,10 @@ export class MaidManager{
                 }
 
                 // 默认攻击方式
-                let distance = Vec.length([
+                let distance = VectorMC.length(new Vector(
                     maid.location.x - maid.target.location.x,
                     maid.location.y - maid.target.location.y,
-                    maid.location.z - maid.target.location.z,
-                ]);
+                    maid.location.z - maid.target.location.z,));
                 let distanceFactor = distance / 8;
                 let yOffset = distance < 5 ? 0.2 : 0.5; // 根据距离偏移目标位置
 
@@ -619,8 +617,8 @@ export class MaidManager{
                     switch(random){
                         case 0:{
                             // 中程密集扇形弹幕
-                            let shoot = DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
-                            .setOwnerID(EntityMaid.Owner.getID(maid))
+                            let shoot = DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet(new Vector(0, 1, 0))
+                            .setTargetOffSet(new Vector(0, yOffset, 0)).setOwnerID(EntityMaid.Owner.getID(maid))
                             .setRandomColor().setRandomType()
                             .setDamage((distanceFactor + basicDamage + 0.5)*delta/amount).setGravity(0)
                             .setVelocity(0.5 * (distanceFactor + 1))
@@ -635,14 +633,14 @@ export class MaidManager{
                         case 1:{
                             // 星弹
                             var aimDanmakuShoot_small = DanmakuShoot.create().setWorld(maid.dimension)
-                            .setThrower(maid).setTarget(maid.target).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
-                            .setColor(DanmakuColor.RANDOM).setType(DanmakuType.STAR)
+                            .setThrower(maid).setTarget(maid.target).setThrowerOffSet(new Vector(0, 1, 0))
+                            .setTargetOffSet(new Vector(0, yOffset, 0)).setColor(DanmakuColor.RANDOM).setType(DanmakuType.STAR)
                             .setDamage((distanceFactor + basicDamage + 0.5)*delta/18).setGravity(0).setLifeTime(40)
                             .setVelocity(0.5 * (distanceFactor + 1)).setInaccuracy(Math.PI/7);
                             
                             var aimDanmakuShoot_big =DanmakuShoot.create().setWorld(maid.dimension)
-                            .setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0]).setLifeTime(45)
-                            .setColor(DanmakuColor.RANDOM).setType(DanmakuType.BIG_STAR)
+                            .setThrower(maid).setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, yOffset, 0))
+                            .setLifeTime(45).setColor(DanmakuColor.RANDOM).setType(DanmakuType.BIG_STAR)
                             .setDamage((distanceFactor + basicDamage + 0.5)*delta/10).setGravity(0)
                             .setVelocity(0.5 * (distanceFactor + 1)).setInaccuracy(Math.PI/15);
                             for(let i=0; i<5;i++){
@@ -669,10 +667,11 @@ export class MaidManager{
                 // 单体
                 else{
                     const amount = 4;
-                    let shoot = DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet([0,1,0]).setTargetOffSet([0,yOffset,0])
+                    let shoot = DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid)
+                        .setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, yOffset, 0))
                         .setOwnerID(EntityMaid.Owner.getID(maid))
                         .setDamage((distanceFactor + basicDamage)/amount).setGravity(0)
-                        .setVelocity(0.5 * (distanceFactor + 1))
+                        .setVelocity(0.5 * (distanceFactor + 1)).enablePreJudge()
                         .setInaccuracy(0.05);
                     
                     for(let i = 0; i < amount; i++){

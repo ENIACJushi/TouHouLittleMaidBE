@@ -1,0 +1,132 @@
+{
+	"format_version": "1.20.0",
+	"minecraft:block": {
+		"description": {
+			"identifier": "touhou_little_maid:fairy_skull_0_block",
+			"menu_category": {
+                "category": "items",
+				"group": "itemGroup.name.skull"
+            },
+            "traits" : {
+				"minecraft:placement_position": {
+					"enabled_states": [
+					  "minecraft:block_face"
+					]
+				},
+                "minecraft:placement_direction": {
+					"enabled_states": ["minecraft:cardinal_direction"],
+					"y_rotation_offset": 180.0
+				}
+            },
+			"states": {
+				"thlm:is_down": [false, true]
+			}
+		},
+		"permutations": [
+			{
+				"condition": "(query.block_state('minecraft:block_face')=='up'||query.block_state('minecraft:block_face')=='down') && query.block_state('minecraft:cardinal_direction') == 'north'",
+				"components": { "minecraft:transformation": { "rotation": [ 0, 0, 0 ] } }
+			},
+			{
+				"condition": "(query.block_state('minecraft:block_face')=='up'||query.block_state('minecraft:block_face')=='down') && query.block_state('minecraft:cardinal_direction') == 'south'",
+				"components": { "minecraft:transformation": { "rotation": [ 0, 180, 0 ] } }
+			},
+			{
+				"condition": "(query.block_state('minecraft:block_face')=='up'||query.block_state('minecraft:block_face')=='down') && query.block_state('minecraft:cardinal_direction') == 'west'",
+				"components": { "minecraft:transformation": { "rotation": [ 0, 90, 0 ] } }
+			},
+			{
+				"condition": "(query.block_state('minecraft:block_face')=='up'||query.block_state('minecraft:block_face')=='down') && query.block_state('minecraft:cardinal_direction') == 'east'",
+				"components": { "minecraft:transformation": { "rotation": [ 0, -90, 0 ] } }
+			},
+			{
+				"condition": "query.block_state('minecraft:block_face')=='down'",
+				"components": {
+					"minecraft:geometry": "geometry.touhou_little_maid.fairy_skull_block_up",
+					"minecraft:collision_box": { "origin": [ -4, 8, -4 ], "size": [ 8, 8, 8 ] },
+					"minecraft:selection_box": { "origin": [ -4, 8, -4 ], "size": [ 8, 8, 8 ] }
+				}
+			},
+			{
+				"condition": "query.block_state('thlm:is_down')",
+				"components": {
+					"minecraft:geometry": "geometry.touhou_little_maid.fairy_skull_block_down",
+					"minecraft:collision_box": { "origin": [ -4, 8, -4 ], "size": [ 8, 7.9, 8 ] },
+					"minecraft:selection_box": { "origin": [ -4, 8, -4 ], "size": [ 8, 7.9, 8 ] }
+				}
+			},
+			{
+				"condition": "query.block_state('minecraft:block_face')=='south'",
+				"components": {
+					"minecraft:transformation": { "rotation": [ 0, 180, 0 ] },
+					"minecraft:geometry": "geometry.touhou_little_maid.fairy_skull_block_side",
+					"minecraft:collision_box": { "origin": [ -4, 4, 0 ], "size": [ 8, 8, 7.9 ] },
+					"minecraft:selection_box": { "origin": [ -4, 4, 0 ], "size": [ 8, 8, 7.9 ] }
+				}
+			},
+			{
+				"condition": "query.block_state('minecraft:block_face')=='north'",
+				"components": {
+					"minecraft:transformation": { "rotation": [ 0, 0, 0 ] },
+					"minecraft:geometry": "geometry.touhou_little_maid.fairy_skull_block_side",
+					"minecraft:collision_box": { "origin": [ -4, 4, 0 ], "size": [ 8, 8, 7.9 ] },
+					"minecraft:selection_box": { "origin": [ -4, 4, 0 ], "size": [ 8, 8, 7.9 ] }
+				}
+			},
+			{
+				"condition": "query.block_state('minecraft:block_face')=='west'",
+				"components": {
+					"minecraft:transformation": { "rotation": [ 0, 90, 0 ] },
+					"minecraft:geometry": "geometry.touhou_little_maid.fairy_skull_block_side",
+					"minecraft:collision_box": { "origin": [ -4, 4, 0 ], "size": [ 8, 8, 7.9 ] },
+					"minecraft:selection_box": { "origin": [ -4, 4, 0 ], "size": [ 8, 8, 7.9 ] }
+				}
+			},
+			{
+				"condition": "query.block_state('minecraft:block_face')=='east'",
+				"components": {
+					"minecraft:transformation": { "rotation": [ 0, 270, 0 ] },
+					"minecraft:geometry": "geometry.touhou_little_maid.fairy_skull_block_side",
+					"minecraft:collision_box": { "origin": [ -4, 4, 0 ], "size": [ 8, 8, 7.9 ] },
+					"minecraft:selection_box": { "origin": [ -4, 4, 0 ], "size": [ 8, 8, 7.9 ] }
+				}
+			},
+			{
+				"condition": "query.block_state('minecraft:block_face')=='up'",
+				"components": {
+					"minecraft:geometry": "geometry.touhou_little_maid.fairy_skull_block_up",
+					"minecraft:collision_box": { "origin": [ -4, 0.1, -4 ], "size": [ 8, 7.9, 8 ] },
+					"minecraft:selection_box": { "origin": [ -4, 0.1, -4 ], "size": [ 8, 7.9, 8 ] }
+				}
+			}
+		],
+		"components": {
+			"minecraft:geometry": "geometry.touhou_little_maid.fairy_skull_block_up",
+			"minecraft:material_instances": { "*": { "texture": "fairy_skull_0", "render_method": "alpha_test" } },
+			"minecraft:map_color": "#B5E61D",
+			"minecraft:destructible_by_mining": {
+                "seconds_to_destroy": 1.0
+            },
+			"minecraft:destructible_by_explosion": {
+                "explosion_resistance": 3
+            },
+			"minecraft:light_dampening": 0,
+			"minecraft:on_placed": {
+				"event": "thlm:place",
+				"target": "self"
+			}
+		},
+		"events": {
+			"thlm:place": {
+				"sequence":[
+					{
+						"condition": "query.block_state('minecraft:block_face')=='down'",
+						"set_block_state": {
+							"thlm:is_down": true
+						}
+					}
+				]
+			}
+		}
+	}
+}

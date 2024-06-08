@@ -85,6 +85,8 @@ item.touhou_little_maid:dragon_skull=龙头(待微波)
 item.touhou_little_maid:magic_powder=§5神秘尘
 item.touhou_little_maid:warden_skull=循声守卫头颅
 
+item.touhou_little_maid:fairy_headwear=妖精女仆头套
+
 ##### 实体 #####
 entity.touhou_little_maid:chair.name=椅子
 entity.touhou_little_maid:maid.name=小女仆
@@ -96,6 +98,11 @@ entity.touhou_little_maid:box.name=蛋糕盒
 entity.touhou_little_maid:throw_power_point.name=P 点
 entity.touhou_little_maid:debug_fairy.name=弹幕测试妖精女仆
 entity.touhou_little_maid:tombstone.name=墓碑
+
+##### 方块 #####
+tile.touhou_little_maid:fairy_skull_0_block.name=妖精女仆头颅
+tile.touhou_little_maid:fairy_skull_1_block.name=妖精女仆头颅
+tile.touhou_little_maid:fairy_skull_2_block.name=妖精女仆头颅
 
 ##### 提示 #####
 message.touhou_little_maid:hakurei_gohei.switch=切换弹种： 

@@ -6,8 +6,8 @@ import { Dimension, Entity } from "@minecraft/server";
 import {DanmakuColor} from "./DanmakuColor"
 import {DanmakuType} from "./DanmakuType"
 import {EntityDanmaku} from "./EntityDanmaku"
-import * as Vec from "../libs/vector3d"
 import * as Tool from "../libs/ScarletToolKit"
+import { Vector, VectorMC } from "../libs/VectorMC";
 
 export class DanmakuShoot{
     static RANDOM      = Math.random();
@@ -24,9 +24,10 @@ export class DanmakuShoot{
         this.shoot_location         = undefined;
         this.enable_target_location = false;
         this.target_location        = undefined;
-        
-        this.target_offset = [0, 0, 0]
-        this.thrower_offset = [0, 0, 0] // 获取不了碰撞箱大小，故手动指定
+        this.pre_judge              = false;
+
+        this.target_offset = new Vector(0, 0, 0);
+        this.thrower_offset = new Vector(0, 0, 0); // 获取不了碰撞箱大小，故手动指定
 
         // Danmaku basic
         this.color      = DanmakuColor.RANDOM;
@@ -51,12 +52,13 @@ export class DanmakuShoot{
     }
     /**
      * 计算发射到目标的向量，并应用发射位置到弹幕
-     * @param {EntityDanmaku} danmaku 
+     * @param {EntityDanmaku} danmaku
+     * @returns {Vector} 弹幕的动量（包含大小）
      */
     calculateVelocity(danmaku){
-        // Get location
         let s_location, t_location;
-        // Get shoot location
+
+        //// 计算发射位置 ////
         if(this.enable_shoot_location){
             // 指定射击位置模式
             s_location = this.shoot_location;
@@ -71,12 +73,14 @@ export class DanmakuShoot{
             catch{
                 return false;
             }
-            s_location = [s.x + this.thrower_offset[0],
-                        s.y + this.thrower_offset[1],
-                        s.z + this.thrower_offset[2]];
+            s_location = new Vector(
+                s.x + this.thrower_offset.x,
+                s.y + this.thrower_offset.y,
+                s.z + this.thrower_offset.z);
             danmaku.setThrowerOffset(this.thrower_offset);
         }
-        // Get target location
+
+        //// 计算目标位置 ////
         if(this.enable_target_location){
             // 指定目标位置模式
             t_location = this.target_location;
@@ -90,14 +94,29 @@ export class DanmakuShoot{
             catch{
                 return false
             }
-            t_location = [t.x + this.target_offset[0],
-                        t.y + this.target_offset[1],
-                        t.z + this.target_offset[2]]
+            t_location = new Vector(
+                t.x + this.target_offset.x,
+                t.y + this.target_offset.y,
+                t.z + this.target_offset.z)
         }
-        // 计算发射者到目标的向量
-        return [t_location[0] - s_location[0],
-                t_location[1] - s_location[1],
-                t_location[2] - s_location[2]];
+
+        //// 计算发射者到目标的向量 ////
+        if(VectorMC.equals(s_location, t_location)){
+            return new Vector(this.velocity, 0, 0);
+        }
+        else{
+            if(this.pre_judge && !this.enable_target_location){ // 预瞄，必须给定目标实体
+                let targetV = this.target.getVelocity();
+                targetV.y = 0; // 受重力和落地影响，容易误判
+                return VectorMC.preJudge(s_location, t_location, this.velocity, targetV);
+            }
+            else{
+                return new Vector(
+                    t_location.x - s_location.x,
+                    t_location.y - s_location.y,
+                    t_location.z - s_location.z);
+            }
+        }
     }
     aimedShot() {
         let danmaku = new EntityDanmaku(this.world, this.thrower)
@@ -110,7 +129,7 @@ export class DanmakuShoot{
         let v = this.calculateVelocity(danmaku);
         if(!v) return false;
 
-        danmaku.shoot(v[0], v[1], v[2], this.velocity, this.inaccuracy);
+        danmaku.shoot(v, this.velocity, this.inaccuracy);
         return true;
         // TODO: world.playSound(null, thrower.getX(), thrower.getY(), thrower.getZ(), SoundEvents.SNOWBALL_THROW, thrower.getSoundSource(), 1.0f, 0.8f);
     }
@@ -130,62 +149,61 @@ export class DanmakuShoot{
         if(this.ownerID!==undefined){ danmaku.setOwnerID(this.ownerID); }
         let v = this.calculateVelocity(danmaku);
         if(!v) return false;
-        v = Vec.normalize(v);
+        v = VectorMC.normalized(v);
         // 处理扇形偏转
         let yaw = -(this.yawTotal / 2);
         let addYaw = this.yawTotal / (this.fanNum - 1);
         let yawAxis;
         // 计算旋转轴
-        if(v[1] == 0){
+        if(v.y == 0){
             // 发射向量与水平面平行，取y轴为旋转轴
-            yawAxis=[0, 1, 0]
+            yawAxis = new Vector(0, 1, 0);
         }
         else{
             // 旋转轴与发射向量垂直，且二者所在平面与水平面垂直
             // 即与两向量垂直的向量（平面的法向量）与水平面平行（y=0）
             // 由点积，设该法向量为（1，0，-x1/z1）
-            if(v[0]===0){
-                yawAxis = [0, -v[1], v[2]]
+            if(v.x === 0){
+                yawAxis = new Vector(0, -v.y, v.z);
             }
             else{
-                yawAxis = [1,
-                    -( v[0] + (v[2]*v[2])/v[0] ) / v[1],
-                    v[2]/v[0]]
+                yawAxis = new Vector(
+                    1,
+                    -( v.x + (v.z*v.z)/v.x ) / v.y,
+                    v.z/v.x);
             }
         }
-        yawAxis = Vec.normalize(yawAxis)
+        yawAxis = VectorMC.normalized(yawAxis)
         
         // 绕发射向量旋转旋转向量
         if(this.axisRotation!=0){
-            yawAxis = Vec.rotate_axis(yawAxis, v, this.axisRotation);
+            yawAxis = VectorMC.rotate_axis(yawAxis, v, this.axisRotation);
         }
         
         // 绕发射和中轴所在平面的法向量旋转发射向量
         if(this.directionRotation!=0){
-            v = Vec.rotate_axis(v, [1,0,-v[0]/v[2]], this.directionRotation);
+            v = VectorMC.rotate_axis(v, new Vector(1, 0, -v.x/v.z), this.directionRotation);
         }
         // 每个弹幕的向量
         for (let i = 1; i <= this.fanNum; i++) {
-            let v1 = Vec.rotate_axis(v, yawAxis, yaw);
+            let v1 = VectorMC.rotate_axis(v, yawAxis, yaw);
             yaw = yaw + addYaw;
-            danmaku.shoot(v1[0], v1[1], v1[2], this.velocity, this.inaccuracy);
+            danmaku.shoot(v1, this.velocity, this.inaccuracy);
         }
         return true;
         // world.playSound(null, thrower.getX(), thrower.getY(), thrower.getZ(), SoundEvents.SNOWBALL_THROW, thrower.getSoundSource(), 1.0f, 0.8f);
     }
     /**
      * 指定方向发射
-     * @param {number} x 
-     * @param {number} y 
-     * @param {number} z
+     * @param {Vector} direction
      * @returns 
      */
-    directionShoot(x,y,z){
+    directionShoot(direction){
         let danmaku = new EntityDanmaku(this.world, this.thrower)
             .setDamage(this.damage).setGravityVelocity(this.gravity)
             .setDanmakuType(this.type).setColor(this.color);
         
-        danmaku.shoot(x,y,z, this.velocity, this.inaccuracy);
+        danmaku.shoot(direction, this.velocity, this.inaccuracy);
     }
     /**
      * @param {Dimension} world 
@@ -294,7 +312,7 @@ export class DanmakuShoot{
     }
     /**
      * 指定发射位置
-     * @param {number[]} location 
+     * @param {Vector} location 
      * @returns {DanmakuShoot}
      */
     setThrowerLocation(location){
@@ -304,7 +322,7 @@ export class DanmakuShoot{
     }
     /**
      * 指定目标位置
-     * @param {number[]} location
+     * @param {Vector} location
      * @returns {DanmakuShoot}
      */
     setTargetLocation(location){
@@ -314,7 +332,7 @@ export class DanmakuShoot{
     }
     /**
      * 设置目标位置的偏移(未使用setTargetLocation()时生效)
-     * @param {Float[]} offset 
+     * @param {Vector} offset 
      */
     setTargetOffSet(offset){
         this.target_offset = offset;
@@ -322,7 +340,7 @@ export class DanmakuShoot{
     }
     /**
      * 设置发射位置的偏移(未使用setThrowerLocation()时生效)
-     * @param {Float[]} offset 
+     * @param {Vector} offset 
      */
     setThrowerOffSet(offset){
         this.thrower_offset = offset;
@@ -358,6 +376,14 @@ export class DanmakuShoot{
      */
     setLifeTime(tick){
         this.lifeTime = tick;
+        return this;
+    }
+    /**
+     * 启用预瞄
+     * @returns {DanmakuShoot}
+     */
+    enablePreJudge(){
+        this.pre_judge = true;
         return this;
     }
 }

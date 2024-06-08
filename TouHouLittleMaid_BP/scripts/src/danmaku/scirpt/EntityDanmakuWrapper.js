@@ -2,6 +2,7 @@ import { Dimension, Entity } from "@minecraft/server"
 import DanmakuColor  from "../DanmakuColor"
 import DanmakuType from "../DanmakuType"
 import EntityDanmaku from "../EntityDanmaku"
+import { Vector } from "../../libs/VectorMC";
 
 
 export class EntityDanmakuWrapper{
@@ -85,7 +86,7 @@ export class EntityDanmakuWrapper{
 
     /**
      * TODO: set position
-     * @param {number[]} vec3d 
+     * @param {Vector} vec3d 
      */
     setPosition(vec3d){
 
@@ -93,7 +94,7 @@ export class EntityDanmakuWrapper{
     
     /**
      * TODO: set motion
-     * @param {number[]} vec3d 
+     * @param {Vector} vec3d 
      */
     setMotion(motion){
 

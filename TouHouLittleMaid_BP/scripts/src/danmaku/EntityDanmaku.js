@@ -4,10 +4,9 @@
  * (Override方法是用于定义实体的，全部不提供)
  */
 import { Dimension, Entity, system } from "@minecraft/server";
-import { Vector } from "../libs/VectorMC";
+import { Vector, VectorMC } from "../libs/VectorMC";
 import {DanmakuColor} from "./DanmakuColor";
 import {DanmakuType} from "./DanmakuType";
-import * as Vec from "../libs/vector3d";
 import { getRandom } from "../libs/ScarletToolKit";
 import * as Tool from "../libs/ScarletToolKit";
 
@@ -22,7 +21,7 @@ export class EntityDanmaku{
 
         this.enableThrowerLocation  = false;
         this.Throwerlocation         = undefined;
-        this.thrower_offset         = [0,0,0] // 使用thrower时
+        this.thrower_offset         = new Vector(0, 0, 0); // 使用thrower时
 
         this.damage = 6;
         this.color  = DanmakuColor.RANDOM;
@@ -34,7 +33,7 @@ export class EntityDanmaku{
     }
     /**
      * 以基岩版原生方式，指定三维动量发射弹幕
-     * @param {number[]} velocity 
+     * @param {Vector} velocity 
      */
     shoot_bedrock(velocity, inaccuracy){
         // Get location
@@ -50,16 +49,16 @@ export class EntityDanmaku{
             catch{
                 return false;
             }
-            spawn_location = [s.x + this.thrower_offset[0],
-                          s.y + this.thrower_offset[1],
-                          s.z + this.thrower_offset[2]];
+            spawn_location = new Vector(
+                s.x + this.thrower_offset.x,
+                s.y + this.thrower_offset.y,
+                s.z + this.thrower_offset.z);
         }
         // Get type
         let type = this.type==DanmakuType.RANDOM ? DanmakuType.random() : this.type;
         // Spawn entity
         let danmaku = this.world.spawnEntity(
-            DanmakuType.getEntityName(type),
-            new Vector(spawn_location[0], spawn_location[1], spawn_location[2]));
+            DanmakuType.getEntityName(type), spawn_location);
         // Set color
         danmaku.triggerEvent(DanmakuColor.getTriggerEvent(this.color));
         // Set source
@@ -79,38 +78,36 @@ export class EntityDanmaku{
         if(inaccuracy != 0){
             // 计算旋转轴，取与发射向量相垂直的任意向量
             let rotate_axis;
-            if(x==0&&y==0){
-                if(z==0) return false; // 向量为0，不符合函数要求
+            if(x == 0 && y == 0){
+                if(z == 0) return false; // 向量为0，不符合函数要求
                 // 由函数说明，z不为0，取与z轴垂直的x轴
-                rotate_axis = [1,0,0];
+                rotate_axis = new Vector(1, 0, 0);
             }
             else{
                 if(y == 0){
                     // 向量在xz平面上，取y轴
-                    rotate_axis = [0, 1, 0]
+                    rotate_axis = new Vector(0, 1, 0);
                 }
                 else{
                     // 与xz平面有一定夹角，取xy平面上与向量垂直的一个向量
-                    rotate_axis = [1, -x/y, 0]
+                    rotate_axis = new Vector(1, -x/y, 0);
                 }
             }
             // 绕方向向量旋转旋转轴0~2PI
-            rotate_axis = Vec.rotate_axis(rotate_axis, bedrock_velocity, getRandom(0, 2*Math.PI));
+            rotate_axis = VectorMC.rotate_axis(rotate_axis, bedrock_velocity, getRandom(0, 2*Math.PI));
             // 绕旋转轴旋转方向向量0~inaccuracy
-            bedrock_velocity = Vec.rotate_axis(bedrock_velocity, rotate_axis, getRandom(0, inaccuracy));
+            bedrock_velocity = VectorMC.rotate_axis(bedrock_velocity, rotate_axis, getRandom(0, inaccuracy));
         }
         //  Apply impulse to entity
-        danmaku.applyImpulse(new Vector(bedrock_velocity[0], bedrock_velocity[1], bedrock_velocity[2]));
+        danmaku.applyImpulse(bedrock_velocity);
     }
     /**
      * 若要一个静止的弹幕，则把velocity设为0。xyz任何时候都不能同时为0
-     * @param {Double} x 
-     * @param {Double} y 
-     * @param {Double} z 
+     * @param {Vector} direction
      * @param {Float} velocity 
      * @param {Float} inaccuracy In Radius(0~PI)
      */
-    shoot(x, y, z, velocity, inaccuracy=0){
+    shoot(direction, velocity, inaccuracy=0){
         // Get location
         let spawn_location;
         if(this.enableThrowerLocation){
@@ -124,16 +121,16 @@ export class EntityDanmaku{
             catch{
                 return false;
             }
-            spawn_location = [s.x + this.thrower_offset[0],
-                          s.y + this.thrower_offset[1],
-                          s.z + this.thrower_offset[2]];
+            spawn_location = new Vector(
+                s.x + this.thrower_offset.x,
+                s.y + this.thrower_offset.y,
+                s.z + this.thrower_offset.z);
         }
         // Get type
         let type = this.type==DanmakuType.RANDOM ? DanmakuType.random() : this.type;
         // Spawn entity
         let danmaku = this.world.spawnEntity(
-            DanmakuType.getEntityName(type),
-            new Vector(spawn_location[0], spawn_location[1], spawn_location[2]));
+            DanmakuType.getEntityName(type), spawn_location);
         // Set color
         danmaku.triggerEvent(DanmakuColor.getTriggerEvent(this.color));
         // Set source
@@ -150,37 +147,37 @@ export class EntityDanmaku{
         //  Calculate direct vector
         let bedrock_velocity;
         if(velocity==0){
-            bedrock_velocity = [0,0,0];
+            bedrock_velocity = new Vector(0,0,0);
         }
         else{
-            bedrock_velocity = Vec.getVector_speed_direction(velocity, [x,y,z]);
+            bedrock_velocity = VectorMC.getVector_speed_direction(velocity, new Vector(direction.x, direction.y, direction.z));
             // 应用精准度
             if(inaccuracy != 0){
                 // 计算旋转轴，取与发射向量相垂直的任意向量
                 let rotate_axis;
-                if(x==0&&y==0){
-                    if(z==0) return false; // 向量为0，不符合函数要求
+                if(direction.x==0 && direction.y==0){
+                    if(direction.z == 0) return false; // 向量为0，不符合函数要求
                     // 由函数说明，z不为0，取与z轴垂直的x轴
-                    rotate_axis = [1,0,0];
+                    rotate_axis = new Vector(1, 0, 0);
                 }
                 else{
-                    if(y == 0){
+                    if(direction.y == 0){
                         // 向量在xz平面上，取y轴
-                        rotate_axis = [0, 1, 0]
+                        rotate_axis = new Vector(0, 1, 0);
                     }
                     else{
                         // 与xz平面有一定夹角，取xy平面上与向量垂直的一个向量
-                        rotate_axis = [1, -x/y, 0]
+                        rotate_axis = new Vector(1, -direction.x / direction.y, 0);
                     }
                 }
                 // 绕方向向量旋转旋转轴0~2PI
-                rotate_axis = Vec.rotate_axis(rotate_axis, bedrock_velocity, getRandom(0, 2*Math.PI));
+                rotate_axis = VectorMC.rotate_axis(rotate_axis, bedrock_velocity, getRandom(0, 2*Math.PI));
                 // 绕旋转轴旋转方向向量0~inaccuracy
-                bedrock_velocity = Vec.rotate_axis(bedrock_velocity, rotate_axis, getRandom(0, inaccuracy));
+                bedrock_velocity = VectorMC.rotate_axis(bedrock_velocity, rotate_axis, getRandom(0, inaccuracy));
             }
         }
         //  Apply impulse to entity
-        danmaku.applyImpulse(new Vector(bedrock_velocity[0], bedrock_velocity[1], bedrock_velocity[2]));
+        danmaku.applyImpulse(bedrock_velocity);
         // Ticks existed
         if(this.ticks_existed > 0){
             system.runTimeout(()=>{
@@ -255,7 +252,7 @@ export class EntityDanmaku{
     }
     /**
      * 指定发射位置
-     * @param {number[]} location 
+     * @param {Vector} location 
      * @returns {DanmakuShoot}
      */
     setThrowerLocation(location){
@@ -265,7 +262,7 @@ export class EntityDanmaku{
     }
     /**
      * 设置发射位置的偏移(未使用setShootLocation()时生效)
-     * @param {Float[]} offset 
+     * @param {Vector} offset 
      */
     setThrowerOffset(offset){
         this.thrower_offset = offset;

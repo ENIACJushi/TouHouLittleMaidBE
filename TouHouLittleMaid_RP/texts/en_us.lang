@@ -31,6 +31,13 @@ item.touhou_little_maid:dragon_skull=Dragon Skull
 item.touhou_little_maid:magic_powder=§5Magic Powder
 item.touhou_little_maid:warden_skull=Warden Skull
 
+item.touhou_little_maid:fairy_headwear=Fairy Headwear
+
+##### Block #####
+tile.touhou_little_maid:fairy_skull_0_block.name=Fairy Skull
+tile.touhou_little_maid:fairy_skull_1_block.name=Fairy Skull
+tile.touhou_little_maid:fairy_skull_2_block.name=Fairy Skull
+
 ##### Message #####
 message.touhou_little_maid:altar.not_enough_power.name=You don't have enough power.
 message.touhou_little_maid:photo.not_suitable_for_place_maid.name=This damnable place can't place the maid.

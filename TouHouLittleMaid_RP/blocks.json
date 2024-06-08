@@ -1,0 +1,16 @@
+{
+    "format_version": [
+      1,
+      1,
+      0
+    ],
+    "touhou_little_maid:altar_torii_block": {
+        "sound": "cloth"
+    },
+    "touhou_little_maid:altar_log_block": {
+        "sound": "wood"
+    },
+    "touhou_little_maid:fairy_skull_0_block" : {
+      "sound" : "stone"
+   }
+}

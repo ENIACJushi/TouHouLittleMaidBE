@@ -1,0 +1,20 @@
+{
+	"format_version": "1.12.10",
+	"minecraft:recipe_shapeless": {
+		"description": {
+			"identifier": "touhou_little_maid:fairy_headwear_1"
+		},
+		"tags": [ "crafting_table" ],
+		"ingredients": [
+			{
+			  "item": "touhou_little_maid:fairy_skull_1_block"
+			},
+			{
+			  "item": "minecraft:leather_helmet"
+			}
+		],
+		"result": {
+			"item": "touhou_little_maid:fairy_headwear_1"
+		}
+	}
+}

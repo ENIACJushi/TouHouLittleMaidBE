@@ -1,12 +1,6 @@
-// var Task = Java.type("com.github.tartaricacid.touhoulittlemaid.util.DelayedTask");
-// var Vec3d = Java.type("com.github.tartaricacid.touhoulittlemaid.danmaku.script.Vec3dWrapper");
-
-// var Danmaku = Java.type("com.github.tartaricacid.touhoulittlemaid.danmaku.script.EntityDanmakuWrapper");
-// var Color = Java.type("com.github.tartaricacid.touhoulittlemaid.danmaku.DanmakuColor");
-// var Type = Java.type("com.github.tartaricacid.touhoulittlemaid.danmaku.DanmakuType");
 
 import { Dimension, Entity, system } from "@minecraft/server";
-import { Vector as Vec3d } from "../../../src/libs/VectorMC";
+import { Vector } from "../../../src/libs/VectorMC";
 import { DanmakuColor as Color } from "../../../src/danmaku/DanmakuColor";
 import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
 import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";
@@ -23,7 +17,7 @@ function fibonacciSphere(radius, samples, rotation) {
         var phi = ((i + rotation) % samples) * increment;
         var x = Math.cos(phi) * r;
         var z = Math.sin(phi) * r;
-        points.push(new Vec3d(x, y * radius, z));
+        points.push(new Vector(x, y * radius, z));
     }
     return points;
 }
@@ -36,7 +30,7 @@ function shoot($d, danmaku) {
 
 function shoot_basic($d, danmaku){
     fibonacciSphere(0.2, 50, $d / 100).forEach(function (v) {
-        danmaku.shoot_bedrock([v.x, v.y, v.z], 0);
+        danmaku.shoot_bedrock(v, 0);
     });
 }
 
@@ -51,14 +45,14 @@ export const SpellCard = {
      * @param {Entity} shooter 释放符卡的实体
      */
     spellCard: function (world, shooter) {
-        // var pos = new Vec3d(shooter.location.x, shooter.location.y + 1, shooter.location.z);
+        // var pos = new Vector(shooter.location.x, shooter.location.y + 1, shooter.location.z);
         var d = 0.0;
         // danmaku.setMotion(v);
         // danmaku.setPosition(pos);
         // danmaku.setLifeTime(100);
         var danmaku = new Danmaku(world, shooter).setDamage(2).
             setDanmakuType(Type.PELLET).setColor(Color.MAGENTA).
-            setThrowerLocation([shooter.location.x, shooter.location.y + 1, shooter.location.z]); // setThrowerOffset([0,1,0]);
+            setThrowerLocation(new Vector(shooter.location.x, shooter.location.y + 1, shooter.location.z));
         for (var i = 0; i < 30; i++) {
             d += i;
             system.runTimeout(shoot(d, danmaku), 4 * i);

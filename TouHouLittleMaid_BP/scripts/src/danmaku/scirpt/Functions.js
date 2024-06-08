@@ -1,22 +1,20 @@
 import { Entity } from "@minecraft/server";
-import { rotate_axis, add } from "../../libs/vector3d"
+import { Vector, VectorMC } from "../../libs/VectorMC";
 
 /**
  * 
- * @param {float} x 
- * @param {float} y 
- * @param {float} z 
+ * @param {Vector} vec3d
  * @param {float} yawIn 
  * @param {float} yOffset 
  * @param {Entity} entity
+ * @returns {Vector}
  */
-export function getRotationVector(x, y, z, yawIn, yOffset, entity){
+export function getRotationVector(vec3d, yawIn, yOffset, entity){
     let yaw = (entity.getRotation().y + yawIn) * -0.01745329251;// PI/180
     let pos = entity.location;
 
-    let vec3d = [x, y, z]
-    vec3d = rotate_axis(vec3d, [0,1,0], yaw);
-    vec3d = add(vec3d, [pos.x, pos.y + 1 + yOffset, pos.z]);
+    let result = VectorMC.rotate_axis(vec3d, new Vector(0, 1, 0), yaw);
+    result = VectorMC.add(result, new Vector(pos.x, pos.y + 1 + yOffset, pos.z));
     
-    return vec3d;
+    return result;
 }
