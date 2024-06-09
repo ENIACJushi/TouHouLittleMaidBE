@@ -6,9 +6,9 @@ import { logger } from "./ScarletToolKit";
 export class Vector{
     x; y; z;
     /**
-     * @param {number} x 
-     * @param {number} y 
-     * @param {number} z 
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} z 
      */
     constructor(x, y, z){
         return {x:x, y:y, z:z};
@@ -110,11 +110,11 @@ export class VectorMC{
     }
     /**
      * 将向量转为字符
-     * @param {Vector} view 
+     * @param {Vector} vector 
      * @returns {string}
      */
     static toString(vector){
-        return `x:${vector.x},y:${vector.y},z:${vector.z}`
+        return `x:${vector.x.toFixed(2)},y:${vector.y.toFixed(2)},z:${vector.z.toFixed(2)}`
     }
     /**
      * 为了兼容旧库，移植而来。效率应该可以提升
@@ -196,15 +196,20 @@ export class VectorMC{
      */
     static preJudge(A, B, Va_len, Vb){
         let BA = this.sub(A, B);
-        let BA_len = this.length(BA);
+        let BA_normalized = this.normalized(BA);
 
-        let Vb_comp2_len = this.dot(Vb, BA) / BA_len;
-        let Vb_comp2 = this.multiply(BA, Vb_comp2_len / BA_len);
+        let Vb_comp2_len = this.dot(Vb, BA_normalized);
+        let Vb_comp2 = this.multiply(BA_normalized, Vb_comp2_len);
         let Va_comp1 = this.sub(Vb, Vb_comp2); // Va_comp1 = Vb_comp1
 
-        let Va_comp2_len = Math.sqrt(Va_len*Va_len - (Va_comp1.x*Va_comp1.x + Va_comp1.y*Va_comp1.y + Va_comp1.z*Va_comp1.z));
-        let Va_comp2 = this.multiply(this.multiply(BA, -1), Va_comp2_len / BA_len);
-
+        let Va_comp2_len_d = Va_len*Va_len - (Va_comp1.x*Va_comp1.x + Va_comp1.y*Va_comp1.y + Va_comp1.z*Va_comp1.z);
+        if(Va_comp2_len_d<=0){ // Va 与 Vb 垂直 → Va = Va_comp1
+            return Va_comp1;
+        }
+        
+        let Va_comp2_len = Math.sqrt(Va_comp2_len_d);
+        let Va_comp2 = this.multiply(this.multiply(BA_normalized, -1), Va_comp2_len);
+        
         return this.add(Va_comp1, Va_comp2); // Va
     }
 }

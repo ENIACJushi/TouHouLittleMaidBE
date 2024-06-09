@@ -73,33 +73,33 @@ export class EntityDanmaku{
         if(this.ownerID !== undefined){ danmaku.setDynamicProperty("owner", this.ownerID); }
         // Set velocity
         //  Calculate direct vector
-        let bedrock_velocity = velocity;
+        let v = velocity;
         // 应用精准度
-        if(inaccuracy != 0){
+        if(inaccuracy !== 0){
             // 计算旋转轴，取与发射向量相垂直的任意向量
             let rotate_axis;
-            if(x == 0 && y == 0){
-                if(z == 0) return false; // 向量为0，不符合函数要求
+            if(v.x == 0 && v.y == 0){
+                if(v.z == 0) return false; // 向量为0，不符合函数要求
                 // 由函数说明，z不为0，取与z轴垂直的x轴
                 rotate_axis = new Vector(1, 0, 0);
             }
             else{
-                if(y == 0){
+                if(v.y == 0){
                     // 向量在xz平面上，取y轴
                     rotate_axis = new Vector(0, 1, 0);
                 }
                 else{
                     // 与xz平面有一定夹角，取xy平面上与向量垂直的一个向量
-                    rotate_axis = new Vector(1, -x/y, 0);
+                    rotate_axis = new Vector(1, -v.x/v.y, 0);
                 }
             }
             // 绕方向向量旋转旋转轴0~2PI
-            rotate_axis = VectorMC.rotate_axis(rotate_axis, bedrock_velocity, getRandom(0, 2*Math.PI));
+            rotate_axis = VectorMC.rotate_axis(rotate_axis, v, getRandom(0, 2*Math.PI));
             // 绕旋转轴旋转方向向量0~inaccuracy
-            bedrock_velocity = VectorMC.rotate_axis(bedrock_velocity, rotate_axis, getRandom(0, inaccuracy));
+            v = VectorMC.rotate_axis(v, rotate_axis, getRandom(0, inaccuracy));
         }
         //  Apply impulse to entity
-        danmaku.applyImpulse(bedrock_velocity);
+        danmaku.applyImpulse(v);
     }
     /**
      * 若要一个静止的弹幕，则把velocity设为0。xyz任何时候都不能同时为0

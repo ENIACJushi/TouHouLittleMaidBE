@@ -25,6 +25,7 @@ export class DanmakuShoot{
         this.enable_target_location = false;
         this.target_location        = undefined;
         this.pre_judge              = false;
+        this.pre_judge_verticle     = false;
 
         this.target_offset = new Vector(0, 0, 0);
         this.thrower_offset = new Vector(0, 0, 0); // 获取不了碰撞箱大小，故手动指定
@@ -105,17 +106,20 @@ export class DanmakuShoot{
             return new Vector(this.velocity, 0, 0);
         }
         else{
-            if(this.pre_judge && !this.enable_target_location){ // 预瞄，必须给定目标实体
+            if(this.pre_judge && !this.enable_target_location){ // 预瞄，必须给定目标实体   幻翼：我超有挂
                 let targetV = this.target.getVelocity();
-                targetV.y = 0; // 受重力和落地影响，容易误判
-                return VectorMC.preJudge(s_location, t_location, this.velocity, targetV);
+                if(!this.pre_judge_verticle) targetV.y = 0; // 受重力和落地影响，容易误判，竖直方向默认关闭
+
+                let targetLocation = VectorMC.add(t_location, VectorMC.multiply(targetV, 5)); // 因为弹幕创建需要时间，这里要加一个时间差
+                if(!VectorMC.equals(s_location, targetLocation)){
+                    return VectorMC.preJudge(s_location, targetLocation, this.velocity, targetV);
+                }
             }
-            else{
-                return new Vector(
-                    t_location.x - s_location.x,
-                    t_location.y - s_location.y,
-                    t_location.z - s_location.z);
-            }
+            // 不使用预瞄或预瞄点与发射点重合
+            return VectorMC.getVector_speed_direction(this.velocity , new Vector(
+                t_location.x - s_location.x,
+                t_location.y - s_location.y,
+                t_location.z - s_location.z));
         }
     }
     aimedShot() {
@@ -128,8 +132,7 @@ export class DanmakuShoot{
         
         let v = this.calculateVelocity(danmaku);
         if(!v) return false;
-
-        danmaku.shoot(v, this.velocity, this.inaccuracy);
+        danmaku.shoot_bedrock(v, this.inaccuracy);
         return true;
         // TODO: world.playSound(null, thrower.getX(), thrower.getY(), thrower.getZ(), SoundEvents.SNOWBALL_THROW, thrower.getSoundSource(), 1.0f, 0.8f);
     }
@@ -384,6 +387,14 @@ export class DanmakuShoot{
      */
     enablePreJudge(){
         this.pre_judge = true;
+        return this;
+    }
+    /**
+     * 启用竖直方向的预瞄
+     * @returns {DanmakuShoot}
+     */
+    enableVerticlePreJudge(){
+        this.pre_judge_verticle = true;
         return this;
     }
 }
