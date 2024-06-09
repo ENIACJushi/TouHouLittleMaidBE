@@ -1,4 +1,4 @@
-import { ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
+import { ItemStack, ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
 import * as Tool from"../libs/ScarletToolKit";
 import { StrMaid } from "../maid/StrMaid";
 import { MaidSkin } from "../maid/MaidSkin";
@@ -19,6 +19,7 @@ export class CommandManager{
             case "thlm:admin"   : this.admin(event)  ; break;
             case "thlm:test"    : this.test(event)   ; break;
             case "thlm:info"    : this.info(event)   ; break;
+            case "thlm:debug"   : this.debug(event)  ; break;
             default: break;
         }
     }
@@ -254,6 +255,57 @@ export class CommandManager{
         let pl = event.sourceEntity;
         Tool.logger("test")
         pl.postClientMessage("id", "value")
+    }
+    /**
+     * 信息函数
+     * @param {ScriptEventCommandMessageAfterEvent} event
+     */
+    static debug(event){
+        let pl = event.sourceEntity;
+        
+        let itemList = [
+            "touhou_little_maid:power_point",
+            "thlmm:maid_spawn_egg",
+            "minecraft:cake",
+            "touhou_little_maid:maid_backpack_big",
+            "touhou_little_maid:maid_backpack_middle",
+            "touhou_little_maid:maid_backpack_small",
+            "touhou_little_maid:camera",
+            "touhou_little_maid:chisel",
+            "minecraft:clay",
+            "minecraft:flint_and_stell",
+            "minecraft:netherrack",
+            // "touhou_little_maid:film",
+            // "touhou_little_maid:garage_kit",
+            "touhou_little_maid:npc_tool",
+            "touhou_little_maid:photo",
+            // "touhou_little_maid:smart_slab_empty",
+            "touhou_little_maid:smart_slab_has_maid",
+
+            "touhou_little_maid:fairy_spawn_egg",
+            "touhou_little_maid:fairy_headwear_0",
+            "touhou_little_maid:warden_skull",
+
+            "touhou_little_maid:hakurei_gohei_crafting_table",
+            "touhou_little_maid:hakurei_gohei_cherry",
+            
+            "thlms:border_sign.boundary_between_wave_and_particle",
+            "thlms:boundary_between_wave_and_particle_3d",
+            "thlms:gossip",
+            "thlms:magic_sign.milky_way",
+            "thlms:metal_sign.metal_fatigue",
+            "thlms:night_sign.night_bird",
+            
+            "touhou_little_maid:dragon_skull",
+            "touhou_little_maid:gold_microwaver_item",
+            "touhou_little_maid:magic_powder",
+            "touhou_little_maid:memorizable_gensokyo_1",
+            "touhou_little_maid:memorizable_gensokyo_2"
+        ]
+
+        for(let item of itemList){
+            pl.dimension.spawnItem(new ItemStack(item, 1), pl.location);
+        }
     }
     /**
      * 信息函数

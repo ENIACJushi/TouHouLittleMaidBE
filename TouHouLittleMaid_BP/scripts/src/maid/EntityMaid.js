@@ -1016,6 +1016,13 @@ export class EntityMaid{
             }
             maid.setProperty("thlm:emote", value);
         },
+        /**
+         * 清除表情
+         * @param {Entity} maid 
+         */
+        clear(maid){
+            this.set(maid, 0);
+        },
         // 背包 起始位置1
         backpack(maid){
             this.set(maid, 1 + EntityMaid.Backpack.getType(maid));

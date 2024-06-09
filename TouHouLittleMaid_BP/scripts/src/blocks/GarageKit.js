@@ -3,6 +3,7 @@ import { Vector } from "../libs/VectorMC";
 import { StrMaid } from "../maid/StrMaid";
 import { ActionbarMessage, getRandomInteger, logger, lore2Str, str2Lore, title_player_actionbar_object, title_player_actionbar_translate } from "../libs/ScarletToolKit";
 import { EntityMaid } from "../maid/EntityMaid";
+import { isBadContainerBlock } from "../../data/BadContainerBlocks";
 import { MaidSkin } from "../maid/MaidSkin";
 import { Watch } from "../libs/SecondWatch"
 

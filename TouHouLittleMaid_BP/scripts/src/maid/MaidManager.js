@@ -714,9 +714,9 @@ export class MaidManager{
     static onNPCEvent(event){
         let maid = event.entity;
         if(maid===undefined) return;
-
+        
         EntityMaid.Home.setLocation(maid);
-        EntityMaid.Backpack.getEntity(maid).kill();
+        EntityMaid.Emote.clear(maid);
     }
     /**
      * NPC 交互

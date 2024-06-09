@@ -241,6 +241,24 @@
                 "target": "self"
               }
             },
+            // 转化为 NPC
+            {
+              "cooldown": 2.5,
+              "use_item": false,
+              "interact_text": "action.interact.thlm.npc",
+              "vibration": "none",
+              "on_interact": {
+                "filters": {
+                  "all_of": [
+                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:npc_tool"},
+                    { "test": "is_family", "subject": "other", "value": "player" },
+                    { "test": "is_owner", "subject": "other", "value": true }
+                  ]
+                },
+                "event": "become_npc",
+                "target": "self"
+              }
+            },
             // 坐下 站立状态交互
             {
               "cooldown": 0.2,
@@ -331,24 +349,6 @@
                   { "test" : "int_property", "domain": "thlm:backpack_type", "value": 3, "operator": "!="}
                 ]},
                 "event": "thlmb:t3", "target": "self"
-              }
-            },
-            // 转化为 NPC
-            {
-              "cooldown": 2.5,
-              "use_item": false,
-              "interact_text": "action.interact.thlm.npc",
-              "vibration": "none",
-              "on_interact": {
-                "filters": {
-                  "all_of": [
-                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "touhou_little_maid:npc_tool"},
-                    { "test": "is_family", "subject": "other", "value": "player" },
-                    { "test": "is_owner", "subject": "other", "value": true }
-                  ]
-                },
-                "event": "become_npc",
-                "target": "self"
               }
             }
           ]
@@ -1147,7 +1147,7 @@
             "add"   : {"component_groups": ["status:follow_standard"]}
           },
           {
-            "filters": { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },
+            "filters": { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": true },
             "add"   : {"component_groups": ["status:follow_sit"]}
           }
         ]
