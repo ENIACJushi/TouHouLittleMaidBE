@@ -6,6 +6,7 @@ import { emote } from "../../data/emote";
 import { MaidSkin } from "./MaidSkin";
 import * as Tag from '../libs/TagDataInterface'
 import * as DP from '../libs/DynamicPropertyInterface'
+import { MaidTarget } from "./MaidTarget";
 
 export class EntityMaid{
     /**
@@ -542,9 +543,11 @@ export class EntityMaid{
          */
         set(maid, type){
             maid.triggerEvent(this.getEventName(maid, this.get(maid), true));
+            // 有些工作模式存在相同的组件，延迟修改避免删除
             system.runTimeout(()=>{
                 maid.triggerEvent(this.getEventName(maid, type, false));
-            },1); // 有些工作模式存在相同的组件，避免删除
+                MaidTarget.search(maid, 15);
+            },1);
         },
         /**
          * 离开工作模式

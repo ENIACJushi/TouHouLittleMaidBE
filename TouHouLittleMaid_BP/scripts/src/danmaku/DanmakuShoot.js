@@ -110,8 +110,8 @@ export class DanmakuShoot{
                 let targetV = this.target.getVelocity();
                 if(!this.pre_judge_verticle) targetV.y = 0; // 受重力和落地影响，容易误判，竖直方向默认关闭
 
-                let targetLocation = VectorMC.add(t_location, VectorMC.multiply(targetV, 5)); // 因为弹幕创建需要时间，这里要加一个时间差
-                if(!VectorMC.equals(s_location, targetLocation)){
+                let targetLocation = VectorMC.add(t_location, VectorMC.multiply(targetV, 5)); // 因为弹幕创建存在延迟，这里要加一个时间差
+                if(!VectorMC.equals(s_location, targetLocation)){ // 发射点和目标点不能重合
                     return VectorMC.preJudge(s_location, targetLocation, this.velocity, targetV);
                 }
             }

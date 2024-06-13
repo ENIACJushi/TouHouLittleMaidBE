@@ -49,7 +49,6 @@ export class MaidTarget{
         for(let i = 0; i < 3; i++){
             system.runTimeout(()=>{
                 if(maid === undefined) return;
-                try{
                     let target = maid.target;
                     if(target !== undefined){
                         if(pointInArea_3D(
@@ -65,6 +64,7 @@ export class MaidTarget{
                             }
                         }
                     }
+                    try{
                 }
                 catch{}
             }, i*20);
@@ -269,6 +269,7 @@ export class Farm{
                 let seedList = farmBlocks.getLand(landBlock.typeId);
                 if(seedList !== undefined){
                     for(let seed of seedList){
+                        logger(seed);
                         if(this.plantSeed(maid, location, seed, landBlock.typeId)){
                             target.triggerEvent("despawn");
                             return;

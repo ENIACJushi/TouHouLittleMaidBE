@@ -187,7 +187,7 @@ export class VectorMC{
         }
     }
     /**
-     * 预瞄桂
+     * 提前量计算
      * @param {Vector} A 点 A 的位置
      * @param {Vector} B 点 B 的位置
      * @param {Number} Va_len A 发射的直线弹射物的速率
@@ -198,12 +198,14 @@ export class VectorMC{
         let BA = this.sub(A, B);
         let BA_normalized = this.normalized(BA);
 
+        // 求Va'
         let Vb_comp2_len = this.dot(Vb, BA_normalized);
         let Vb_comp2 = this.multiply(BA_normalized, Vb_comp2_len);
         let Va_comp1 = this.sub(Vb, Vb_comp2); // Va_comp1 = Vb_comp1
-
+        
+        // 求Va''
         let Va_comp2_len_d = Va_len*Va_len - (Va_comp1.x*Va_comp1.x + Va_comp1.y*Va_comp1.y + Va_comp1.z*Va_comp1.z);
-        if(Va_comp2_len_d<=0){ // Va 与 Vb 垂直 → Va = Va_comp1
+        if(Va_comp2_len_d <= 0){ // Va 与 Vb 垂直，Va = Va''，直接出结果
             return Va_comp1;
         }
         

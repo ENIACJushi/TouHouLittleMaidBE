@@ -399,7 +399,8 @@ export class MaidManager{
                 case EntityMaid.Work.melon     : EntityMaid.Work.enter(maid, EntityMaid.Work.melon     ); break; // 恢复瓜类模式
                 case EntityMaid.Work.cocoa     : EntityMaid.Work.enter(maid, EntityMaid.Work.cocoa     ); break; // 恢复可可模式
             }
-
+            MaidTarget.search(maid, 15);
+            
             // 拾物模式
             if(EntityMaid.Pick.get(maid)){
                 EntityMaid.Pick.set(maid, true);

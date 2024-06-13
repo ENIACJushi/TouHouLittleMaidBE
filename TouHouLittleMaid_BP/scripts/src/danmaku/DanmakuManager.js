@@ -241,6 +241,7 @@ export function debug_shoot(entity){
             .setColor(DanmakuColor.RANDOM).setType(DanmakuType.GLOWEY_BALL)
             .setDamage(1).setGravity(0).enablePreJudge().enableVerticlePreJudge()
 
+        let target = entity.dimension.getPlayers({"closest": 1, "location": entity.location,"name": "Voyage1976" })[0];
         const n = 18;
         let step = 65 / n;
         for(let i = 0; i<n;i++){

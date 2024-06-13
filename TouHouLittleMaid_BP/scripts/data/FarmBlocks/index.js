@@ -1,11 +1,19 @@
-import { BlockPermutation, ItemStack } from "@minecraft/server";
+
 import { Data as Vallina } from "./Vallina";
 import { Data as FarmersDelight } from "./FarmersDelight";
 import { Data as CornDelight } from "./CornDelight";
-import { logger } from "../../src/libs/ScarletToolKit";
+import { Data as 餐厨工艺 } from "./餐厨工艺";
 
-var checkList = [Vallina, FarmersDelight, CornDelight];
+var checkList = [
+    Vallina, 
+    FarmersDelight, 
+    CornDelight,
+    餐厨工艺
+];
 
+
+import { BlockPermutation, ItemStack } from "@minecraft/server";
+import { logger, logger_debug } from "../../src/libs/ScarletToolKit";
 
 class FarmBlocks{
     Data = {
@@ -17,7 +25,6 @@ class FarmBlocks{
     landList = [];
     constructor(){
         for(let addonData of checkList){
-            try{
                 new ItemStack(addonData.tester, 1);
                 logger("添加了一个模组" + addonData.tester);
         
@@ -27,15 +34,21 @@ class FarmBlocks{
                 for(let seed in addonData.seeds){
                     this.addSeed(seed, addonData.seeds[seed]);
                 }
+                try{
             }
             catch{}
         }
+        // logger(JSON.stringify(this.Data.crops));
+        logger(JSON.stringify(this.Data.seeds))
     }
     
     // 添加作物信息
     addCrop(key, value){
         this.Data.crops[key] = value;
-        this.corpList.push(BlockPermutation.resolve(key, value.state));
+        try{
+            this.corpList.push(BlockPermutation.resolve(key, value.state));
+        }
+        catch{};
     }
     
     // 添加种子信息

@@ -190,14 +190,14 @@
       },
       "init_ramdon":{
         "randomize": [
-            { "trigger": "init_f1", "weight": 4 },
-            { "trigger": "init_f2", "weight": 3 },
-            { "trigger": "init_f3", "weight": 2 }
+            { "trigger": "fairy:f1", "weight": 4 },
+            { "trigger": "fairy:f2", "weight": 3 },
+            { "trigger": "fairy:f3", "weight": 2 }
         ]
       },
-      "init_f1":{"sequence": [{ "add": { "component_groups": [ "f1" ] } }]},
-      "init_f2":{"sequence": [{ "add": { "component_groups": [ "f2" ] } }]},
-      "init_f3":{"sequence": [{ "add": { "component_groups": [ "f3" ] } }]},
+      "fairy:f1":{"sequence": [{ "add": { "component_groups": [ "f1" ] } }]},
+      "fairy:f2":{"sequence": [{ "add": { "component_groups": [ "f2" ] } }]},
+      "fairy:f3":{"sequence": [{ "add": { "component_groups": [ "f3" ] } }]},
       "thlm:dfs":{},
       "thlm:pfd":{},
       "spawn_skull":{
