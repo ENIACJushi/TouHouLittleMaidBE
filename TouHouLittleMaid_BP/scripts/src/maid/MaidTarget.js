@@ -319,7 +319,7 @@ export class Farm{
          * 若附近目标数少于6则开始扫描
          */
         let existedTargets = dimension.getEntities({
-            "location": location, "maxDistance": range, "type": "thlmt:sugar_cane"});
+            "location": location, "maxDistance": range, "type": "thlmt:farm"});
         if(existedTargets.length > 6) return;
 
         ///// 频率调整 /////
