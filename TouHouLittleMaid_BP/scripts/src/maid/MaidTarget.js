@@ -269,7 +269,6 @@ export class Farm{
                 let seedList = farmBlocks.getLand(landBlock.typeId);
                 if(seedList !== undefined){
                     for(let seed of seedList){
-                        logger(seed);
                         if(this.plantSeed(maid, location, seed, landBlock.typeId)){
                             target.triggerEvent("despawn");
                             return;
