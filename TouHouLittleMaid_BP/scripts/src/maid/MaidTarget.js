@@ -127,8 +127,8 @@ class SpeedController{
 export class Farm{
     static maxLack = 3; // 进入慢扫描的连续缺目标次数
     static lackStep = 5; // 慢扫描等待步数
-    static minCount = 10; // 缺目标的最大目标数
-    static maxCount = 64; // 单次扫描获取的最大目标数 到达该数量则停止扫描 确定标准为一个目标实体生命周期内，女仆能收集到的最大目标数
+    static minCount = 8; // 缺目标的最大目标数
+    static maxCount = 24; // 单次扫描获取的最大目标数 到达该数量则停止扫描 确定标准为一个目标实体生命周期内，女仆能收集到的最大目标数
 
     /**
      * 放置收获目标, 位置应为整数方块坐标
@@ -364,6 +364,7 @@ export class Farm{
                             if(block === undefined){
                                 // 上方一格为空，放置种植标记
                                 this.placeSeed(dimension, new Vector(x, A+i+1, z));
+                                count++;
                                 break;
                             }
                             // 上方一格不为空，进行作物判断
@@ -385,6 +386,7 @@ export class Farm{
                             if(mature){
                                 // 已成熟，放置收获标记
                                 this.placeCorp(dimension, new Vector(x, A+i, z));
+                                count++;
                             }
                             break;
                         }
@@ -400,6 +402,7 @@ export class Farm{
                         if(farmBlocks.getLand(block.typeId) !== undefined){
                             // 是耕地，在上方放置种植标记
                             if(upAir) this.placeSeed(dimension, new Vector(x, A-i+1, z));
+                            count++;
                             break;
                         }
 
@@ -418,6 +421,7 @@ export class Farm{
                             if(mature){
                                 // 已成熟，放置收获标记
                                 this.placeCorp(dimension, new Vector(x, A-i, z));
+                                count++;
                             }
                             break;
                         }
