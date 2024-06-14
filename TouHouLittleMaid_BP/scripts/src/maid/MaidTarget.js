@@ -1,8 +1,10 @@
-import { EntityHitEntityAfterEvent, Entity, Dimension, system, BlockPermutation } from "@minecraft/server";
+import { EntityHitEntityAfterEvent, Entity, Dimension, system, BlockPermutation, BlockVolume } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import { EntityMaid } from "./EntityMaid";
 import { logger, pointInArea_3D } from "../libs/ScarletToolKit";
 import { farmBlocks } from "../../data/FarmBlocks/index";
+
+
 
 export class MaidTarget{
     /**
@@ -20,7 +22,7 @@ export class MaidTarget{
         }
     }
     /**
-     * 寻找甘蔗
+     * 寻找目标点
      * @param {Entity} maid 
      * @param {number} type
      * @param {Dimension} dimension
@@ -48,7 +50,8 @@ export class MaidTarget{
     static stepEvent(maid, work){
         for(let i = 0; i < 3; i++){
             system.runTimeout(()=>{
-                if(maid === undefined) return;
+                try{
+                    if(maid === undefined) return;
                     let target = maid.target;
                     if(target !== undefined){
                         if(pointInArea_3D(
@@ -63,8 +66,8 @@ export class MaidTarget{
                                 default: break;
                             }
                         }
+                        target.triggerEvent("cooldown");
                     }
-                    try{
                 }
                 catch{}
             }, i*20);
@@ -77,24 +80,25 @@ class SpeedController{
     /**
      * 搜索开始前 判断是否进行搜索
      * @param {Entity} maid 
-     * @param {number} [lackStep=5] 
-     * @param {number} [maxLack=3] 慢扫描时，每LACKSTEP次调用函数才进行一次扫描
-     * @param {boolean}
+     * @param {number} [maxLack=2] 进入慢扫描状态需要的缺目标步数
+     * @param {number} [lackStep=5] 慢扫描时，每LACKSTEP次调用函数才进行一次扫描
+     * @param {{run: boolean; lackmode: boolean}}
      */
-    static beforeSearch(maid, maxLack=3, lackStep=5){
+    static beforeSearch(maid, maxLack=2, lackStep=5){
+        // 速度控制
         let lackCount = maid.getDynamicProperty("target_lack");
         if(lackCount !== undefined && lackCount >= maxLack){
             lackCount++;
             if(lackCount >= maxLack + lackStep){
                 maid.setDynamicProperty("target_lack", maxLack);
-                return true;
+                return {run: true, lackmode: true};
             }
             else{
                 maid.setDynamicProperty("target_lack", lackCount);
-                return false;
+                return {run: false, lackmode: true};
             }
         }
-        return true;
+        return {run: true, lackmode: false};
     }
 
     /**
@@ -125,11 +129,10 @@ class SpeedController{
 
 // 耕地作物 thlmt:farm
 export class Farm{
-    static maxLack = 3; // 进入慢扫描的连续缺目标次数
+    static maxLack  = 2; // 进入慢扫描的连续缺目标次数
     static lackStep = 5; // 慢扫描等待步数
     static minCount = 8; // 缺目标的最大目标数
-    static maxCount = 24; // 单次扫描获取的最大目标数 到达该数量则停止扫描 确定标准为一个目标实体生命周期内，女仆能收集到的最大目标数
-
+    static maxCount = 25; // 单次扫描获取的最大目标数 到达该数量则停止扫描 确定标准为一个目标实体生命周期内，女仆能收集到的最大目标数
     /**
      * 放置收获目标, 位置应为整数方块坐标
      * @param {Dimension} dimension 
@@ -304,25 +307,49 @@ export class Farm{
         }
     }
     /**
+     * 
+     * @param {Dimension} dimension 
+     * @param {Vector} location 
+     * @param {Number} range 
+     * @returns {Entity[]}
+     */
+    static getTargets(dimension, location, range){
+        let existedTargets = dimension.getEntities({
+            "location": location, "maxDistance": range, "type": "thlmt:farm"});
+
+        // 限高
+        let targetList = [];
+        for(let target of existedTargets){
+            let delta = target.location.y - location.y;
+            if(delta < 2 || delta > -2){
+                targetList.push(target);
+            }
+        }
+        return targetList;
+    }
+    /**
      * 寻找作物
      * @param {Entity} maid
      * @param {number} range
      * @returns {object} 
      */
-    static search(maid, range=6){
+    static search(maid, _range=6){
+        if(maid.target!==undefined) return; // 已经有目标，不需要扫描
         ///// 需求判断 /////
         const dimension = maid.dimension;
         const location = maid.location;
         /**
-         * 获取范围内已经标定的点
+         * 获取范围（扩张后）内已经标定的点
          * 若附近目标数少于6则开始扫描
          */
-        let existedTargets = dimension.getEntities({
-            "location": location, "maxDistance": range, "type": "thlmt:farm"});
-        if(existedTargets.length > 6) return;
+        let targets = this.getTargets(dimension, location, _range + 10);
+        if(targets.length > 6) return;
 
         ///// 频率调整 /////
-        if(!SpeedController.beforeSearch(maid, this.maxLack, this.lackStep)) return;
+        let range = _range;
+        let temp = SpeedController.beforeSearch(maid, this.maxLack, this.lackStep);
+        if(!temp.run) return;
+        if(temp.lackmode) range = range + 10; // 若进入了慢扫描模式，则增大扫描范围
 
         ///// 搜索 /////
         /**
@@ -340,11 +367,11 @@ export class Farm{
         let y = Math.floor(location.y);
         let xStart = Math.floor(location.x);
         let zStart = Math.floor(location.z);
-        let count = 0;
-        for(let ix = 0; ix < range; ix = ix>0 ? -ix : 1-ix){
-            system.runTimeout(()=>{
-                for(let iz = 0; iz < range; iz = iz>0 ? -iz : 1-iz){
-                    if(count > this.maxCount) return;
+        let count = targets.length;
+        function* searchJob(){
+            for(let ix = 0; ix < range; ix = ix > 0 ? -ix : 1-ix){
+                for(let iz = 0; iz < range; iz = iz > 0 ? -iz : 1-iz){
+                    if(count > Farm.maxCount) break;
 
                     let x = xStart + ix;
                     let z = zStart + iz;
@@ -354,15 +381,21 @@ export class Farm{
                     // 向上搜索
                     for(let i = 0; i <= 2; i++){
                         let block = dimension.getBlock(new Vector(x, A+i, z));
-                        if(i===0) upAir = (block.typeId === "minecraft:air" || block === undefined);
+
+                        // 是空气，跳过
+                        if(block === undefined || block.typeId === "minecraft:air"){
+                            if(i===0) upAir = true;
+                            continue;
+                        }
+
                         // 耕地判断
                         if(farmBlocks.getLand(block.typeId) !== undefined){
                             // 是耕地，找上方一格
                             y = A+i;
                             let block = dimension.getBlock(new Vector(x, A+i+1, z));
-                            if(block === undefined){
+                            if(block === undefined || block.typeId === "minecraft:air"){
                                 // 上方一格为空，放置种植标记
-                                this.placeSeed(dimension, new Vector(x, A+i+1, z));
+                                Farm.placeSeed(dimension, new Vector(x, A+i+1, z));
                                 count++;
                                 break;
                             }
@@ -384,7 +417,7 @@ export class Farm{
 
                             if(mature){
                                 // 已成熟，放置收获标记
-                                this.placeCorp(dimension, new Vector(x, A+i, z));
+                                Farm.placeCorp(dimension, new Vector(x, A+i, z));
                                 count++;
                             }
                             break;
@@ -396,11 +429,16 @@ export class Farm{
                     // 向下搜索
                     for(let i = 1; i <= 2; i++){
                         let block = dimension.getBlock(new Vector(x, A-i, z));
-                        
+                        // 是空气，跳过
+                        if(block === undefined || block.typeId === "minecraft:air"){
+                            upAir = true;
+                            continue;
+                        }
+
                         // 耕地判断
                         if(farmBlocks.getLand(block.typeId) !== undefined){
                             // 是耕地，在上方放置种植标记
-                            if(upAir) this.placeSeed(dimension, new Vector(x, A-i+1, z));
+                            if(upAir) Farm.placeSeed(dimension, new Vector(x, A-i+1, z));
                             count++;
                             break;
                         }
@@ -419,27 +457,103 @@ export class Farm{
 
                             if(mature){
                                 // 已成熟，放置收获标记
-                                this.placeCorp(dimension, new Vector(x, A-i, z));
+                                Farm.placeCorp(dimension, new Vector(x, A-i, z));
                                 count++;
                             }
                             break;
                         }
-                        upAir = (block.typeId === "minecraft:air" || block === undefined);
                     }
-                }
-            }, (ix<0 ? 4-8*ix : ix*8));
-        }
 
-        ///// 频率调整 /////
-        system.runTimeout(()=>{
-            SpeedController.afterSearch(maid, count, this.maxLack, this.minCount)
-        }, range*8 + 8);
+                    yield;
+                }
+                if(count > Farm.maxCount) break;
+            }
+            ///// 频率调整 /////
+            SpeedController.afterSearch(maid, count, Farm.maxLack, Farm.minCount);
+        }
+        function* newSearchJob(){
+            let areaLength = range*2+1;
+            let searchMatrix = new Array(areaLength);
+            for(let i = 0; i < areaLength; i++){
+                searchMatrix[i] = new Array(areaLength).fill(false)
+            }
+            
+            for(let target of targets){
+                searchMatrix[Math.floor(target.location.x - location.x + range)][Math.floor(target.location.z - location.z + range)] = true;
+            }
+            for(let ix = 0; ix < range; ix = ix > 0 ? -ix : 2-ix){
+                // 获取作物方块
+                let lands = dimension.getBlocks(
+                    new BlockVolume(
+                        new Vector(location.x + ix, location.y-2, location.z - range),
+                        new Vector(location.x + ix + 1, location.y+2, location.z + range)
+                    ),
+                    {
+                        "includePermutations": farmBlocks.getCorpPermutations(),
+                        "includeTypes": farmBlocks.getLands()
+                    },
+                    true
+                );
+                for(let pos of lands.getBlockLocationIterator()){
+                    let m_x = Math.floor(pos.x - location.x + range);
+                    let m_z = Math.floor(pos.z - location.z + range);
+                    if(searchMatrix[m_x][m_z] === true){
+                        continue;
+                    }
+
+                    let block = dimension.getBlock(pos);
+
+                    // 耕地判断
+                    if(farmBlocks.getLand(block.typeId) !== undefined){
+                        // 检查上方方块
+                        let blockLocation = new Vector(pos.x, pos.y+1, pos.z);
+                        block = dimension.getBlock(blockLocation);
+                        if(block === undefined || block.typeId === "minecraft:air"){
+                            // 上方一格为空，放置种植标记
+                            Farm.placeSeed(dimension, blockLocation);
+                            searchMatrix[m_x][m_z] = true;
+                            count++;
+                            continue;
+                        }
+                    }
+
+                    // 作物判断
+                    let corpInfo = farmBlocks.getCorp(block.typeId);
+                    if(corpInfo !== undefined){
+                        // 是作物，判断是否成熟
+                        
+                        let mature = true;
+                        for(let key in corpInfo.state){
+                            if(block.permutation.getState(key) !== corpInfo.state[key]){
+                                mature = false;
+                                break;
+                            }
+                        }
+
+                        if(mature){
+                            // 已成熟，放置收获标记
+                            Farm.placeCorp(dimension, block.location);
+                            count++;
+                        }
+                        searchMatrix[m_x][m_z] = true;// 无论成不成熟都结束这个坐标的判断
+                        continue;
+                    }
+
+                }
+                if(count > Farm.maxCount) break;
+                // yield;
+            }
+            SpeedController.afterSearch(maid, count, Farm.maxLack, Farm.minCount);
+        }
+        system.runJob(newSearchJob());
+        
+
     }
 }
 
 // 甘蔗
 class SugarCane{
-    static maxLack = 3; // 进入慢扫描的连续缺目标次数
+    static maxLack = 2; // 进入慢扫描的连续缺目标次数
     static lackStep = 5; // 慢扫描等待步数
     static minCount = 10; // 缺目标的最大目标数
     static maxCount = 40; // 单次扫描获取的最大目标数 到达该数量则停止扫描 确定标准为一个目标实体生命周期内，女仆能收集到的最大目标数
@@ -481,7 +595,7 @@ class SugarCane{
      * @param {number} range
      * @returns {object} 
      */
-    static search(maid, range=6){
+    static search(maid, _range=6){
         ///// 需求判断 /////
         const dimension = maid.dimension;
         const location = maid.location;
@@ -490,11 +604,14 @@ class SugarCane{
          * 若附近目标数少于3则开始扫描
          */
         let existedTargets = dimension.getEntities({
-            "location": location, "maxDistance": range, "type": "thlmt:sugar_cane"});
+            "location": location, "maxDistance": _range, "type": "thlmt:sugar_cane"});
         if(existedTargets.length > 3) return;
 
         ///// 频率调整 /////
-        if(!SpeedController.beforeSearch(maid, this.maxLack, this.lackStep)) return;
+        let range = _range;
+        let temp = SpeedController.beforeSearch(maid, this.maxLack, this.lackStep);
+        if(!temp.run) return;
+        if(temp.lackmode) range = range + 10; // 若进入了慢扫描模式，则增大扫描范围
 
         ///// 搜索 /////
         /**
@@ -669,17 +786,20 @@ export class Melon{
      * @param {number} range
      * @returns {object} 
      */
-    static search(maid, range=6){
+    static search(maid, _range=6){
         ///// 需求判断 /////
         const dimension = maid.dimension;
         const location = maid.location;
         let existedTargets = dimension.getEntities({
-            "location": location, "maxDistance": range, "type": "thlmt:melon"});
+            "location": location, "maxDistance": _range, "type": "thlmt:melon"});
         if(existedTargets.length > 3) return;
         
         
         ///// 频率调整 /////
-        if(!SpeedController.beforeSearch(maid, this.maxLack, this.lackStep)) return;
+        let range = _range;
+        let temp = SpeedController.beforeSearch(maid, this.maxLack, this.lackStep);
+        if(!temp.run) return;
+        if(temp.lackmode) range = range + 10; // 若进入了慢扫描模式，则增大扫描范围
 
         ///// 搜索 /////
         // 初始化扫描矩阵
@@ -838,16 +958,19 @@ export class Cocoa{
      * @param {number} range
      * @returns {object} 
      */
-    static search(maid, range=6){
+    static search(maid, _range=6){
         ///// 需求判断 /////
         const dimension = maid.dimension;
         const location = maid.location;
         let existedTargets = dimension.getEntities({
-            "location": location, "maxDistance": range, "type": "thlmt:cocoa"});
+            "location": location, "maxDistance": _range, "type": "thlmt:cocoa"});
         if(existedTargets.length > 3) return;
 
         ///// 频率调整 /////
-        if(!SpeedController.beforeSearch(maid, this.maxLack, this.lackStep)) return;
+        let range = _range;
+        let temp = SpeedController.beforeSearch(maid, this.maxLack, this.lackStep);
+        if(!temp.run) return;
+        if(temp.lackmode) range = range + 10; // 若进入了慢扫描模式，则增大扫描范围
 
         /** setblock -121 -60 16 cocoa ["direction"=3,"age"=2]
          * 寻找成熟（"age"=2）的可可豆(cocoa)，并生成带有方向标记（direction）的目标

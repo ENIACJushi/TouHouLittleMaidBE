@@ -25,8 +25,9 @@ class FarmBlocks{
     landList = [];
     constructor(){
         for(let addonData of checkList){
+            try{
                 new ItemStack(addonData.tester, 1);
-                logger("添加了一个模组" + addonData.tester);
+                // logger("添加了一个模组" + addonData.tester);
         
                 for(let crop in addonData.crops){
                     this.addCrop(crop, addonData.crops[crop]);
@@ -34,12 +35,11 @@ class FarmBlocks{
                 for(let seed in addonData.seeds){
                     this.addSeed(seed, addonData.seeds[seed]);
                 }
-                try{
             }
             catch{}
         }
         // logger(JSON.stringify(this.Data.crops));
-        logger(JSON.stringify(this.Data.seeds))
+        // logger(JSON.stringify(this.Data.seeds))
     }
     
     // 添加作物信息

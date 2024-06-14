@@ -17,7 +17,7 @@
         "minecraft:ageable": { "duration": 60, "grow_up": { "event": "despawn", "target": "self" } }
       },
       "cooldown": {
-        "minecraft:ageable": { "duration": 30, "grow_up": { "event": "finish_cooldown", "target": "self" } }
+        "minecraft:ageable": { "duration": 10, "grow_up": { "event": "finish_cooldown", "target": "self" } }
       }
     },
     "components": {
