@@ -14,10 +14,10 @@
       "despawn": { "minecraft:instant_despawn":{ "remove_child_entities": false } },
       "life": { 
         "minecraft:type_family": { "family": [ "thlmt:farm" ] },
-        "minecraft:ageable": { "duration": 60, "grow_up": { "event": "despawn", "target": "self" } }
+        "minecraft:ageable": { "duration": 120, "grow_up": { "event": "despawn", "target": "self" } }
       },
       "cooldown": {
-        "minecraft:ageable": { "duration": 10, "grow_up": { "event": "finish_cooldown", "target": "self" } }
+        "minecraft:ageable": { "duration": 15, "grow_up": { "event": "finish_cooldown", "target": "self" } }
       }
     },
     "components": {

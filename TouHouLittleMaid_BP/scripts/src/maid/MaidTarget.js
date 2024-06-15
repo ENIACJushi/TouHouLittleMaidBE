@@ -502,7 +502,6 @@ export class Farm{
                     }
 
                     let block = dimension.getBlock(pos);
-
                     // 耕地判断
                     if(farmBlocks.getLand(block.typeId) !== undefined){
                         // 检查上方方块

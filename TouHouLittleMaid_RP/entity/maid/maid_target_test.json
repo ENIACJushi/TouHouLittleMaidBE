@@ -2,7 +2,7 @@
   "format_version": "1.10.0",
   "minecraft:client_entity": {
     "description": {
-      "identifier": "thlmt:farm",
+      "identifier": "thlmt:test",
       "min_engine_version": "1.8.0",
       "materials": {
         "default": "danmaku_blending"

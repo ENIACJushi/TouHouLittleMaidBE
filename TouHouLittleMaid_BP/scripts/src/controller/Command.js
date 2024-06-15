@@ -1,4 +1,4 @@
-import { ItemStack, ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
+import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
 import * as Tool from"../libs/ScarletToolKit";
 import { StrMaid } from "../maid/StrMaid";
 import { MaidSkin } from "../maid/MaidSkin";
@@ -257,7 +257,7 @@ export class CommandManager{
         pl.postClientMessage("id", "value")
     }
     /**
-     * 信息函数
+     * 发烟测试
      * @param {ScriptEventCommandMessageAfterEvent} event
      */
     static debug(event){
@@ -324,7 +324,18 @@ export class CommandManager{
             }
             pl.sendMessage(info);
         }
-        
+        let blockInv = block.getComponent(BlockComponentTypes.Inventory);
+        if(blockInv !== undefined){
+            let container = blockInv.container;
+            if(container !== undefined){
+                for(let i = 0; i < container.size; i++){
+                    let item = container.getItem(i);
+                    if(item !== undefined){
+                        Tool.logger(`${item.typeId} ${item.amount}`);
+                    }
+                }
+            }
+        }
         // 手持物品
         let item = Tool.getPlayerMainHand(pl);
         if(item!==undefined) pl.sendMessage(`item: ${item.typeId}`);
