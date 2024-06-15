@@ -273,7 +273,7 @@ export class CommandManager{
             "touhou_little_maid:camera",
             "touhou_little_maid:chisel",
             "minecraft:clay",
-            "minecraft:flint_and_stell",
+            "minecraft:flint_and_steel",
             "minecraft:netherrack",
             // "touhou_little_maid:film",
             // "touhou_little_maid:garage_kit",
@@ -324,18 +324,18 @@ export class CommandManager{
             }
             pl.sendMessage(info);
         }
-        let blockInv = block.getComponent(BlockComponentTypes.Inventory);
-        if(blockInv !== undefined){
-            let container = blockInv.container;
-            if(container !== undefined){
-                for(let i = 0; i < container.size; i++){
-                    let item = container.getItem(i);
-                    if(item !== undefined){
-                        Tool.logger(`${item.typeId} ${item.amount}`);
-                    }
-                }
-            }
-        }
+        // let blockInv = block.getComponent(BlockComponentTypes.Inventory);
+        // if(blockInv !== undefined){
+        //     let container = blockInv.container;
+        //     if(container !== undefined){
+        //         for(let i = 0; i < container.size; i++){
+        //             let item = container.getItem(i);
+        //             if(item !== undefined){
+        //                 Tool.logger(`${item.typeId} ${item.amount}`);
+        //             }
+        //         }
+        //     }
+        // }
         // 手持物品
         let item = Tool.getPlayerMainHand(pl);
         if(item!==undefined) pl.sendMessage(`item: ${item.typeId}`);

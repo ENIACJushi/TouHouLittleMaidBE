@@ -472,7 +472,7 @@ export class Farm{
             SpeedController.afterSearch(maid, count, Farm.maxLack, Farm.minCount);
         }
         function* newSearchJob(){
-            let areaLength = range*2+1;
+            let areaLength = range*2+2;
             let searchMatrix = new Array(areaLength);
             for(let i = 0; i < areaLength; i++){
                 searchMatrix[i] = new Array(areaLength).fill(false)

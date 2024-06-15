@@ -142,7 +142,7 @@ const GoheiDefault = DanmakuType.PELLET;
 export function gohei_activate(ev){
     try{
         let pl = ev.source;
-        let slot = pl.selectedSlot
+        let slot = pl.selectedSlotIndex
         let container = pl.getComponent("inventory").container;
         let item = container.getItem(slot);
 
@@ -185,7 +185,7 @@ export function gohei_transform(ev, danmakuName){
     
                 // Set item
                 let player = ev.source;
-                player.getComponent("inventory").container.setItem(player.selectedSlot, itemStack);
+                player.getComponent("inventory").container.setItem(player.selectedSlotIndex, itemStack);
     
                 // Send message
                 player.sendMessage({rawtext:[{translate: "message.touhou_little_maid:hakurei_gohei.switch"}, {translate: `danmaku.${DanmakuType.getName(GoheiSequence[index])}.name`}]});

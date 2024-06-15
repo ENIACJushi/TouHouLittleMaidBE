@@ -282,18 +282,9 @@ export class MaidManager{
             // 消耗照片
             Tool.setPlayerMainHand(event.source);
             
-            // 如果最近的玩家是主人，直接设置主人
+            // 设置主人
             system.runTimeout(()=>{
-                let closestPlayer = dimension.getPlayers({"closest":1, "location": location})[0];
-                if(closestPlayer.id === player.id){
-                    maid.getComponent("tameable").tame();
-                }
-                // 否则给予玩家一个苹果，自己驯服
-                else{
-                    let apple = new ItemStack("minecraft:apple", 1);
-                    apple.nameTag="§cApple!"
-                    event.source.dimension.spawnItem(apple, event.source.location);
-                }
+                maid.getComponent("tameable").tame(event.source);
             }, 1);
             
         }
@@ -349,18 +340,9 @@ export class MaidManager{
             // 转换物品
             Tool.setPlayerMainHand(event.source, new ItemStack("touhou_little_maid:smart_slab_empty", 1));
             
+            // 设置主人
             system.runTimeout(()=>{
-                // 如果最近的玩家是主人，直接设置主人
-                let closestPlayer = dimension.getPlayers({"closest":1, "location": location})[0];
-                if(closestPlayer.id === player.id){
-                    maid.getComponent("tameable").tame();
-                }
-                // 否则给予玩家一个苹果，自己驯服
-                else{
-                    let apple = new ItemStack("minecraft:apple", 1);
-                    apple.nameTag="§cApple!"
-                    event.source.dimension.spawnItem(apple, event.source.location);
-                }
+                maid.getComponent("tameable").tame(event.source);
             }, 1);
         }
         /**

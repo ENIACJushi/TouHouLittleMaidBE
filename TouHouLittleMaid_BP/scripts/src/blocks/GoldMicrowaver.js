@@ -1,4 +1,4 @@
-import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerAfterEvent, Entity, ItemStack, Player } from "@minecraft/server";
+import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerAfterEvent, Entity, ItemStack, Player, BlockVolume } from "@minecraft/server";
 import { VectorMC } from "../libs/VectorMC";
 import { logger, getPlayerMainHand, setPlayerMainHand } from "../libs/ScarletToolKit";
 
@@ -249,7 +249,7 @@ export class GoldMicrowaver{
         }
 
         // 放置方块
-        dimension.fillBlocks(location, location, 
+        dimension.fillBlocks(new BlockVolume(location, location), 
             BlockPermutation.resolve("touhou_little_maid:gold_microwaver", 
                 {"thlm:direction":directionNum, "thlm:door":false, "thlm:item":0, "thlm:status":false}));
 
@@ -261,7 +261,7 @@ export class GoldMicrowaver{
 
         // 消耗物品
         let container = player.getComponent("inventory").container;
-        let slot = player.selectedSlot;
+        let slot = player.selectedSlotIndex;
         if(event.itemStack.amount===1){
             container.setItem(slot);
         }

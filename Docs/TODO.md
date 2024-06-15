@@ -1,6 +1,13 @@
 
 ## 计划
 
+适配1.21.0
+
+- 为驯服函数 `.tame(Player)` 补充参数
+- Player.selectedSlot 改为 Player.selectedSlotIndex;
+- dimension.fillBlocks(Vector, Vector, bl) 改为 dimension.fillBlocks(BlockVolume, bl) 
+
+使用新版本的 .tame(Player) 和 tamedToPlayerId，实现不需要跟随式寻主的女仆驯服操作；
 庭灯：可以存储P点、为附近的女仆提供buff，打掉之后P点会以lore的形式存储在物品之中（需要测试lore中是否能包含translate文本）
 御币改为长按连发
 * 扫帚，玩家坐上去之后视角向上按前进就可以飞，参考minecar的飞行矿车。

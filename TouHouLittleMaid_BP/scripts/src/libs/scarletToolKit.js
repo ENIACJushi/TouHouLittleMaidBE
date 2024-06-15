@@ -122,7 +122,8 @@ export function pointInArea_3D(x,y,z,areaStart_x,areaStart_y,areaStart_z,areaEnd
  */
 export function getPlayerMainHand(player){
     let container = player.getComponent("inventory").container;
-    let slot = player.selectedSlot;
+    let slot = player.selectedSlotIndex;
+    // pl.getComponent("equippable").getEquipment(EquipmentSlot.Mainhand);
     return container.getItem(slot);
 }
 /**
@@ -132,7 +133,7 @@ export function getPlayerMainHand(player){
  */
 export function setPlayerMainHand(player, item=undefined){
     let container = player.getComponent("inventory").container;
-    let slot = player.selectedSlot;
+    let slot = player.selectedSlotIndex;
     if(item===undefined){
         container.setItem(slot);
     }

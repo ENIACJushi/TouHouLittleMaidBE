@@ -1,4 +1,4 @@
-import { ItemUseOnBeforeEvent, EquipmentSlot, Block, Direction, system, Dimension, Entity, ItemStack, DataDrivenEntityTriggerAfterEvent, BlockPermutation, Player } from "@minecraft/server";
+import { ItemUseOnBeforeEvent, EquipmentSlot, Block, Direction, system, Dimension, Entity, ItemStack, DataDrivenEntityTriggerAfterEvent, BlockPermutation, Player, BlockVolume, BlockVolumeBase } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import { StrMaid } from "../maid/StrMaid";
 import { ActionbarMessage, getRandomInteger, logger, lore2Str, str2Lore, title_player_actionbar_object, title_player_actionbar_translate } from "../libs/ScarletToolKit";
@@ -113,10 +113,7 @@ export class GarageKit{
                     maid.teleport(maid.location, {"facingLocation": 
                         new Vector(maid.location.x + facing[0], maid.location.y, maid.location.z + facing[1])});
                     // 占位方块
-                    dimension.fillBlocks(
-                        startLocation, startLocation,
-                        blockGarageKit
-                    )
+                    dimension.fillBlocks(new BlockVolume(startLocation, startLocation), blockGarageKit);
                 }
                 // 生成雕塑
                 else{
@@ -137,10 +134,7 @@ export class GarageKit{
                     maid.teleport(maid.location, {"facingLocation": 
                         new Vector(maid.location.x + facing[0], maid.location.y, maid.location.z + facing[1])});
                     // 占位方块
-                    dimension.fillBlocks(
-                        event.block.location, endLocation,
-                        blockStatues
-                    );
+                    dimension.fillBlocks(new BlockVolume(event.block.location, endLocation), blockStatues);
                 }
 
                 let item = equippable.getEquipment(EquipmentSlot.Mainhand);
@@ -213,13 +207,13 @@ export class GarageKit{
                 )
                 
                 // 使用fill，提高对大体积区域的检测速度
-                let amount = maid.dimension.fillBlocks(startLocation, endLocation, "minecraft:structure_void",
-                    {"matchingBlock": BlockPermutation.resolve("minecraft:air")});
-                if(amount > 0){
-                    maid.dimension.fillBlocks(startLocation, endLocation, "minecraft:air",
-                        {"matchingBlock": BlockPermutation.resolve("minecraft:structure_void")});
-                    maid.dimension.fillBlocks(startLocation, endLocation, "minecraft:clay",
-                        {"matchingBlock": BlockPermutation.resolve(blockStatues)});
+                let statuesBlocks = maid.dimension.getBlocks(
+                    new BlockVolume(startLocation, endLocation), 
+                    {"includeTypes": [blockStatues]},
+                    true
+                );
+                if(statuesBlocks.getCapacity() < space.x*space.y*space.z){
+                    maid.dimension.fillBlocks(statuesBlocks, "minecraft:clay");
                     EntityMaid.despawn(maid);
                 }
             }; break;
@@ -290,7 +284,7 @@ export class GarageKit{
         let rotation = player.getRotation();
 
         // 放置方块
-        dimension.fillBlocks(location, location, 
+        dimension.fillBlocks(new BlockVolume(location, location), 
             BlockPermutation.resolve(blockGarageKit, {"thlm:solid": true}));
 
         ///// 放置实体 /////
@@ -328,7 +322,7 @@ export class GarageKit{
 
         // 消耗物品
         let container = player.getComponent("inventory").container;
-        let slot = player.selectedSlot;
+        let slot = player.selectedSlotIndex;
         if(event.itemStack.amount===1){
             container.setItem(slot);
         }

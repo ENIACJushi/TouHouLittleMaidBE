@@ -144,7 +144,7 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
 
         // Place item then trigger craft event, pop item, or do nothing.
         let container = player.getComponent("inventory").container;
-        let slot = player.selectedSlot;
+        let slot = player.selectedSlotIndex;
         let itemStack = container.getItem(slot);
         // There are no items on the platform.
         if(itemEntity == null){
