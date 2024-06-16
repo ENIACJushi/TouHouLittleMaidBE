@@ -159,13 +159,8 @@ export class AltarCraftHelper{
                             // 转换lore字符串
                             let strPure = Tool.lore2Str(lore);
 
-                            // 只有原主人能复活
-                            let ownerId = StrMaid.Owner.getId(strPure);
-                            
-                            if(ownerId === undefined || player.id === ownerId){
-                                EntityMaid.fromStr(strPure, dimension, location, false);
-                            }
-                            return true;
+                            // 只有原主人在场才能复活
+                            return EntityMaid.fromStr(strPure, dimension, location, false) !== undefined;
                         }
                     }
                     break;
