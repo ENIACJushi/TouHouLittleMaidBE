@@ -161,6 +161,21 @@ export class EntityMaid{
     // 主人
     static Owner = {
         /**
+         * 更新动态属性的数据
+         * @param {Entity} maid 
+         */
+        refresh(maid){
+            let tameable = maid.getComponent("tameable");
+            // if(tameable === undefined) return;
+            
+            if(tameable.tamedToPlayerId !== undefined){
+                this.setID(maid, tameable.tamedToPlayerId);
+            }
+            if(tameable.tamedToPlayer !== undefined){
+                this.setName(maid, tameable.tamedToPlayer.name);
+            }
+        },
+        /**
          * 是否有主人
          * @returns {boolean}
          */
@@ -207,11 +222,11 @@ export class EntityMaid{
         /**
          * 获取主人实体
          * @param {Entity} maid
-         * @returns {Entity|undefined}
+         * @returns {Player|undefined}
          */
         get(maid){
             let id = this.getID(maid);
-            if(id!==undefined){
+            if(id !== undefined){
                 return world.getEntity(id);
             }
             let name = this.getName(maid);
@@ -229,6 +244,7 @@ export class EntityMaid{
          * @param {Player} player
          */
         set(maid, player){
+            maid.getComponent("tameable").tame(player);
             this.setID(maid, player.id);
             this.setName(maid, player.name);
         }
@@ -1107,6 +1123,30 @@ export class EntityMaid{
             }
         }
     }
+    static Sound = class{
+        /**
+         * 取消驯服语音
+         * @param {Entity} maid 
+         */
+        static disableTamed(maid){
+            maid.setDynamicProperty("sound:disable_tamed", true);
+        }
+        static tamed(maid){
+            if(maid.getDynamicProperty("sound:disable_tamed") === true){
+                maid.setDynamicProperty("sound:disable_tamed");
+                return;
+            }
+            this.playSound(maid, "mob.thlmm.maid.tamed");
+        }
+        /**
+         * 播放声音
+         * @param {Entity} maid 
+         * @param {string} name 
+         */
+        static playSound(maid, name){
+            maid.dimension.runCommand(`playsound ${name} @a ${maid.location.x} ${maid.location.y} ${maid.location.z}`);
+        }
+    }
     /**
      * 初始化女仆实体为女仆
      * @param {Entity} maid 
@@ -1190,6 +1230,24 @@ export class EntityMaid{
      * @returns {Entity|undefined} maid
      */
     static fromStr(maidStr, dimension, location, set_health=false){
+        /// 数据合法性校验 ///
+        // 若有主人 则主人必须在世界中
+        let ownerID = StrMaid.Owner.getId(maidStr);
+        let ownerName = StrMaid.Str.getOwnerName(maidStr);
+        let ownerEntity = undefined;
+        let hasOwner = false;
+        if(ownerID !== undefined){
+            hasOwner = true;
+            ownerEntity = world.getEntity(ownerID);
+        }
+        if(ownerEntity === undefined && ownerName !== undefined){
+            hasOwner = true;
+            ownerEntity = world.getPlayers({"name": ownerName})[0];
+        }
+        if(hasOwner && ownerEntity === undefined){
+            return undefined;
+        }
+
         /// 生成女仆 ///
         var maid = dimension.spawnEntity("thlmm:maid", location);
         this.init_maid(maid, true);
@@ -1199,8 +1257,7 @@ export class EntityMaid{
         this.Level.set(maid, StrMaid.Level.get(maidStr));
         // 杀敌数
         this.Kill.set(maid, StrMaid.Kill.get(maidStr));
-        // 主人ID  可为空
-        let ownerID = StrMaid.Owner.getId(maidStr);
+        // 主人ID  可为空  非空时主人必须在世界中
         if(ownerID !== undefined) this.Owner.setID(maid, ownerID);
         // 生命值  延时设置，等待 level 调血
         if(set_health){
@@ -1232,8 +1289,13 @@ export class EntityMaid{
         let maidName = StrMaid.Str.getMaidName(maidStr);
         if(maidName!==undefined){ maid.nameTag = maidName }
         // 主人名称
-        let ownerName = StrMaid.Str.getOwnerName(maidStr);
         if(ownerName!==undefined){ this.Owner.setName(maid, ownerName)};
+        
+        // 设置主人
+        if(hasOwner){
+            this.Sound.disableTamed(maid);
+            system.runTimeout(()=>{maid.getComponent("tameable").tame(ownerEntity);},1); // 等待女仆属性设置完成
+        }
 
         return maid;
     }

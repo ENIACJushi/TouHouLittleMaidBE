@@ -77,46 +77,27 @@ export class MaidManager{
             }
         }
         /**
-         * 女仆驯服寻主事件
-         * 因为 1.没有实体交互事件 2.实体触发器事件没有发动者 3.脚本无法获取主人 4.若与实体交互成功，则物品使用事件不会触发
-         * 所以 让女仆自行紧跟主人并扫描，直到脚本获取到主人
-         * 对于曾经有主人的女仆，当跟随到的主人与记录不符时会重新回到重生时的野生状态
+         * 女仆被驯服事件
          * @param {DataDrivenEntityTriggerAfterEvent} event
          */
-        static onTameFollowSuccess(event){
-            const results = event.entity.dimension.getPlayers({
-                maxDistance:2,
-                location:event.entity.location
-            })
-            if(results.length === 1){
-                let maid = event.entity;
-                let player = results[0];
-                // 寻主成功
-                if(EntityMaid.Owner.getID(maid)===undefined || EntityMaid.Owner.getID(maid)===results[0].id){
-                    // 添加组件
-                    maid.triggerEvent("api:follow_on_tame_over");
-                    EntityMaid.Level.eventTamed(maid, EntityMaid.Level.get(maid));
+        static onTamed(event){
+            let maid = event.entity;
 
-                    // 设置主人
-                    EntityMaid.Owner.setID(maid, player.id);
-                    EntityMaid.Owner.setName(maid, player.name);
-                    
-                    // 设置工作模式
-                    let work = maid.getDynamicProperty("temp_work");
-                    if(work !== undefined){
-                        EntityMaid.Work.set(maid, work);
-                        maid.setDynamicProperty("temp_work")
-                    }
-                }
-                // 跟随到的主人与记录不符 回到未驯服状态
-                else{
-                    maid.triggerEvent("api:follow_on_tame_over_backreborn");
-                    // 返还一个苹果
-                    let apple = new ItemStack("minecraft:apple", 1);
-                    apple.nameTag="§cApple!"
-                    player.dimension.spawnItem(apple, player.location);
-                }
+            EntityMaid.Level.eventTamed(maid, EntityMaid.Level.get(maid));
+
+            // 设置主人
+            EntityMaid.Owner.refresh(maid);
+            
+            // 设置工作模式
+            let work = maid.getDynamicProperty("temp_work");
+            if(work !== undefined){
+                EntityMaid.Work.set(maid, work);
+                maid.setDynamicProperty("temp_work");
             }
+            
+            // 播放语音 从魂符、照片、祭坛复活的女仆不会播放
+            
+            EntityMaid.Sound.tamed(maid);
         }
         /**
          * 坟墓受击
@@ -277,16 +258,9 @@ export class MaidManager{
             
             // 放置
             let maid = EntityMaid.fromStr(strPure, dimension, location, true);
-            maid.triggerEvent("api:reborn");
             
             // 消耗照片
             Tool.setPlayerMainHand(event.source);
-            
-            // 设置主人
-            system.runTimeout(()=>{
-                maid.getComponent("tameable").tame(event.source);
-            }, 1);
-            
         }
         /**
          * 魂符使用事件
@@ -317,7 +291,6 @@ export class MaidManager{
                 try{
                     EntityMaid.Skin.setRandom(maid);
                     EntityMaid.Owner.set(maid, player);
-                    maid.triggerEvent("api:reborn");
                 }
                 catch{}
             }
@@ -331,7 +304,6 @@ export class MaidManager{
 
                     // 放置
                     maid = EntityMaid.fromStr(str, dimension, location, true);
-                    maid.triggerEvent("api:reborn");
                 }
                 catch{}
             }
@@ -339,11 +311,6 @@ export class MaidManager{
             if(maid === undefined){ return; }
             // 转换物品
             Tool.setPlayerMainHand(event.source, new ItemStack("touhou_little_maid:smart_slab_empty", 1));
-            
-            // 设置主人
-            system.runTimeout(()=>{
-                maid.getComponent("tameable").tame(event.source);
-            }, 1);
         }
         /**
          * 女仆坐下事件

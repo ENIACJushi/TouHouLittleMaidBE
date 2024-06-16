@@ -13,7 +13,7 @@
 - Player.selectedSlot 改为 Player.selectedSlotIndex;
 - dimension.fillBlocks(Vector, Vector, bl) 改为 dimension.fillBlocks(BlockVolume, bl) 
 
-<!-- #### 功能调整 -->
+#### 功能调整
 
 使用新版本的 .tame(Player) 和 tamedToPlayerId，实现不需要跟随式寻主的女仆驯服操作；
 

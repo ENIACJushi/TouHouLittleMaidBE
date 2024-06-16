@@ -5,6 +5,7 @@ import { recipeList } from "../../data/recipes/index"
 import { tagDefines } from "../../data/recipes/tag_define"
 import PowerPoint from "./PowerPoint";
 import { EntityMaid } from "../maid/EntityMaid"
+import { StrMaid } from "../maid/StrMaid";
 
 export class AltarCraftHelper{
     constructor(){
@@ -109,7 +110,8 @@ export class AltarCraftHelper{
      * @param {Dimension} dimension 
      * @param {Vector} location 
      * @param {*} output 
-     * @param {*} itemStacks 
+     * @param {ItemStack} itemStacks 
+     * @param {Player} player 
      * @returns 
      */
     summonOutput(dimension, location, output, itemStacks, player){
@@ -157,8 +159,12 @@ export class AltarCraftHelper{
                             // 转换lore字符串
                             let strPure = Tool.lore2Str(lore);
 
-                            let maid = EntityMaid.fromStr(strPure, dimension, location, false);
-                            maid.triggerEvent("api:reborn");
+                            // 只有原主人能复活
+                            let ownerId = StrMaid.Owner.getId(strPure);
+                            
+                            if(ownerId === undefined || player.id === ownerId){
+                                EntityMaid.fromStr(strPure, dimension, location, false);
+                            }
                             return true;
                         }
                     }

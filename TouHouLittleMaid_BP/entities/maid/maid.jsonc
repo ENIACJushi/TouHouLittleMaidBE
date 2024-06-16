@@ -150,29 +150,6 @@
           "can_teleport": false
         }
       },
-      // 拐走后跟随
-      "status:follow_on_tame":{
-        "minecraft:is_tamed": { },
-        "minecraft:behavior.follow_owner": {
-          "priority": 0,
-          "speed_multiplier": 1.4,
-          "start_distance": 1,
-          "stop_distance": 1,
-          "can_teleport": true
-        },
-        "minecraft:entity_sensor": {
-          "sensor_range": 1,
-          "relative_range": false,
-          "minimum_count": 1,
-          "maximum_count": 2,
-          "event_filters": {
-            "all_of": [
-              { "test": "is_owner", "subject": "other", "value": true }
-            ]
-          },
-          "event": "thlmm:f"
-        }
-      },
       // 守家模式
       "status:home":{
         "minecraft:is_baby": {}
@@ -184,23 +161,17 @@
           "probability": 1.0,
           "tame_items": "cake",
           "tame_event": {
-            "event": "on_tamed",
+            "event": "thlmm:f",
             "target": "self"
           }
         }
       },
-      "thlmm:reborn": {
-        "minecraft:behavior.panic": { "priority": 1, "speed_multiplier": 1.25 },
+      
+      "thlmm:maid_tame": {
         "minecraft:tameable": {
           "probability": 1.0,
-          "tame_items":["apple", "cake"],
-          "tame_event": {
-            "event": "on_tamed",
-            "target": "self"
-          }
-        }
-      },
-      "thlmm:maid_tame": {
+          "tame_items": []
+        },
         "minecraft:is_tamed": {},
         "minecraft:interact": {
           "interactions": [
@@ -934,30 +905,7 @@
         }
       },
       "despawn":{ "add": { "component_groups": [ "despawn" ] } },
-      "on_tamed": {
-        "remove": {
-          "component_groups": [
-            "thlmm:maid_wild"
-          ]
-        },
-        "add": {
-          "component_groups": [
-            "status:follow_on_tame"
-          ]
-        }
-      },
-      "on_tamed_reborn": {
-        "remove": {
-          "component_groups": [
-            "thlmm:reborn"
-          ]
-        },
-        "add": {
-          "component_groups": [
-            "status:follow_on_tame"
-          ]
-        }
-      },
+      
       "become_npc":{
         "remove": { "component_groups": [
           "thlmm:maid_basic",
@@ -968,7 +916,6 @@
           "backpack:default",
           "thlmm:lv1_basic",
           "thlmm:lv1_tame",
-          "status:follow_on_tame",
           "status:follow_standard",
           "status:follow_sit",
           "thlmm:maid_tame"
@@ -987,7 +934,6 @@
           "backpack:default",
           "thlmm:lv1_basic",
           "thlmm:lv1_tame",
-          "status:follow_on_tame",
           "status:follow_standard",
           "status:follow_sit",
           "thlmm:maid_tame"
@@ -1005,7 +951,6 @@
           "backpack:default",
           "thlmm:lv1_basic",
           "thlmm:lv1_tame",
-          "status:follow_on_tame",
           "status:follow_standard",
           "status:follow_sit",
           "thlmm:maid_tame"
@@ -1056,7 +1001,12 @@
       },// timer 每3秒一次的定时事件 
       "thlmm:a": {}, // danmaku Attack
       "thlmm:d" :{}, // Death
-      "thlmm:f" :{}, // Follow on tamed
+      "thlmm:f": {
+        "remove": { "component_groups": [ "thlmm:maid_wild" ] },
+        "add": {"component_groups": [ "thlmm:maid_tame", "status:follow_standard", "thlmm:maid_tame_sit"]},
+        "trigger": "api:mode_idle",
+        "queue_command":{ "command": ["particle thlm:maid_happy ~~~"]}
+      },
       "thlmm:h" :{}, // Home
       "thlmm:i" :{ "sequence": [ // 退出坐下模式 进入查包模式
         { "remove": {"component_groups": ["thlmm:maid_tame_sit"]},  "add": {"component_groups": ["thlmm:maid_tame_inventory"]} },
@@ -1138,11 +1088,6 @@
       "thlmb:t3": {},
       
       //////// 脚本接口 ////////
-      //// 曾有主人的生成 ////
-      "api:reborn":{
-        "add": { "component_groups": [ "thlmm:reborn" ] },
-        "remove": { "component_groups": [ "thlmm:maid_wild" ] }
-      },
       //// 跟随类型 ////
       "api:status_follow"  :{
         "sequence": [
@@ -1160,17 +1105,6 @@
       "api:status_home"    :{
         "add"   : {"component_groups": ["status:home"]}, 
         "remove": {"component_groups": ["status:follow_standard", "status:follow_sit"]}
-      },
-      "api:follow_on_tame_over":{
-        "add": {"component_groups": [ "thlmm:maid_tame", "status:follow_standard", "thlmm:maid_tame_sit"]}, 
-        "remove": {"component_groups": ["status:follow_on_tame"]},
-        "trigger": "api:mode_idle",
-        "queue_command":{ "command": ["playsound mob.thlmm.maid.tamed @a ~~~", "particle thlm:maid_happy ~~~"]}
-      },
-      "api:follow_on_tame_over_backreborn":{
-        "add": { "component_groups": [ "thlmm:maid_wild", "thlmm:reborn" ] },
-        "remove": {"component_groups": ["status:follow_on_tame"]},
-        "queue_command":{ "command": ["particle thlm:maid_angry ~~~"]}
       },
       
       //// 等级 ////
