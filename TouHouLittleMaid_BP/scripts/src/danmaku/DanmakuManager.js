@@ -212,14 +212,22 @@ export function fairy_shoot(fairy){
 
         let distanceFactor = distance / 8;
         let speed = 0.3 * (distanceFactor + 1);
-        
         // 我们在 MC 加入了预瞄桂
-        DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, 1, 0))
-                .setTarget(fairy.target).setRandomColor().setRandomType()
+        if (Math.random() <= AIMED_SHOT_PROBABILITY) {
+            DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet(new Vector(0, 1, 0))
+                    .setTargetOffSet(new Vector(0, 1, 0)).setTarget(fairy.target).setRandomColor().setRandomType()
+                    .setDamage((distanceFactor + 1)).setGravity(0)
+                    .setVelocity(speed).enablePreJudge()
+                    .setInaccuracy(0.05).aimedShot();
+        } else {
+            DanmakuShoot.create().setWorld(fairy.dimension).setThrower(fairy).setThrowerOffSet(new Vector(0, 1, 0))
+                .setTargetOffSet(new Vector(0, 1, 0)) .setTarget(fairy.target).setRandomColor().setRandomType()
                 .setDamage(distanceFactor + 1.5).setGravity(0)
                 .setVelocity(speed).enablePreJudge()
                 .setInaccuracy(0.02).setFanNum(3).setYawTotal(Math.PI / 6)
                 .fanShapedShot();
+        }
+        
     }
 }
 var laserRadius = 0;

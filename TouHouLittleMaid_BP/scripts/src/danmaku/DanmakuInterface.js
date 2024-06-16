@@ -64,7 +64,8 @@ export class DanmakuInterface{
                 // 没有原版框架下的攻击实体，则通过动态属性寻找
                 let id = danmaku.getDynamicProperty("source");
 
-                if(id != "0"){
+                if(id !== undefined && id !== "0"){
+                    if(target.id == id){ return false; };
                     source =  world.getEntity(id);
                 }
             }
@@ -72,7 +73,7 @@ export class DanmakuInterface{
             
             //// 免伤判断 ////
             // 不伤害自己
-            if(target.id == source.id){ return false; }
+            if(target.id == source.id){ return false; };
             // 玩家受击
             if(target.typeId==="minecraft:player"){
                 // 女仆不伤害主人

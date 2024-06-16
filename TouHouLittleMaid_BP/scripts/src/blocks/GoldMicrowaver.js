@@ -463,6 +463,7 @@ export class GoldMicrowaver{
     static despawnEvent(event){
         let microwaver = event.entity;
         // 掉落物品
+        microwaver.triggerEvent("despawn");
         let recipes = this.recipes[this.Entity.getItem(microwaver)]
         if(recipes !== undefined){
             if(this.Entity.getProgress(microwaver)>=1.0){

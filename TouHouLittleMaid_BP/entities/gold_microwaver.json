@@ -42,10 +42,11 @@
       "minecraft:knockback_resistance": { "value": 1.0 }
     },
     "events": {
-      "thlmw:d":{ "add": { "component_groups": [ "despawn" ] } },
-      "thlmw:f":{},
-      "thlmw:i":{},
-      "thlmw:s":{},
+      "thlmw:d": {},
+      "despawn": { "add": { "component_groups": [ "despawn" ] } },
+      "thlmw:f": {},
+      "thlmw:i": {},
+      "thlmw:s": {},
       "step":{
         "sequence": [
           {

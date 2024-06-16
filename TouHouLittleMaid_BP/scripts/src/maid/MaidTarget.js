@@ -479,7 +479,7 @@ export class Farm{
             }
             
             for(let target of targets){
-                searchMatrix[Math.floor(target.location.x - location.x + range)][Math.floor(target.location.z - location.z + range)] = true;
+                searchMatrix[Math.floor(target.location.x - location.x + range) + 1][Math.floor(target.location.z - location.z + range) + 1] = true;
             }
             for(let ix = 0; ix < range; ix = ix > 0 ? -ix : 2-ix){
                 // 获取作物方块
@@ -495,8 +495,8 @@ export class Farm{
                     true
                 );
                 for(let pos of lands.getBlockLocationIterator()){
-                    let m_x = Math.floor(pos.x - location.x + range);
-                    let m_z = Math.floor(pos.z - location.z + range);
+                    let m_x = Math.floor(pos.x - location.x + range) + 1;
+                    let m_z = Math.floor(pos.z - location.z + range) + 1;
                     if(searchMatrix[m_x][m_z] === true){
                         continue;
                     }
