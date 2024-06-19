@@ -39,7 +39,6 @@ export class MaidManager{
          */
         static onSpawnEvent(event){
             let maid = event.entity;
-
             EntityMaid.init_maid(maid);
         }
         /**

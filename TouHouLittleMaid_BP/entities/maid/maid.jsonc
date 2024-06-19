@@ -24,8 +24,15 @@
       }
     },
     "component_groups": {
-      "despawn":{
-        "minecraft:instant_despawn":{ "remove_child_entities": false }
+      "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
+      "init_failed": { 
+        "minecraft:ageable": {
+          "duration": 2,
+          "grow_up": {
+            "event": "init_failed",
+            "target": "self"
+          }
+        }
       },
       ///////// 女仆属性 /////////
       ///// 基础属性 /////
@@ -62,7 +69,7 @@
         },
         ///// 基础属性 /////
         "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": false },
-        "minecraft:health"       : { "value": 40, "max": 40 },
+        "minecraft:health"       : { "value": 64, "max": 64 },
         "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
         "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
         "minecraft:loot"         : { "table": "loot_tables/empty.json" },
@@ -877,9 +884,8 @@
     },
     "events": {
       ///// 基础事件 /////
-      "minecraft:entity_spawned": {
-        "trigger": "thlmm:0"
-      },
+      "minecraft:entity_spawned": { "trigger": "thlmm:0" },
+      "init_failed":{ "queue_command": {"command":"function touhou_little_maid/not_support"} },
       "become_maid":{
         "add": {
           "component_groups": [
@@ -1077,7 +1083,7 @@
             "remove": { "component_groups": [ "mode:danmaku_attack_sit" ] } }
         ]
       },
-      "thlmm:0" :{}, // Spawn
+      "thlmm:0" :{ "add": { "component_groups": [ "init_failed" ] } }, // Spawn
       "thlmm:1" :{}, // smart slab
       "thlm:n": {}, // npc交互
 
@@ -1088,6 +1094,8 @@
       "thlmb:t3": {},
       
       //////// 脚本接口 ////////
+      //// 初始化成功 ////
+      "api:init_success":{ "remove": { "component_groups": [ "init_failed" ] } },
       //// 跟随类型 ////
       "api:status_follow"  :{
         "sequence": [
