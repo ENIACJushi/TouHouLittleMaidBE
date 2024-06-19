@@ -99,6 +99,7 @@
       },
       // 站起时移动属性
       "thlmm:maid_basic_stand_movement":{
+        "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
         "minecraft:water_movement": { "drag_factor": 0.9 },
         "minecraft:jump.static": { },
         "minecraft:can_climb": { },
@@ -122,6 +123,7 @@
       },
       // 坐下时移动属性
       "thlmm:maid_basic_sit_movement":{
+        "minecraft:collision_box": { "width": 0.6, "height": 1.15 },
         "minecraft:navigation.walk": {
           "can_walk": false
         },
