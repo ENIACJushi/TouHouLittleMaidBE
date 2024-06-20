@@ -45,6 +45,11 @@
             "target": "self"
           }
         },
+        "minecraft:damage_sensor": {
+          "triggers": [
+            { "cause": "all", "on_damage": {"event": "on_hurt", "target": "self", "filters": {"test": "has_damage", "value": "fatal", "operator": "not"}} }
+          ]
+        },
         "minecraft:behavior.float": { "priority": 2 },
         // TODO: 潜水逻辑
         // "minecraft:inside_block_notifier": {
@@ -388,6 +393,7 @@
           "triggers": [
             { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"test": "is_owner","subject": "damager","value": true} }},
             { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } },
+            { "cause": "all", "damage_multiplier": 0.9, "on_damage": {"event": "on_hurt", "target": "self", "filters": {"test": "has_damage", "value": "fatal", "operator": "not"}} },
             { "cause": "all", "damage_multiplier": 0.9 }
           ]
         }
@@ -403,6 +409,7 @@
           "triggers": [
             { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"test": "is_owner","subject": "damager","value": true} }},
             { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } },
+            { "cause": "all", "damage_multiplier": 0.75, "on_damage": {"event": "on_hurt", "target": "self", "filters": {"test": "has_damage", "value": "fatal", "operator": "not"}} },
             { "cause": "all", "damage_multiplier": 0.75 }
           ]
         }
@@ -888,6 +895,7 @@
       ///// 基础事件 /////
       "minecraft:entity_spawned": { "trigger": "thlmm:0" },
       "init_failed":{ "queue_command": {"command":"function touhou_little_maid/not_support"} },
+      "on_hurt": { "queue_command": {"command": "playsound mob.thlmm.maid.hurt @a ~~~"} },
       "become_maid":{
         "add": {
           "component_groups": [
@@ -1008,7 +1016,7 @@
         ]
       },// timer 每3秒一次的定时事件 
       "thlmm:a": {}, // danmaku Attack
-      "thlmm:d" :{}, // Death
+      "thlmm:d" :{ "queue_command": {"command": "playsound mob.thlmm.maid.death @a ~~~"} }, // Death
       "thlmm:f": {
         "remove": { "component_groups": [ "thlmm:maid_wild" ] },
         "add": {"component_groups": [ "thlmm:maid_tame", "status:follow_standard", "thlmm:maid_tame_sit"]},
