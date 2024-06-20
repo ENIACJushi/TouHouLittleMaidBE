@@ -21,6 +21,7 @@ import {DanmakuType}   from "../danmaku/DanmakuType";
 import { shoot as cherryShoot } from "../danmaku/custom/Cherry";
 import { Cocoa, Farm, MaidTarget, Melon } from "./MaidTarget";
 import { isBadContainerBlock } from "../../data/BadContainerBlocks";
+import * as DP from '../libs/DynamicPropertyInterface'
 
 const HOME_RADIUS=32;
 
@@ -73,6 +74,12 @@ export class MaidManager{
             let ownerName = EntityMaid.Owner.getName(maid);;
             if(ownerName !== undefined){
                 tombstone.nameTag = "§aOwner\n§e" + ownerName;
+                DP.setString(tombstone, "owner_name", ownerName);
+            }
+            // 主人信息
+            let owenrId = EntityMaid.Owner.getID(maid);
+            if(owenrId !== undefined){
+                DP.setString(tombstone, "owner_id", owenrId);
             }
         }
         /**
@@ -105,6 +112,21 @@ export class MaidManager{
         static tombstoneAttackEvent(event){
             let tombstone = event.entity;
             let dimension = tombstone.dimension;
+            // 主人验证
+            let ownerName = DP.getString(tombstone, "owner_name");
+            if(ownerName !== undefined){
+                let player = dimension.getPlayers({"name": ownerName, "location": tombstone.location, "maxDistance": 6});
+                if(player.length === 0){
+                    let ownerID = DP.getString(tombstone, "owner_id");
+                    if(ownerID !== undefined){
+                        let player = world.getEntity(ownerID);
+                        if(VectorMC.length(VectorMC.sub(player.location, tombstone.location)) > 6){
+                            return;
+                        }
+                    }
+                }
+            }
+
             let container = tombstone.getComponent("inventory").container;
 
             for(let i = 0; i < container.size; i++){
