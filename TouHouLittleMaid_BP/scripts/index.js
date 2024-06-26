@@ -197,7 +197,7 @@ class thlm {
         // Trigger Event
         world.afterEvents.dataDrivenEntityTrigger.subscribe(event => {
             system.run(()=>{
-                Tool.logger(event.eventId);
+                // Tool.logger(event.eventId);
                 // const {entity, id, modifiers} = data;
                 if(event.eventId.substring(0, 4) == "thlm"){
                     switch(event.eventId.substring(4, 5)){

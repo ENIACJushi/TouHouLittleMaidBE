@@ -2,15 +2,16 @@
 import { Data as Vallina } from "./Vallina";
 import { Data as FarmersDelight } from "./FarmersDelight";
 import { Data as CornDelight } from "./CornDelight";
-import { Data as 餐厨工艺 } from "./餐厨工艺";
+import { Data as ccgy } from "./ccgy";
 
 var checkList = [
-    Vallina, 
-    FarmersDelight, 
-    CornDelight,
-    餐厨工艺
+    Vallina,       // 原版
+    FarmersDelight,// 农夫乐事
+    CornDelight,   // 玉米乐事
+    ccgy           // 餐厨工艺
 ];
 
+//////////////////////////////////////////////////////////////////////
 
 import { BlockPermutation, ItemStack } from "@minecraft/server";
 import { logger, logger_debug } from "../../src/libs/ScarletToolKit";
