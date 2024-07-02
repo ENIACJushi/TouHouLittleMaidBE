@@ -54,12 +54,13 @@ export class DanmakuInterface{
      * @param {Entity} target 受击者
      * @returns {boolean}
      */
-    static applyDamage(source, danmaku, target){
+    static applyDamage(_source, danmaku, target){
         try{
             // Get source entity by event or property
             // const damageOptions = {"damagingProjectile": projectile}; // 弹射物伤害
             var damageOptions = {"cause" : EntityDamageCause.magic} // 魔法伤害
             //// 设置伤害施加者 ////
+            let source = _source;
             if(source === undefined){
                 // 没有原版框架下的攻击实体，则通过动态属性寻找
                 let id = danmaku.getDynamicProperty("source");
@@ -76,9 +77,9 @@ export class DanmakuInterface{
             if(target.id == source.id){ return false; };
             // 玩家受击
             if(target.typeId==="minecraft:player"){
-                // 女仆不伤害主人
+                // 女仆不伤害玩家
                 let ownerID = danmaku.getDynamicProperty("owner");
-                if(ownerID!==undefined && ownerID===target.id){
+                if(ownerID!==undefined){// && ownerID===target.id
                     return false;
                 }
             }
@@ -86,7 +87,7 @@ export class DanmakuInterface{
             else if(target.typeId==="thlmm:maid"){
                 let targetOwnerID = EntityMaid.Owner.getID(target); // 目标的主人
                 if(targetOwnerID !== undefined){
-                    // 主人不伤害自己的女仆
+                    /// 主人不伤害自己的女仆
                     // 脚本发射
                     if(targetOwnerID === danmaku.getDynamicProperty("source")){
                         return false;
@@ -95,11 +96,11 @@ export class DanmakuInterface{
                     if(source.id !== undefined && targetOwnerID === source.id){
                         return false;
                     }
-                    // 女仆不伤害相同主人的女仆
-                    let sourceOwnerID = danmaku.getDynamicProperty("owner");
-                    if(sourceOwnerID!==undefined && sourceOwnerID === targetOwnerID){
-                        return false;
-                    }
+                }
+                /// 女仆不伤害女仆
+                let sourceOwnerID = danmaku.getDynamicProperty("owner");
+                if(sourceOwnerID !== undefined){
+                    return false;
                 }
             }
             // 不伤害自己的坐骑
