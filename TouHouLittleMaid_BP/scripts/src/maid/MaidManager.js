@@ -179,38 +179,17 @@ export class MaidManager{
             location.y += 0.5;
             let output_item = new ItemStack("touhou_little_maid:photo", 1);
             output_item.setLore(lore);
+            let maidnName = EntityMaid.getNameTag(maid);
+            if(maidnName !== ""){
+                output_item.nameTag = `§z${maidnName}`;
+            }
             if(maid.dimension.spawnItem(output_item, owner.location) !== undefined){
                 // 清除女仆
                 EntityMaid.Pick.set(maid, false);// 避免捡完东西被消除
                 maid.triggerEvent("despawn");
             }
         }
-        /**
-         * 女仆被魂符收回事件
-         * @param {DataDrivenEntityTriggerAfterEvent} event 
-         */
-        static onSmartSlabRecycleEvent(event){
-            let maid = event.entity;
-            if(maid===undefined) return;
-
-            // 获取魂符物品
-            let owner = EntityMaid.Owner.get(maid);
-            if(owner === undefined) return;
-            let item = Tool.getPlayerMainHand(owner);
-            if(item === undefined || item.typeId !== "touhou_little_maid:smart_slab_empty") return;
-
-            // 将女仆转为lore
-            let lore = EntityMaid.toLore(maid);
-            
-            // 清除女仆
-            EntityMaid.Pick.set(maid, false);// 避免捡完东西被消除
-            maid.triggerEvent("despawn");
-
-            // 修改魂符
-            let new_itme = new ItemStack("touhou_little_maid:smart_slab_has_maid", 1)
-            new_itme.setLore(lore);
-            Tool.setPlayerMainHand(owner, new_itme);
-        }
+        
         /**
          * 根据方块和一个方向获得可以放置女仆的位置
          * 用于魂符和相片的放置
@@ -288,7 +267,8 @@ export class MaidManager{
          * @param {ItemUseOnBeforeEvent} event 
          */
         static smartSlabOnUseEvent(event){
-            let lore = event.itemStack.getLore();
+            let itemStack = event.itemStack;
+            let lore = itemStack.getLore();
 
             //// 检测被交互的方块是否会复制物品 ////
             if(isBadContainerBlock(event.block.typeId)) return;
@@ -306,6 +286,7 @@ export class MaidManager{
 
             // 生成女仆
             let maid = undefined;
+            let itemName = itemStack.nameTag;
             if(lore.length === 0){
                 // 首次使用
                 maid = EntityMaid.spawnRandomMaid(dimension, location);
@@ -332,8 +313,51 @@ export class MaidManager{
             }
             // 没有成功召唤 直接退出
             if(maid === undefined){ return; }
+            
             // 转换物品
-            Tool.setPlayerMainHand(event.source, new ItemStack("touhou_little_maid:smart_slab_empty", 1));
+            let emptyItem = new ItemStack("touhou_little_maid:smart_slab_empty", 1);
+            if(itemName !== undefined && itemName.substring(0,2) !== "§z"){
+                emptyItem.nameTag = itemName;
+            }
+            
+            Tool.setPlayerMainHand(event.source, emptyItem);
+        }
+        /**
+         * 女仆被魂符收回事件
+         * @param {DataDrivenEntityTriggerAfterEvent} event 
+         */
+        static onSmartSlabRecycleEvent(event){
+            let maid = event.entity;
+            if(maid===undefined) return;
+
+            // 获取魂符物品
+            let owner = EntityMaid.Owner.get(maid);
+            if(owner === undefined) return;
+            let item = Tool.getPlayerMainHand(owner);
+            if(item === undefined || item.typeId !== "touhou_little_maid:smart_slab_empty") return;
+
+            // 将女仆转为lore
+            let lore = EntityMaid.toLore(maid);
+            
+            // 清除女仆
+            EntityMaid.Pick.set(maid, false);// 避免捡完东西被消除
+            maid.triggerEvent("despawn");
+
+            // 修改魂符
+            let new_itme = new ItemStack("touhou_little_maid:smart_slab_has_maid", 1);
+            if(item.nameTag === undefined){
+                let maidnName = EntityMaid.getNameTag(maid);
+                if(maidnName !== ""){
+                    new_itme.nameTag = `§z${maidnName}`;
+                }
+            }
+            else{
+                if(item.nameTag.substring(0,2) !== ""){
+                    new_itme.nameTag = item.nameTag;
+                }
+            }
+            new_itme.setLore(lore);
+            Tool.setPlayerMainHand(owner, new_itme);
         }
         /**
          * 女仆坐下事件

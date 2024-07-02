@@ -1375,7 +1375,8 @@ export class EntityMaid{
      */
     static getNameTag(maid){
         if(this.Backpack.isCheckMode(maid)){
-            return maid.getDynamicProperty("name");
+            let name = maid.getDynamicProperty("name");
+            return name === undefined ? "" : name;
         }
         return maid.nameTag;
     }
