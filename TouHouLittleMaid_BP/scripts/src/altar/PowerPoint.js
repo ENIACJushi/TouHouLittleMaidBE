@@ -126,8 +126,10 @@ export default class PowerPoint {
             // Follow box (xzy) x-z-7
             let delta_x = pl_headLocation.x - en.location.x;
             let delta_z = pl_headLocation.z - en.location.z;
-            if(    -1*this.power_point_distance < delta_x && delta_x < this.power_point_distance
-                && -1*this.power_point_distance < delta_z && delta_z < this.power_point_distance
+            
+            let distance = Math.sqrt(delta_x*delta_x + delta_z*delta_z);
+            
+            if(    -1*this.power_point_distance < distance && distance < this.power_point_distance
                 && -5 < delta_y && delta_y < 6)
             {
                 // Score box (xzy): 3 × 3 × 4
@@ -165,9 +167,10 @@ export default class PowerPoint {
                 }
                 // ​If not in the score box, do storm suction
                 else{
-                    let distance = Math.sqrt(delta_x*delta_x + delta_z*delta_z);
     
-                    let velocity_xz = (distance > 1) ? (this.power_point_max_speed - distance * (this.power_point_max_speed/this.power_point_distance)) : (distance * (this.power_point_max_speed/this.power_point_distance));
+                    let velocity_xz = (distance > 1) 
+                        ? (this.power_point_max_speed - distance * (this.power_point_max_speed/this.power_point_distance)) 
+                        : (distance * (this.power_point_max_speed/this.power_point_distance));
                     let v_x = velocity_xz*(delta_x/distance);
                     let v_z = velocity_xz*(delta_z/distance);
                 
