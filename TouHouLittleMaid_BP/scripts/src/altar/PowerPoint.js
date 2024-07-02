@@ -161,6 +161,10 @@ export default class PowerPoint {
                             default: break;
                         }
                     }
+                    if(point_score > 500){
+                        // 转化为经验
+                        pl.runCommand(`xp ${point_score - 500} @s`)
+                    }
                     this.set_power_number(pl.name, Math.min(500, point_score));
                     pl.dimension.runCommand(`playsound power_pop ${Tool.playerCMDName(pl.name)}`);
                     en.triggerEvent("despawn");
