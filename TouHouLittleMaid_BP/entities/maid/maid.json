@@ -391,9 +391,12 @@
       "thlmm:lv1_tame": {
         "minecraft:damage_sensor": {
           "triggers": [
-            { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"test": "is_owner","subject": "damager","value": true} }},
-            { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } },
-            { "cause": "all", "damage_multiplier": 0.9, "on_damage": {"event": "on_hurt", "target": "self", "filters": {"test": "has_damage", "value": "fatal", "operator": "not"}} },
+            { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"all_of":[
+              {"test": "is_owner","subject": "damager","value": true},
+              {"test": "is_sneaking", "subject": "damager", "value": true }
+            ]} }}, // 打开菜单
+            { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } }, // 免疫主人伤害
+            { "cause": "all", "damage_multiplier": 0.9, "on_damage": {"event": "on_hurt", "target": "self", "filters": {"test": "has_damage", "value": "fatal", "operator": "not"}} }, // 受伤事件
             { "cause": "all", "damage_multiplier": 0.9 }
           ]
         }
@@ -407,9 +410,12 @@
       "thlmm:lv2_tame": {
         "minecraft:damage_sensor": {
           "triggers": [
-            { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"test": "is_owner","subject": "damager","value": true} }},
-            { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } },
-            { "cause": "all", "damage_multiplier": 0.75, "on_damage": {"event": "on_hurt", "target": "self", "filters": {"test": "has_damage", "value": "fatal", "operator": "not"}} },
+            { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"all_of":[
+              {"test": "is_owner","subject": "damager","value": true},
+              {"test": "is_sneaking", "subject": "damager", "value": true }
+            ]} }}, // 打开菜单
+            { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } }, // 免疫主人伤害
+            { "cause": "all", "damage_multiplier": 0.75, "on_damage": {"event": "on_hurt", "target": "self", "filters": {"test": "has_damage", "value": "fatal", "operator": "not"}} }, // 受伤事件
             { "cause": "all", "damage_multiplier": 0.75 }
           ]
         }
