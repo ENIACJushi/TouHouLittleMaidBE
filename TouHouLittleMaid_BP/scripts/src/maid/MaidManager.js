@@ -311,7 +311,9 @@ export class MaidManager{
                 maid = EntityMaid.spawnRandomMaid(dimension, location);
                 try{
                     EntityMaid.Skin.setRandom(maid);
-                    EntityMaid.Owner.set(maid, player);
+                    system.runTimeout(()=>{
+                        EntityMaid.Owner.set(maid, player);
+                    },1)
                 }
                 catch{}
             }
