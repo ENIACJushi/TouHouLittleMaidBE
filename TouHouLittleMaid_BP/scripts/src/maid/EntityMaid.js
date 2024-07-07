@@ -1170,7 +1170,6 @@ export class EntityMaid{
             },1);
         }
         maid.setDynamicProperty("spawn_set", true);
-        maid.triggerEvent("api:init_success");
     }
     /// 字符化
     /**

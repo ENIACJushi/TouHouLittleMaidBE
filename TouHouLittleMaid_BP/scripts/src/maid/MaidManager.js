@@ -40,6 +40,7 @@ export class MaidManager{
          */
         static onSpawnEvent(event){
             let maid = event.entity;
+            maid.triggerEvent("api:init_success");
             EntityMaid.init_maid(maid);
         }
         /**
