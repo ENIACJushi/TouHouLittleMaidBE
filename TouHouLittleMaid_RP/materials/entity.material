@@ -4,14 +4,12 @@
     "power_point:entity":{
       "+defines": [ "USE_UV_ANIM", "ALPHA_TEST", "USE_EMISSIVE" ]
     },
-    "danmaku_emissive:entity": {
-      "+defines": [ "USE_UV_ANIM", "ALPHA_TEST", "USE_EMISSIVE" ]
-    },
     "danmaku_blending:entity": {
-      "+defines": [ "USE_UV_ANIM", "ALPHA_TEST", "USE_EMISSIVE" ],
-      "+states": [ "Blending", "DisableCulling","DisableDepthWrite"],
-      "blendSrc": "SourceAlpha",
-      "blendDst": "One"
+			"+states": ["Blending", "DisableCulling", "DisableDepthWrite"],
+			"+defines": ["USE_EMISSIVE", "USE_UV_ANIM"],
+			"-defines": ["FANCY"],
+			"blendSrc": "SourceAlpha",
+			"blendDst": "One"
     },
     "wing_default:entity":{
       "+states":[

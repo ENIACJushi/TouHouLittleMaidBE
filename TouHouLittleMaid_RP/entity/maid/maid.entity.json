@@ -6,7 +6,9 @@
       "materials": {
         "default": "warden",
         "wing_default": "wing_default",
-        "wind_solid": "warden"
+        "wind_solid": "warden",
+        "blending": "danmaku_blending",
+        "emissive": "entity_emissive_alpha"
       },
       "textures": {
         "statue_base": "textures/entity/maid/statue_base",

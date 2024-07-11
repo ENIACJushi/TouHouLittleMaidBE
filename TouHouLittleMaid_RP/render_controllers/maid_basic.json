@@ -60,7 +60,10 @@
 			"materials": [
 				{"*": "Material.default"},
 				{"wingLeft": "Material.wing"},
-				{"wingRight": "Material.wing"}
+				{"wingRight": "Material.wing"},
+        
+				{"_wingLeft": "Material.blending"},
+				{"_wingRight": "Material.blending"}
 			],
 			"textures": [ "Array.skins[q.property('thlm:skin_pack')==0?q.variant+1:0]" ]
 		},

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="utf-8" content="text/html; charset=GBK">
+        <meta name="viewport" content="width=device-width">
+        <title>子骨骼发光</title>
+    </head>
+    <body>
+        <h1>子骨骼发光</h1>
+
+        <div style="text-indent: 10px;">
+            <p>模型json</p>
+            <textarea id="input" name="input" style="padding:10px;" cols="100", rows="50"></textarea>
+        </div>
+        
+        <button onclick="process()">处理</button>
+        
+        
+        <div style="text-indent: 10px;">
+            <p>输出</p>
+            <textarea id="output" name="output" style="padding:10px;" cols="100", rows="50"></textarea>
+        </div>
+        
+
+
+        <hr>
+
+        <div style="text-indent: 10px;">
+            
+        </div>
+        
+        <!-- 样式 -->
+        <style type="text/css">
+            table td{padding:5px;}
+        </style>
+        
+        <!-- 主要处理 -->
+        <script>
+            function process(){
+                let input = document.getElementById("input").value;
+                input = JSON.parse(input);
+
+                for(let key in input){
+                    if(key !== "format_version"){
+                        processBone(input[key]["bones"])
+                    }
+                }
+
+                document.getElementById("output").value = JSON.stringify(input, "\n"," ");
+            }
+
+            function processBone(bones){
+                let _xxx = new Set();
+                for(let bone of bones){
+                    if(bone["name"].substring(0, 1) === "_"){
+                        _xxx.add(bone["name"]);
+                    }
+                    else if(_xxx.has(bone["parent"])){
+                        bone["name"] = "_" + bone["name"];
+                        _xxx.add(bone["name"]);
+                    }
+                    else if(_xxx.has("_" + bone["parent"])){
+                        bone["parent"] = "_" + bone["parent"];
+                        bone["name"] = "_" + bone["name"];
+                        _xxx.add(bone["name"]);
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>
+

@@ -261,6 +261,7 @@
       "geometry": "Array.geos[q.property('thlm:skin_pack')==0?q.variant+1:0]",
       "materials": [
         { "*": "Material.default" },
+        
         { "wingLeft": "Material.wing_default" },
         { "wingLeftUp": "Material.wing_default" },
         { "wingLeftDown": "Material.wing_default" },
@@ -268,14 +269,17 @@
         { "wingRightUp": "Material.wing_default" },
         { "wingRightDown": "Material.wing_default" },
         { "sinFloat": "Material.wing_default"},
-
+        
         { "wingLeft_": "Material.wind_solid" },
         { "wingLeftUp_": "Material.wind_solid" },
         { "wingLeftDown_": "Material.wind_solid" },
         { "wingRight_": "Material.wind_solid" },
         { "wingRightUp_": "Material.wind_solid" },
         { "wingRightDown_": "Material.wind_solid" },
-        { "sinFloat_": "Material.wind_solid"}
+        { "sinFloat_": "Material.wind_solid"},
+
+        // { "*_": "Material.blending"}, // 不可以匹配后缀，只能靠前缀多个字符解决
+        { "_*": "Material.emissive"}
       ],
       "textures": [
         "Array.skins[q.property('thlm:skin_pack')==0?q.variant+1:0]"

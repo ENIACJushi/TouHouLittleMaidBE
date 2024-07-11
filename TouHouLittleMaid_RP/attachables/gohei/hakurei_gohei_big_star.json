@@ -6,7 +6,7 @@
       "materials": {
         "default": "entity_alphatest",
         "enchanted": "entity_alphatest_glint",
-        "blending": "danmaku_emissive"
+        "blending": "danmaku_blending"
       },
       "textures": {
         "default": "textures/items/hakurei_gohei_in_hand",
