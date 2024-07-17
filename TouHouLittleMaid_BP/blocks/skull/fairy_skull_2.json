@@ -103,7 +103,9 @@
 		"components": {
 			
 			"minecraft:geometry": "geometry.touhou_little_maid.fairy_skull_block_up",
-			"minecraft:material_instances": { "*": { "texture": "fairy_skull_2", "render_method": "alpha_test" } },
+			"minecraft:material_instances": { 
+				"*": { "texture": "fairy_skull_2", "render_method": "alpha_test" }
+			},
 			"minecraft:map_color": "#B5E61D",
 			"minecraft:destructible_by_mining": {
                 "seconds_to_destroy": 1.0

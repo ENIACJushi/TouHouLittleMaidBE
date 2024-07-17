@@ -1,37 +1,32 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.touhou_little_maid.statue_base":{
-			"loop":true,
+		"animation.touhou_little_maid.statue_base": {
+			"loop": true,
 			"bones": {
-				"statue_base" : {
-					"position" : [ 0, -5.5, 0 ],
-					"scale":[0.5, 0.5, 0.5]
+				"statue_base": {
+					"position": [0, -5.5, 0],
+					"scale": [0.5, 0.5, 0.5]
 				}
 			}
 		},
-		"animation.touhou_little_maid.maid.backpack_offset":{
-			"loop":true,
+		"animation.touhou_little_maid.maid.backpack_offset": {
+			"loop": true,
 			"bones": {
-				"backpack" : {
-					"position" : [ 0, 8, 4 ]
+				"backpack": {
+					"position": [0, 8, 4]
 				}
 			}
 		},
 		"animation.touhou_little_maid.emote": {
 			"loop": true,
 			"bones": {
-			  "emote": {
-				"rotation": [
-				  0,
-				  "query.camera_rotation(1) - q.body_y_rotation",
-				  0
-				],
-				"position":[0, 28, 0]
-			  }
+				"emote": {
+					"rotation": [0, "query.camera_rotation(1) - q.body_y_rotation", 0],
+					"position": [0, 28, 0]
+				}
 			}
 		},
-
 		"animation.touhou_little_maid.maid.beg": {
 			"loop": true,
 			"bones": {
@@ -48,28 +43,25 @@
 		"animation.touhou_little_maid.maid.sit": {
 			"loop": true,
 			"bones": {
-				"body": {
+				"root": {
 					"position": [0, -7, 0]
 				},
 				"armLeft": {
-					"rotation": [-50.60796, 20.86371, 14.12716],
-					"position": [0, -7, 0]
+					"rotation": [-50.60796, 20.86371, 14.12716]
 				},
 				"LeftForeArm": {
 					"rotation": [-60.94031, 19.61291, -8.71337],
 					"position": [0, 0, 0]
 				},
 				"armRight": {
-					"rotation": [-53.54725, -27.24469, -9.67384],
-					"position": [0, -7, 0]
+					"rotation": [-53.54725, -27.24469, -9.67384]
 				},
 				"RightForeArm": {
 					"rotation": [-47.5, 0, 0],
 					"position": [0, 0, 0]
 				},
 				"legLeft": {
-					"rotation": [-76.18803, -4.56361, -11.06107],
-					"position": [0, -7, 0]
+					"rotation": [-76.18803, -4.56361, -11.06107]
 				},
 				"LeftLowerLeg": {
 					"rotation": [105, 0, 0],
@@ -80,20 +72,15 @@
 					"position": [0, 0, 0]
 				},
 				"legRight": {
-					"rotation": [-76.26839, 3.50905, 10.2682],
-					"position": [0, -7, 0]
+					"rotation": [-76.26839, 3.50905, 10.2682]
 				},
 				"head": {
 					"rotation": [-7.5, 0, 0],
-					"position": [0, -7.3, 0]
+					"position": [0, -0.3, 0]
 				},
 				"sittingRotationSkirt": {
 					"rotation": [-37.5, 0, 0],
-					"position": [0, 0.5, 0.8]
-				},
-
-				"robe": {
-					"position": [0, -7, 0]
+					"position": [0, 0.5, -0.2]
 				}
 			}
 		}

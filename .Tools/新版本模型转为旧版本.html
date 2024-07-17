@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="utf-8" content="text/html; charset=GBK">
+        <meta name="viewport" content="width=device-width">
+        <title>新版本模型转为旧版本（1.10）</title>
+    </head>
+    <body>
+        <h1>新版本模型转为旧版本</h1>
+        
+        <input type="file" id="file" name="file" style="padding:10px;" multiple/>
+
+        <hr>
+
+        <div style="text-indent: 10px;">
+            
+        </div>
+        
+        <!-- 样式 -->
+        <style type="text/css">
+            table td{padding:5px;}
+        </style>
+        
+        <!-- 主要处理 -->
+        <script>
+            const fileUploader = document.getElementById('file');
+            fileUploader.addEventListener('change', (event) => {
+                
+
+                for(let file of event.target.files){
+                    
+                    const reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        let input = e.target.result;
+                        input = JSON.parse(input);
+                        input = JSON.stringify(input);
+                        
+                        var aTag = document.createElement('a');
+                        var blob = new Blob([input]);
+                        aTag.download = file.name;
+                        aTag.href = URL.createObjectURL(blob);
+                        aTag.click();
+                        URL.revokeObjectURL(blob);
+                    };
+
+                    reader.readAsText(file, file.name);
+                }
+            });
+        </script>
+    </body>
+</html>
+

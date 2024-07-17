@@ -129,11 +129,12 @@
                 }
             }
             
-            //// 文件列表 ////
+            //// 页面交互 ////
+            // 文件列表
             var fileList = []; // [ {"name":"xxx.xx"} ]
             var processing = false; // 正在处理
 
-            //// 添加文件事件 ////
+            // 添加文件事件
             const fileUploader = document.getElementById('file');
             fileUploader.addEventListener('change', (event) => {
                 const files = event.target.files;
@@ -159,7 +160,7 @@
                 res.innerHTML = msg;
             }
             
-            //// 改变文件位置 ////
+            // 改变文件位置
             function file_up(num){
                 if(num == 0 || processing) return;
                 var temp = fileList[num-1];
@@ -181,6 +182,29 @@
             }
 
             //// 转换并输出 ////
+            // 骨骼处理
+            function processBone(bones){
+                if(bones===undefined) return false;
+                
+                // 添加根骨骼 root
+                let hasRoot = false;
+                let _xxx = new Set();
+                for(let bone of bones){
+                    if(bone["name"] === "root"){
+                        hasRoot = true;
+                        continue;
+                    }
+                    // 对于没有父骨骼的骨骼，将父骨骼设为"root"
+                    if(bone["parent"] === undefined){
+                        bone["parent"] = "root";
+                    }
+                }
+                // 如果没有root骨骼，则创建root骨骼
+                if(!hasRoot) bones.unshift(rootBone);
+                
+                return true;
+            }
+            // 主函数
             function startConvert(){
                 if(processing) return;
                 console.log("Start converting..");
@@ -308,14 +332,6 @@
                                 for(let key in bedrock){
                                     if(key !== "format_version"){
                                         processBone(input[key]["bones"])
-                                    }
-                                }
-                                function processBone(bones){
-                                    for(let bone of bones){
-                                        // 对于没有父骨骼的骨骼，将父骨骼设为"root"
-                                        if(bone["parent"] === undefined){
-                                            bone["parent"] = "root";
-                                        }
                                     }
                                 }
 
