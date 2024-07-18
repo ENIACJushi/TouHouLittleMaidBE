@@ -89,7 +89,7 @@
 			"bones": {
 				"root": {
 					"rotation": [0, -90, -90],
-					"position": [6, -5.5, -9]
+					"position": [6, -4.5, -9]
 				},
 				"head": {
 					"rotation": [27.5, 0, 0]

@@ -183,6 +183,10 @@
 
             //// 转换并输出 ////
             // 骨骼处理
+            const rootBone = {
+                "name": "root",
+				"pivot": [0, 0, 0]
+            }
             function processBone(bones){
                 if(bones===undefined) return false;
                 
@@ -317,21 +321,29 @@
                                 
 
                                 // 补充模型标识符信息
-                                if(modelJson["format_version"] === "1.12.0"){ // 1.12.0
+                                if(modelJson["format_version"] === "1.10.0"){ // 1.10.0
+                                    bedrock = modelText.replace("geometry.model", `geometry.${packName2}.${model_name}`);
+                                }
+                                else{ // 1.12.0+
                                     for(let model of modelJson["minecraft:geometry"]){
                                         model["description"]["identifier"] = `geometry.${packName2}.${model_name}`;
                                     }
                                     bedrock = JSON.stringify(modelJson, null, '\t');
                                 }
-                                else{ // 1.10.0
-                                    bedrock = modelText.replace("geometry.model", `geometry.${packName2}.${model_name}`);
-                                }
 
                                 // 骨骼修改
                                 bedrock = JSON.parse(bedrock);
-                                for(let key in bedrock){
-                                    if(key !== "format_version"){
-                                        processBone(input[key]["bones"])
+                                if(bedrock["format_version"] === "1.10.0"){
+                                    for(let key in bedrock){
+                                        if(key !== "format_version"){
+                                            processBone(bedrock[key]["bones"])
+                                        }
+                                    }
+                                }
+                                // 新格式
+                                else{
+                                    for(let geo of bedrock["minecraft:geometry"]){
+                                        processBone(geo["bones"]);
                                     }
                                 }
 

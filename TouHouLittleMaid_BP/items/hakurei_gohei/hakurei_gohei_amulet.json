@@ -6,6 +6,8 @@
       "identifier": "touhou_little_maid:hakurei_gohei_amulet"
     },
     "components": {
+      
+      "minecraft:allow_off_hand": true,
       "minecraft:icon": {
         "texture": "touhou_little_maid.hakurei_gohei"
       },

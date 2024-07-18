@@ -66,12 +66,20 @@
             function processFile(_input){
                 let input = JSON.parse(_input);
                 
-                for(let key in input){
-                    if(key !== "format_version"){
-                        processBone(input[key]["bones"])
+                // 旧格式
+                if(input["format_version"] === "1.10.0"){
+                    for(let key in input){
+                        if(key !== "format_version"){
+                            processBone(input[key]["bones"])
+                        }
                     }
                 }
-
+                // 新格式
+                else{
+                    for(let geo of input["minecraft:geometry"]){
+                        processBone(geo["bones"]);
+                    }
+                }
                 return JSON.stringify(input);
             }
 

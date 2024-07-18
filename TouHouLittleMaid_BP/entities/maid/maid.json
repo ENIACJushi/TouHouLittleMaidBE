@@ -146,6 +146,24 @@
           "track_target": true
         }
       },
+      // 抱起时移动属性 其实是取消碰撞箱
+      "thlmm:maid_basic_hug_movement":{
+        "minecraft:collision_box": { "width": 0, "height": 0 },
+        "minecraft:navigation.walk": {
+          "can_walk": false
+        },
+        "minecraft:behavior.random_stroll": {
+          "priority": 8,
+          "speed_multiplier": 0.0
+        },
+        "minecraft:movement.basic": { },
+        "minecraft:behavior.mount_pathing": {
+          "priority": 3,
+          "speed_multiplier": 0.0,
+          "target_dist": 0,
+          "track_target": true
+        }
+      },
       // 正常跟随（站立）
       "status:follow_standard":{
         "minecraft:behavior.follow_owner": {
@@ -554,9 +572,21 @@
           }
         }
       },
-      // 只是加了一个 parrot_tame
+      // 加了一个 parrot_tame 和rideable
       "mode:searching_danmaku_attack_hug":{
         "minecraft:type_family"  : { "family": [ "maid", "mob", "player", "parrot_tame" ] },
+        "minecraft:rideable": {// 提供交互
+          "controlling_seat": 0,
+          "crouching_skip_interact": true,
+          "family_types": ["hug_maid"],
+          "interact_text": "",
+          "pull_in_entities": false,
+          "rider_can_interact": false,
+          "seat_count": 1,
+          "seats":[
+            {"position": [ -0.4, 0.2, 0.1 ], "lock_rider_rotation": 0, "rotate_rider_by": 0}
+          ]
+        },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 4, "must_see": true, "must_reach": false,
           "reselect_targets": true, "within_radius": 16, "scan_interval": 10,
@@ -1169,6 +1199,11 @@
           {
             "filters": {"test": "int_property", "domain": "thlm:work", "value": 2, "operator": "not"},
             "add": { "component_groups": [ "mode:hug" ] }
+          },
+          // 切换移动属性
+          {
+            "remove": {"component_groups": ["thlmm:maid_basic_sit_movement"]},
+            "add": {"component_groups": ["thlmm:maid_basic_hug_movement"]}
           }
         ]
       },
@@ -1176,7 +1211,11 @@
       }, // Hug stop
       "api:hug_to_sit":{
         "sequence": [
-          
+          // 切换移动属性
+          {
+            "add": {"component_groups": ["thlmm:maid_basic_sit_movement"]},
+            "remove": {"component_groups": ["thlmm:maid_basic_hug_movement"]}
+          },
           // 移除通用 hug 组
           {
             "filters": {"test": "int_property", "domain": "thlm:work", "value": 2, "operator": "not"},

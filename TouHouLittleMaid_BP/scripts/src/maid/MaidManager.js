@@ -787,16 +787,19 @@ export class MaidManager{
          * @param {DataDrivenEntityTriggerAfterEvent} event
          */
         static seatScan(event){
-            let seat = event.entity;
-            
-            let maids = seat.dimension.getEntities({
-                "location": seat.location,
-                "maxDistance": 1,
-                "families": ["maid"]
-            });
-            if(maids.length === 0){
-                seat.remove();
+            try{
+                let seat = event.entity;
+                if(seat === undefined) return;
+                let maids = seat.dimension.getEntities({
+                    "location": seat.location,
+                    "maxDistance": 1,
+                    "families": ["maid"]
+                });
+                if(maids.length === 0){
+                    seat.remove();
+                }
             }
+            catch{}
         }
         /**
          * 女仆扫描
