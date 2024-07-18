@@ -13,6 +13,8 @@
         "thlm:backpack_invisible":{"type": "bool", "default": false, "client_sync": true},
         // 正在坐下
         "thlm:is_sitting": {"type": "bool", "default": false, "client_sync": true},
+        // 正在被抱起
+        "thlm:is_hug": {"type": "bool", "default": false, "client_sync": true},
         // 表情
         "thlm:emote"             :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
         // 环境
@@ -223,6 +225,25 @@
                   ]
                 },
                 "event": "thlmm:1",
+                "target": "self"
+              }
+            },
+            // 鞍(抱起)
+            {
+              "cooldown": 1.5,
+              "use_item": false,
+              "interact_text": "action.interact.tlm.hug",
+              "vibration": "none",
+              "on_interact": {
+                "filters": {
+                  "all_of": [
+                    { "test": "bool_property", "domain": "thlm:is_hug", "value": false},
+                    { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "minecraft:saddle"},
+                    { "test": "is_family", "subject": "other", "value": "player" },
+                    { "test": "is_owner", "subject": "other", "value": true }
+                  ]
+                },
+                "event": "thlmm:j",
                 "target": "self"
               }
             },
@@ -533,9 +554,78 @@
           }
         }
       },
+      // 只是加了一个 parrot_tame
+      "mode:searching_danmaku_attack_hug":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob", "player", "parrot_tame" ] },
+        "minecraft:behavior.nearest_attackable_target": {
+          "priority": 4, "must_see": true, "must_reach": false,
+          "reselect_targets": true, "within_radius": 16, "scan_interval": 10,
+          "entity_types": [ { "filters": { "any_of": [ 
+            {"test": "is_family","subject": "other","value": "monster"}
+          ] }, "max_dist": 16, "must_see": true } ]
+        },
+        "minecraft:behavior.hurt_by_target": {
+          "priority": 3,
+          "entity_types": {
+            "filters":{ "all_of": [
+              {"test": "has_component","subject": "other","value": "is_tamed", "operator": "not"},
+              {"test": "is_family","subject": "other","value": "maid", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "player", "operator": "!="}
+            ] }
+          }
+        },
+        "minecraft:behavior.owner_hurt_by_target": {
+          "priority": 1,
+          "entity_types": {
+            "filters":{ "all_of": [
+              {"test": "has_component","subject": "other","value": "is_tamed", "operator": "not"},
+              {"test": "is_family","subject": "other","value": "maid", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "player", "operator": "!="}
+            ] }
+          }
+        },
+        "minecraft:behavior.owner_hurt_target"   : {
+          "priority": 2,
+          "entity_types": {
+            "filters":{ "all_of": [
+              {"test": "has_component","subject": "other","value": "is_tamed", "operator": "not"},
+              {"test": "is_family","subject": "other","value": "maid", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "player", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "villager", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "allay", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "horse", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "donkey", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "mule", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "axolotl", "operator": "!="}, // 美西螈
+              {"test": "is_family","subject": "other","value": "cat", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "ocelot", "operator": "!="}, // 豹猫
+              {"test": "is_family","subject": "other","value": "parrot_tame", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "parrot_wild", "operator": "!="},
+              {"test": "is_family","subject": "other","value": "camel", "operator": "!="}, // 骆驼
+              {"test": "is_family","subject": "other","value": "panda", "operator": "!="}
+            ] }
+          }
+        }
+      },
       // 空闲
       "mode:idle":{
-        "minecraft:type_family"  : { "family": [ "maid", "mob" ] }
+        "minecraft:type_family"  : { "family": [ "maid", "mob"] }
+      },
+      // 抱起
+      "mode:hug":{
+        "minecraft:type_family"  : { "family": [ "maid", "mob", "parrot_tame"] },
+        "minecraft:rideable": {// 提供交互
+          "controlling_seat": 0,
+          "crouching_skip_interact": true,
+          "family_types": ["hug_maid"],
+          "interact_text": "",
+          "pull_in_entities": false,
+          "rider_can_interact": false,
+          "seat_count": 1,
+          "seats":[
+            {"position": [ -0.4, 0.2, 0.1 ], "lock_rider_rotation": 0, "rotate_rider_by": 0}
+          ]
+        }
       },
       "mode:idle_stand":{
         "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 1.25 }
@@ -1042,6 +1132,68 @@
         { "filters":  {"test": "int_property", "domain": "thlm:backpack_type", "value": 3},
           "add": { "component_groups": [ "backpack:big_sneaking" ] }, "remove": { "component_groups": [ "backpack:big" ] } }
       ] },
+      // 抱起，与坐下完全相同
+      "thlmm:j" :{
+        "sequence": [
+          { "set_property": { "thlm:is_sitting": true }},
+          { // 切换移动属性
+            "remove": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]}, 
+            "add": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
+          },
+          { // 不处于家模式，还需要取消主人跟随
+            "filters": { "test": "has_component", "subject": "self", "operator": "not", "value": "minecraft:is_baby" },
+            "remove": { "component_groups": [ "status:follow_standard" ]}, 
+            "add": { "component_groups": [ "status:follow_sit" ]}
+          },
+          // 工作模式 | 近战、农业模式 交给脚本执行
+          { "filters": {"test": "int_property", "domain": "thlm:work", "value": 2}, // 弹幕模式 切换索敌（不跟随）
+            "remove": { "component_groups": [ "mode:danmaku_attack"]},
+            "add": { "component_groups": ["mode:danmaku_attack_sit"]}
+          }
+          // 农作模式由脚本取消扫描
+        ]
+      }, // Hug
+      "api:sit_to_hug":{
+        "sequence": [
+          // 两个包含 family 的组要特别处理
+          {
+            "filters": {"test": "int_property", "domain": "thlm:work", "value": 2},
+            "remove": { "component_groups": [ "mode:searching_danmaku_attack" ] },
+            "add": { "component_groups": [ "mode:searching_danmaku_attack_hug" ] }
+          },
+          {
+            "filters": {"test": "int_property", "domain": "thlm:work", "value": 0},
+            "remove": { "component_groups": [ "mode:idle" ] }
+          },
+          // 添加通用 hug 组
+          {
+            "filters": {"test": "int_property", "domain": "thlm:work", "value": 2, "operator": "not"},
+            "add": { "component_groups": [ "mode:hug" ] }
+          }
+        ]
+      },
+      "thlmm:k": {
+      }, // Hug stop
+      "api:hug_to_sit":{
+        "sequence": [
+          
+          // 移除通用 hug 组
+          {
+            "filters": {"test": "int_property", "domain": "thlm:work", "value": 2, "operator": "not"},
+            "remove": { "component_groups": [ "mode:hug" ] }
+          },
+          // 两个包含 family 的组要特别处理
+          {
+            "filters": {"test": "int_property", "domain": "thlm:work", "value": 2},
+            "add": { "component_groups": [ "mode:searching_danmaku_attack" ] },
+            "remove": { "component_groups": [ "mode:searching_danmaku_attack_hug" ] }
+          },
+          {
+            "filters": {"test": "int_property", "domain": "thlm:work", "value": 0},
+            "add": { "component_groups": [ "mode:idle" ] }
+          }
+        ]
+      },
       "thlmm:l1":{}, "thlmm:l2" :{}, "thlmm:l3" :{}, "thlmm:l4" :{}, "thlmm:l5" :{}, "thlmm:l6" :{}, // Level 1~6
       "thlmm:m" :{}, // Master interact
       "thlmm:n" :{}, // NPC

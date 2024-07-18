@@ -174,7 +174,6 @@ class thlm {
                 }
             });
         });
-        
         // 物品使用事件
         world.beforeEvents.itemUse.subscribe(event=>{
             system.run(()=>{
@@ -222,6 +221,8 @@ class thlm {
                                 case "b"  : MaidManager.boxOpenEvent(event); break;
                                 // n: NPC
                                 case "n": MaidManager.NPCInteract(event); break;
+                                // h: hug
+                                case "h": MaidManager.Hug.seatScan(event); break;
                                 default: break;
                             }; break;
                         // 女仆专用事件
@@ -232,6 +233,8 @@ class thlm {
                                 case "f": MaidManager.Core    .onTamed(event);             break; // f on tamed
                                 case "h": MaidManager.Shedule .returnHomeEvent(event);     break; // h Home
                                 case "i": MaidManager.Interact.inventoryModeEvent(event);  break; // i Inventory mode
+                                case "j": MaidManager.Hug     .startEvent(event);          break; // j Hug
+                                case "k": MaidManager.Hug     .stopEvent(event);           break; // k Hug stop
                                 case "l": MaidManager         .setLevelEvent(event);       break; // l Level
                                 case "m": MaidManager.Interact.onInteractEvent(event);     break; // m Master interact
                                 case "n": MaidManager         .onNPCEvent(event);          break; // n NPC

@@ -133,6 +133,8 @@ message.touhou_little_maid:chisel.offhand_not_photo.name=请副手持有一张�
 action.interact.camera=照相
 action.interact.thlm.npc=变为 NPC
 action.interact.thlm.npc_remove=清除 NPC
+action.interact.tlm.hug=抱起
+action.interact.tlm.hug_stop=放下
 
 ## 管理命令
 message.tlm.command.must_player=这个指令必须由玩家执行

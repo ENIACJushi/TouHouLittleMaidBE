@@ -85,6 +85,8 @@ message.touhou_little_maid:chisel.offhand_not_photo.name=Please have a photo of 
 action.interact.camera=Photo
 action.interact.thlm.npc=Turn into NPC
 action.interact.thlm.npc_remove=Clear NPC
+action.interact.tlm.hug=Hug
+action.interact.tlm.hug_stop=Lay down
 
 gui.touhou_little_maid:button.backpack.true.name=Show backpack
 gui.touhou_little_maid:button.backpack.false.name=Hide backpack

@@ -1,0 +1,84 @@
+{
+    "format_version": "1.18.10",
+    "minecraft:entity": {
+      "description": {
+        "identifier": "touhou_little_maid:hug_maid",
+        "is_spawnable": false,
+        "is_summonable": true
+      },
+      "component_groups": {
+        "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
+        "tamed": { "minecraft:is_tamed": { } }
+      },
+      "components": {
+        "minecraft:collision_box": {
+            "height": 0,
+            "width": 0
+        },
+        "minecraft:custom_hit_test": {
+            "hitboxes": [
+                {
+                    "width": 2,
+                    "height": 2,
+                    "pivot": [
+                        0,
+                        0,
+                        0
+                    ]
+                }
+            ]
+        },
+        "minecraft:tameable": { "probability": 1, "tame_event": {
+            "event": "minecraft:on_tame",
+            "target": "self"
+        } },
+        "minecraft:nameable": {
+          "always_show": false,
+          "allow_name_tag_renaming": false
+        },
+        "minecraft:type_family": {
+          "family": ["hug_maid"]
+        },
+        "minecraft:timer": {
+            "time": 1,
+            "looping": true,
+            "time_down_event": {
+                "event": "thlm:h",
+                "target": "self"
+            }
+        },
+        "minecraft:interact": {
+            "interactions": [
+                // 鞍(放下)
+                {
+                    "cooldown": 1.5,
+                    "use_item": false,
+                    "interact_text": "action.interact.tlm.hug_stop",
+                    "vibration": "none",
+                    "on_interact": {
+                        "filters": {
+                            "all_of": [
+                                { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "minecraft:saddle"},
+                                { "test": "is_family", "subject": "other", "value": "player" },
+                                { "test": "is_owner", "subject": "other", "value": true }
+                            ]
+                        },
+                        "event": "thlmm:k",
+                        "target": "self"
+                    }
+                }
+            ]
+        },
+        "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+        "minecraft:persistent": {},
+        "minecraft:knockback_resistance": { "value": 1.0 }
+      },
+      "events": {
+        "despawn":{ "add": { "component_groups": [ "despawn" ] } },
+        "minecraft:on_tame":{ "add": { "component_groups": [ "tamed" ] } },
+        "thlm:h":{},
+        "thlmm:k":{}
+    }
+  }
+}

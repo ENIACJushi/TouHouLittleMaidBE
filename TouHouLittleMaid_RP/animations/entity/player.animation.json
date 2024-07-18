@@ -1,0 +1,30 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.thlm.player.hug_maid": {
+			"loop": true,
+			"override_previous_animation": true,
+			"bones": {
+				"leftArm": {
+					"rotation": [-29.9, 2.49, 4.33]
+				},
+				"rightArm": {
+					"rotation": [-44.89, 3.53, 3.54]
+				}
+			}
+		},
+        
+		"animation.thlm.player.hug_maid_stop": {
+			"loop": true,
+			"override_previous_animation": true,
+			"bones": {
+				"leftArm": {
+					"rotation": [0,0,0]
+				},
+				"rightArm": {
+					"rotation": [0,0,0]
+				}
+			}
+		}
+	}
+}

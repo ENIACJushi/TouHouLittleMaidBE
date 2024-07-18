@@ -308,7 +308,7 @@
           "backpack_offset",
           {"blink" : "query.property('thlm:work') >= -1"},
           "wing",
-          "look_at_target",
+          {"look_at_target": "!query.property('thlm:is_hug')"},
           {"walk" : "!query.property('thlm:is_sitting')"},
           "emote",
           "controller_sit",
@@ -327,7 +327,9 @@
         
         "sit": "animation.touhou_little_maid.maid.sit",
         "controller_sit": "controller.animation.touhou_little_maid.sitting",
-        "beg": "animation.touhou_little_maid.maid.beg"
+        "beg": "animation.touhou_little_maid.maid.beg",
+
+        "hug": "animation.touhou_little_maid.maid.hug"
       },
       "render_controllers": [
         "controller.render.touhou_little_maid.maid.maid_backpack",

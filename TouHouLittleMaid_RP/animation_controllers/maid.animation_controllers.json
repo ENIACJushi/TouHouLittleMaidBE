@@ -7,16 +7,32 @@
 				"default" : {
 					"transitions" : [
 						{
-							"sitting" : "query.property('thlm:is_sitting') && !q.is_in_ui"
+							"sitting" : "!q.is_in_ui && query.property('thlm:is_sitting')"
+						},
+						{
+							"hug": "!q.is_in_ui && query.property('thlm:is_hug')"
 						}
 					],
 					"blend_transition": 0.375
 				},
+
 				"sitting" : {
 					"animations" : [ "sit" ],
 					"transitions" : [
 						{
 							"default" : "!query.property('thlm:is_sitting') || q.is_in_ui"
+						},
+						{
+							"hug": "!q.is_in_ui && query.property('thlm:is_hug')"
+						}
+					],
+					"blend_transition": 0.375
+				},
+				"hug": {
+					"animations": [ "hug" ],
+					"transitions" : [
+						{
+							"default" : "!query.property('thlm:is_hug') || q.is_in_ui"
 						}
 					],
 					"blend_transition": 0.375

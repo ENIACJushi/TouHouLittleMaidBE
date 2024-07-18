@@ -3,9 +3,9 @@
 	"geometry.touhou_little_maid.aki_sizuha": {
 		"texturewidth": 128,
 		"textureheight": 128,
-		"visible_bounds_width": 2,
-		"visible_bounds_height": 3,
-		"visible_bounds_offset": [0, 1.5, 0],
+		"visible_bounds_width": 4,
+		"visible_bounds_height": 4,
+		"visible_bounds_offset": [0, 1, 0],
 		"bones": [
 			{
 				"name": "root",

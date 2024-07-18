@@ -9,7 +9,7 @@
  *  thlmm:<女仆id>
  *  thlmo:<主人生物id>
  */
-import { Direction, ItemStack, world, DataDrivenEntityTriggerAfterEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent } from "@minecraft/server";
+import { Direction, ItemStack, world, DataDrivenEntityTriggerAfterEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent, Entity, Player } from "@minecraft/server";
 import { Vector, VectorMC } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 import * as UI from "./MaidUI"
@@ -495,7 +495,7 @@ export class MaidManager{
             const STEP_MAX = 1000;
             let maid = event.entity; 
             if(maid===undefined) return;
-            
+
                 ///// 步数计算 一步3秒 /////
                 let healStep = maid.getDynamicProperty("step");
                 // 计时量未初始化 立即初始化
@@ -511,9 +511,13 @@ export class MaidManager{
                 }
 
                 ///// 取模决定执行任务 /////
-                // 每次
+                //// 每次
+                // 抱起扫描
+                if(maid.getProperty("thlm:is_hug")) MaidManager.Hug.maidScan(maid);
+                
                 let work = EntityMaid.Work.get(maid);
-                switch(work){ // 农业扫描
+                // 农业扫描
+                switch(work){ 
                     case EntityMaid.Work.farm : 
                     case EntityMaid.Work.melon:
                     case EntityMaid.Work.cocoa: MaidTarget.stepEvent(maid, work); break;
@@ -681,7 +685,165 @@ export class MaidManager{
             }
         }
     }
-    
+
+    static Hug = class{
+        /**
+         * 抱起来
+         * @param {DataDrivenEntityTriggerAfterEvent} event
+         */
+        static startEvent(event){
+            // 抱起事件是坐下事件的父集
+            MaidManager.Interact.onSitEvent(event);
+            
+            // 开始抱起
+            let maid = event.entity;
+            let player = EntityMaid.Owner.get(maid);
+            const dimension = maid.dimension;
+            
+            // 只能抱起一名女仆，如果有鹦鹉也不行，因为位置会乱
+            let rideComponent = player.getComponent("rideable");
+            let riders = rideComponent.getRiders();
+            if(riders.length != 0) return;
+            
+            // 由坐下模式转抱起模式
+            maid.triggerEvent("api:sit_to_hug");
+            system.runTimeout(()=>{
+                // 让女仆坐上玩家
+                if(rideComponent.addRider(maid)){
+                    // 生成交互实体
+                    this.summonInteractEntity(maid, player);
+                    // 设置女仆属性
+                    maid.setProperty("thlm:is_hug", true);
+                    // 玩家动画
+                    this.startAnimate(player);
+                }
+                else{
+                    // 失败，返回坐下模式
+                    maid.triggerEvent("api:hug_to_sit");
+                }
+            },1);
+        }
+        /**
+         * 生成交互实体
+         * @param {Entity} maid 
+         * @param {Player} player 
+         */
+        static summonInteractEntity(maid, player){
+            let hugMaid = player.dimension.spawnEntity("touhou_little_maid:hug_maid", new Vector(
+                player.location.x,
+                -60,
+                player.location.z
+            ));
+            hugMaid.getComponent("tameable").tame(player);
+            // 坐上女仆
+            let maidComponent = maid.getComponent("rideable");
+            maidComponent.addRider(hugMaid);
+            // 设置女仆id
+            hugMaid.setDynamicProperty("maid", maid.id);
+        }
+        /**
+         * 放下去 (交互事件 三个实体都是正常状态 由交互实体触发)
+         * @param {DataDrivenEntityTriggerAfterEvent} event
+         */
+        static stopEvent(event){
+            let id = event.entity.getDynamicProperty("maid");
+            if(id === undefined){
+                event.entity.remove();
+                return;
+            }
+            let maid = world.getEntity(id);
+            if(maid === undefined){
+                event.entity.remove();
+                return;
+            }
+            this.stop(maid)
+        }
+        /**
+         * 放下去
+         * @param {Entity} maid 
+         */
+        static stop(maid){
+            // 删除交互实体
+            let seat = maid.getComponent("rideable").getRiders();
+            if(seat.length !== 0){
+                seat[0].remove();
+            }
+
+            // 返回坐下模式
+            maid.triggerEvent("api:hug_to_sit");
+
+            // 恢复属性
+            maid.setProperty("thlm:is_hug", false);
+
+            // 恢复玩家动画
+            let player = EntityMaid.Owner.get(maid);
+            if(player !== undefined){
+                this.stopAnimate(player);
+                player.getComponent("rideable").ejectRider(maid);
+            }
+        }
+        /**
+         * 中间实体扫描
+         * @param {DataDrivenEntityTriggerAfterEvent} event
+         */
+        static seatScan(event){
+            let seat = event.entity;
+            
+            let maids = seat.dimension.getEntities({
+                "location": seat.location,
+                "maxDistance": 1,
+                "families": ["maid"]
+            });
+            if(maids.length === 0){
+                seat.remove();
+            }
+        }
+        /**
+         * 女仆扫描
+         * @param {Entity} maid
+         */
+        static maidScan(maid){
+            // 若脱离玩家则退出抱起状态
+            let player = EntityMaid.Owner.get(maid);
+            let quit = true;
+
+            if(player !== undefined){
+                for(let rider of player.getComponent("rideable").getRiders()){
+                    if(rider.id === maid.id){
+                        quit = false;
+                        break;
+                    }
+                }
+            }
+
+            if(quit){
+                this.stop(maid);
+                return;
+            }
+
+            // 若交互实体消失则补一个
+            if(maid.getComponent("rideable").getRiders().length === 0){
+                // 生成交互实体
+                this.summonInteractEntity(maid, player);
+            }
+        }
+        
+        /**
+         * 停止抱起动画
+         * @param {Player} player 
+         */
+        static stopAnimate(player){
+            player.runCommand("playanimation @s animation.thlm.player.hug_maid_stop animation.thlm.player.hug_maid_stop");
+        }
+        /**
+         * 开始抱起动画
+         * @param {Player} player 
+         */
+        static startAnimate(player){
+            player.runCommand("playanimation @s animation.thlm.player.hug_maid animation.thlm.player.hug_maid 9999");
+            player.runCommand("playanimation @s animation.thlm.player.hug_maid");
+        }
+    }
     
     ///// 其它事件 /////
     /**
