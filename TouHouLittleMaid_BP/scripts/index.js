@@ -6,7 +6,7 @@ import * as Danmaku from "./src/danmaku/DanmakuManager"
 import { CustomSpellCardManger } from "./src/danmaku/CustomSpellCardManger";
 import * as Tool from"./src/libs/ScarletToolKit";
 import { itemShootManager } from "./src/danmaku/ItemShootManager";
-import { ConfigHelper } from "./src/controller/Config";
+import { config, ConfigHelper } from "./src/controller/Config";
 import { GoldMicrowaver } from "./src/blocks/GoldMicrowaver";
 import { MaidManager } from "./src/maid/MaidManager";
 import { MaidSkin } from "./src/maid/MaidSkin";
@@ -81,7 +81,6 @@ class thlm {
 
         });
         }
-
         //// Player ////
         // Script Event
         system.afterEvents.scriptEventReceive.subscribe(event => {
@@ -178,6 +177,8 @@ class thlm {
         world.beforeEvents.itemUse.subscribe(event=>{
             system.run(()=>{
                 let item = event.itemStack;
+                if(item === undefined) return;
+
                 if(item.typeId.substring(0, 18) === "touhou_little_maid"){
                     switch(item.typeId.substring(19)){
                         case "hakurei_gohei_crafting_table": Danmaku.gohei_activate(event); break;
@@ -188,6 +189,33 @@ class thlm {
                 else if(item.typeId.substring(0, 6) === "thlms:"){
                     // 符卡释放
                     CustomSpellCardManger.onSpellCardUseEvent(event);
+                }
+                else if(item.typeId.substring(0, 9) === "minecraft"){
+                    return; 
+                    switch(item.typeId.substring(10)){
+                        case "written_book":{
+                            let lore = item.getLore();
+                            if(lore !== undefined){
+                                let version = lore[0];
+                                if(version.substring(0, 3) === "MG_"){
+                                    version = version.substring(3);
+                                    version = version.split('.'); // 章节.版本，如 0.1 : 总览第一版
+                                    if(config.memorizable_gensokyo[parseInt(version[0])] > parseInt(version[1])){
+                                        Tool.setPlayerMainHand(event.source);
+                                        event.source.runCommand(`structure load memorizable_gensokyo_${parseInt(version[0])} ~~~`);
+                                        Tool.ActionbarMessage.translate("message.touhou_little_maid.mg.update"); // 指南书版本已更新
+                                    }
+                                }
+                            }
+                            else{
+                                // 旧版本的书
+                                if(item.nameTag.substring(0, 7) === "记忆中的幻想乡"){
+
+                                }
+                            }
+                        }; break;
+                        default: break;
+                    }
                 }
             });
         });

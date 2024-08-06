@@ -11,8 +11,8 @@ export class AltarCraftHelper{
     constructor(){
         this.recipes = [[], [], [], [], [], []];
         this.tags = tagDefines;
-        for(let recipe of recipeList){
-            this.addRecipe(recipe);
+        for(let recipe in recipeList){
+            this.addRecipe(recipeList[recipe]);
         }
 
     }

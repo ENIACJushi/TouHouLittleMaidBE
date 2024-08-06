@@ -45,6 +45,8 @@ message.touhou_little_maid:hakurei_gohei.switch=Switch danmaku type:
 message.touhou_little_maid.altar.upgrade.notfound=No maid matching the level criteria
 message.touhou_little_maid.altar.upgrade.kill=The maid didn't kill enough enemies
 message.touhou_little_maid.altar.upgrade.success=Update successfully
+message.touhou_little_maid.mg.update=The guidebook version has been updated
+
 
 message.tlm.command.must_player=This command must be executed by the player.
 message.tlm.admin.maid_info=Maid information:

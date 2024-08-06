@@ -21,7 +21,7 @@ export const recipe = {
       "tag": "forge:rods/wooden"
     },
     {
-      "tag": "forge:rods/wooden"
+      "item": "minecraft:paper"
     },
     {
       "tag": "forge:rods/wooden"
@@ -30,7 +30,7 @@ export const recipe = {
       "item": "minecraft:paper"
     },
     {
-      "item": "minecraft:paper"
+      "tag": "forge:rods/wooden"
     },
     {
       "item": "minecraft:paper"
