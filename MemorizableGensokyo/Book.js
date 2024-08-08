@@ -32,10 +32,26 @@ export class Book {
      * 
      * @param {Number} page 页数
      * @param {String} value 内容
+     * @param {boolean} trim 
      */
-    setLang(page, value){
+    setLang(page, value, trim=true){
         let key = `tlm.${Book.getSeqStr(this.bookId)}${Book.getSeqStr(page)}`;
-        this.langs.set(key, value);
+        // 去除末尾的换行和空格
+        let res = value;
+        if(trim){
+            while(true){
+                if(res.endsWith(' ')){
+                    res = res.substring(0, res.length - 1);
+                }
+                else if(res.endsWith('%1')){
+                    res = res.substring(0, res.length - 2);
+                }
+                else{
+                    break;
+                }
+            }
+        }
+        this.langs.set(key, res);
         return key;
     }
     /**
@@ -52,12 +68,21 @@ export class Book {
     /**
      * 导出所有语言文本
      */
-    exportLangs(){
+    exportLangs(align){
         let res = [];
         for(let [key, value] of this.langs){
             res.push(`${key}=${value}`);
         }
         return res;
+    }
+    /**
+     * 对齐 若页数小于所给值，则在末尾填充空text页面
+     * @param {Number} n 
+     */
+    align(n){
+        while(this.pages.length < n){
+            this.addText(' ', false);
+        }
     }
     /**
      * 解析一组书籍数据
@@ -71,6 +96,7 @@ export class Book {
                 case "craft": this.addCraft(page.content, page.recipe); break;
                 case "altar": this.addAltar(page.content, page.recipe); break;
                 case "double_module": this.addDoubleModule(page.content, page.module1, page.module2); break;
+                case "placeholder": this. addPlaceholder(); break;
                 default: break;
             }
         }
@@ -78,10 +104,11 @@ export class Book {
     /**
      * 增加一个纯文本页 文本中的 \n 将会单独列出
      * @param {String} text 
+     * @param {boolean} [trim=true]
      */
-    addText(text){
+    addText(text, trim=true){
         let lines = text.replace(new RegExp('\n', 'g'), "%1");
-        let key = this.setLang(this.pages.length, lines);
+        let key = this.setLang(this.pages.length, lines, trim);
         this.pages.push({"rawtext":[{"translate": key,"with":["\n"]}]});
     }
     /**
@@ -147,10 +174,15 @@ export class Book {
         let key = this.setLang(this.pages.length, res);
         this.pages.push({"rawtext":[{"translate": key,"with":["\n"]}]});
     }
+    
+    addPlaceholder(){
+        this.addText(' ', false);
+    }
 
     addInvalidItem(name){
         this.invalidItems.add(`${this.bookId}-${this.pages.length}-${name}`);
     }
+    
     //// Tools ////
     static resolveModule(module){
         switch(module.type){

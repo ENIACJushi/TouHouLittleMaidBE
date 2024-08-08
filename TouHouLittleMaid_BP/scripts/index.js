@@ -14,6 +14,7 @@ import { MaidTarget } from "./src/maid/MaidTarget"
 
 import { CommandManager } from './src/controller/Command'
 import { GarageKit } from "./src/blocks/GarageKit";
+import { MemorizableGensokyo } from "./src/book/MemorizableGensokyoUI";
 
 
 if(true){
@@ -191,29 +192,45 @@ class thlm {
                     CustomSpellCardManger.onSpellCardUseEvent(event);
                 }
                 else if(item.typeId.substring(0, 9) === "minecraft"){
-                    return; 
                     switch(item.typeId.substring(10)){
+                        // 指南书更新
                         case "written_book":{
                             let lore = item.getLore();
-                            if(lore !== undefined){
-                                let version = lore[0];
-                                if(version.substring(0, 3) === "MG_"){
-                                    version = version.substring(3);
-                                    version = version.split('.'); // 章节.版本，如 0.1 : 总览第一版
-                                    if(config.memorizable_gensokyo[parseInt(version[0])] > parseInt(version[1])){
-                                        Tool.setPlayerMainHand(event.source);
-                                        event.source.runCommand(`structure load memorizable_gensokyo_${parseInt(version[0])} ~~~`);
-                                        Tool.ActionbarMessage.translate("message.touhou_little_maid.mg.update"); // 指南书版本已更新
+                            if(lore !== undefined && lore.length===1){
+                                lore = lore[0];
+                                if(lore.substring(0, 10) === "§t§l§m§m§g"){
+                                    lore = lore.substring(10).replace(new RegExp('§', 'g'), '');
+                                    lore = lore.split('_');
+
+                                    let chapter = parseInt(lore[0]);
+                                    let pl = event.source;
+                                    // 下一章
+                                    if(pl.isSneaking){
+                                        if(item.amount===1) Tool.setPlayerMainHand(pl);
+                                        else{
+                                            item.amount--;
+                                            Tool.setPlayerMainHand(pl, item);
+                                        }
+                                        pl.runCommand(`structure load tlm_mg${chapter===3 ? 1 : chapter+1} ~-0.5~1~-0.5`);
+                                    }
+                                    // 版本检测
+                                    else{
+                                        let version = parseInt(lore[1]);
+                                        if(config.memorizable_gensokyo[chapter-1] > parseInt(version)){
+                                            if(item.amount===1) Tool.setPlayerMainHand(pl);
+                                            else{
+                                                item.amount--;
+                                                Tool.setPlayerMainHand(pl, item);
+                                            }
+                                            pl.runCommand(`structure load tlm_mg${chapter} ~-0.5~1~-0.5`);
+                                            Tool.ActionbarMessage.translate(pl, "message.touhou_little_maid.mg.update"); // 指南书版本已更新
+                                        }
+
                                     }
                                 }
                             }
-                            else{
-                                // 旧版本的书
-                                if(item.nameTag.substring(0, 7) === "记忆中的幻想乡"){
-
-                                }
-                            }
                         }; break;
+                        case "splash_potion": MemorizableGensokyo.sendForm(event.source); break;
                         default: break;
                     }
                 }

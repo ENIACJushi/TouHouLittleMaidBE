@@ -21,27 +21,94 @@
  *  1. 换行使用 translate 的 %n 实现，图片则直接嵌入文本中，最大程度缩减rawtext的长度
  */
 
-const fs = require('fs');
-const path = require('path');
+import * as fs from "fs"
+import { Book } from "./Book.js";
+const key = ["book1", "book2", "book3"];
+const TEXT_PATH = "../TouHouLittleMaid_RP/texts/"
+const TEXT_STARTER = "### MG_AUTO_GENERATE_START ###";
+const TEXT_ENDER = "### MG_AUTO_GENERATE_END ###";
 
-// 定义文件路径
-const filePathA = path.join(__dirname, 'a.json');
-const filePathB = path.join(__dirname, 'b.json');
+/**
+ * 写入语言文件
+ * @param {String} name 如 zh_CN
+ * @param {String} str 语言字符串
+ */
+function writeLang(name, str){
+    var path = TEXT_PATH + name + ".lang";
+    let res = fs.readFileSync(path, "utf-8");
 
-// 读取a.json文件
-fs.readFile(filePathA, 'utf8', (err, data) => {
-    if (err) {
-        console.error('读取a.json文件时发生错误：', err);
-        return;
+    let starter = res.indexOf(TEXT_STARTER);
+    let ender = res.indexOf(TEXT_ENDER);
+    if(starter >= 0 && ender >= 0){
+        res = res.substring(0, starter) + TEXT_STARTER + '\n' + str + res.substring(ender);
     }
-
-    // 将读取到的数据写入到b.json文件中
-    fs.writeFile(filePathB, data, 'utf8', (err) => {
+    else{
+        res += TEXT_STARTER + "\n";
+        res += str + "\n";
+        res += TEXT_ENDER + "\n";
+    }
+    
+    fs.writeFile(path, res, 'utf8', (err) => {
         if (err) {
-            console.error('写入b.json文件时发生错误：', err);
+            console.error(`写入${path}.lang文件时发生错误: `, err);
             return;
         }
-        
-        console.log('文件写入成功，b.json已创建并包含a.json的内容。');
     });
+}
+
+// 读取books/xxx.js文件
+let files = fs.readdirSync("./books");
+let books = {};
+for (let index = 0; index < files.length; index++) {
+    const element = files[index];
+    
+    console.log(element);
+    // import 加载
+    books[element] = await import(`./books/${element}`);
+}
+
+// 获取最大page数
+let maxPage = new Array(key.length).fill(0);
+
+for(let i = 0; i < key.length; i++){
+    for(let lang in books){
+        maxPage[i] = Math.max(maxPage[i], books[lang][key[i]].length);
+    }
+}
+
+/**
+ * 处理
+ * page和lang对齐最长的，页数少的语言补空格
+ * page输出最长的，lang分语言输出到对应的mc text文件中
+ *  pages.txt
+ *  zh_CN.lang
+ *  en_US.lang
+ */
+let pageStr = "";
+let pageExported = false;
+for(let name in books){// 对每本书
+    let langStr = "";
+    for(let i = 0; i < 3; i++){ // 的每种语言
+        // 解析
+        let k = key[i];
+        let book = books[name];
+        let b = new Book(i);
+        b.resolve(book[k]);
+        b.align(maxPage[i]);
+        
+        // 输出
+        langStr += b.exportLangs().join('\n') + '\n\n';
+        if(!pageExported) pageStr += b.exportPages().join('\n') + "\n\n";
+    }
+    // 写入lang文件
+    writeLang(name.replace('.js', ''), langStr);
+    pageExported = true;
+}
+
+// 写入page文件
+fs.writeFile("./output/pages.txt", pageStr, 'utf8', (err) => {
+    if (err) {
+        console.error('写入pages.txt文件时发生错误：', err);
+        return;
+    }
 });

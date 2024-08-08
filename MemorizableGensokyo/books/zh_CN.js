@@ -6,48 +6,57 @@ export const book1 = [
 `
             §l总览§r
             §7(1/3)§r
-  一个与女仆和东方 Project 有关的模组。 感谢酒石酸菌和雪尼等人制作的java版TouhouLittleMaid。 感谢酒石酸菌、琥珀酸、帕金伊、天顶乌、天幂、Paulzzh、尤里的猫以及其他美工制作了如此优秀的模型和材质。 感谢 Little Maid Mob 的作者 Verclene。`
-
-  // 目录
-},{ type: "text", content:
+  一个与女仆和东方 Project 有关的模组。 
+  感谢7z制作的UI。感谢酒石酸菌和雪尼等人制作的java版TouhouLittleMaid。 
+  感谢酒石酸菌、琥珀酸、帕金伊、天顶乌、天幂、Paulzzh、尤里的猫以及其他美工制作了如此优秀的模型和材质。
+  感谢 Little Maid Mob 的作者 Verclene。`
+},
+// 目录
+{ type: "text", content:
 `
              §l目录§r
 
-  东方 Project____________3     女仆妖精_______________4     Power道具______________5     御币与弹幕_____________7     多方块祭坛_____________9`
-
-},{type: "text", content:
+东方 Project.................................3
+女仆妖精........................................4
+Power道具......................................5
+御币与弹幕....................................7
+多方块祭坛....................................9`
+},
+{type: "text", content:
 `
 §l东方Project§r
-   东方 Project 是日本同人社团上海爱丽丝幻乐团制作的一系列同人作品，系列以清版弹幕射击游戏为主。
+  东方 Project 是日本同人社团上海爱丽丝幻乐团制作的一系列同人作品，系列以清版弹幕射击游戏为主。
 
   Touhou 百科： https://en.touhouwiki.net/wiki/Touhou_Wiki`
 
 // 单图 图片位置用 $image$ 表示
-},{ type: "img", img: 0x10, content:
+},
+{ type: "img", img: 0x10, content:
 `
 §l女仆妖精§r
-   这个模组添加了一种怪物，怪物的掉落物是重要的合成材料。
+  这个模组添加了一种怪物，怪物的掉落物是重要的合成材料。
        $image$
   在任意群系的夜晚生成，会以弹幕攻击玩家。`
 
-},{ type: "img", img: 0x12, content:
+},
+{ type: "img", img: 0x12, content:
 `
 §lPower 道具§r
-   Power道具是本模组重要的资 源， 通过杀死女仆妖精来获取。 能够用于祭坛合成。
+  Power道具是本模组重要的资 源， 通过杀死女仆妖精来获取。 能够用于祭坛合成。
        $image$`
 
 },{ type: "text", content:
 `
 
-   也可以在沙漠神殿的箱子里找 到得点道具， 砸在地上可以爆出大 量P点。
+  也可以在沙漠神殿的箱子里找 到得点道具， 砸在地上可以爆出大 量P点。
 
-   当你手持御币时， 在物品栏上 方就能看到Power值。 Power值最 大为5, 超过此数值不再增长。`
+  当你手持御币时， 在物品栏上 方就能看到Power值。 Power值最 大为5, 超过此数值不再增长。`
 
 // 工作台合成 自动区分有序/无序，但物品贴图要手动添加 $recipe$是合成表插入的位置
 },{type: "craft", recipe: "hakurei_gohei.json", content:
 `
 §l御币与弹幕§r
-   御币是一个普通的远程武器。可以射出弹幕。
+  御币是一个普通的远程武器。可以射出弹幕。
 
 $recipe$
 `
@@ -55,17 +64,17 @@ $recipe$
 },{ type: "text", content:
 `
 
-   潜行状态下与任意方块交互，
+  潜行状态下与任意方块交互，
 即可切换弹种。同时会收到当前弹
 种的提示。
 
-   因技术限制， 由合成台制作的御
+  因技术限制， 由合成台制作的御
 币需要先对方块使用一下才能激
 活。`
 },{ type: "img", img: 0x11, content:
 `
 §l多方块祭坛§r
-   祭坛是本模组用于合成所必需的多方块结构，合成同时还需要玩家的power值。
+  祭坛是本模组用于合成所必需的多方块结构，合成同时还需要玩家的power值。
        $image$`
 
 },{ type: "img", img: 0x13, content:
@@ -77,89 +86,41 @@ $recipe$
 
 },{ type: "text", content:
 `
-你可以右击六个柱子的顶端来放置物品。在柱子下跳起捡回。当物品完全放置且Power值足够，祭坛就能触发合成。
+  你可以右击六个柱子的顶端来放置物品。在柱子下跳起捡回。当物品完全放置且Power值足够，祭坛就能触发合成。
 
-因为缺少Power而导致的合成中断，获取足够Power后重新放置任意材料可以触发合成。
+  因为缺少Power而导致的合成中断，获取足够Power后重新放置任意材料可以触发合成。
 
-无需担心忘记取下材料，祭坛上的物品是不会自动消失的。`
-}
+  无需担心忘记取下材料，祭坛上的物品是不会自动消失的。`
+},
+{ type: "placeholder"},
+{ type: "placeholder"},
+{ type: "placeholder"},
+{ type: "placeholder"},
+{ type: "placeholder"}
 ]
+
 
 ////// 第二章 //////
 export const book2 = [
-{ type: "text", content:
+{ type: "text", content: 
 `
-             §l合成§r
-             §7(2/3)§r
-`
+            §l女仆§r
+            §7(2/3)§r
+  介绍女仆的基本内容。`
 },
+// 目录
 { type: "text", content:
 `
              §l目录§r
-  §7因配方较多，仅给出顺序。§r    
-御币（合成）   御币（修复）
-落雷         樱之御币
- 《记忆中的幻想乡》
-黄金微波炉   龙头`
+
+生成女仆........................................3
+复活女仆........................................5
+升级女仆........................................6
+相机与照片....................................7
+凿子................................................9
+女仆背包.......................................11
+公主抱..........................................13`
 },
-{ type: "altar", recipe: recipeList.craft_hakurei_gohei, content:
-`
-§l御币 (合成)§r
-   御币可以在祭坛以更低的代价合成。
-
-
-   $recipe$`
-},
-{ type: "altar", recipe: recipeList.repair_hakurei_gohei, content:
-`
-§l御币 (修复)§r
-   御币无法被附魔经验修补，但可以消耗P点和纸回满耐久，这种修复没有惩罚。
-
-$recipe$`
-},
-{ type: "altar", recipe: recipeList.spawn_lightning_bolt, content:
-`
-§l落雷§r
-    召唤一道雷电。
-
-
-$recipe$`
-},
-{ type: "altar", recipe: recipeList.gohei_cherry, content:
-`
-§l樱之御币§r
-   御币、樱花树苗、水桶、泥土。
-
-
-$recipe$`
-},
-{ type: "craft", recipe: "memorizable_gensokyo.json", content:
-`
-§l《记忆中的幻想乡》§r
-   书、蛋糕。
-
-
-$recipe$`
-},
-{ type: "craft", recipe: "gold_microwaver.json", content:
-`
-§l黄金微波炉§r
-   钟、烈焰粉、黄色玻璃、金锭、末影水晶。
-
-
-$recipe$`
-},
-{ type: "craft", recipe: "dragon_skull.json", content:
-`
-§l龙头§r
-   青金石、雷霆之杖、紫水晶、龙首、紫颂花。放在黄金微波炉加热获得神秘尘。
-
-$recipe$`
-}
-]
-
-////// 第三章 //////
-export const book3 = [
 // patchouli.touhou_little_maid:book.entries.maid.spawn_maid.name.name
 { type: "altar", recipe: recipeList.spawn_box, content:
 `
@@ -214,14 +175,14 @@ $recipe$
 // patchouli.touhou_little_maid:book.entries.other.chisel_and_statues.name.name
 { type: "altar", recipe: recipeList.craft_chisel, content:
 `
-§l雕刻刀§r
-   雕刻刀右击粘土可以做成不同尺寸的雕像，目前支持 1x1x1 1x1x2 2x2x4 3x3x6
+§l凿子§r
+   凿子右击粘土可以做成不同尺寸的雕像，目前支持 1x1x1 1x1x2 2x2x4 3x3x6。
 
 $recipe$`
 },
 { type: "img", img: 0x14,  content:
 `
-  副手持照片，主手持雕刻刀，右击多方块结构的左下角，即可雕刻出照片中的女仆。
+  副手持照片，主手持凿子，右击多方块结构的左下角，即可雕刻出照片中的女仆。
 $image$
   火烤1x1大小的雕像可以转换成手办。`
 },
@@ -238,18 +199,98 @@ module2: {type: "altar", recipe: recipeList.craft_maid_backpack_big}, content:
 `$module1$
 $module2$`
 },
-{ type: "double_module", module1: {type: "altar", recipe: recipeList.craft_maid_backpack_middle}, 
-module2: {type: "altar", recipe: recipeList.craft_maid_backpack_big}, content:
-`$module1$
-$module2$`
-},
-
 { type: "img", img: 0x15,  content:
 `
-§l抱起女仆§r
-   手持鞍和女仆交互即可抱起，再次交互即可放下
+§l公主抱§r
+   手持鞍和女仆交互即可抱起，再次交互即可放下。
 
 $image$
 `
-}
+},
+{ type: "placeholder"},
+{ type: "placeholder"},
+{ type: "placeholder"},
+{ type: "placeholder"},
+{ type: "placeholder"},
+{ type: "placeholder"},
+{ type: "placeholder"}
+]
+
+////// 第三章 //////
+export const book3 = [
+{ type: "text", content:
+`
+             §l杂项§r
+             §7(3/3)§r
+  介绍一些其它内容。
+`
+},
+{ type: "text", content:
+`
+             §l目录§r
+
+记忆中的幻想乡.............................3
+御币................................................4
+落雷................................................7
+黄金微波炉...................................8`
+},
+{ type: "craft", recipe: "memorizable_gensokyo.json", content:
+`
+§l《记忆中的幻想乡》§r
+   书、蛋糕。
+
+
+$recipe$`
+},
+{ type: "altar", recipe: recipeList.craft_hakurei_gohei, content:
+`
+§l御币 (合成)§r
+   御币可以在祭坛以更低的代价合成。
+
+
+   $recipe$`
+},
+{ type: "altar", recipe: recipeList.repair_hakurei_gohei, content:
+`
+§l御币 (修复)§r
+   御币无法被附魔经验修补，但可以消耗P点和纸回满耐久，这种修复没有惩罚。
+
+$recipe$`
+},
+{ type: "altar", recipe: recipeList.gohei_cherry, content:
+`
+§l樱之御币§r
+   御币、樱花树苗、水桶、泥土。
+
+
+$recipe$`
+},
+{ type: "altar", recipe: recipeList.spawn_lightning_bolt, content:
+`
+§l落雷§r
+    召唤一道雷电。
+
+
+$recipe$`
+},
+{ type: "craft", recipe: "gold_microwaver.json", content:
+`
+§l黄金微波炉§r
+   钟、烈焰粉、黄色玻璃、金锭、末影水晶。
+
+
+$recipe$`
+},
+{ type: "craft", recipe: "dragon_skull.json", content:
+`
+§l龙头§r
+   青金石、雷霆之杖、紫水晶、龙首、紫颂花。放在黄金微波炉加热获得神秘尘。
+
+$recipe$`
+},
+{ type: "placeholder"},
+{ type: "placeholder"},
+{ type: "placeholder"},
+{ type: "placeholder"},
+{ type: "placeholder"}
 ]

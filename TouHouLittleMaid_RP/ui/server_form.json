@@ -1,45 +1,42 @@
 {
-    "namespace": "server_form",
-    "main_screen_content/server_form_factory": {
-        "type": "factory",
-        "control_ids": { "long_form": "@server_form.form_selector", "custom_form": "@server_form.custom_form" }
-    },
-    "form_selector": {
-        "type": "panel",
-        "anchor_from": "center",
-        "anchor_to": "center",
-        "controls": [
-            { "thlm_main@form_type": { "$min": "/M ", "$max": "/M 􀐏", "$content": "thlm_menu.main" } },
-            { "doge_main@form_type": { "$min": "/D ", "$max":"/D 􀐏", "$content": "form_main.main" } },
-            { "doge_ad@form_type": { "$min": "/A ", "$max":"/A 􀐏", "$content": "ad_p1.main" } },
-            // { "thlm_skin@form_type": { "$min": "/S ", "$max": "/S 􀐏", "$content": "thlm_skin.main" } },
-            { "vanilla@vanilla_form": {} }
+  "namespace": "server_form",
+	"main_screen_content": {
+		"modifications": [{
+			"array_name": "controls",
+			"operation": "insert_front",
+			"value": [{
+				"server_form_factory": {
+					"type": "factory",
+					"control_ids": {
+						"long_form": "@tlm_server_form.long_form_replacement"
+					}
+				}
+			}]
+		}]
+	},
+  "long_form": {
+    "modifications": [
+      {
+        "array_name": "bindings",
+        "operation": "insert_front",
+        "value": [
+          { "binding_name": "#title_text" },
+          {
+            "binding_type": "view",
+            "source_property_name": "(#title_text < '/' or #title_text > '/􀐏')",
+            "target_property_name": "#visible"
+          }
         ]
-    },
-    "form_type": {
-        "type": "panel",
-        "controls": [{ "content@$content": {} }],
-        "bindings": [
-            { "binding_name": "#title_text" },
-            {
-                "binding_type": "view",
-                "source_property_name": "(#title_text = $min) or (#title_text > $min and #title_text < $max)",
-                "target_property_name": "#visible"
-            },
-            { "binding_type": "view", "source_property_name": "(#title_text - $min)", "target_property_name": "#title" }
-        ]
-    },
-    "vanilla_form@server_form.long_form": {
-        "bindings": [
-            { "binding_name": "#title_text" },
-            {
-                "binding_type": "view",
-                "source_property_name": "(#title_text < '/' or #title_text > '/􀐏')",
-                "target_property_name": "#visible"
-            }
-        ]
-    },
-    "third_party_server_screen": {
-        "button_mappings": []
-    }
+      }
+    ]
+  },
+  "long_form_panel": {
+    "bindings": [
+      {
+        "binding_type": "view",
+        "source_property_name": "(#title_text < '/' or #title_text > '/􀐏')",
+        "target_property_name": "#visible"
+      }
+    ]
+  }
 }

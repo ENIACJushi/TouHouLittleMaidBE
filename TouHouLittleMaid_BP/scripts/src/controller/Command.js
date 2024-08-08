@@ -19,9 +19,37 @@ export class CommandManager{
             case "thlm:admin"   : this.admin(event)  ; break;
             case "thlm:test"    : this.test(event)   ; break;
             case "thlm:info"    : this.info(event)   ; break;
+            case "thlm:mg"      : this.memorizableGensokyo(event)   ; break;
+            case "thlm:mg_get"  : this.memorizableGensokyo_get(event); break;
             case "thlm:debug"   : this.debug(event)  ; break;
             default: break;
         }
+    }
+    /**
+     * 设置书本版本
+     * @param {ScriptEventCommandMessageAfterEvent} event 
+     */
+    static memorizableGensokyo(event){
+        let pl = event.sourceEntity;
+        let version = ""
+        for(let i = 0; i < event.message.length; i++){
+            version += "§" + event.message[i];
+        }
+        let item = Tool.getPlayerMainHand(pl);
+        // [tlmmg<version>]
+        let versionStr = `§t§l§m§m§g${version}`;
+        item.setLore([versionStr]);
+        Tool.setPlayerMainHand(pl, item);
+        pl.sendMessage(versionStr.replace(new RegExp('§', 'g'), '*'));
+    }
+    /**
+     * 设置书本版本
+     * @param {ScriptEventCommandMessageAfterEvent} event 
+     */
+    static memorizableGensokyo_get(event){
+        let pl = event.sourceEntity;
+        let item = Tool.getPlayerMainHand(pl);
+        pl.sendMessage(item.getLore()[0].replace(new RegExp('§', 'g'), ''));
     }
     /**
      * 设置皮肤包

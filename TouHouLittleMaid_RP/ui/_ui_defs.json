@@ -2,6 +2,8 @@
   "ui_defs": [
     "ui/form/thlm_menu.json",
     "ui/form/header.json",
-    "ui/container/maid_backpack.json"
+    "ui/container/maid_backpack.json",
+    "ui/form/tlm_book_screen.json",
+    "ui/form/index.json"
   ]
 }
