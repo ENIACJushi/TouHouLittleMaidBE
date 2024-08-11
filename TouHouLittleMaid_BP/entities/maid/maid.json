@@ -4,6 +4,8 @@
     "description": {
       "identifier": "thlmm:maid", "is_spawnable": true, "is_summonable": true, "is_experimental": false,
       "properties": {
+        // 家模式
+        "thlm:home": {"type": "bool", "default": false, "client_sync": true},
         // 工作模式
         "thlm:work" : {"type": "int", "default": 0, "range":[-20, 20], "client_sync": true},
         // 模型包
@@ -46,11 +48,6 @@
             "event": "thlmm:t",
             "target": "self"
           }
-        },
-        "minecraft:damage_sensor": {
-          "triggers": [
-            { "cause": "all", "on_damage": {"event": "on_hurt", "target": "self", "filters": {"test": "has_damage", "value": "fatal", "operator": "not"}} }
-          ]
         },
         "minecraft:behavior.float": { "priority": 2 },
         // TODO: 潜水逻辑
@@ -183,10 +180,6 @@
           "stop_distance": 3,
           "can_teleport": false
         }
-      },
-      // 守家模式
-      "status:home":{
-        "minecraft:is_baby": {}
       },
 
       "thlmm:maid_wild": {
@@ -435,7 +428,6 @@
               {"test": "is_sneaking", "subject": "damager", "value": true }
             ]} }}, // 打开菜单
             { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } }, // 免疫主人伤害
-            { "cause": "all", "damage_multiplier": 0.9, "on_damage": {"event": "on_hurt", "target": "self", "filters": {"test": "has_damage", "value": "fatal", "operator": "not"}} }, // 受伤事件
             { "cause": "all", "damage_multiplier": 0.9 }
           ]
         }
@@ -454,7 +446,6 @@
               {"test": "is_sneaking", "subject": "damager", "value": true }
             ]} }}, // 打开菜单
             { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } }, // 免疫主人伤害
-            { "cause": "all", "damage_multiplier": 0.75, "on_damage": {"event": "on_hurt", "target": "self", "filters": {"test": "has_damage", "value": "fatal", "operator": "not"}} }, // 受伤事件
             { "cause": "all", "damage_multiplier": 0.75 }
           ]
         }
@@ -1021,7 +1012,6 @@
       ///// 基础事件 /////
       "minecraft:entity_spawned": { "trigger": "thlmm:0" },
       "init_failed":{ "queue_command": {"command":"function touhou_little_maid/not_support"} },
-      "on_hurt": { "queue_command": {"command": "playsound mob.thlmm.maid.hurt @a ~~~"} },
       "become_maid":{
         "add": {
           "component_groups": [
@@ -1132,7 +1122,7 @@
             "trigger": "thlmm:h", 
             "filters": { "all_of": [
               { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },
-              { "test": "has_component", "subject": "self", "operator": "==", "value": "minecraft:is_baby" }
+              { "test": "bool_property", "domain": "thlm:home", "subject": "self", "value": true }
             ]}
           },
           // 弹幕攻击
@@ -1142,7 +1132,7 @@
         ]
       },// timer 每3秒一次的定时事件 
       "thlmm:a": {}, // danmaku Attack
-      "thlmm:d" :{ "queue_command": {"command": "playsound mob.thlmm.maid.death @a ~~~"} }, // Death
+      "thlmm:d" :{}, // Death
       "thlmm:f": {
         "remove": { "component_groups": [ "thlmm:maid_wild" ] },
         "add": {"component_groups": [ "thlmm:maid_tame", "status:follow_standard", "thlmm:maid_tame_sit"]},
@@ -1171,7 +1161,7 @@
             "add": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
           },
           { // 不处于家模式，还需要取消主人跟随
-            "filters": { "test": "has_component", "subject": "self", "operator": "not", "value": "minecraft:is_baby" },
+            "filters": { "test": "bool_property", "domain": "thlm:home", "subject": "self", "value": false },
             "remove": { "component_groups": [ "status:follow_standard" ]}, 
             "add": { "component_groups": [ "status:follow_sit" ]}
           },
@@ -1259,7 +1249,7 @@
             "add": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
           },
           { // 不处于家模式，还需要取消主人跟随
-            "filters": { "test": "has_component", "subject": "self", "operator": "not", "value": "minecraft:is_baby" },
+            "filters": { "test": "bool_property", "domain": "thlm:home", "subject": "self", "value": false },
             "remove": { "component_groups": [ "status:follow_standard" ]}, 
             "add": { "component_groups": [ "status:follow_sit" ]}
           },
@@ -1280,7 +1270,7 @@
             "remove": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
           },
           { // 不处于家模式，还需要恢复主人跟随
-            "filters": { "test": "has_component", "subject": "self", "operator": "not", "value": "minecraft:is_baby" },
+            "filters": { "test": "bool_property", "domain": "thlm:home", "subject": "self", "value": false },
             "add": { "component_groups": [ "status:follow_standard" ]}, 
             "remove": { "component_groups": [ "status:follow_sit" ]}
           },
@@ -1306,7 +1296,7 @@
       //// 跟随类型 ////
       "api:status_follow"  :{
         "sequence": [
-          {  "remove": {"component_groups": ["status:home"]} },
+          { "set_property": {"thlm:home": false} },
           {
             "filters": { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },
             "add"   : {"component_groups": ["status:follow_standard"]}
@@ -1318,7 +1308,7 @@
         ]
       },
       "api:status_home"    :{
-        "add"   : {"component_groups": ["status:home"]}, 
+        "set_property": {"thlm:home": true},
         "remove": {"component_groups": ["status:follow_standard", "status:follow_sit"]}
       },
       

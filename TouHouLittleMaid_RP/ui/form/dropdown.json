@@ -1,0 +1,562 @@
+{
+  ///// 基础调用链 /////
+  // 表单根节点
+  "third_party_server_screen@common.base_screen": {
+    "$screen_content": "server_form.main_screen_content",
+    "button_mappings": [
+      {
+        "from_button_id": "button.menu_cancel",
+        "to_button_id": "button.menu_exit",
+        "mapping_type": "global"
+      }
+    ]
+  },
+  // long / custom 选择
+  "main_screen_content": {
+    "type": "panel",
+    "size": [0, 0],
+    "controls": [
+      {
+        "server_form_factory": {
+          "type": "factory",
+          "control_ids": {
+              "long_form": "@server_form.long_form",
+              "custom_form": "@server_form.custom_form"
+          }
+        }
+      }
+    ]
+  },
+  ///// custom form 主界面 /////
+  "custom_form@common_dialogs.main_panel_no_buttons": {
+    "$title_panel": "common_dialogs.standard_title_label",
+    "$title_size": [ "100% - 14px", 10 ],
+    "size": [225, 200],
+    "$text_name": "#title_text",
+    "$title_text_binding_type": "none",
+    "$child_control": "server_form.custom_form_panel",
+    "layer": 2
+  },
+  "custom_form_panel@common.scrolling_panel" : {
+    "anchor_to": "top_left",
+    "anchor_from": "top_left",
+    "$show_background": false,
+    "size": [ "100%", "100%" ],
+    "$scrolling_content": "server_form.custom_form_scrolling_content",
+    "$scroll_size": [ 5, "100% - 4px" ],
+    "$scrolling_pane_size": [ "100% - 4px", "100% - 2px" ],
+    "$scrolling_pane_offset": [ 2, 0 ],
+    "$scroll_bar_right_padding_size": [ 0, 0 ]
+  },
+  "custom_form_scrolling_content": {
+    "type": "stack_panel",
+    "size": ["100% - 4px", "100%c"],
+    "offset": [2,0],
+    "orientation": "vertical",
+    "anchor_from": "top_left",
+    "anchor_to": "top_left",
+
+    "controls": [
+      {
+        "generated_form@server_form.generated_contents": {}
+      },
+      {
+        "submit_button@common_buttons.light_text_button": {
+          "$pressed_button_name": "button.submit_custom_form",
+          "anchor_from": "top_left",
+          "anchor_to": "top_left",
+          "size": ["100%", 32],
+          "$button_text": "gui.submit",
+
+          "bindings": [
+            {
+              "binding_name": "#submit_button_visible",
+              "binding_name_override": "#visible"
+            }
+          ]
+        }
+      }
+    ]    
+  },
+  // 内容
+  "generated_contents": {
+    "type": "stack_panel",
+    "size": ["100%", "100%c"],
+    "orientation": "vertical",
+    "anchor_from": "top_left",
+    "anchor_to": "top_left",
+
+    "factory":{
+      "name": "buttons",
+      "control_ids": {
+        "label": "@server_form.custom_label", // 文字
+        "toggle": "@server_form.custom_toggle", // 开关
+        "slider": "@server_form.custom_slider", // 滑条
+        "step_slider": "@server_form.custom_step_slider",// step 滑条
+        "dropdown": "@server_form.custom_dropdown", // 下拉列表
+        "input": "@server_form.custom_input" // 文本输入
+      }
+    },
+
+    "collection_name": "custom_form",
+    "bindings": [
+      {
+        "binding_name": "#custom_form_length",
+        "binding_name_override": "#collection_length"
+      }
+    ]
+  },
+  ///// 开关 /////
+  //// 根节点
+  "custom_toggle@settings_common.option_toggle": {
+    "$option_label": "#custom_text",
+    "$toggle_name": "custom_toggle",
+    "$toggle_state_binding_name": "#custom_toggle_state",
+    "$option_binding_name": "#custom_toggle_state",
+    "$toggle_binding_type": "collection",
+    "$toggle_enabled_binding_name": "#custom_toggle_enabled",
+    "$toggle_enabled_binding_type": "collection",
+    
+    "$toggle_grid_collection_name": "custom_form", // 
+
+    "$label_bindings": [
+      {
+        "binding_name": "#custom_text",
+        "binding_type": "collection",
+        "binding_collection_name": "custom_form"
+      }
+    ]
+  },
+  /// 根节点模板
+  "option_toggle@settings_common.option_generic": {
+    "$control_name": "settings_common.option_toggle_control",
+    "$option_label|default": "",
+    "$toggle_tts_header": "$option_label",
+    "variables": [
+      {
+        "requires": "$desktop_screen",
+        "$one_line_layout": true
+      }
+    ]
+  },
+  "option_generic": {
+    "type": "panel",
+    "$option_generic_panel_size|default": [ "100%", "100%c" ],
+    "size": "$option_generic_panel_size",
+    "$enabled|default": true,
+    "$option_enabled_binding_name|default": "",
+    "controls": [
+      { "option_generic_core@settings_common.option_generic_core": {} }
+    ]
+  },
+  /** 模板核心
+   * Option_generic和option_generic_core分开，
+   * 以保证$enabled和$option_enabled_binding_name被定义
+   * 否则，变量部分现在option_generic_core阻塞。
+  */
+  // 单行排版比双行排版要更简洁，所以只对单行进行分析
+  "option_generic_core": {
+    "$allow_data_binding|default": true,
+    "$option_label|default": "",
+    "$show_option_label|default": true,
+    "$label_bindings|default": [],
+    "$one_line_layout|default": false,
+    "$has_option_description|default": false,
+    "$option_description|default": "",
+    "$option_enabled_binding_type|default": "global",
+    "$option_label_alignment|default": "left",
+    "$label_offset|default": [ 0, 0 ],
+    
+    "type": "stack_panel",
+    "size": [ "100%", "100%c" ],
+    "enabled": "$enabled",
+    "variables": [
+      {
+        "requires": "(not $enabled or not $option_enabled_binding_name)",
+        "$option_enabled_binding_type": "none",
+        "$option_enabled_binding_name": "#not_data_bound"
+      }
+    ],
+    "bindings": [
+      {
+        "binding_type": "$option_enabled_binding_type",
+        "binding_name": "$option_enabled_binding_name",
+        "binding_name_override": "#enabled"
+      }
+    ],
+    "controls": [
+      // 双行
+      {
+        "two_line_layout": {
+          "ignored": "($one_line_layout)",
+          "type": "stack_panel",
+          "orientation": "vertical",
+          "size": [ "100%", "100%c" ],
+          "controls": [
+            {
+              "option_label_panel": {
+                "type": "panel",
+                "size": [ "100%", "100%c" ],
+                "controls": [
+                  {
+                    "option_label": {
+                      "type": "label",
+                      "text_alignment": "$option_label_alignment",
+                      "color": "$main_header_text_color",
+                      "size": [ "100%", "default" ],
+                      "offset": "$label_offset",
+                      "layer": 1,
+                      "text": "$option_label",
+                      "visible": "$show_option_label",
+                      "bindings": "$label_bindings",
+                      "locked_alpha": 0.5
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "spacer": {
+                "type": "panel",
+                "visible": "$show_option_label",
+                "size": [ 0, 1 ]
+              }
+            },
+            {
+              "option_descriptive_text_0": {
+                "ignored": "(not $has_option_description)",
+                "type": "label",
+                "text_alignment": "$option_label_alignment",
+                "size": [ "90%", "default" ],
+                "min_size": [ 0, 0 ],
+                "color": "$option_description_text_color",
+                "text": "$option_description",
+                "visible": "$show_option_label",
+                "anchor_from": "bottom_left",
+                "anchor_to": "bottom_left",
+                "locked_alpha": 0.5
+              }
+            },
+            {
+              "spacer2": {
+                "type": "panel",
+                "visible": "$show_option_label",
+                "size": [ 0, 1 ]
+              }
+            },
+            {
+              "$control_name@$control_name": {
+                "anchor_from": "top_left",
+                "anchor_to": "top_left"
+              }
+            }
+          ]
+        }
+      },
+      // 单行
+      {
+        "one_line_layout": {
+          "ignored": "(not $one_line_layout)",
+          "type": "panel",
+          // 因为在这个布局中标签和控件在同一行，所以整个控件的高度不应该是两者高度的总和，这是单独的“100%c”的高度
+          // 无论标签和控件的相对位置如何。相反，高度应该是两个高度的最大值。目前，使用此布局的唯一控件是[切换 toggle]
+          // 这意味着高度要么是16px(切换本身的高度)，要么是100%c-16px(标签的高度，由于行换行而变化，只能通过减去
+          // 已知toggle的高度，16px，从toggle和label的高度之和，100%c。
+          // 在标签和描述之间添加2px的间距。如果此布局用于任何其他控件，
+          // 则需要相应地更改$line_size和$min_line_size，就像$label_size和$label_offset一样。
+          "$line_size|default": [ "100%", "100%c - 16px + 2px" ],
+          "$line_min_size|default": [ "100%", "16px" ],
+          "size": "$line_size",
+          "min_size": "$line_min_size",
+          "$label_size|default": [ "100% - 34px", "default" ],
+          "$label_offset|default": [ 34, 3 ],
+          "controls": [
+            {
+              "$control_name@$control_name": {
+                "anchor_from": "top_left",
+                "anchor_to": "top_left"
+              }
+            },
+            {
+              "option_label": {
+                "type": "label",
+                "color": "$main_header_text_color",
+                "text_alignment": "$option_label_alignment",
+                "layer": 1,
+                "size": "$label_size",
+                "offset": "$label_offset",
+                "anchor_from": "top_left",
+                "anchor_to": "top_left",
+                "text": "$option_label",
+                "visible": "$show_option_label",
+                "bindings": "$label_bindings",
+                "locked_alpha": 0.5
+              }
+            },
+            {
+              "option_descriptive_text": {
+                "ignored": "(not $has_option_description)",
+                "type": "label",
+                "text_alignment": "$option_label_alignment",
+                "size": "$label_size",
+                "offset": "$label_offset",
+                "min_size": [ 0, 0 ],
+                "color": "$option_description_text_color",
+                "text": "$option_description",
+                "visible": "$show_option_label",
+                "anchor_from": "bottom_left",
+                "anchor_to": "bottom_left",
+                "locked_alpha": 0.5
+              }
+            }
+          ]
+        }
+      },
+      {
+        "spacer": {
+          "type": "panel",
+          "size": [ 0, 4 ]
+        }
+      }
+    ]
+  },
+  //// 根节点元素
+  /// $control_name, 用于展示开关， 文本则是直接放在了核心模板内
+  "option_toggle_control@common.toggle": {
+    "layer": 2,
+    "$toggle_state_binding_name|default": "$option_binding_name",
+    "$toggle_enabled_binding_name|default": "$option_enabled_binding_name",
+    "$toggle_enabled_binding_type|default": "global",
+    "size": [ "100%", "100%c" ],
+    "$binding_type": "global",
+    "$binding_condition": "once",
+
+    // 开/关 锁定的各个外观
+    "$unchecked_control": "settings_common.option_toggle_off",
+    "$checked_control": "settings_common.option_toggle_on",
+    "$unchecked_hover_control": "settings_common.option_toggle_off_hover",
+    "$checked_hover_control": "settings_common.option_toggle_on_hover",
+    "$unchecked_locked_control": "settings_common.option_toggle_off_locked",
+    "$unchecked_locked_hover_control": "settings_common.option_toggle_off_locked",
+    "$checked_locked_control": "settings_common.option_toggle_on_locked",
+    "$checked_locked_hover_control": "settings_common.option_toggle_on_locked",
+
+    "$enable_directional_toggling": false,
+
+    "enabled": "$enabled",
+    "variables": [
+      {
+        "requires": "(not $option_enabled_binding_name or not $enabled)",
+        "$toggle_enabled_binding_name": "#not_data_bound",
+        "$toggle_enabled_binding_type": "none"
+      }
+    ]
+  },
+  "common.toggle@common.toggle_visuals": {
+    "type": "toggle",
+
+    "$focus_id|default": "",
+    "$focus_override_down|default": "",
+    "$focus_override_up|default": "",
+    "$focus_override_left|default": "",
+    "$focus_override_right|default": "",
+    "focus_identifier": "$focus_id",
+    "focus_change_down": "$focus_override_down",
+    "focus_change_up": "$focus_override_up",
+    "focus_change_left": "$focus_override_left",
+    "focus_change_right": "$focus_override_right",
+    "$toggle_focus_enabled|default": true,
+    "focus_enabled": "$toggle_focus_enabled",
+    "focus_magnet_enabled": true,
+
+    "$default_focus_precedence|default": 0,
+    "default_focus_precedence": "$default_focus_precedence",
+
+    "$allow_controller_back_button_mapping|default": false,
+
+    "layer": 1,
+    "sound_name": "random.click",
+    "sound_volume": 1.0,
+    "sound_pitch": 1.0,
+
+    "checked_control": "checked",
+    "unchecked_control": "unchecked",
+    "checked_hover_control": "checked_hover",
+    "unchecked_hover_control": "unchecked_hover",
+    "checked_locked_control": "checked_locked",
+    "unchecked_locked_control": "unchecked_locked",
+    "checked_locked_hover_control": "checked_locked_hover",
+    "unchecked_locked_hover_control": "unchecked_locked_hover",
+
+    "$radio_toggle_group|default": false,
+    "$toggle_default_state|default": false,
+    "$toggle_group_forced_index|default": -1,
+    "$toggle_group_default_selected|default": 0,
+
+    // 绑定信息
+    "$toggle_binding_type|default": "global", // collection
+    "$toggle_binding_condition|default": "visible",
+    "$toggle_grid_collection_name|default": "", // custom_form
+    "$toggle_state_binding_name|default": "#toggle_state", // #custom_toggle_state
+
+    "$toggle_enabled_binding_type|default": "none", // collection
+    "$toggle_enabled_binding_condition|default": "visible",
+    "$toggle_enabled_binding_name|default": "#toggle_enabled", // #custom_toggle_enabled
+
+    "$toggle_collection_details_type|default": "none",
+    "$toggle_collection_detail_name|default": "",
+
+    // tts忽略
+    "$toggle_tts_header_binding_type|default": "none",
+    "$toggle_tts_header_binding_condition|default": "visible",
+    "$toggle_tts_header_binding_collection_name|default": "",
+    "$toggle_tts_header|default": "",
+    
+    "$toggle_tts_value_binding_type|default": "none",
+    "$toggle_tts_value_binding_condition|default": "visible",
+    "$toggle_tts_value_binding_collection_name|default": "",
+    "$toggle_tts_override_toggle_value|default": "",
+
+    "$ignore_tts_enabled_bind|default": false,
+
+
+    "$toggle_tts_name|default": "accessibility.toggle.tts.title",
+    "$toggle_tts_toggle_on_text|default": "accessibility.state.on",
+    "$toggle_tts_toggle_off_text|default": "accessibility.state.off",
+    "$toggle_tts_type_priority|default": -100,
+    "$toggle_tts_index_priority|default": 150,
+    "$toggle_tts_inherit_siblings|default": false,
+    "$tts_section_header|default": "",
+
+    "$toggle_focus_bind|default": "",
+    "$toggle_tts_enabled_binding_type|default": "none",
+
+    "radio_toggle_group": "$radio_toggle_group",
+    "toggle_name": "$toggle_name",
+    "toggle_default_state": "$toggle_default_state",
+    "toggle_group_forced_index": "$toggle_group_forced_index",
+    "toggle_group_default_selected": "$toggle_group_default_selected",
+    "toggle_grid_collection_name": "$toggle_grid_collection_name",
+
+    "$enable_directional_toggling|default": false,
+    "$toggle_on_button|default": "toggle.toggle_on",
+    "$toggle_off_button|default": "toggle.toggle_off",
+
+
+    "enable_directional_toggling": "$enable_directional_toggling",
+    "toggle_on_button": "$toggle_on_button",
+    "toggle_off_button": "$toggle_off_button",
+
+    "tts_toggle_on": "$toggle_tts_toggle_on_text",
+    "tts_toggle_off": "$toggle_tts_toggle_off_text",
+    "tts_name": "$toggle_tts_name",
+    "tts_control_header": "$toggle_tts_header",
+    "tts_section_header": "$tts_section_header",
+    "tts_override_control_value": "$toggle_tts_override_toggle_value",
+    "tts_control_type_order_priority": "$toggle_tts_type_priority",
+    "tts_index_priority": "$toggle_tts_index_priority",
+    "tts_inherit_siblings": "$toggle_tts_inherit_siblings",
+
+    "button_mappings": [
+      {
+        "from_button_id": "button.menu_select",
+        "to_button_id": "button.menu_select",
+        "mapping_type": "pressed"
+      },
+      {
+        "from_button_id": "button.menu_ok",
+        "to_button_id": "button.menu_ok",
+        "mapping_type": "focused"
+      },
+      {
+        "from_button_id": "button.controller_back",
+        "to_button_id": "button.controller_back",
+        "mapping_type": "focused",
+        "ignored": "(not $allow_controller_back_button_mapping)"
+      },
+      {
+        "ignored": "(not $enable_directional_toggling)",
+        "from_button_id": "button.menu_left",
+        "to_button_id": "$toggle_off_button",
+        "mapping_type": "pressed",
+        "input_mode_condition": "gamepad_and_not_gaze"
+      },
+      {
+        "ignored": "(not $enable_directional_toggling)",
+        "from_button_id": "button.menu_right",
+        "to_button_id": "$toggle_on_button",
+        "mapping_type": "pressed",
+        "input_mode_condition": "gamepad_and_not_gaze"
+      }
+    ],
+
+    // 这是开关用到的属性 type=toggle 时特有的
+    // 因为按钮没法改#值，所以只能试着改写toggle了
+    "$toggle_property_bag|default": {
+      "#toggle_state": true
+    },
+    "property_bag": "$toggle_property_bag",
+
+    "bindings": [
+      {
+        "binding_type": "$toggle_binding_type", // collection
+        "binding_condition": "$toggle_binding_condition", // visible
+        "binding_collection_name": "$toggle_grid_collection_name", // custom_form
+        "binding_name": "$toggle_state_binding_name", // #custom_toggle_state !这个很重要，是用于记录开启状态的
+        "binding_name_override": "#toggle_state"
+      },
+      {
+        "binding_type": "$toggle_enabled_binding_type", // collection
+        "binding_condition": "$toggle_enabled_binding_condition", // visible
+        "binding_collection_name": "$toggle_grid_collection_name", // custom_form
+        "binding_name": "$toggle_enabled_binding_name", // #custom_toggle_enabled 用于启用开关
+        "binding_name_override": "#enabled"
+      },
+      {
+        "binding_type": "$toggle_collection_details_type", // none
+        "binding_collection_name": "$toggle_collection_detail_name" // "" ?
+      },
+      // tts忽略
+      {
+        "binding_type": "$toggle_tts_header_binding_type",
+        "binding_condition": "$toggle_tts_header_binding_condition",
+        "binding_collection_name": "$toggle_tts_header_binding_collection_name",
+        "binding_name": "$toggle_tts_header"
+      },
+      {
+        "binding_type": "$toggle_tts_value_binding_type",
+        "binding_condition": "$toggle_tts_value_binding_condition",
+        "binding_collection_name": "$toggle_tts_value_binding_collection_name",
+        "binding_name": "$toggle_tts_override_toggle_value"
+      },
+      {
+        "ignored": "$ignore_tts_enabled_bind",
+        "binding_type": "$toggle_tts_enabled_binding_type",
+        "binding_name": "#tts_enabled",
+        "binding_name_override": "#focus_enabled"
+      },
+      {
+        "ignored": "(($toggle_focus_bind = '') and (not $ignore_tts_enabled_bind))",
+        "binding_type": "global",
+        "binding_name": "$toggle_focus_bind",
+        "binding_name_override": "#focus_enabled"
+      }
+    ]
+  },
+  "common.toggle_visuals": {
+    "type": "panel",
+    "controls": [
+      { "unchecked@$unchecked_control": {} },
+      { "checked@$checked_control": {} },
+
+      { "unchecked_hover@$unchecked_hover_control": {} },
+      { "checked_hover@$checked_hover_control": {} },
+      
+      { "unchecked_locked@$unchecked_locked_control": {} },
+      { "checked_locked@$checked_locked_control": {} },
+      
+      { "unchecked_locked_hover@$unchecked_locked_hover_control": {} },
+      { "checked_locked_hover@$checked_locked_hover_control": {} }
+    ]
+  }
+}

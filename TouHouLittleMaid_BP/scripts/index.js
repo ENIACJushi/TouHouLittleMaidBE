@@ -184,6 +184,7 @@ class thlm {
                     switch(item.typeId.substring(19)){
                         case "hakurei_gohei_crafting_table": Danmaku.gohei_activate(event); break;
                         case "hakurei_gohei_cherry": itemShootManager.itemShootEvent(event); break;
+                        case "memorizable_gensokyo": MemorizableGensokyo.onUseEvent(event); break;
                         default: break;
                     }
                 }
@@ -230,7 +231,6 @@ class thlm {
                                 }
                             }
                         }; break;
-                        case "splash_potion": MemorizableGensokyo.sendForm(event.source); break;
                         default: break;
                     }
                 }

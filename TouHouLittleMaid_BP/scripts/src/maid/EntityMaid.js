@@ -636,7 +636,7 @@ export class EntityMaid{
          * @param {Entity} maid 
          */
         getMode(maid){
-            return maid.getComponent("minecraft:is_baby")!==undefined;
+            return maid.getProperty("thlm:home");
         },
         /**
          * 切换home模式

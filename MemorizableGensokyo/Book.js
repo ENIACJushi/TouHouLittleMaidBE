@@ -35,7 +35,7 @@ export class Book {
      * @param {boolean} trim 
      */
     setLang(page, value, trim=true){
-        let key = `tlm.${Book.getSeqStr(this.bookId)}${Book.getSeqStr(page)}`;
+        let key = `tlm.${Book.getSeqStr(this.bookId)}.${Book.getSeqStr(page)}`;
         // 去除末尾的换行和空格
         let res = value;
         if(trim){
@@ -265,12 +265,11 @@ export class Book {
     static resolveImage(img){
         return `%1%1%1       ${String.fromCharCode(GLYPH_IMG + img)}%1%1%1`;
     }
-    static numberStr = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     /**
      * 获取页码字符
      * @param {Number} seq 
      */
     static getSeqStr(seq){
-        return this.numberStr[seq];
+        return seq.toString();
     }
 }
