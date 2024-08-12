@@ -24,9 +24,13 @@
 import * as fs from "fs"
 import { Book } from "./Book.js";
 const key = ["book1", "book2", "book3"];
-const TEXT_PATH = "../TouHouLittleMaid_RP/texts/"
+// 自动生成信息
+const TEXT_PATH = "../TouHouLittleMaid_RP/texts/";
 const TEXT_STARTER = "### MG_AUTO_GENERATE_START ###";
 const TEXT_ENDER = "### MG_AUTO_GENERATE_END ###";
+const SCRIPT_PATH = "../TouHouLittleMaid_BP/scripts/src/book/MemorizableGensokyoUI.js"
+const SCRIPT_STARTER = "// MG_AUTO_GENERATE_START";
+const SCRIPT_ENDER = "// MG_AUTO_GENERATE_END";
 
 /**
  * 写入语言文件
@@ -55,7 +59,32 @@ function writeLang(name, str){
         }
     });
 }
+/**
+ * 写入脚本文件
+ * @param {Number[]} pages 各章长度
+ */
+function writeScript(pages){
+    let res = fs.readFileSync(SCRIPT_PATH, "utf-8");
+    let str = `const BOOK = [${pages.toString()}];\n`
 
+    let starter = res.indexOf(SCRIPT_STARTER);
+    let ender = res.indexOf(SCRIPT_ENDER);
+    if(starter >= 0 && ender >= 0){
+        res = res.substring(0, starter) + SCRIPT_STARTER + '\n' + str + res.substring(ender);
+    }
+    else{
+        res += SCRIPT_STARTER + "\n";
+        res += str + "\n";
+        res += SCRIPT_ENDER + "\n";
+    }
+    
+    fs.writeFile(SCRIPT_PATH, res, 'utf8', (err) => {
+        if (err) {
+            console.error(`写入 ${SCRIPT_PATH} 文件时发生错误: `, err);
+            return;
+        }
+    });
+}
 // 读取books/xxx.js文件
 let files = fs.readdirSync("./books");
 let books = {};
@@ -75,6 +104,12 @@ for(let i = 0; i < key.length; i++){
         maxPage[i] = Math.max(maxPage[i], books[lang][key[i]].length);
     }
 }
+// 向上取偶
+maxPage.forEach((val, i)=>{
+    maxPage[i] = val + val%2;
+});
+// 生成页码数量
+writeScript(maxPage);
 
 /**
  * 处理

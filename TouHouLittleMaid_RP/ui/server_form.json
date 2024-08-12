@@ -20,10 +20,10 @@
         "array_name": "bindings",
         "operation": "insert_front",
         "value": [
-          { "binding_name": "#title_text" },
           {
             "binding_type": "view",
-            "source_property_name": "(#title_text < '/' or #title_text > '/􀐏')",
+            "source_control_name": "inside_header_panel",
+            "source_property_name": "#stored_text",
             "target_property_name": "#visible"
           }
         ]
@@ -35,7 +35,7 @@
       {
         "binding_type": "view",
         "source_property_name": "(#title_text < '/' or #title_text > '/􀐏')",
-        "target_property_name": "#visible"
+        "target_property_name": "#stored_text"
       }
     ]
   }

@@ -91,12 +91,7 @@ $recipe$
   因为缺少Power而导致的合成中断，获取足够Power后重新放置任意材料可以触发合成。
 
   无需担心忘记取下材料，祭坛上的物品是不会自动消失的。`
-},
-{ type: "placeholder"},
-{ type: "placeholder"},
-{ type: "placeholder"},
-{ type: "placeholder"},
-{ type: "placeholder"}
+}
 ]
 
 
@@ -206,14 +201,7 @@ $module2$`
 
 $image$
 `
-},
-{ type: "placeholder"},
-{ type: "placeholder"},
-{ type: "placeholder"},
-{ type: "placeholder"},
-{ type: "placeholder"},
-{ type: "placeholder"},
-{ type: "placeholder"}
+}
 ]
 
 ////// 第三章 //////
@@ -245,7 +233,7 @@ $recipe$`
 { type: "altar", recipe: recipeList.craft_hakurei_gohei, content:
 `
 §l御币 (合成)§r
-   御币可以在祭坛以更低的代价合成。
+御币可以在祭坛以更低的代价合成。
 
 
    $recipe$`
@@ -287,10 +275,5 @@ $recipe$`
    青金石、雷霆之杖、紫水晶、龙首、紫颂花。放在黄金微波炉加热获得神秘尘。
 
 $recipe$`
-},
-{ type: "placeholder"},
-{ type: "placeholder"},
-{ type: "placeholder"},
-{ type: "placeholder"},
-{ type: "placeholder"}
+}
 ]

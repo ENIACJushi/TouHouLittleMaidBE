@@ -14,7 +14,8 @@ const TEMPLATE_CRAFT =  `
 `
 const TEMPLATE_ALTAR = `
      01
-  ${String.fromCharCode(GLYPH_IMG+1)}               2      3 ${String.fromCharCode(GLYPH_ITEM+2)} r
+  ${String.fromCharCode(GLYPH_IMG+1)}
+  2      3 ${String.fromCharCode(GLYPH_ITEM+2)} r
 
   4      5    §cP:power§r
 `

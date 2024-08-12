@@ -1,12 +1,13 @@
 import { ItemStack, ItemUseBeforeEvent, Player } from "@minecraft/server";
-import { config } from "../controller/Config";
 import { getPlayerMainHand, logger, lore2Str, setPlayerMainHand, str2Lore } from "../libs/ScarletToolKit";
 import * as mcui from '@minecraft/server-ui';
 
 // 书本各章节的页码号(自动生成)
 // MG_AUTO_GENERATE_START
-const BOOK = [ 16, 20, 14,10,10,10,10,11,12 ]
+const BOOK = [12,16,10];
 // MG_AUTO_GENERATE_END
+
+const chapterButtonDelta = BOOK.length + BOOK.length % 2;
 
 export class MemorizableGensokyo{
     /**
@@ -58,14 +59,15 @@ export class MemorizableGensokyo{
             i++;
             if(chapterPtr >= chapterStart.length) break;
         }
-        logger(bodyStr);
         const form = new mcui.ActionFormData()
-            .title('/TLM_B 3') // 头图
-            
+            .title('/TLM_B textures/ui/tlm_book_title') // 头图
             .body(bodyStr)
-            .button("chapter1", "img1")
-            .button("chapter2", "img2")
-            .button("chapter3", "img3")
+            // 奇数章节要补一个占位按钮凑成偶数（手动补充）
+            .button({"rawtext":[{"translate":"tlm.book.chapter1"}]}, "textures/items/memorizable_gensokyo")
+            .button({"rawtext":[{"translate":"tlm.book.chapter2"}]}, "textures/ui/chapter_maid")
+            .button({"rawtext":[{"translate":"tlm.book.chapter3"}]}, "textures/items/microwaver/magic_powder")
+            .button("placeholder")
+            .button("一行文字，可以被动态定义")
         // 章节内容
         for(let i = 0; i < BOOK.length; i++){
             for(let i2 = 0; i2 < BOOK[i]; i2++){
@@ -86,11 +88,14 @@ export class MemorizableGensokyo{
     }
     /**
      * 根据总页号获取章节和章节页码
-     * @param {Number} page_total 总页号
+     * @param {Number} _page_total 总页号
      * @returns {{chapter:Number; page:Number}}
      */
-    static getChapterByTotal(page_total){
-        if(page_total===undefined) return {chapter: -1, page: -1};
+    static getChapterByTotal(_page_total){
+        if(_page_total===undefined) return {chapter: -1, page: 0};
+
+        let page_total = _page_total-chapterButtonDelta;
+
         let chapter = 0;
         let page = page_total;
         for(; chapter < BOOK.length; chapter++){
@@ -107,7 +112,7 @@ export class MemorizableGensokyo{
      * @param {Number} page 
      */
     static getTotalByChapter(chapter, page){
-        if(chapter===-1) return 0; // 在首页时返回任意非负数即可
+        if(chapter===undefined||chapter<0||page===undefined||page<0) return 0; // 在首页时返回任意非负数即可
         let res = page;
         for(let i = 0; i < chapter; i++){
             res += BOOK[i];
@@ -135,6 +140,6 @@ export class MemorizableGensokyo{
             str = str.split(':');
             return {chapter: parseInt(str[1]), page: parseInt(str[2])};
         }
-        else return {chapter:-1,page:-1};
+        else return {chapter:-1,page:0};
     }
 }

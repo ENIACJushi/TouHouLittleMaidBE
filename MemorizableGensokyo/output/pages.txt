@@ -10,10 +10,6 @@
 {"rawtext":[{"translate":"tlm.0.9","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.0.10","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.0.11","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.0.12","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.0.13","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.0.14","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.0.15","with":["\n"]}]}
 
 {"rawtext":[{"translate":"tlm.1.0","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.1.1","with":["\n"]}]}
@@ -31,10 +27,6 @@
 {"rawtext":[{"translate":"tlm.1.13","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.1.14","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.1.15","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.1.16","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.1.17","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.1.18","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.1.19","with":["\n"]}]}
 
 {"rawtext":[{"translate":"tlm.2.0","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.2.1","with":["\n"]}]}
@@ -46,8 +38,4 @@
 {"rawtext":[{"translate":"tlm.2.7","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.2.8","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.2.9","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.2.10","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.2.11","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.2.12","with":["\n"]}]}
-{"rawtext":[{"translate":"tlm.2.13","with":["\n"]}]}
 

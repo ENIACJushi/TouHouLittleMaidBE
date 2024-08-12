@@ -1,744 +1,40 @@
 /********************************************************
-*   (c) Mojang. All rights reserved                      *
-*   (c) Microsoft. All rights reserved.                  *
+*   If you like this UI, go https://github.com/ENIACJushi/TouHouLittleMaidBE and give me a star, thanks!
+*   如果你喜欢这个UI，请关注b站 体宿一，谢谢！
 *********************************************************/
-/**
- * 尝试用 toggle 实现
-*/
-
 {
   "namespace": "thlm_book",
 
-  // -----------------------------------------------
-  // EDU
-  // -----------------------------------------------
-
-  "screenshot": {
-    "type": "image",
-    "texture_file_system": "$screenshot_file_system",
-    "layer": 3,
-
-    "$screenshot_binding|default": [
-      {
-        "binding_name": "#screenshot_path",
-        "binding_name_override": "#texture",
-        "binding_type": "collection",
-        "binding_collection_name": "book_pages"
-      }
-    ],
-    "bindings": "$screenshot_binding"
-  },
-
-  "screenshot_frame": {
-    "type": "image",
-    "texture": "$screenshot_frame_texture",
-    "layer": 1,
-    "$caption_enabled|default": true,
-
-    "controls": [
-      {
-        "caption_edit@thlm_book.page_caption": {
-          "layer": 3,
-          "visible": "$caption_enabled"
-        }
-      }
-    ]
-  },
-
-  "photo_corner": {
-    "type": "image",
-    "size": [ 19, 19 ],
-    "layer": 1
-  },
-
-  "photo_corner_bl@thlm_book.photo_corner": {
-    "texture": "textures/ui/photo_corner_bl",
-    "offset": [ -1, 1 ],
-    "anchor_to": "bottom_left",
-    "anchor_from": "bottom_left"
-  },
-
-  "photo_corner_br@thlm_book.photo_corner": {
-    "texture": "textures/ui/photo_corner_br",
-    "offset": [ 1, 1 ],
-    "anchor_to": "bottom_right",
-    "anchor_from": "bottom_right"
-  },
-
-  "photo_corner_tr@thlm_book.photo_corner": {
-    "texture": "textures/ui/photo_corner_tr",
-    "offset": [ 1, -1 ],
-    "anchor_to": "top_right",
-    "anchor_from": "top_right"
-  },
-
-  "photo_corner_tl@thlm_book.photo_corner": {
-    "texture": "textures/ui/photo_corner_tl",
-    "offset": [ -1, -1 ],
-    "anchor_to": "top_left",
-    "anchor_from": "top_left"
-  },
-
-  "page_caption@thlm_book.page_text_edit": {
-    "size": [ "100%-20px", 22 ],
-    "offset": [ 0, 0 ],
-    "anchor_from": "bottom_middle",
-    "anchor_to": "bottom_middle",
-
-    "$text_alignment": "center"
-  },
-
-  "page_photo": {
-    "type": "panel",
-    "layer": 1,
-    // Photos are square, so use x for y size
-    "size": [ "100%-32px", "100%x" ],
-    "offset": [ 0, -2 ],
-    "controls": [
-      { "screenshot@thlm_book.screenshot": {} },
-      { "screenshot_frame@thlm_book.screenshot_frame": { "layer": 4 } },
-      { "photo_corner_bl@thlm_book.photo_corner_bl": { "layer": 5 } },
-      { "photo_corner_br@thlm_book.photo_corner_br": { "layer": 5 } },
-      { "photo_corner_tl@thlm_book.photo_corner_tl": { "layer": 5 } },
-      { "photo_corner_tr@thlm_book.photo_corner_tr": { "layer": 5 } }
-    ]
-  },
-
-  // An individual photo in the From Portfolio grid on the add photo screen
-  "pick_item@common.empty_panel": {
-    "type": "panel",
-    "size": [ 100, 100 ],
-    "$screenshot_binding": [
-      {
-        "binding_name": "#item_screenshot_path",
-        "binding_name_override": "#texture",
-        "binding_type": "global"
-      },
-      {
-        "binding_type": "collection_details",
-        "binding_collection_name": "pick_item_column_collection",
-        "binding_collection_prefix": "pick_item_column"
-      },
-      {
-        "binding_type": "collection_details",
-        "binding_collection_name": "pick_item_row_collection",
-        "binding_collection_prefix": "pick_item_row"
-      }
-    ],
-    "controls": [
-      {
-        "photo@thlm_book.page_photo": {
-          "size": [ "100% - 8px", "100% - 8px" ],
-          "bindings": [],
-          "$caption_enabled": false
-        }
-      },
-      {
-        "button": {
-          "type": "button",
-          "size": [ "100% - 8px", "100% - 8px" ],
-          "bindings": [
-            {
-              "binding_type": "collection_details",
-              "binding_collection_name": "pick_item_column_collection",
-              "binding_collection_prefix": "pick_item_column"
-            },
-            {
-              "binding_type": "collection_details",
-              "binding_collection_name": "pick_item_row_collection",
-              "binding_collection_prefix": "pick_item_row"
-            }
-          ],
-          "button_mappings": [
-            {
-              "from_button_id": "button.menu_select",
-              "to_button_id": "button.picked",
-              "mapping_type": "pressed"
-            }
-          ]
-        }
-      }
-    ]
-  },
-
-  // An individual photo in the From Inventory grid on the add photo screen
-  "pick_item_inventory": {
-    "type": "panel",
-    "size": [ 100, 100 ],
-    "$screenshot_binding": [
-      {
-        "binding_name": "#inventory_screenshot_path",
-        "binding_name_override": "#texture",
-        "binding_type": "global"
-      },
-      {
-        "binding_type": "collection_details",
-        "binding_collection_name": "pick_inventory_column_collection",
-        "binding_collection_prefix": "pick_inventory_column"
-      },
-      {
-        "binding_type": "collection_details",
-        "binding_collection_name": "pick_inventory_row_collection",
-        "binding_collection_prefix": "pick_inventory_row"
-      }
-    ],
-    "controls": [
-      {
-        "photo@thlm_book.page_photo": {
-          "size": [ "100% - 8px", "100% - 8px" ],
-          "bindings": [],
-          "$caption_enabled": false
-        }
-      },
-      {
-        "button": {
-          "type": "button",
-          "size": [ "100% - 8px", "100% - 8px" ],
-          "bindings": [
-            {
-              "binding_type": "collection_details",
-              "binding_collection_name": "pick_inventory_column_collection",
-              "binding_collection_prefix": "pick_inventory_column"
-            },
-            {
-              "binding_type": "collection_details",
-              "binding_collection_name": "pick_inventory_row_collection",
-              "binding_collection_prefix": "pick_inventory_row"
-            }
-          ],
-          "button_mappings": [
-            {
-              "from_button_id": "button.menu_select",
-              "to_button_id": "button.picked_inventory",
-              "mapping_type": "pressed"
-            },
-            {
-              "from_button_id": "button.menu_ok",
-              "to_button_id": "button.picked_inventory",
-              "mapping_type": "focused"
-            }
-          ]
-        }
-      }
-    ]
-  },
-
-  "header": {
-    "type": "label",
-    "max_size": [ "100%", "default" ],
-    "size": [ "default", "default" ],
-    "color": "$book_page_number_color",
-    "text": "$header_text"
-  },
-
-  "text_centering_panel_inventory": {
-    "type": "panel",
-    "size": [ "100%", "100%c" ],
-    "controls": [
-      {
-        "inventory_header@thlm_book.header": {
-          "$header_text": "thlm_book.headerInventory"
-        }
-      }
-    ]
-  },
-
-  "text_centering_panel_portfolio": {
-    "type": "panel",
-    "size": [ "100%", "100%c" ],
-    "controls": [
-      {
-        "portfolio_header@thlm_book.header": {
-          "$header_text": "thlm_book.headerPortfolio"
-        }
-      }
-    ]
-  },
-
-  // From Inventory and From Portfolio headers and photo grids on the add photo screen
-  "pick_scrolling_content": {
-    "type": "stack_panel",
-    "controls": [
-      {
-        "inventory_header@thlm_book.text_centering_panel_inventory": {
-        }
-      },
-      {
-        "inventory_grid@edu_common.stack_panel_grid": {
-          "$grid_collection_prefix": "pick_inventory",
-          "$stack_grid_item": "thlm_book.pick_item_inventory"
-        }
-      },
-      {
-        "portfolio_header@thlm_book.text_centering_panel_portfolio": {
-        }
-      },
-      {
-        "portfolio_grid@edu_common.stack_panel_grid": {
-          "$grid_collection_prefix": "pick_item",
-          "$stack_grid_item": "thlm_book.pick_item"
-        }
-      }
-    ]
-  },
-
-  // Background, scrollbar, and close button for the add photo screen
-  "pick_panel": {
-    "type": "image",
-    "texture": "textures/ui/book_frame",
-    "size": [ 225, 231 ],
-
-    "controls": [
-      {
-        "scroll@common.scrolling_panel": {
-          "$show_background": false,
-          "$scrolling_pane_size": [ "100% - 16px", "100% - 30px" ],
-          "$scrolling_pane_offset": [ 8, 21 ],
-          "$scrolling_content": "thlm_book.pick_scrolling_content"
-        }
-      },
-      {
-        "close_button@thlm_book.close_button": {
-          "offset": [ -7, 7 ]
-        }
-      }
-    ]
-  },
-
-  // -----------------------------------------------
-  //  Background
-  // -----------------------------------------------
-
-  "blank": {
-    "type": "image",
-    "layer": 4
-  },
-  "book_spine_image": {
-    "type": "image",
-    "layer": 1,
-    "texture": "textures/ui/book_spine"
-  },
-
+  //// 背景 ////
+  "book_spine_image": { "type": "image", "layer": 1, "texture": "textures/ui/book_spine" },
   "page_crease_left_image": {
-    "type": "image",
-    "layer": 3,
-    "anchor_from": "right_middle",
-    "anchor_to": "right_middle",
+    "type": "image", "layer": 3,
+    "anchor_from": "right_middle", "anchor_to": "right_middle",
     "texture": "textures/ui/book_pagecrease_left"
   },
-
   "page_crease_right_image": {
-    "type": "image",
-    "layer": 3,
-    "anchor_from": "left_middle",
-    "anchor_to": "left_middle",
+    "type": "image", "layer": 3,
+    "anchor_from": "left_middle", "anchor_to": "left_middle",
     "texture": "textures/ui/book_pagecrease_right"
   },
-
   "page_edge_left_image": {
-    "type": "image",
-    "layer": 2,
-    "anchor_from": "left_middle",
-    "anchor_to": "left_middle",
+    "type": "image", "layer": 2,
+    "anchor_from": "left_middle", "anchor_to": "left_middle",
     "texture": "textures/ui/book_pageedge_left"
   },
-
   "page_edge_right_image": {
-    "type": "image",
-    "layer": 2,
-    "anchor_from": "right_middle",
-    "anchor_to": "right_middle",
+    "type": "image", "layer": 2,
+    "anchor_from": "right_middle", "anchor_to": "right_middle",
     "texture": "textures/ui/book_pageedge_right"
   },
 
-  "text_edit_hover_image": {
-    "type": "image",
-    "layer": 4,
-    "texture": "textures/ui/book_texteditbox_hover"
-  },
-
-  // -----------------------------------------------
-  //  Button
-  // -----------------------------------------------
-
-  "book_buttons_panel": {
-    "type": "panel",
-    "controls": [
-      {
-        "sign_button@common_buttons.light_text_form_fitting_button": {
-          "$form_fitting_min_size": [ 100, 0 ],
-          "$pressed_button_name": "button.sign_book",
-          "$button_text": "thlm_book.signButton",
-
-          "bindings": [
-            {
-              "binding_name": "#editable",
-              "binding_name_override": "#visible"
-            }
-          ]
-        }
-      },
-      {
-        "export_button@common_buttons.light_text_form_fitting_button": {
-          "ignored": "(not $education_edition)",
-
-          "$form_fitting_min_size": [ 100, 0 ],
-          "$pressed_button_name": "button.export_book",
-          "$button_text": "thlm_book.export",
-
-          "bindings": [
-            {
-              "binding_name": "(not #editable)",
-              "binding_name_override": "#visible"
-            }
-          ]
-        }
-      },
-      {
-        "im_content_button@im_reader.reader_button": {
-          "ignored": "(not $education_edition)",
-
-          "size": [ "100%y", "100%sm" ],
-          "anchor_from": "bottom_right",
-          "anchor_to": "bottom_right"
-        }
-      }
-    ]
-  },
-
-  "cover_buttons_stack_panel_holder": {
-    "type": "panel",
-    "size": [ "100%", "100%c" ],
-    "controls": [
-      {
-        "cover_buttons_stack_panel": {
-          "type": "stack_panel",
-          "orientation": "horizontal",
-          "size": [ "100%c", 20 ],
-          "controls": [
-            {
-              "finalize_button@common_buttons.light_text_form_fitting_button": {
-                "$form_fitting_min_size": [ 100, 0 ],
-                "$pressed_button_name": "button.finalize",
-                "$button_text": "thlm_book.finalizeButton",
-
-                "bindings": [
-                  {
-                    "binding_name": "#finalize_button_enabled",
-                    "binding_name_override": "#enabled"
-                  }
-                ]
-              }
-            },
-            {
-              "padding_1": {
-                "type": "panel",
-                "size": [ 10, "100%" ]
-              }
-            },
-            {
-              "cancel_sign_button@common_buttons.light_text_form_fitting_button": {
-                "$form_fitting_min_size": [ 100, 0 ],
-                "$pressed_button_name": "button.book_exit",
-                "$button_text": "gui.cancel"
-              }
-            }
-          ]
-        }
-      }
-    ]
-  },
-
-  "close_button_default": {
-    "type": "image",
-    "texture": "textures/ui/close_button_default",
-    "color": "$portfolio_close_color"
-  },
-
-  "close_button_hover": {
-    "type": "image",
-    "texture": "textures/ui/close_button_hover"
-  },
-
-  "close_button_pressed": {
-    "type": "image",
-    "texture": "textures/ui/close_button_pressed"
-  },
-
-
-  // -----------------------------------------------
-  //  Content
-  // -----------------------------------------------
-
-  "page_text_edit@common.multiline_text_edit_box": {
-    "layer": 4,
-    "$text_box_text_color": "$book_page_text_color",
-    "$color": "$book_page_text_color",
-    "$disabled_alpha": 1.0,
-
-    "constrain_to_rect": true,
-
-    "$text_edit_box_content_binding_type": "collection",
-    "$text_edit_box_grid_collection_name": "book_pages",
-    "$text_box_enabled_binding_name": "#editable",
-    "$text_box_name": "#page_text_box",
-    "$text_background_default": "thlm_book.blank",
-    "$text_edit_box_content_binding_name": "#text_box_item_name",
-
-    "$text_background_hover": "thlm_book.text_edit_hover_image",
-    "$text_edit_box_focusable_binding_name": "#editable",
-
-    "$enable_profanity_filter": true
-  },
-
-  "page_text@thlm_book.page_text_edit": {
-    "size": [ "100%-32px", "100%-58px" ],
-    "offset": [ 0, 23 ],
-    "anchor_from": "top_middle",
-    "anchor_to": "top_middle",
-    "$text_edit_box_focusable_binding_name": "#editable",
-
-    "$text_edit_visible_binding_name": "#is_text_page",
-    "$text_edit_visible_binding_collection_name": "book_pages",
-    "$text_edit_visible_binding_type|default": "collection",
-
-    "$enable_profanity_filter": true
-  },
-
-  "page_number_label": {
-    "type": "label",
-    "offset": [ 0, 13 ],
-    "layer": 5,
-    "color": "$book_page_number_color",
-    "anchor_from": "top_middle",
-    "anchor_to": "top_middle",
-
-    "localize": false,
-    "text": "#page_number",
-
-    "bindings": [
-      {
-        "binding_name": "#page_number",
-        "binding_type": "collection",
-        "binding_collection_name": "book_pages"
-      },
-      {
-        "binding_type": "collection_details",
-        "binding_collection_name": "book_pages"
-      }
-    ]
-  },
-
-  // Padded button for edit panel, as when the button disappears, its padding needs to as well
-  "padded_button": {
-    "type": "panel",
-    "size": [ "100%c + 2px", "100%c" ],
-    "$button_bind_type": "global",
-    "controls": [
-      {
-        "button@thlm_book.base_button": {
-          "size": "$button_size"
-        }
-      }
-    ],
-    "bindings": [
-      {
-        "binding_name": "$button_active",
-        "binding_name_override": "#visible",
-        "binding_type": "$button_bind_type",
-        "binding_collection_name": "book_pages"
-      },
-      {
-        "binding_type": "collection_details",
-        "binding_collection_name": "book_pages"
-      }
-    ]
-  },
-  "title_label": {
-    "type": "label",
-    "offset": [ 0, 30 ],
-    "layer": 2,
-    "anchor_to": "top_middle",
-    "anchor_from": "top_middle",
-    "text": "thlm_book.editTitle",
-    "color": "$book_title_label_color",
-
-    "bindings": [
-      {
-        "binding_name": "#editable",
-        "binding_name_override": "#visible"
-      }
-    ]
-  },
-
-  "title_text_box@common.text_edit_box": {
-    "size": [ "100% - 20px", 14 ],
-    "offset": [ 0, 46 ],
-    "layer": 2,
-    "anchor_to": "top_middle",
-    "anchor_from": "top_middle",
-
-    "max_length": "$max_title_length",
-
-    "$text_alignment": "center",
-    "$place_holder_text": "thlm_book.titleHere",
-    "$text_box_text_color": "$book_title_color",
-    "$place_holder_text_color": "$book_title_placeholder_color",
-    "$color": "$book_title_color",
-    "$text_box_name": "#title_text_box",
-    "$text_box_enabled_binding_name": "#editable",
-
-    "$text_edit_box_content_binding_name": "#title_text_box_item_name",
-    "$text_background_default": "thlm_book.blank",
-    "$text_background_hover": "thlm_book.text_edit_hover_image",
-
-    "$enable_profanity_filter": true
-  },
-
-  "author_label": {
-    "type": "label",
-    "size": [ "default", 18 ],
-    "offset": [ 0, 4 ],
-    
-    "text": "thlm_book.byAuthor",
-    "color": "$book_author_label_color"
-  },
-
-  "author_text_box@common.text_edit_box": {
-    "size": [ "100% - 1px", "100%" ],
-    "offset": [ 1, 0 ],
-    "layer": 3,
-
-    "constrain_to_rect": true,
-
-    "$text_alignment": "left",
-    "$text_box_text_color": "$book_author_color",
-    "$color": "$book_author_color",
-    "$text_box_name": "#author_text_box",
-    "$text_box_enabled_binding_name": "#author_editable",
-    "$text_edit_box_content_binding_name": "#author_text_box_item_name",
-
-    "$text_background_default": "thlm_book.blank",
-    "$text_background_hover": "thlm_book.text_edit_hover_image",
-
-    "$enable_profanity_filter": true
-  },
-
-  "author_stack_panel": {
-    "type": "stack_panel",
-    "size": [ "100% - 26px", 0 ],
-    "offset": [ 0, 62 ],
-    "layer": 2,
-    "anchor_to": "top_middle",
-    "anchor_from": "top_middle",
-
-    "orientation": "horizontal",
-
-    "controls": [
-      {
-        "author_label_panel": {
-          "type": "panel",
-          "size": [ "100%c", "100%c" ],
-
-          "controls": [
-            { "author_label@thlm_book.author_label": {} }
-          ]
-        }
-      },
-      {
-        "author_text_panel": {
-          "type": "panel",
-          "size": [ "fill", 18 ],
-          "controls": [
-            { "author_text_box@thlm_book.author_text_box": {} }
-          ]
-        }
-      }
-    ]
-  },
-
-  "warning_label": {
-    "type": "label",
-    "offset": [ 0, 86 ],
-    "size": [ "100%-30px", "100%" ],
-    "layer": 2,
-    "anchor_to": "top_middle",
-    "anchor_from": "top_middle",
-
-    "text": "thlm_book.finalizeWarning",
-    "text_alignment": "left",
-    "color": "$book_warning_color",
-
-    "bindings": [
-      {
-        "binding_name": "#editable",
-        "binding_name_override": "#visible"
-      }
-    ]
-  },
-
-  "cover_content_panel": {
-    "type": "panel",
-
-    "controls": [
-      { "title_label@thlm_book.title_label": {} },
-      { "title_text_box@thlm_book.title_text_box": {} },
-      { "author_stack_panel@thlm_book.author_stack_panel": {} },
-      { "warning_label@thlm_book.warning_label": {} }
-    ]
-  },
-
-  // -----------------------------------------------
-  //  Screen
-  // -----------------------------------------------
-
-  "cover_and_buttons_panel": {
-    "type": "panel",
-    "size": [ "100%", "100%" ],
-    "max_size": [ "100%", 231 ],
-
-    "controls": [
-      {
-        "cover_panel": {
-          "type": "panel",
-          "size": "$page_size",
-          "max_size": [ 320, "100% - 20px" ],
-          "anchor_from": "top_middle",
-          "anchor_to": "top_middle",
-
-          "$book_background_image|default": "textures/ui/book_cover",
-          "controls": [
-            { "cover_content_panel@thlm_book.cover_content_panel": {} },
-            {
-              "book_background": {
-                "type": "image",
-                "layer": 1,
-                "texture": "$book_background_image"
-              }
-            },
-            {
-              "close_button@thlm_book.close_button": {
-                "offset": [ -5, 5 ]
-              }
-            }
-          ]
-        }
-      },
-      {
-        "cover_buttons_stack_panel_holder@thlm_book.cover_buttons_stack_panel_holder": {
-          "anchor_from": "bottom_middle",
-          "anchor_to": "bottom_middle"
-        }
-      }
-    ]
-  },
-
   //// 根部 ////
-  "root_panel": {
-    "type": "panel",
-    "layer": 1
-  },
+  "root_panel": { "type": "panel", "layer": 1 },
   "book_screen@common.base_screen": {
+    
+    "anchor_from": "center",
+    "anchor_to": "center",
+    "size": [ "100%", "100%" ],
     "$close_on_player_hurt|default": true,
     "close_on_player_hurt": "$close_on_player_hurt",
     "button_mappings": [
@@ -767,14 +63,16 @@
   },
   "book_screen_content": {
     "type": "panel",
+    "anchor_from": "center",
+    "anchor_to": "center",
+    "size": [ "100%", "100%" ],
     "controls": [
       {
         "root_panel@thlm_book.root_panel": {
           "$book_size": [ 320, 207 ],
           "$page_size": [ 160, 207 ],
-
           "controls": [
-            { "pages@thlm_book.book_and_buttons_panel": { "$seq": 1 } }
+            { "pages@thlm_book.book_and_buttons_root": { "$seq": 1 } }
           ]
         }
       }
@@ -782,521 +80,916 @@
   },
 
   //// 根内容 ////
-  "book_and_buttons_panel": {
-    "$seq|default": 1,
-    "type": "panel",
-    "size": [ "100%cm", "100%" ],
-    "max_size": [ "100%", 231 ],
-    "controls": [
-      // 内容
+  "book_and_buttons_root": { // pages@book_and_buttons_root
+    "type": "stack_panel",
+    "collection_name": "form_buttons",
+    "anchor_from": "top_middle",
+    "anchor_to": "top_middle",
+    "size": "$book_size",
+    "controls":[
       {
-        "book_panel": {
+        "book_and_buttons_panel":{
           "type": "panel",
+          "$seq|default": 1,
+          "anchor_from": "top_middle",
+          "anchor_to": "top_middle",
           "size": "$book_size",
-          "anchor_from": "center",
-          "anchor_to": "center",
-          "bindings":[
-            /// 传入值初始化 ///
-            // '006' + '03' + '020' + '001'  ...|章节1页数[3]|章节数[2]|总页数[3]|当前页码[3]
-            { "binding_type": "view", "source_property_name": "#form_text", "target_property_name": "#input_text", "binding_condition": "once" },
-            /// 数据段1 ///
-            { "binding_type": "view", "source_property_name": "(((#input_text-'_')*'%11.11s')*1)", "target_property_name": "#input", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(('_'+#input)+'a')", "target_property_name": "#temp", "binding_condition": "once" },
-            // 是否在首页
-            { "binding_type": "view", "source_property_name": "(#input-((#input/10)*10))", "target_property_name": "#in_home", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(#input/10)", "target_property_name": "#input1", "binding_condition": "once" },
-            // 当前页码
-            { "binding_type": "view", "source_property_name": "(#input1-((#input1/1000)*1000))", "target_property_name": "#page_base", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(#input1/1000)", "target_property_name": "#input2", "binding_condition": "once" },
-            // 总页码
-            { "binding_type": "view", "source_property_name": "(#input2-((#input2/1000)*1000))", "target_property_name": "#page_total", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(#input2/1000)", "target_property_name": "#input3", "binding_condition": "once" },
-            // 以下变量可为0
-            // 章节数
-            { "binding_type": "view", "source_property_name": "(#input3-((#input3/100)*100))", "target_property_name": "#chapter_total", "binding_condition": "once" },
-            
-            /// 数据段2 ///
-            { "binding_type": "view", "source_property_name": "(((#input_text - #temp - '_')*'%11.11s')*1)", "target_property_name": "#input4", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(('_'+#input4)+'b')", "target_property_name": "#temp2", "binding_condition": "once" },
-            // 章节1页码起点
-            { "binding_type": "view", "source_property_name": "(#input4-((#input4/1000)*1000))", "target_property_name": "#page_chapter1", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(#input4/1000)", "target_property_name": "#input5", "binding_condition": "once" },
-            // 章节2页码起点
-            { "binding_type": "view", "source_property_name": "(#input5-((#input5/1000)*1000))", "target_property_name": "#page_chapter2", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(#input5/1000)", "target_property_name": "#input6", "binding_condition": "once" },
-            // 章节3页码起点
-            { "binding_type": "view", "source_property_name": "(#input6-((#input6/1000)*1000))", "target_property_name": "#page_chapter3", "binding_condition": "once" },
-
-            
-            /// 数据段3 ///
-            { "binding_type": "view", "source_property_name": "(((#input_text - #temp - #temp2 - '_')*'%11.11s')*1)", "target_property_name": "#input7", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(('_'+#input7)+'c')", "target_property_name": "#temp3", "binding_condition": "once" },
-            // 章节4页码起点
-            { "binding_type": "view", "source_property_name": "(#input7-((#input7/1000)*1000))", "target_property_name": "#page_chapter4", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(#input7/1000)", "target_property_name": "#input8", "binding_condition": "once" },
-            // 章节5页码起点
-            { "binding_type": "view", "source_property_name": "(#input8-((#input8/1000)*1000))", "target_property_name": "#page_chapter5", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(#input8/1000)", "target_property_name": "#input9", "binding_condition": "once" },
-            // 章节6页码起点
-            { "binding_type": "view", "source_property_name": "(#input9-((#input9/1000)*1000))", "target_property_name": "#page_chapter6", "binding_condition": "once" },
-
-            /// 数据段4 ///
-            { "binding_type": "view", "source_property_name": "(((#input_text - #temp - #temp2 - #temp3 - '_')*'%11.11s')*1)", "target_property_name": "#input10", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(('_'+#input10)+'d')", "target_property_name": "#temp4", "binding_condition": "once" },
-            // 章节7页码起点
-            { "binding_type": "view", "source_property_name": "(#input10-((#input10/1000)*1000))", "target_property_name": "#page_chapter7", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(#input10/1000)", "target_property_name": "#input11", "binding_condition": "once" },
-            // 章节8页码起点
-            { "binding_type": "view", "source_property_name": "(#input11-((#input11/1000)*1000))", "target_property_name": "#page_chapter8", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(#input11/1000)", "target_property_name": "#input12", "binding_condition": "once" },
-            // 章节9页码起点
-            { "binding_type": "view", "source_property_name": "(#input12-((#input12/1000)*1000))", "target_property_name": "#page_chapter9", "binding_condition": "once" },
-            { "binding_type": "view", "source_property_name": "(#input12/1000)", "target_property_name": "#input13", "binding_condition": "once" },
-            // 章节10页码起点
-            { "binding_type": "view", "source_property_name": "(#input13-((#input13/1000)*1000))", "target_property_name": "#page_chapter10", "binding_condition": "once" },
-            
-            /// 页码控制 ///
-            // 下一页
+          "controls": [
+            // 内容
             {
-              "binding_type": "view", "source_control_name": "next_button_watcher",
-              "source_property_name": "#page", "target_property_name": "#page_delta_next",
-              "binding_condition": "always"
+              "book_panel": {
+                "type": "panel",
+                "size": "$book_size",
+                "anchor_from": "center",
+                "anchor_to": "center",
+                // "visible": false,
+                "bindings":[
+                  /// 传入值初始化 ///
+                  // '006' + '03' + '020' + '001'  ...|章节1页数[3]|章节数[2]|总页数[3]|当前页码[3]
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#title_text = $min) or (#title_text > $min and #title_text < $max)",
+                    "target_property_name": "#valid", "binding_condition": "once"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(('_' + (#valid*100)) +'z')",
+                    "target_property_name": "#temp0", "binding_condition": "once"
+                  },
+                  // 避免其它表单造成数据传入错误  若数据不合法则在头部加上一段合法数据
+                  { "binding_type": "view", "source_property_name": "('_100z' + #form_text)", "target_property_name": "#input_text0", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(#input_text0 - #temp0", "target_property_name": "#input_text", "binding_condition": "once" },
+
+                  /// 数据段1 ///
+                  { "binding_type": "view", "source_property_name": "(((#input_text-'_')*'%11.11s')*1)", "target_property_name": "#input", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(('_'+#input)+'a')", "target_property_name": "#temp", "binding_condition": "once" },
+                  // 是否在首页
+                  { "binding_type": "view", "source_property_name": "((#input-((#input/10)*10))=1)", "target_property_name": "#in_home", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(#input/10)", "target_property_name": "#input1", "binding_condition": "once" },
+                  // 当前页码
+                  { "binding_type": "view", "source_property_name": "(#input1-((#input1/1000)*1000))", "target_property_name": "#page_base", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(#input1/1000)", "target_property_name": "#input2", "binding_condition": "once" },
+                  // 总页码
+                  { "binding_type": "view", "source_property_name": "(#input2-((#input2/1000)*1000))", "target_property_name": "#page_total", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(#input2/1000)", "target_property_name": "#input3", "binding_condition": "once" },
+                  // 以下变量可为0
+                  // 章节数
+                  { "binding_type": "view", "source_property_name": "(#input3-((#input3/100)*100))", "target_property_name": "#chapter_total", "binding_condition": "once" },
+                  
+                  /// 数据段2 ///
+                  { "binding_type": "view", "source_property_name": "(((#input_text - #temp - '_')*'%11.11s')*1)", "target_property_name": "#input4", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(('_'+#input4)+'b')", "target_property_name": "#temp2", "binding_condition": "once" },
+                  // 章节1页码起点
+                  { "binding_type": "view", "source_property_name": "(#input4-((#input4/1000)*1000))", "target_property_name": "#page_chapter1", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(#input4/1000)", "target_property_name": "#input5", "binding_condition": "once" },
+                  // 章节2页码起点
+                  { "binding_type": "view", "source_property_name": "(#input5-((#input5/1000)*1000))", "target_property_name": "#page_chapter2", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(#input5/1000)", "target_property_name": "#input6", "binding_condition": "once" },
+                  // 章节3页码起点
+                  { "binding_type": "view", "source_property_name": "(#input6-((#input6/1000)*1000))", "target_property_name": "#page_chapter3", "binding_condition": "once" },
+
+                  /// 数据段3 ///
+                  { "binding_type": "view", "source_property_name": "(((#input_text - #temp - #temp2 - '_')*'%11.11s')*1)", "target_property_name": "#input7", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(('_'+#input7)+'c')", "target_property_name": "#temp3", "binding_condition": "once" },
+                  // 章节4页码起点
+                  { "binding_type": "view", "source_property_name": "(#input7-((#input7/1000)*1000))", "target_property_name": "#page_chapter4", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(#input7/1000)", "target_property_name": "#input8", "binding_condition": "once" },
+                  // 章节5页码起点
+                  { "binding_type": "view", "source_property_name": "(#input8-((#input8/1000)*1000))", "target_property_name": "#page_chapter5", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(#input8/1000)", "target_property_name": "#input9", "binding_condition": "once" },
+                  // 章节6页码起点
+                  { "binding_type": "view", "source_property_name": "(#input9-((#input9/1000)*1000))", "target_property_name": "#page_chapter6", "binding_condition": "once" },
+
+                  /// 数据段4 ///
+                  { "binding_type": "view", "source_property_name": "(((#input_text - #temp - #temp2 - #temp3 - '_')*'%11.11s')*1)", "target_property_name": "#input10", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(('_'+#input10)+'d')", "target_property_name": "#temp4", "binding_condition": "once" },
+                  // 章节7页码起点
+                  { "binding_type": "view", "source_property_name": "(#input10-((#input10/1000)*1000))", "target_property_name": "#page_chapter7", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(#input10/1000)", "target_property_name": "#input11", "binding_condition": "once" },
+                  // 章节8页码起点
+                  { "binding_type": "view", "source_property_name": "(#input11-((#input11/1000)*1000))", "target_property_name": "#page_chapter8", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(#input11/1000)", "target_property_name": "#input12", "binding_condition": "once" },
+                  // 章节9页码起点
+                  { "binding_type": "view", "source_property_name": "(#input12-((#input12/1000)*1000))", "target_property_name": "#page_chapter9", "binding_condition": "once" },
+                  { "binding_type": "view", "source_property_name": "(#input12/1000)", "target_property_name": "#input13", "binding_condition": "once" },
+                  // 章节10页码起点
+                  { "binding_type": "view", "source_property_name": "(#input13-((#input13/1000)*1000))", "target_property_name": "#page_chapter10", "binding_condition": "once" },
+                  
+                  /// 首页初始化 ///
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#page_base - (#in_home*(#page_base+2)))", "target_property_name": "#page_base",
+                    "binding_condition": "once"
+                  },
+                  /// 章节信息按钮占位 ///
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "((#chapter_total>0)*2 + (#chapter_total>2)*2 + (#chapter_total>4)*2 +(#chapter_total>5)*2 + (#chapter_total>8)*2)", "target_property_name": "#chapter_button_delta",
+                    "binding_condition": "once"
+                  },
+                  /// 页码控制 ///
+                  // 下一页
+                  {
+                    "binding_type": "view", "source_control_name": "next_button_watcher",
+                    "source_property_name": "#page", "target_property_name": "#page_delta_next",
+                    "binding_condition": "always"
+                  },
+                  // 上一页
+                  {
+                    "binding_type": "view", "source_control_name": "prev_button_watcher",
+                    "source_property_name": "#page", "target_property_name": "#page_delta_prev",
+                    "binding_condition": "always"
+                  },
+                  // 返回首页
+                  {
+                    "binding_type": "view", "source_control_name": "home_button",
+                    "source_property_name": "#toggle_state", "target_property_name": "#to_home",
+                    "binding_condition": "always", "resolve_sibling_scope": true
+                  },
+                  {// 页码#page的计算有延迟，这里要直接算出来
+                    "binding_type": "view", 
+                    "source_property_name": "(#page_delta_home + (#page_base + #page_delta_chapter + 2*#page_delta_next - 2*#page_delta_prev - #page_delta_home+2)*(#to_home and (#page_base + #page_delta_chapter + 2*#page_delta_next - 2*#page_delta_prev - #page_delta_home)>-1))",
+                    "target_property_name": "#page_delta_home",
+                    "binding_condition": "always"
+                  },
+                  // 章节跳转组
+                  { "binding_type": "view", "source_control_name": "chapter_watcher_1", "source_property_name": "#page", "target_property_name": "#page_delta_chapter1", "binding_condition": "always" },
+                  { "binding_type": "view", "source_control_name": "chapter_watcher_2", "source_property_name": "#page", "target_property_name": "#page_delta_chapter2", "binding_condition": "always" },
+                  { "binding_type": "view", "source_control_name": "chapter_watcher_3", "source_property_name": "#page", "target_property_name": "#page_delta_chapter3", "binding_condition": "always" },
+                  { "binding_type": "view", "source_control_name": "chapter_watcher_4", "source_property_name": "#page", "target_property_name": "#page_delta_chapter4", "binding_condition": "always" },
+                  { "binding_type": "view", "source_control_name": "chapter_watcher_5", "source_property_name": "#page", "target_property_name": "#page_delta_chapter5", "binding_condition": "always" },
+                  { "binding_type": "view", "source_control_name": "chapter_watcher_6", "source_property_name": "#page", "target_property_name": "#page_delta_chapter6", "binding_condition": "always" },
+                  { "binding_type": "view", "source_control_name": "chapter_watcher_7", "source_property_name": "#page", "target_property_name": "#page_delta_chapter7", "binding_condition": "always" },
+                  { "binding_type": "view", "source_control_name": "chapter_watcher_8", "source_property_name": "#page", "target_property_name": "#page_delta_chapter8", "binding_condition": "always" },
+                  { "binding_type": "view", "source_control_name": "chapter_watcher_9", "source_property_name": "#page", "target_property_name": "#page_delta_chapter9", "binding_condition": "always" },
+                  { "binding_type": "view", "source_control_name": "chapter_watcher_10", "source_property_name": "#page", "target_property_name": "#page_delta_chapter10", "binding_condition": "always" },
+                  { 
+                    "binding_type": "view", 
+                    "source_property_name": "(#page_delta_chapter1 + #page_delta_chapter2 + #page_delta_chapter3 + #page_delta_chapter4 + #page_delta_chapter5 + #page_delta_chapter6 + #page_delta_chapter7 + #page_delta_chapter8 + #page_delta_chapter9 + #page_delta_chapter10)",
+                    "target_property_name": "#page_delta_chapter",
+                    "binding_condition": "always" 
+                  },
+                  // 计算
+                  { "binding_type": "view",
+                    "source_property_name": "(#page_base + #page_delta_chapter + 2*#page_delta_next - 2*#page_delta_prev - #page_delta_home)",
+                    "target_property_name": "#page", "binding_condition": "always"
+                  }
+                ],
+                // 用 前三个 button 显示章节按钮
+                // 用后续按钮传递显示值
+                "controls": [
+                  // 内容
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 0, "$p2": 1 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 2, "$p2": 3 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 4, "$p2": 5 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 6, "$p2": 7 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 8, "$p2": 9 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 10, "$p2": 11 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 12, "$p2": 13 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 14, "$p2": 15 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 16, "$p2": 17 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 18, "$p2": 19 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 20, "$p2": 21 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 22, "$p2": 23 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 24, "$p2": 25 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 26, "$p2": 27 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 28, "$p2": 29 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 30, "$p2": 31 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 32, "$p2": 33 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 34, "$p2": 35 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 36, "$p2": 37 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 38, "$p2": 39 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 40, "$p2": 41 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 42, "$p2": 43 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 44, "$p2": 45 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 46, "$p2": 47 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 48, "$p2": 49 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 50, "$p2": 51 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 52, "$p2": 53 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 54, "$p2": 55 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 56, "$p2": 57 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 58, "$p2": 59 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 60, "$p2": 61 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 62, "$p2": 63 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 64, "$p2": 65 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 66, "$p2": 67 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 68, "$p2": 69 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 70, "$p2": 71 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 72, "$p2": 73 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 74, "$p2": 75 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 76, "$p2": 77 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 78, "$p2": 79 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 70, "$p2": 71 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 82, "$p2": 83 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 84, "$p2": 85 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 86, "$p2": 87 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 88, "$p2": 89 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 90, "$p2": 91 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 92, "$p2": 93 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 94, "$p2": 95 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 96, "$p2": 97 } },
+                  { "book_grid@thlm_book.book_close_and_grid": { "$p1": 98, "$p2": 99 } }
+                ]
+              }
+            },
+            // 其它组件
+            {
+              "button_panel":{
+                "type": "panel",
+                "size": "$book_size",
+                "anchor_from": "center",
+                "anchor_to": "center",
+                "controls": [
+                  // 边框
+                  { "book_background@thlm_book.book_background": { "size": "$book_size" } }
+                ]
+              }
             },
             // 上一页
             {
-              "binding_type": "view", "source_control_name": "prev_button_watcher",
-              "source_property_name": "#page", "target_property_name": "#page_delta_prev",
-              "binding_condition": "always"
+              "prev_button_watcher":{
+                "type": "panel",
+                "visible": false,
+                "bindings":[
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "book_panel",
+                    "source_property_name": "(#page_base-#page_base)",
+                    "target_property_name": "#page",
+                    "binding_condition": "once",
+                    "resolve_sibling_scope": true
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "#page",
+                    "target_property_name": "#page_next",
+                    "binding_condition": "once"
+                  },
+                  /// toggle
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "prev_button",
+                    "source_property_name": "#toggle_state",
+                    "target_property_name": "#new_toggle_state",
+                    "binding_condition": "always",
+                    "resolve_sibling_scope": true
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "((#new_toggle_state) and (not (#old_toggle_state)))",
+                    "target_property_name": "#temp",
+                    "binding_condition": "always"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(((#new_toggle_state) and ((#page_next + #temp) < (#page + 2))))",
+                    "target_property_name": "#temp2",
+                    "binding_condition": "always"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#page_next + #temp2 )",
+                    "target_property_name": "#page_next",
+                    "binding_condition": "always"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(((not (#new_toggle_state)) and ((#page_next) > (#page)))*1)",
+                    "target_property_name": "#temp3",
+                    "binding_condition": "always"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#page + #temp3 )",
+                    "target_property_name": "#page",
+                    "binding_condition": "always"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "#new_toggle_state",
+                    "target_property_name": "#old_toggle_state",
+                    "binding_condition": "always"
+                  }
+                ]
+              }
+            },
+            {
+              "prev_button@thlm_book.base_button": {
+                "$toggle_name": "prev_button",
+                "size": [ 24, 24 ],
+                "layer": 1000,
+                "offset": [ 7, -9 ],
+                "anchor_from": "bottom_left",
+                "anchor_to": "bottom_left",
+                "sound_name": "item.book.page_turn",
+                "sound_volume": 4.0,
+                "sound_pitch": 1.0,
+                
+                "$pressed_button_name": "button.prev_page",
+                
+                "$checked": "thlm_book.left_toggle_check",
+                "$checked_hover": "thlm_book.left_toggle_check_hover",
+                "$unchecked_hover": "thlm_book.left_toggle_uncheck_hover",
+                "$unchecked": "thlm_book.left_toggle_uncheck",
+                "bindings":[
+                  // 页码控制
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "book_panel",
+                    "source_property_name": "#page",
+                    "target_property_name": "#book_page",
+                    "binding_condition": "always",
+                    "resolve_sibling_scope": true
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#book_page > -2)",
+                    "target_property_name": "#visible",
+                    "binding_condition": "always",
+                    "resolve_sibling_scope": true
+                  },
+                  // 通用toggle检测
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "prev_button_watcher",
+                    "source_property_name": "#old_toggle_state",
+                    "target_property_name": "#next_signal",
+                    "binding_condition": "always",
+                    "resolve_sibling_scope": true
+                  },
+                  {
+                    "binding_type": "view",
+                    // 0 0 -> 0
+                    // 0 1 -> 0
+                    // 1 0 -> 1
+                    // 1 1 -> 0
+                    "source_property_name": "((#toggle_state) and (not (#next_signal)))",
+                    "target_property_name": "#toggle_state",
+                    "binding_condition": "always"
+                  }
+                ]
+              }
+            },
+            // 下一页
+            {
+              "next_button_watcher":{
+                "type": "panel",
+                "visible": false,
+                "bindings":[
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "book_panel",
+                    "source_property_name": "(#page_base-#page_base)",
+                    "target_property_name": "#page",
+                    "binding_condition": "once",
+                    "resolve_sibling_scope": true
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "#page",
+                    "target_property_name": "#page_next",
+                    "binding_condition": "once"
+                  },
+                  /// toggle
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "next_button",
+                    "source_property_name": "#toggle_state",
+                    "target_property_name": "#new_toggle_state",
+                    "binding_condition": "always",
+                    "resolve_sibling_scope": true
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "((#new_toggle_state) and (not (#old_toggle_state)))",
+                    "target_property_name": "#temp",
+                    "binding_condition": "always"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(((#new_toggle_state) and ((#page_next + #temp) < (#page + 2))))",
+                    "target_property_name": "#temp2",
+                    "binding_condition": "always"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#page_next + #temp2)",
+                    "target_property_name": "#page_next",
+                    "binding_condition": "always"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(((not (#new_toggle_state)) and ((#page_next) > (#page)))*1)",
+                    "target_property_name": "#temp3",
+                    "binding_condition": "always"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#page + #temp3)",
+                    "target_property_name": "#page",
+                    "binding_condition": "always"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "#new_toggle_state",
+                    "target_property_name": "#old_toggle_state",
+                    "binding_condition": "always"
+                  }
+                ]
+              }
+            },
+            {
+              "next_button@thlm_book.base_button": {
+                "$toggle_name": "next_button",
+                "size": [ 24, 24 ],
+                "offset": [ -7, -9 ],
+                "layer": 1000,
+                "anchor_from": "bottom_right",
+                "anchor_to": "bottom_right",
+                "sound_name": "item.book.page_turn",
+                "sound_volume": 4.0,
+                "sound_pitch": 1.0,
+                
+                "$pressed_button_name": "button.next_page",
+
+                "$checked": "thlm_book.right_toggle_check",
+                "$checked_hover": "thlm_book.right_toggle_check_hover",
+                "$unchecked_hover": "thlm_book.right_toggle_uncheck_hover",
+                "$unchecked": "thlm_book.right_toggle_uncheck",
+
+
+                "$default_texture": "textures/ui/book_pageright_default",
+                "$hover_texture": "textures/ui/book_pageright_hover",
+                "$pressed_texture": "textures/ui/book_pageright_pressed",
+                "bindings":[
+                  // 页码控制
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "book_panel",
+                    "source_property_name": "#page",
+                    "target_property_name": "#book_page",
+                    "binding_condition": "always",
+                    "resolve_sibling_scope": true
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "book_panel",
+                    "source_property_name": "#page_total",
+                    "target_property_name": "#page_total",
+                    "binding_condition": "always",
+                    "resolve_sibling_scope": true
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#book_page < #page_total)",
+                    "target_property_name": "#visible",
+                    "binding_condition": "always"
+                  },
+                  // 通用toggle检测
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "next_button_watcher",
+                    "source_property_name": "#old_toggle_state",
+                    "target_property_name": "#next_signal",
+                    "binding_condition": "always",
+                    "resolve_sibling_scope": true
+                  },
+                  {
+                    "binding_type": "view",
+                    // 0 0 -> 0
+                    // 0 1 -> 0
+                    // 1 0 -> 1
+                    // 1 1 -> 0
+                    "source_property_name": "((#toggle_state) and (not (#next_signal)))",
+                    "target_property_name": "#toggle_state",
+                    "binding_condition": "always"
+                  }
+                ]
+              }
             },
             // 返回首页
+            {
+              "home_button@thlm_book.base_button": {
+                "$toggle_name": "home_button",
+                "size": [ 23, 16 ],
+                "offset": [ -1, -12 ],
+                "layer": 1000,
+                "anchor_from": "bottom_middle",
+                "anchor_to": "bottom_middle",
+                "sound_name": "item.book.page_turn",
+                "sound_volume": 4.0,
+                "sound_pitch": 1.0,
+                
+                "$checked": "thlm_book.home_toggle_check",
+                "$checked_hover": "thlm_book.home_toggle_check_hover",
+                "$unchecked_hover": "thlm_book.home_toggle_uncheck_hover",
+                "$unchecked": "thlm_book.home_toggle_uncheck",
 
-            // 计算
-            { "binding_type": "view",
-              "source_property_name": "(#page_base + 2*#page_delta_next - 2*#page_delta_prev)",
-              "target_property_name": "#page", "binding_condition": "always"
-            }
+                "bindings":[
+                  // 页码控制
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "book_panel",
+                    "source_property_name": "#page",
+                    "target_property_name": "#page",
+                    "binding_condition": "always",
+                    "resolve_sibling_scope": true
+                  },
+                  {
+                    "binding_type": "view",
+                    // 1 1 0
+                    // 1 0 1
+                    // 0 1 0
+                    // 0 0 0
+                    "source_property_name": "((#toggle_state) and (#page>-1))",
+                    "target_property_name": "#toggle_state",
+                    "binding_condition": "always"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#page>-1)",
+                    "target_property_name": "#visible",
+                    "binding_condition": "always"
+                  }
+                ]
+              }
+            },
+            // 取消表单 (在首页退出时)
+            { 
+              "cancel_button": {
+                "type": "button",
+                "layer": 1000,
+                "offset": [ -14, 7 ],
+                "anchor_from": "top_right",
+                "anchor_to": "top_right",
+                "size": [ 14, 14 ],
+                
+                "default_control": "default",
+                "hover_control": "hover",
+                "pressed_control": "pressed",
+                "focus_enabled": false,
+                "bindings": [
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "book_panel",
+                    "source_property_name": "(#page<0)",
+                    "target_property_name": "#visible",
+                    "binding_condition": "always",
+                    "resolve_sibling_scope": true
+                  }
+                ],
+                "button_mappings": [
+                  {
+                    "from_button_id": "button.menu_select",
+                    "to_button_id": "button.menu_exit",
+                    "mapping_type": "pressed"
+                  },
+                  {
+                    "from_button_id": "button.menu_cancel",
+                    "to_button_id": "button.menu_exit",
+                    "mapping_type": "global"
+                  }
+                ],
+                "controls": [
+                  { "default@thlm_book.close_button_default": {"layer": 1000} },
+                  { "hover@thlm_book.close_button_hover": {"layer": 1000} },
+                  { "pressed@thlm_book.close_button_pressed": {"layer": 1000} }
+                ]
+              }
+            },
+            // 头图
+            {
+              "image":{
+                "type": "image",
+                "texture": "#texture",
+                "size": [130, 130],
+                "anchor_from":"left_middle",
+                "anchor_to":"left_middle",
+                "offset": [18, 0],
+                "layer": 1000,
+                "bindings":[
+                  {
+                    "binding_type": "view",
+                    "source_property_name": "(#title_text - $min)",
+                    "target_property_name": "#texture"
+                  },
+                  {
+                    "binding_type": "view",
+                    "source_control_name": "book_panel",
+                    "source_property_name": "(#page<0)",
+                    "target_property_name": "#visible",
+                    "binding_condition": "always",
+                    "resolve_sibling_scope": true
+                  }
+                ]
+              }
+            },
+            // 背景
+            { "book_background_grid@thlm_book.book_background_grid": {}},
+            {
+              "book_spine_image@thlm_book.book_spine_image": {
+                "size": [ 8, "100% - 2px" ]
+              }
+            },
+            // 章节跳转组
+            { "chapter1_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_1", "$text": "#chapter_text_1", "$offset": [173, 46], "$chapter_watcher": "chapter_watcher_1", "$chapter": 0} },
+            { "chapter2_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_2", "$text": "#chapter_text_2", "$offset": [173, 57], "$chapter_watcher": "chapter_watcher_2", "$chapter": 1} },
+            { "chapter3_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_3", "$text": "#chapter_text_3", "$offset": [173, 68], "$chapter_watcher": "chapter_watcher_3", "$chapter": 2} },
+            { "chapter4_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_4", "$text": "#chapter_text_4", "$offset": [173, 79], "$chapter_watcher": "chapter_watcher_4", "$chapter": 3} },
+            { "chapter5_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_5", "$text": "#chapter_text_5", "$offset": [173, 90], "$chapter_watcher": "chapter_watcher_5", "$chapter": 4} },
+            { "chapter6_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_6", "$text": "#chapter_text_6", "$offset": [173, 101], "$chapter_watcher": "chapter_watcher_6", "$chapter": 5} },
+            { "chapter7_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_7", "$text": "#chapter_text_7", "$offset": [173, 112], "$chapter_watcher": "chapter_watcher_7", "$chapter": 6} },
+            { "chapter8_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_8", "$text": "#chapter_text_8", "$offset": [173, 123], "$chapter_watcher": "chapter_watcher_8", "$chapter": 7} },
+            { "chapter9_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_9", "$text": "#chapter_text_9", "$offset": [173, 134], "$chapter_watcher": "chapter_watcher_9", "$chapter": 8} },
+            { "chapter10_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_10", "$text": "#chapter_text_10", "$offset": [173, 145], "$chapter_watcher": "chapter_watcher_10", "$chapter": 9} },
+
+            { "chapter_watcher_1@thlm_book.chapter_watcher": {"$chapter_button": "chapter1_button", "$chapter_page": "#page_chapter1"}},
+            { "chapter_watcher_2@thlm_book.chapter_watcher": {"$chapter_button": "chapter2_button", "$chapter_page": "#page_chapter2"}},
+            { "chapter_watcher_3@thlm_book.chapter_watcher": {"$chapter_button": "chapter3_button", "$chapter_page": "#page_chapter3"}},
+            { "chapter_watcher_4@thlm_book.chapter_watcher": {"$chapter_button": "chapter4_button", "$chapter_page": "#page_chapter4"}},
+            { "chapter_watcher_5@thlm_book.chapter_watcher": {"$chapter_button": "chapter5_button", "$chapter_page": "#page_chapter5"}},
+            { "chapter_watcher_6@thlm_book.chapter_watcher": {"$chapter_button": "chapter6_button", "$chapter_page": "#page_chapter6"}},
+            { "chapter_watcher_7@thlm_book.chapter_watcher": {"$chapter_button": "chapter7_button", "$chapter_page": "#page_chapter7"}},
+            { "chapter_watcher_8@thlm_book.chapter_watcher": {"$chapter_button": "chapter8_button", "$chapter_page": "#page_chapter8"}},
+            { "chapter_watcher_9@thlm_book.chapter_watcher": {"$chapter_button": "chapter9_button", "$chapter_page": "#page_chapter9"}},
+            { "chapter_watcher_10@thlm_book.chapter_watcher": {"$chapter_button": "chapter10_button", "$chapter_page": "#page_chapter10"}}
           ],
-          // 用 前三个 button 显示章节按钮
-          // 用后续按钮传递显示值
-          "controls": [
-            // 内容
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 0, "$p2": 1 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 2, "$p2": 3 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 4, "$p2": 5 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 6, "$p2": 7 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 8, "$p2": 9 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 10, "$p2": 11 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 12, "$p2": 13 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 14, "$p2": 15 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 16, "$p2": 17 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 18, "$p2": 19 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 20, "$p2": 21 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 22, "$p2": 23 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 24, "$p2": 25 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 26, "$p2": 27 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 28, "$p2": 29 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 30, "$p2": 31 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 32, "$p2": 33 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 34, "$p2": 35 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 36, "$p2": 37 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 38, "$p2": 39 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 40, "$p2": 41 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 42, "$p2": 43 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 44, "$p2": 45 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 46, "$p2": 47 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 48, "$p2": 49 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 50, "$p2": 51 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 52, "$p2": 53 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 54, "$p2": 55 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 56, "$p2": 57 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 58, "$p2": 59 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 60, "$p2": 61 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 62, "$p2": 63 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 64, "$p2": 65 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 66, "$p2": 67 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 68, "$p2": 69 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 70, "$p2": 71 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 72, "$p2": 73 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 74, "$p2": 75 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 76, "$p2": 77 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 78, "$p2": 79 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 70, "$p2": 71 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 82, "$p2": 83 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 84, "$p2": 85 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 86, "$p2": 87 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 88, "$p2": 89 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 90, "$p2": 91 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 92, "$p2": 93 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 94, "$p2": 95 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 96, "$p2": 97 } },
-            { "book_grid@thlm_book.book_close_and_grid": { "$p1": 98, "$p2": 99 } }
-          ]
-        }
-      },
-      // 其它组件
-      {
-        "button_panel":{
-          "type": "panel",
-          "size": "$book_size",
-          "anchor_from": "center",
-          "anchor_to": "center",
-          "controls": [
-            // 边框
-            { "book_background@thlm_book.book_background": { "size": "$book_size" } }
-          ]
-        }
-      },
-      // 上一页
-      {
-        "prev_button_watcher":{
-          "type": "panel",
-          "visible": false,
           "bindings":[
-            {
-              "binding_type": "view",
-              "source_control_name": "book_panel",
-              "source_property_name": "(#page_base-#page_base)",
-              "target_property_name": "#page",
-              "binding_condition": "once",
-              "resolve_sibling_scope": true
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "#page",
-              "target_property_name": "#page_next",
-              "binding_condition": "once"
-            },
-            /// toggle
-            {
-              "binding_type": "view",
-              "source_control_name": "prev_button",
-              "source_property_name": "#toggle_state",
-              "target_property_name": "#new_toggle_state",
-              "binding_condition": "always",
-              "resolve_sibling_scope": true
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "((#new_toggle_state) and (not (#old_toggle_state)))",
-              "target_property_name": "#temp",
-              "binding_condition": "always"
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "(((#new_toggle_state) and ((#page_next + #temp) < (#page + 2))))",
-              "target_property_name": "#temp2",
-              "binding_condition": "always"
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "(#page_next + #temp2 )",
-              "target_property_name": "#page_next",
-              "binding_condition": "always"
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "(((not (#new_toggle_state)) and ((#page_next) > (#page)))*1)",
-              "target_property_name": "#temp3",
-              "binding_condition": "always"
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "(#page + #temp3 )",
-              "target_property_name": "#page",
-              "binding_condition": "always"
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "#new_toggle_state",
-              "target_property_name": "#old_toggle_state",
-              "binding_condition": "always"
-            }
-          ]
-        }
-      },
-      {
-        "prev_button@thlm_book.base_button": {
-          "$toggle_name": "prev_button",
-          "size": [ 24, 24 ],
-          "layer": 1000,
-          "offset": [ 7, -21 ],
-          "anchor_from": "bottom_left",
-          "anchor_to": "bottom_left",
-          "sound_name": "item.book.page_turn",
-          "sound_volume": 4.0,
-          "sound_pitch": 1.0,
-          
-          "$pressed_button_name": "button.prev_page",
-          
-          "$checked": "thlm_book.left_toggle_check",
-          "$checked_hover": "thlm_book.left_toggle_check_hover",
-          "$unchecked_hover": "thlm_book.left_toggle_uncheck_hover",
-          "$unchecked": "thlm_book.left_toggle_uncheck",
-          "bindings":[
-            // 页码控制
-            {
-              "binding_type": "view",
-              "source_control_name": "book_panel",
-              "source_property_name": "#page",
-              "target_property_name": "#book_page",
-              "binding_condition": "always",
-              "resolve_sibling_scope": true
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "(#book_page > 0)",
-              "target_property_name": "#visible",
-              "binding_condition": "always",
-              "resolve_sibling_scope": true
-            },
-            // 通用toggle检测
-            {
-              "binding_type": "view",
-              "source_control_name": "prev_button_watcher",
-              "source_property_name": "#old_toggle_state",
-              "target_property_name": "#next_signal",
-              "binding_condition": "always",
-              "resolve_sibling_scope": true
-            },
-            {
-              "binding_type": "view",
-              // 0 0 -> 0
-              // 0 1 -> 0
-              // 1 0 -> 1
-              // 1 1 -> 0
-              "source_property_name": "((#toggle_state) and (not (#next_signal)))",
-              "target_property_name": "#toggle_state",
-              "binding_condition": "always"
-            }
-          ]
-        }
-      },
-      // 下一页
-      {
-        "next_button_watcher":{
-          "type": "panel",
-          "visible": false,
-          "bindings":[
-            {
-              "binding_type": "view",
-              "source_control_name": "book_panel",
-              "source_property_name": "(#page_base-#page_base)",
-              "target_property_name": "#page",
-              "binding_condition": "once",
-              "resolve_sibling_scope": true
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "#page",
-              "target_property_name": "#page_next",
-              "binding_condition": "once"
-            },
-            /// toggle
-            {
-              "binding_type": "view",
-              "source_control_name": "next_button",
-              "source_property_name": "#toggle_state",
-              "target_property_name": "#new_toggle_state",
-              "binding_condition": "always",
-              "resolve_sibling_scope": true
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "((#new_toggle_state) and (not (#old_toggle_state)))",
-              "target_property_name": "#temp",
-              "binding_condition": "always"
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "(((#new_toggle_state) and ((#page_next + #temp) < (#page + 2))))",
-              "target_property_name": "#temp2",
-              "binding_condition": "always"
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "(#page_next + #temp2 )",
-              "target_property_name": "#page_next",
-              "binding_condition": "always"
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "(((not (#new_toggle_state)) and ((#page_next) > (#page)))*1)",
-              "target_property_name": "#temp3",
-              "binding_condition": "always"
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "(#page + #temp3 )",
-              "target_property_name": "#page",
-              "binding_condition": "always"
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "#new_toggle_state",
-              "target_property_name": "#old_toggle_state",
-              "binding_condition": "always"
-            }
-          ]
-        }
-      },
-      {
-        "next_button@thlm_book.base_button": {
-          "$toggle_name": "next_button",
-          "size": [ 24, 24 ],
-          "offset": [ -7, -21 ],
-          "layer": 1000,
-          "anchor_from": "bottom_right",
-          "anchor_to": "bottom_right",
-          "sound_name": "item.book.page_turn",
-          "sound_volume": 4.0,
-          "sound_pitch": 1.0,
-          
-          "$pressed_button_name": "button.next_page",
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_1",
+              "source_property_name": "#text", "target_property_name": "#chapter_text_1" },
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_1",
+              "source_property_name": "#texture", "target_property_name": "#chapter_texture_1" },
+            
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_2",
+              "source_property_name": "#text", "target_property_name": "#chapter_text_2" },
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_2",
+              "source_property_name": "#texture", "target_property_name": "#chapter_texture_2" },
+            
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_3",
+              "source_property_name": "#text", "target_property_name": "#chapter_text_3" },
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_3",
+              "source_property_name": "#texture", "target_property_name": "#chapter_texture_3" },
+            
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_4",
+              "source_property_name": "#text", "target_property_name": "#chapter_text_4" },
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_4",
+              "source_property_name": "#texture", "target_property_name": "#chapter_texture_4" },
+            
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_5",
+              "source_property_name": "#text", "target_property_name": "#chapter_text_5" },
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_5",
+              "source_property_name": "#texture", "target_property_name": "#chapter_texture_5" },
+            
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_6",
+              "source_property_name": "#text", "target_property_name": "#chapter_text_6" },
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_6",
+              "source_property_name": "#texture", "target_property_name": "#chapter_texture_6" },
 
-          "$checked": "thlm_book.right_toggle_check",
-          "$checked_hover": "thlm_book.right_toggle_check_hover",
-          "$unchecked_hover": "thlm_book.right_toggle_uncheck_hover",
-          "$unchecked": "thlm_book.right_toggle_uncheck",
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_7",
+              "source_property_name": "#text", "target_property_name": "#chapter_text_7" },
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_7",
+              "source_property_name": "#texture", "target_property_name": "#chapter_texture_7" },
 
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_8",
+              "source_property_name": "#text", "target_property_name": "#chapter_text_8" },
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_8",
+              "source_property_name": "#texture", "target_property_name": "#chapter_texture_8" },
 
-          "$default_texture": "textures/ui/book_pageright_default",
-          "$hover_texture": "textures/ui/book_pageright_hover",
-          "$pressed_texture": "textures/ui/book_pageright_pressed",
-          "bindings":[
-            // 页码控制
-            {
-              "binding_type": "view",
-              "source_control_name": "book_panel",
-              "source_property_name": "#page",
-              "target_property_name": "#book_page",
-              "binding_condition": "always",
-              "resolve_sibling_scope": true
-            },
-            {
-              "binding_type": "view",
-              "source_control_name": "book_panel",
-              "source_property_name": "#page_total",
-              "target_property_name": "#page_total",
-              "binding_condition": "always",
-              "resolve_sibling_scope": true
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "(#book_page < #page_total)",
-              "target_property_name": "#visible",
-              "binding_condition": "always"
-            },
-            // 通用toggle检测
-            {
-              "binding_type": "view",
-              "source_control_name": "next_button_watcher",
-              "source_property_name": "#old_toggle_state",
-              "target_property_name": "#next_signal",
-              "binding_condition": "always",
-              "resolve_sibling_scope": true
-            },
-            {
-              "binding_type": "view",
-              // 0 0 -> 0
-              // 0 1 -> 0
-              // 1 0 -> 1
-              // 1 1 -> 0
-              "source_property_name": "((#toggle_state) and (not (#next_signal)))",
-              "target_property_name": "#toggle_state",
-              "binding_condition": "always"
-            }
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_9",
+              "source_property_name": "#text", "target_property_name": "#chapter_text_9" },
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_9",
+              "source_property_name": "#texture", "target_property_name": "#chapter_texture_9" },
+
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_10",
+              "source_property_name": "#text", "target_property_name": "#chapter_text_10" },
+            { "binding_type": "view", "binding_condition": "once", "source_control_name": "chapter_wrapper_10",
+              "source_property_name": "#texture", "target_property_name": "#chapter_texture_10" }
           ]
         }
       },
-      // 返回首页
+      { "chapter_wrapper_1@thlm_book.chapter_button_wrapper": { "$chapter": 0 } },
+      { "chapter_wrapper_2@thlm_book.chapter_button_wrapper": { "$chapter": 1 } },
+      { "chapter_wrapper_3@thlm_book.chapter_button_wrapper": { "$chapter": 2 } },
+      { "chapter_wrapper_4@thlm_book.chapter_button_wrapper": { "$chapter": 3 } },
+      { "chapter_wrapper_5@thlm_book.chapter_button_wrapper": { "$chapter": 4 } },
+      { "chapter_wrapper_6@thlm_book.chapter_button_wrapper": { "$chapter": 5 } },
+      { "chapter_wrapper_7@thlm_book.chapter_button_wrapper": { "$chapter": 6 } },
+      { "chapter_wrapper_8@thlm_book.chapter_button_wrapper": { "$chapter": 7 } },
+      { "chapter_wrapper_9@thlm_book.chapter_button_wrapper": { "$chapter": 8 } },
+      { "chapter_wrapper_10@thlm_book.chapter_button_wrapper": { "$chapter": 9 } }
+    ]
+  },
+  //// 章节跳转按钮 ////
+  "chapter_button_wrapper":{
+    "type": "panel",
+    "$chapter|default": 0,
+    "collection_index": "$chapter",
+    "visible": false,
+    "bindings": [
       {
-        "home_button_watcher":{
-          "type": "panel",
-          "visible": false,
-          "bindings":[
-            {
-              "binding_type": "view",
-              "source_control_name": "book_panel",
-              "source_property_name": "#in_home",
-              "target_property_name": "#in_home",
-              "binding_condition": "once",
-              "resolve_sibling_scope": true
-            },
-            /// toggle
-            {
-              "binding_type": "view",
-              "source_control_name": "home_button",
-              "source_property_name": "#toggle_state",
-              "target_property_name": "#new_toggle_state",
-              "binding_condition": "always",
-              "resolve_sibling_scope": true
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "((#new_toggle_state) and (not (#old_toggle_state)))",
-              "target_property_name": "#in_home",
-              "binding_condition": "always"
-            },
-            {
-              "binding_type": "view",
-              "source_property_name": "#new_toggle_state",
-              "target_property_name": "#old_toggle_state",
-              "binding_condition": "always"
-            }
-          ]
-        }
+        "binding_type": "collection",
+        "binding_collection_name": "form_buttons",
+        "binding_name": "#form_button_text",
+        "binding_name_override": "#text",
+        "binding_condition": "once"
       },
       {
-        "home_button@thlm_book.base_button": {
-          "$toggle_name": "home_button",
-          "size": [ 24, 24 ],
-          "offset": [ -7, -21 ],
-          "layer": 1000,
-          "anchor_from": "bottom_middle",
-          "anchor_to": "bottom_middle",
-          "sound_name": "item.book.page_turn",
-          "sound_volume": 4.0,
-          "sound_pitch": 1.0,
-          
-          "$checked": "thlm_book.right_toggle_check",
-          "$checked_hover": "thlm_book.right_toggle_check_hover",
-          "$unchecked_hover": "thlm_book.right_toggle_uncheck_hover",
-          "$unchecked": "thlm_book.right_toggle_uncheck",
-
-          "bindings":[
-            // 页码控制
-            {
-              "binding_type": "view",
-              "source_control_name": "book_panel",
-              "source_property_name": "(not (#in_home))",
-              "target_property_name": "#visible",
-              "binding_condition": "always",
-              "resolve_sibling_scope": true
-            },
-            // 通用toggle检测
-            {
-              "binding_type": "view",
-              "source_control_name": "home_button_watcher",
-              "source_property_name": "#old_toggle_state",
-              "target_property_name": "#next_signal",
-              "binding_condition": "always",
-              "resolve_sibling_scope": true
-            },
-            {
-              "binding_type": "view",
-              // 0 0 -> 0
-              // 0 1 -> 0
-              // 1 0 -> 1
-              // 1 1 -> 0
-              "source_property_name": "((#toggle_state) and (not (#next_signal)))",
-              "target_property_name": "#toggle_state",
-              "binding_condition": "always"
-            }
-          ]
-        }
+        "binding_type": "collection",
+        "binding_collection_name": "form_buttons",
+        "binding_name": "#form_button_texture",
+        "binding_name_override": "#texture",
+        "binding_condition": "once"
       }
-      // 章节跳转组
-      
+    ]
+  },
+  "chapter_button@common.toggle": {
+    "$toggle_name": "chapter_button",
+    "type": "toggle",
+    "anchor_from":"top_left",
+    "anchor_to":"top_left",
+    "layer": 1000,
+    "sound_name": "item.book.page_turn",
+    "sound_volume": 4.0,
+    "sound_pitch": 1.0,
+    "property_bag": {
+      "#toggle_state": true
+    },
+    "$size_image": [10, 10],
+    "$size_text": [120, 10],
+    "$offset": [173, 24],
+    "offset": "$offset",
+    "size": [120, 12],
+    "$text": "#chapter_text_1",
+    "$texture": "#chapter_texture_1",
+    "$chapter_watcher": "chapter_watcher_1",
+    "$chapter": 0,
+    "controls": [
+      {
+        "image":{
+          "type": "image",
+          "texture": "#texture",
+          "size": "$size_image",
+          "anchor_from":"left_middle",
+          "anchor_to":"left_middle",
+          "offset": [1, 0],
+          "layer": 1000,
+          "bindings":[
+            {
+              "binding_type": "view",
+              "source_control_name": "book_and_buttons_panel",
+              "source_property_name": "$texture",
+              "target_property_name": "#texture"
+            }
+          ]
+        }
+      },
+      {
+        "text":{
+          "type": "label",
+          "text": "#text",
+          "color": "$book_page_text_color",
+          "size": "$size_text",
+          "anchor_from":"left_middle",
+          "anchor_to":"left_middle",
+          "offset": [13, 0],
+          "layer": 1000,
+          "bindings":[
+            {
+              "binding_type": "view",
+              "source_control_name": "book_and_buttons_panel",
+              "source_property_name": "$text",
+              "target_property_name": "#text"
+            }
+          ]
+        }
+      },
+      // { "unchecked@toggle_style": {"layer": 999, "size": ["100%", "100%"]} },
+      // { "checked@toggle_style": {"layer": 999, "size": ["100%", "100%"]} },
+
+      { "unchecked_hover@toggle_style": {"layer": 999, "size": ["100%", "100%"], "$toggle_image":"textures/ui/tlm_book_chapter_select"} },
+      { "checked_hover@toggle_style": {"layer": 999, "size": ["100%", "100%"], "$toggle_image":"textures/ui/tlm_book_chapter_select"} }
+    ],
+    "bindings":[
+      // 页码控制
+      {
+        "binding_type": "view",
+        "source_control_name": "book_panel",
+        "source_property_name": "(#chapter_total>$chapter)",
+        "target_property_name": "#in_range",
+        "binding_condition": "once",
+        "resolve_sibling_scope": true
+      },
+      {
+        "binding_type": "view",
+        "source_control_name": "book_panel",
+        "source_property_name": "(#page<0)",
+        "target_property_name": "#in_home",
+        "binding_condition": "always",
+        "resolve_sibling_scope": true
+      },
+      {
+        "binding_type": "view",
+        "source_property_name": "((#in_home) and (#in_range))",
+        "target_property_name": "#visible",
+        "binding_condition": "always"
+      },
+      // 通用toggle检测
+      {
+        "binding_type": "view",
+        "source_control_name": "$chapter_watcher",
+        "source_property_name": "#old_toggle_state",
+        "target_property_name": "#next_signal",
+        "binding_condition": "always",
+        "resolve_sibling_scope": true
+      },
+      {
+        "binding_type": "view",
+        // 0 0 -> 0
+        // 0 1 -> 0
+        // 1 0 -> 1
+        // 1 1 -> 0
+        "source_property_name": "((#toggle_state) and (not (#next_signal)))",
+        "target_property_name": "#toggle_state",
+        "binding_condition": "always"
+      }
+    ],
+    "$pressed_button_name": "button.menu_settings"
+  },
+  "chapter_watcher":{
+    "type": "panel",
+    "$chapter_button|default": "chapter_wrapper_1",
+    "$chapter_page|default": "#page_chapter1",
+    "visible": false,
+    "bindings":[
+      // 初始化置零
+      {
+        "binding_type": "view",
+        "source_control_name": "book_panel",
+        "source_property_name": "(#page_base-#page_base)",
+        "target_property_name": "#page",
+        "binding_condition": "once",
+        "resolve_sibling_scope": true
+      },
+      {
+        "binding_type": "view",
+        "source_property_name": "#page",
+        "target_property_name": "#page_next",
+        "binding_condition": "once"
+      },
+      // 初始化页码
+      {
+        "binding_type": "view",
+        "source_control_name": "book_panel",
+        "source_property_name": "(($chapter_page)+2)",// 从首页跳转到第0页要+2
+        "target_property_name": "#chapter_page",
+        "binding_condition": "once",
+        "resolve_sibling_scope": true
+      },
+      /// toggle
+      {
+        "binding_type": "view",
+        "source_control_name": "$chapter_button",
+        "source_property_name": "#toggle_state",
+        "target_property_name": "#new_toggle_state",
+        "binding_condition": "always",
+        "resolve_sibling_scope": true
+      },
+      {
+        "binding_type": "view",
+        "source_property_name": "((#new_toggle_state) and (not (#old_toggle_state)))",
+        "target_property_name": "#temp",
+        "binding_condition": "always"
+      },
+      {
+        "binding_type": "view",
+        "source_property_name": "(((#new_toggle_state) and ((#page_next + #temp) < (#page + 2))))",
+        "target_property_name": "#temp2",
+        "binding_condition": "always"
+      },
+      {
+        "binding_type": "view",
+        "source_property_name": "(#page_next + #temp2)",
+        "target_property_name": "#page_next",
+        "binding_condition": "always"
+      },
+      {
+        "binding_type": "view",
+        "source_property_name": "(((not (#new_toggle_state)) and ((#page_next) > (#page)))*1)",
+        "target_property_name": "#temp3",
+        "binding_condition": "always"
+      },
+      {
+        "binding_type": "view",
+        "source_property_name": "(#page + (#temp3*(#chapter_page)))",
+        "target_property_name": "#page",
+        "binding_condition": "always"
+      },
+      {
+        "binding_type": "view",
+        "source_property_name": "#new_toggle_state",
+        "target_property_name": "#old_toggle_state",
+        "binding_condition": "always"
+      }
     ]
   },
   //// 书本内容 ////
@@ -1325,12 +1018,12 @@
               "pressed_control": "pressed",
               "focus_enabled": false,
               "bindings": [
-                {
-                  "binding_type": "view",
-                  "source_control_name": "book_panel",
-                  "source_property_name": "((#page=$p1) or (#page=$p1-1))",
-                  "target_property_name": "#visible"
-                },
+                // {
+                //   "binding_type": "view",
+                //   "source_control_name": "book_panel",
+                //   "source_property_name": "(((#page+#chapter_button_delta)=$p1) or ((#page+#chapter_button_delta)=$p1-1))",
+                //   "target_property_name": "#visible"
+                // },
                 {
                     "binding_type": "collection_details",
                     "binding_collection_name": "form_buttons"
@@ -1359,6 +1052,28 @@
       },
       {
         "book_grid@book_grid":{}
+      }
+    ],
+    "bindings":[
+      {
+        "binding_type": "view",
+        "source_control_name": "book_panel",
+        "source_property_name": "#chapter_button_delta",
+        "target_property_name": "#delta",
+        "binding_condition":"always"
+      },
+      {
+        "binding_type": "view",
+        "source_control_name": "book_panel",
+        "source_property_name": "#page",
+        "target_property_name": "#page",
+        "binding_condition":"always"
+      },
+      {
+        "binding_type": "view",
+        "source_property_name": "(((#delta-1)<$p1) and ((#page+#delta)=$p1))",
+        "target_property_name": "#visible",
+        "binding_condition":"always"
       }
     ]
   },
@@ -1399,18 +1114,6 @@
                 ]
               }
               
-            },
-            {
-              "$page_crease_image@$page_crease_image": {
-                "size": [ "100% - 40px", "100% - 14px" ],
-                "offset": [ 0, -2 ]
-              }
-            },
-            {
-              "$page_edge_image@$page_edge_image": {
-                "size": [ "100% - 7px", "100% - 16px" ],
-                "offset": "$page_edge_offset"
-              }
             }
           ]
         }
@@ -1444,7 +1147,61 @@
                 ]
               }
               
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "book_background_grid": {
+    "type": "grid",
+    "$p1|default": 2,
+    "$p2|default": 3,
+    "size": "$book_size",
+    "layer": "($seq + 4)",
+    "grid_dimensions": [ 2, 1 ],
+    "controls": [
+      {
+        "page_panel_left": { // @thlm_book.page_panel
+          "grid_position": [ 0, 0 ],
+          "type": "panel",
+
+          "size": "$page_size",
+          "offset": [ 11, 24 ],
+          "layer": "($seq + 4)",
+          "$page_content_offset": [ 5, 0 ],
+          "$page_crease_image": "book.page_crease_left_image",
+          "$page_edge_image": "book.page_edge_left_image",
+          "$page_edge_offset": [ 7, -1 ],
+          "controls":[
+            {
+              "$page_crease_image@$page_crease_image": {
+                "size": [ "100% - 40px", "100% - 14px" ],
+                "offset": [ 0, -2 ]
+              }
             },
+            {
+              "$page_edge_image@$page_edge_image": {
+                "size": [ "100% - 7px", "100% - 16px" ],
+                "offset": "$page_edge_offset"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "page_panel_right": { // @thlm_book.page_panel
+          "grid_position": [ 1, 0 ],
+          "type": "panel",
+
+          "size": "$page_size",
+          "offset": [ 11, 24 ],
+          "layer": "($seq + 4)",
+          "$page_content_offset": [ -5, 0 ],
+          "$page_crease_image": "thlm_book.page_crease_right_image",
+          "$page_edge_image": "thlm_book.page_edge_right_image",
+          "$page_edge_offset": [ -7, -1 ],
+          "controls":[
             {
               "$page_crease_image@$page_crease_image": {
                 "size": [ "100% - 40px", "100% - 14px" ],
@@ -1479,20 +1236,14 @@
         "page_text": {
           "collection_index": "$index", // 不能被赋予#值 所以是一开始就决定了的
           "bindings": [
-            // 调试用，显示页码
+            // 调试用
             // {
             //   "binding_type": "view",
             //   "source_control_name": "book_panel",
-            //   "source_property_name": "(','+ #input10)",
+            //   "source_property_name": "(','+ (#temp0) )",
             //   "target_property_name": "#text"
             // }
             //// 工作时
-            {
-              "binding_type": "view",
-              "source_control_name": "book_panel",
-              "source_property_name": "((#page=$index) or (#page=$index-1))",
-              "target_property_name": "#visible"
-            },
             {
               "binding_name": "#form_button_text",
               "binding_name_override": "#text",
@@ -1500,12 +1251,6 @@
               "binding_collection_name": "form_buttons",
               "binding_condition": "visible"
             }
-            //// 凑热闹
-            // {
-            //   "binding_type": "view",
-            //   "source_property_name": "(('' + #text) - '$')",
-            //   "target_property_name": "#texture"
-            // }
           ],
           "type": "label",
           "text": "#text",
@@ -1515,49 +1260,6 @@
           "anchor_from": "top_middle",
           "anchor_to": "top_middle",
           "color": "$book_page_text_color"
-        }
-      }
-    ]
-  },
-  "page_panel": {
-    "type": "panel",
-    "size": "$page_size",
-    "max_size": [ "100%", "100%" ],
-    "$page_content_offset|default": [ 0, 0 ],
-    "$page_crease_image|default": "thlm_book.page_crease_left_image",
-    "$page_edge_image|default": "thlm_book.page_edge_left_image",
-    "$page_edge_offset|default": [ 7, -1 ],
-
-    "controls": [
-      { 
-        "page_content_panel": {
-          "type": "panel",
-          "offset": "$page_content_offset",
-      
-          "controls": [
-            { "page_text@thlm_book.page_text": {} },
-            { "page_number_label@thlm_book.page_number_label": {} }
-          ],
-          "bindings": [
-            {
-              "binding_name": "#page_visible",
-              "binding_name_override": "#visible",
-              "binding_type": "collection",
-              "binding_collection_name": "book_pages"
-            }
-          ]
-        }
-      },
-      {
-        "$page_crease_image@$page_crease_image": {
-          "size": [ "100% - 40px", "100% - 14px" ],
-          "offset": [ 0, -2 ]
-        }
-      },
-      {
-        "$page_edge_image@$page_edge_image": {
-          "size": [ "100% - 7px", "100% - 16px" ],
-          "offset": "$page_edge_offset"
         }
       }
     ]
@@ -1598,6 +1300,15 @@
     // "unchecked_locked_hover_control": "unchecked_locked_hover",
     "$pressed_button_name": "button.menu_settings"
   },
+
+  // 边框
+  "book_background": {
+    "type": "image",
+    "layer": 0,
+    "texture": "textures/ui/book_back"
+  },
+  
+  //// 按钮风格 ////
   "left_toggle_uncheck@toggle_style":{"$toggle_image":"textures/ui/book_pageleft_default"},
   "left_toggle_uncheck_hover@toggle_style":{"$toggle_image":"textures/ui/book_pageleft_hover"},
   "left_toggle_check@toggle_style":{"$toggle_image":"textures/ui/book_pageleft_pressed"},
@@ -1608,12 +1319,14 @@
   "right_toggle_check@toggle_style":{"$toggle_image":"textures/ui/book_pageright_pressed"},
   "right_toggle_check_hover@toggle_style":{"$toggle_image":"textures/ui/book_pageright_pressed"},
 
-  "toggle_style":{"type":"image","texture":"$toggle_image"},
+  
+  "home_toggle_uncheck@toggle_style":{"$toggle_image":"textures/ui/tlm_book_home_default"},
+  "home_toggle_uncheck_hover@toggle_style":{"$toggle_image":"textures/ui/tlm_book_home_hover"},
+  "home_toggle_check@toggle_style":{"$toggle_image":"textures/ui/tlm_book_home_pressed"},
+  "home_toggle_check_hover@toggle_style":{"$toggle_image":"textures/ui/tlm_book_home_pressed"},
 
-  // 边框
-  "book_background": {
-    "type": "image",
-    "layer": 0,
-    "texture": "textures/ui/book_back"
-  }
+  "close_button_default": { "type": "image", "texture": "textures/ui/close_button_default", "color": "$portfolio_close_color"},
+  "close_button_hover": { "type": "image", "texture": "textures/ui/close_button_hover" },
+  "close_button_pressed": { "type": "image", "texture": "textures/ui/close_button_pressed" },
+  "toggle_style":{"type":"image","texture":"$toggle_image"}
 }
