@@ -106,8 +106,7 @@ class thlm {
                     // 初始化p点计分板
                     PowerPoint.set_power_number(player.name, 0);
                     // 给书
-                    player.dimension.runCommand(`give ${playerName} touhou_little_maid:memorizable_gensokyo_1 1`);
-                    player.dimension.runCommand(`give ${playerName} touhou_little_maid:memorizable_gensokyo_2 1`);
+                    player.dimension.runCommand(`give ${playerName} touhou_little_maid:memorizable_gensokyo 1`);
                     // 给魂符
                     player.dimension.runCommand(`give ${playerName} touhou_little_maid:smart_slab_has_maid 1`);
                     // say something
@@ -191,48 +190,6 @@ class thlm {
                 else if(item.typeId.substring(0, 6) === "thlms:"){
                     // 符卡释放
                     CustomSpellCardManger.onSpellCardUseEvent(event);
-                }
-                else if(item.typeId.substring(0, 9) === "minecraft"){
-                    switch(item.typeId.substring(10)){
-                        // 指南书更新
-                        case "written_book":{
-                            let lore = item.getLore();
-                            if(lore !== undefined && lore.length===1){
-                                lore = lore[0];
-                                if(lore.substring(0, 10) === "§t§l§m§m§g"){
-                                    lore = lore.substring(10).replace(new RegExp('§', 'g'), '');
-                                    lore = lore.split('_');
-
-                                    let chapter = parseInt(lore[0]);
-                                    let pl = event.source;
-                                    // 下一章
-                                    if(pl.isSneaking){
-                                        if(item.amount===1) Tool.setPlayerMainHand(pl);
-                                        else{
-                                            item.amount--;
-                                            Tool.setPlayerMainHand(pl, item);
-                                        }
-                                        pl.runCommand(`structure load tlm_mg${chapter===3 ? 1 : chapter+1} ~-0.5~1~-0.5`);
-                                    }
-                                    // 版本检测
-                                    else{
-                                        let version = parseInt(lore[1]);
-                                        if(config.memorizable_gensokyo[chapter-1] > parseInt(version)){
-                                            if(item.amount===1) Tool.setPlayerMainHand(pl);
-                                            else{
-                                                item.amount--;
-                                                Tool.setPlayerMainHand(pl, item);
-                                            }
-                                            pl.runCommand(`structure load tlm_mg${chapter} ~-0.5~1~-0.5`);
-                                            Tool.ActionbarMessage.translate(pl, "message.touhou_little_maid.mg.update"); // 指南书版本已更新
-                                        }
-
-                                    }
-                                }
-                            }
-                        }; break;
-                        default: break;
-                    }
                 }
             });
         });

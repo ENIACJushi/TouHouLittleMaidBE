@@ -2,7 +2,7 @@ import { world, system, Entity } from "@minecraft/server";
 import * as Tool from "../libs/ScarletToolKit"
 
 
-const config_lock = 2;// 锁定的配置项数量,锁定配置项总放在最前
+const config_lock = 1;// 锁定的配置项数量,锁定配置项总放在最前
 export var config={
     /**
      * 已弃用
@@ -11,12 +11,6 @@ export var config={
      * 建议多人游戏时设为true
      */
     "maid_death_bag": false,
-    // 指南书版本
-    "memorizable_gensokyo":[
-        1, // 第一章
-        1, // 第二章
-        1  // 第三章
-    ],
     // 公开的配置项 只能为 整数 或 布尔值
     "ui_enable"     : 1,   // 是否启用特殊UI
     "fairy_damage"  : 100, // 妖精女仆弹幕攻击力的倍数因子，伤害最后会乘上(这个数/100)

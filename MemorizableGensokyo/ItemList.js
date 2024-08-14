@@ -46,7 +46,6 @@ const itemFont = {
     "minecraft:book": 0x2D,
     "minecraft:cake": 0x2E,
     "touhou_little_maid:memorizable_gensokyo": 0x2F,
-    "touhou_little_maid:memorizable_gensokyo_1": 0x2F,
 
     // 龙头
     "minecraft:amethyst_shard": 0x30,

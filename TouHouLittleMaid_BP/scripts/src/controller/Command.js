@@ -327,8 +327,7 @@ export class CommandManager{
             "touhou_little_maid:dragon_skull",
             "touhou_little_maid:gold_microwaver_item",
             "touhou_little_maid:magic_powder",
-            "touhou_little_maid:memorizable_gensokyo_1",
-            "touhou_little_maid:memorizable_gensokyo_2"
+            "touhou_little_maid:memorizable_gensokyo"
         ]
 
         for(let item of itemList){

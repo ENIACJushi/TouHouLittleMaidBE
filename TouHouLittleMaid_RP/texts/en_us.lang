@@ -109,157 +109,6 @@ danmaku.star.name=§aStar
 danmaku.big_star.name=§aBig Star
 danmaku.glowey_ball.name=§aGlowey Ball
 
-##### 记忆中的幻想乡 #####
-me.total_chapter=2
-
-### 第一章 ###
-item.touhou_little_maid:memorizable_gensokyo_1=Memorizable Gensokyo: Overview
-thlm.mg1=Memorizable Gensokyo: Overview
-
-me.chapter1.page1.title=         §lOverview§r
-me.chapter1.title.page=           §7(1/3)§r
-me.chapter1.page1.text=  A mod about the maid and the touhou project. Thanks to people like Tartrate and Snow for making TLM java mod. Thanks to the artists for producing excellent models. Thanks to Verclene, the author of little maid mob mod.
-me.chapter1.page2.title=        §lCatalogue§r
-me.chapter1.page2.text=Touhou Project..............3 Fairy Maid.............................4 Power Point.........................5 Gohei & Danmaku..............7 Altar..........................................9
-
-me.chapter1.page3.title=§lTouhou Project§r
-me.chapter1.page3.text1=   The Touhou Project is a Japanese doujin game series by Sole Team Shanghai Alice member ZUN that specializes in Shoot 'em Ups.
-me.chapter1.page3.text2=  Touhou Wiki: https://en.touhouwiki.net/wiki/Touhou_Wiki
-
-me.c1.p4.ti=§lFairy Maid§r
-me.c1.p4.t1=   This mod adds one mobs. The looting of mob are important crafting ingredient.
-me.c1.p4.t2=       
-me.c1.p4.t3=  Spawn on the night and attack the player with danmaku.
-
-me.c1.p5.ti=§lPower Point§r
-me.c1.p5.t1=   The power point is an important resource for this mod, which is obtained by killing the maid fairy Can be used for altar crafting.
-me.c1.p5.t2=       
-me.c1.p6.t1=   You can also find some in the chest of the desert temple.
-me.c1.p6.t2=   When you holds gohei, you can see the power value above the inventory. The maximum power value is 5, and more than this number power point no longer increases.
-
-me.c1.p7.ti=§lGohei and Danmaku§r
-me.c1.p7.t1=   The gohei is a long-range weapon that shoots a barrage.
-me.c1.p7.t2=                                                                               
-me.c1.p8.t1=   When you interact with any block in sneaking mode, you can switch types.
-me.c1.p8.t2=   Due to technical limitations, the gohei made by the composite table need to be used by the other block before they can be activated.
-
-me.c1.p9.ti=§lAltar§r
-me.c1.p9.t1=   The altar is the multi-block structure required for the craft of this mod. The craft also requires player's power point.
-me.c1.p9.t2=       
-me.c1.p10.t1=   Use the gohei to right click on the red wool front left of center of the fourth layer to build an altar.
-me.c1.p10.t2=       
-me.c1.p11.t1=   You can right click on the top of each of the six pillars to place items. Jump under the pole and pick it up. When the item is fully placed and the Power value is sufficient, the altar can trigger crafting.
-me.c1.p11.t2=   ## When crafting is interrupted due to lack of Power, replacing any material after obtaining enough Power can trigger crafting.
-me.c1.p11.t3=   ## There is no need to worry about forgetting to remove the material, the items on the altar will not automatically disappear.
-
-
-#### 第二章 ####
-item.touhou_little_maid:memorizable_gensokyo_2=Memorizable Gensokyo: Crafting
-thlm.mg2=Memorizable Gensokyo: Crafting
-
-## 封面 ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p1.title"},{"text":"\n"},{"translate":"me.c2.title.page"},{"text":"\n"},{"translate":"me.c2.p1.text"}]}
-me.c2.p1.title=         §lCrafting§r
-me.c2.title.page=             §7(2/3)§r
-me.c2.p1.text=  
-
-## 目录 ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p2.title"},{"text":"\n"},{"translate":"me.c2.p2.text"}]}
-me.c2.p2.title=        §lCatalogue§r
-me.c2.p2.text=§rGohei (Crafting)   Gohei(repairing)         Maid(Spawn)   Maid(Respawn)       Backpack              Camera                 Lighting             Sakura gohei          Memorizable Gensokyo   Gold Microwave Oven   Dragon skull
-
-## 御币 (合成) ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p3.ti"},{"text":"\n"},{"translate":"me.c2.p3.t1"},{"text":"\n\n\n\n"},{"translate":"me.c2.p3.t2"}]}
-me.c2.p3.ti=§lGohei (Crafting)§r
-me.c2.p3.t1=   Gohei can be made at the altar at a much lower cost.
-me.c2.p3.t2=                                                                                                §cP:0.15
-
-## 御币 (修复) ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p4.ti"},{"text":"\n"},{"translate":"me.c2.p4.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p4.t2"}]}
-me.c2.p4.ti=§lGohei (repairing)§r
-me.c2.p4.t1=   Gohei cannot be repaired by mending, but here's a better way without repair punishment.
-me.c2.p4.t2=                                                                                                §cP:0.10
-
-## 女仆 (生成) ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p5.ti"},{"text":"\n"},{"translate":"me.c2.p5.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p5.t2"}]}
-me.c2.p5.ti=§lMaid (Spawn)§r
-me.c2.p5.t1= 
-me.c2.p5.t2=                                                                                                §cP:0.50
-
-## 女仆 (复活) ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p6.ti"},{"text":"\n"},{"translate":"me.c2.p6.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p6.t2"}]}
-me.c2.p6.ti=§lMaid (Respawn)§r
-me.c2.p6.t1=    
-me.c2.p6.t2=                                                                                                §cP:0.50
-
-## 背包 (小) ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p7.ti"},{"text":"\n"},{"translate":"me.c2.p7.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p7.t2"}]}
-me.c2.p7.ti=§lBackpack (Small)§r
-me.c2.p7.t1=    Red wool, iron ingot. Provides 6 additional storage Spaces.
-me.c2.p7.t2=                                                                                                §cP:0.10
-
-## 背包 (中) ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p8.ti"},{"text":"\n"},{"translate":"me.c2.p8.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p8.t2"}]}
-me.c2.p8.ti=§lBackpack (Medium)§r
-me.c2.p8.t1=    Pink wool, gold ingot. Provides 18 additional storage Spaces.
-me.c2.p8.t2=                                                                                                §cP:0.20
-
-## 背包 (大) ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.p9.ti"},{"text":"\n"},{"translate":"me.c2.p9.t1"},{"text":"\n\n\n"},{"translate":"me.c2.p9.t2"}]}
-me.c2.p9.ti=§lBackpack (Big)§r
-me.c2.p9.t1=    Gray wool, diamond. Provides 30 additional storage Spaces.
-me.c2.p9.t2=                                                                                                §cP:0.30
-
-## 照相机 ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pa.ti"},{"text":"\n"},{"translate":"me.c2.pa.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pa.t2"}]}
-me.c2.pa.ti=§lCamera§r
-me.c2.pa.t1=    Quartz block, obsidian. Take a picture of the maid and get the picture.
-me.c2.pa.t2=                                                                                                §cP:0.20
-
-## 落雷 ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pb.ti"},{"text":"\n"},{"translate":"me.c2.pb.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pb.t2"}]}
-me.c2.pb.ti=§lLighting§r
-me.c2.pb.t1=    Summon a lightning bolt.
-me.c2.pb.t2=                                                                                                §cP:0.20
-
-## 樱之御币 ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pc.ti"},{"text":"\n"},{"translate":"me.c2.pc.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pc.t2"}]}
-me.c2.pc.ti=§lSakura gohei§r
-me.c2.pc.t1=   Gohei, sakura saplings, buckets, dirt.
-me.c2.pc.t2=                                                                                                §cP:2.00
-
-
-### 工作台合成 放在祭坛合成后 ###
-## 记忆中的幻想乡 - 总览 ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pc1.ti"},{"text":"\n"},{"translate":"me.c2.pc1.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pc1.t2"}]}
-me.c2.pc1.ti=§lMemorizable Gensokyo: Overview§r
-me.c2.pc1.t1=   Book, cake.
-me.c2.pc1.t2=                                                                               
-
-## 记忆中的幻想乡 - 合成 ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pc2.ti"},{"text":"\n"},{"translate":"me.c2.pc2.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pc2.t2"}]}
-me.c2.pc2.ti=§lMemorizable Gensokyo: Crafting§r
-me.c2.pc2.t1=   Book, red wool.
-me.c2.pc2.t2=                                                                               
-
-## 女仆章节预留 pc3
-
-## 黄金微波炉 ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pc4.ti"},{"text":"\n"},{"translate":"me.c2.pc4.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pc4.t2"}]}
-me.c2.pc4.ti=§lGold microwave oven§r
-me.c2.pc4.t1=   Bell, blaze powder, yellow glass, gold ingot, Ender crystal.
-me.c2.pc4.t2=                                                                               
-
-## 龙头 ##
-## {"rawtext":[{"text":"\n"},{"translate":"me.c2.pc5.ti"},{"text":"\n"},{"translate":"me.c2.pc5.t1"},{"text":"\n\n\n"},{"translate":"me.c2.pc5.t2"}]}
-me.c2.pc5.ti=§lDragon skull§r
-me.c2.pc5.t1=   Lapis lazis, lightning rod, amethyst, dragon skull, chorus flower.
-me.c2.pc5.t2=                                                                               
-
-
-item.touhou_little_maid:memorizable_gensokyo_3=Memorizable Gensokyo: Maid 
-
-
 ##### Entity #####
 entity.touhou_little_maid:chair.name=Chair
 entity.touhou_little_maid:maid.name=Little Maid
@@ -277,7 +126,6 @@ action.interact.maid_backpack_carry=Carry
 item_group.touhou_little_maid:main.name=Touhou Little Maid: Main
 item_group.touhou_little_maid:chair.name=Touhou Little Maid: Chair
 item_group.touhou_little_maid:garage_kit.name=Touhou Little Maid: Garage Kit
-
 
 ##### Touhou Model Pack #####
 pack.touhou_little_maid.maid.name=Touhou Project Model
@@ -937,3 +785,7 @@ tlm.2.8=§lDragon skull§r%1   Lapis lazis, lightning rod, amethyst, dragon skul
 tlm.2.9= 
 
 ### MG_AUTO_GENERATE_END ###
+
+## 旧书失效信息
+me.chapter1.page1.title= This book is out of date, please use cake and book to make a new guide book.
+me.c2.p1.title= This book is out of date, please use cake and book to make a new guide book.

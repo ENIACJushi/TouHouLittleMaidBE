@@ -67,7 +67,6 @@ export class MemorizableGensokyo{
             .button({"rawtext":[{"translate":"tlm.book.chapter2"}]}, "textures/ui/chapter_maid")
             .button({"rawtext":[{"translate":"tlm.book.chapter3"}]}, "textures/items/microwaver/magic_powder")
             .button("placeholder")
-            .button("一行文字，可以被动态定义")
         // 章节内容
         for(let i = 0; i < BOOK.length; i++){
             for(let i2 = 0; i2 < BOOK[i]; i2++){
