@@ -269,7 +269,6 @@ export class MaidManager{
          */
         static smartSlabOnUseEvent(event){
             let itemStack = event.itemStack;
-            let lore = itemStack.getLore();
 
             //// 检测被交互的方块是否会复制物品 ////
             if(isBadContainerBlock(event.block.typeId)) return;
@@ -288,7 +287,13 @@ export class MaidManager{
             // 生成女仆
             let maid = undefined;
             let itemName = itemStack.nameTag;
-            if(lore.length === 0){
+
+            let structureId = itemStack.getDynamicProperty('touho_little_maid:structure_id');
+            let maidStr = itemStack.getDynamicProperty('touho_little_maid:maid_str');
+            
+            let lore = maidStr ? JSON.parse(maidStr) : undefined;
+
+            if(!structureId || !lore){
                 // 首次使用
                 maid = EntityMaid.spawnRandomMaid(dimension, location);
                 try{
@@ -298,28 +303,29 @@ export class MaidManager{
                     },1)
                 }
                 catch{}
-            }
-            else{
+            }else{
                 try{
                     // 转换lore
                     let str = Tool.lore2Str(lore);
 
                     // 使用者不是主人
                     if(StrMaid.Owner.getId(str) !== event.source.id) return;
-
                     // 放置
-                    maid = EntityMaid.fromStr(str, dimension, location, true);
+                    maid = EntityMaid.fromStructure(structureId, dimension, location, event.source);
                 }
                 catch{}
             }
             // 没有成功召唤 直接退出
             if(maid === undefined){ return; }
             
+            world.playSound('bucket.empty_water', location);
+
             // 转换物品
             let emptyItem = new ItemStack("touhou_little_maid:smart_slab_empty", 1);
             if(itemName !== undefined && itemName.substring(0,2) !== "§z"){
                 emptyItem.nameTag = itemName;
             }
+            player.startItemCooldown(emptyItem.typeId, 20);
             
             Tool.setPlayerMainHand(event.source, emptyItem);
         }
@@ -335,10 +341,11 @@ export class MaidManager{
             let owner = EntityMaid.Owner.get(maid);
             if(owner === undefined) return;
             let item = Tool.getPlayerMainHand(owner);
-            if(item === undefined || item.typeId !== "touhou_little_maid:smart_slab_empty") return;
+            if(item?.typeId !== "touhou_little_maid:smart_slab_empty") return;
 
-            // 将女仆转为lore
-            let lore = EntityMaid.toLore(maid);
+            // 将女仆转为物品数据
+            let structureId = EntityMaid.toStructure(maid);
+            let maidStr = EntityMaid.toLore(maid);
             
             // 清除女仆
             EntityMaid.Pick.set(maid, false);// 避免捡完东西被消除
@@ -357,7 +364,10 @@ export class MaidManager{
                     new_itme.nameTag = item.nameTag;
                 }
             }
-            new_itme.setLore(lore);
+            // 保证兼容性？
+            new_itme.setDynamicProperty('touho_little_maid:structure_id',structureId)
+            new_itme.setDynamicProperty('touho_little_maid:maid_str', JSON.stringify(maidStr))
+            owner.startItemCooldown(new_itme.typeId, 20);
             Tool.setPlayerMainHand(owner, new_itme);
         }
         /**

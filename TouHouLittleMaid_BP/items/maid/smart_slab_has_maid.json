@@ -19,7 +19,11 @@
             "event": "on_use_on"
           }
         },
-        "minecraft:max_stack_size": 1
+        "minecraft:max_stack_size": 1,
+        "minecraft:cooldown": {
+          "category": "touhou_little_maid:smart_slab_has_maid",
+          "duration": 1
+        }
       },
       "events": {
         "on_use_on": {

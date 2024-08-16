@@ -4,7 +4,7 @@ import experiment from "./experiment"
 import PowerPoint from "./src/altar/PowerPoint"
 import * as Danmaku from "./src/danmaku/DanmakuManager"
 import { CustomSpellCardManger } from "./src/danmaku/CustomSpellCardManger";
-import * as Tool from"./src/libs/ScarletToolKit";
+import * as Tool from "./src/libs/ScarletToolKit";
 import { itemShootManager } from "./src/danmaku/ItemShootManager";
 import { config, ConfigHelper } from "./src/controller/Config";
 import { GoldMicrowaver } from "./src/blocks/GoldMicrowaver";
