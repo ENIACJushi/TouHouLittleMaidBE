@@ -131,13 +131,8 @@
                 "binding_name": "#form_button_texture",
                 "binding_name_override": "#texture",
                 "binding_type": "collection",
-                "binding_collection_name": "form_buttons"
-            },
-            {
-                "binding_name": "#form_button_texture_file_system",
-                "binding_name_override": "#texture_file_system",
-                "binding_type": "collection",
-                "binding_collection_name": "form_buttons"
+                "binding_collection_name": "form_buttons",
+                "binding_condition": "visible"
             }
         ]
     },
@@ -243,14 +238,15 @@
         "bindings": [
             {
                 "binding_type": "collection_details",
-                "binding_collection_name": "form_buttons"
+                "binding_collection_name": "form_buttons",
+                "binding_condition": "visible"
             },
-            {
-                "binding_name": "#form_button_text",
-                "binding_name_override": "#text",
-                "binding_type": "collection",
-                "binding_collection_name": "form_buttons"
-            },
+            // {
+            //     "binding_name": "#form_button_text",
+            //     "binding_name_override": "#text",
+            //     "binding_type": "collection",
+            //     "binding_collection_name": "form_buttons"
+            // },
             {
                 "binding_type": "view",
                 "source_property_name": "(#text < '$' or #text > '$􀐏' )",
@@ -335,22 +331,32 @@
         ]
     },
     "left_item": {
-        "type": "collection_panel",
+        "type": "panel",
         "size": [ "100%", 19 ],
         "collection_index": "$index",
         "controls": [
             {
-                "image_": {
+                "background": {
                     "type": "image",
                     "anchor_from": "left_middle",
                     "anchor_to": "left_middle",
                     "texture": "textures/gui/scrolling_item_hover",
+                    "size": [ 19, 19 ]
+                }
+            },
+            {
+                "image": {
+                    "type": "image",
+                    "anchor_from": "left_middle",
+                    "anchor_to": "left_middle",
                     "size": [ 19, 19 ],
-                    "controls": [
+                    "bindings": [
                         {
-                            "i@thlm_menu.image": {
-                                "$index": "$index"
-                            }
+                            "binding_name": "#form_button_texture",
+                            "binding_name_override": "#texture",
+                            "binding_type": "collection",
+                            "binding_collection_name": "form_buttons",
+                            "binding_condition": "visible"
                         }
                     ]
                 }
@@ -363,6 +369,8 @@
                     "$button_text": "#form_button_text",
                     "$button_text_binding_type": "collection",
                     "$button_text_grid_collection_name": "form_buttons",
+                    "$button_binding_condition": "visible",
+
                     "$button_text_max_size": [ "90%", 17 ],
                     "$border_visible": false,
                     "$default_button_texture": "textures/gui/scrolling_item_hover",

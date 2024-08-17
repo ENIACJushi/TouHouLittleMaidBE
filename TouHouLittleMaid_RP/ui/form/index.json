@@ -6,7 +6,7 @@
     "size": [0, 0],
     "controls": [
       { "thlm_main@form_type": { "$min": "/M ", "$max": "/M 􀐏", "$content": "thlm_menu.main" } },
-      { "thlm_book@form_type": { "$min": "/TLM_B ", "$max": "/TLM_B 􀐏", "$content": "thlm_book.book_screen" } }
+      { "thlm_book@form_type": { "$min": "/TLM_B ", "$max": "/TLM_B 􀐏", "$content": "thlm_book.main" } }
     ]
   },
   "form_type": {
@@ -15,6 +15,7 @@
     "anchor_from": "center",
     "anchor_to": "center",
     "controls": [{ "content@$content": {} }],
+    "visible": false,
     "bindings": [
       { "binding_name": "#title_text" },
       {

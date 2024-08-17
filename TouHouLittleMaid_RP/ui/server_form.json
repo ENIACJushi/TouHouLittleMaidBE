@@ -22,20 +22,10 @@
         "value": [
           {
             "binding_type": "view",
-            "source_control_name": "inside_header_panel",
-            "source_property_name": "#stored_text",
+            "source_property_name": "(#title_text < '/' or #title_text > '/􀐏')",
             "target_property_name": "#visible"
           }
         ]
-      }
-    ]
-  },
-  "long_form_panel": {
-    "bindings": [
-      {
-        "binding_type": "view",
-        "source_property_name": "(#title_text < '/' or #title_text > '/􀐏')",
-        "target_property_name": "#stored_text"
       }
     ]
   }
