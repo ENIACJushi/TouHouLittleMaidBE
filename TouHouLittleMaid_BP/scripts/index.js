@@ -15,22 +15,31 @@ import { MaidTarget } from "./src/maid/MaidTarget"
 import { CommandManager } from './src/controller/Command'
 import { GarageKit } from "./src/blocks/GarageKit";
 import { MemorizableGensokyo } from "./src/book/MemorizableGensokyoUI";
+import { Gohei } from "./src/danmaku/item/Gohei";
+import { GoheiCherry } from "./src/danmaku/item/GoheiCherry";
+import { Skull } from "./src/blocks/Skull";
+import { StatuesBlock } from "./src/blocks/StatuesBlock";
+import { AltarBlock } from "./src/blocks/AltarBlock";
 
 
 if(true){
     // World Initialize
-    world.afterEvents.worldInitialize.subscribe((e) => {
+    world.beforeEvents.worldInitialize.subscribe((e) => {
+        // 注册方块自定义组件
+        Skull.registerCC(e);
+        StatuesBlock.registerCC(e);
+        AltarBlock.registerCC(e);
+        GarageKit.registerCC(e);
+        GoldMicrowaver.registerCC(e);
         system.run(()=>{
+            // 注册物品自定义组件
+            GoheiCherry.registerCC(e);
+            CustomSpellCardManger.registerCC(e);
+            // 初始化
             ConfigHelper.init();
-            PowerPoint.init_scoreboard_world();
-
-            // PowerPoint.init_dynamic_properties(e);
-            // Danmaku.init_dynamic_properties(e);
-            // EntityMaid.initDynamicProperties(e);
-            
+            PowerPoint.init(e);
             MaidManager.Core.init();
             MaidSkin.initScoreboard();
-            
         });
     });
 
@@ -162,7 +171,7 @@ class thlm {
                             default:{
                                 //// 御币使用事件 ////
                                 if(itemName.substring(0,13) === "hakurei_gohei"){
-                                    if(player.isSneaking) Danmaku.gohei_transform(event, itemName.substring(14)); // 切换弹种
+                                    if(player.isSneaking) Gohei.transform(event, itemName.substring(14)); // 切换弹种
                                     else if(block.typeId == "minecraft:red_wool")         // 祭坛激活
                                         altarStructure.activate(player.dimension, event.block.location, event.blockFace);
                                 }
@@ -181,15 +190,10 @@ class thlm {
 
                 if(item.typeId.substring(0, 18) === "touhou_little_maid"){
                     switch(item.typeId.substring(19)){
-                        case "hakurei_gohei_crafting_table": Danmaku.gohei_activate(event); break;
-                        case "hakurei_gohei_cherry": itemShootManager.itemShootEvent(event); break;
+                        case "hakurei_gohei_crafting_table": Gohei.activate(event); break;
                         case "memorizable_gensokyo": MemorizableGensokyo.onUseEvent(event); break;
                         default: break;
                     }
-                }
-                else if(item.typeId.substring(0, 6) === "thlms:"){
-                    // 符卡释放
-                    CustomSpellCardManger.onSpellCardUseEvent(event);
                 }
             });
         });
@@ -346,7 +350,7 @@ class thlm {
             });
         });
         // Hit Entity
-        world.afterEvents.projectileHitEntity.subscribe(event =>{
+        world.afterEvents.projectileHitEntity.subscribe(event=>{
             system.run(()=>{
                 var projectile = event.projectile;
                 if(projectile !== undefined){
@@ -366,7 +370,6 @@ class thlm {
                 }
             });
         });
-
         // 玩家主手物品检测
         system.runInterval(()=>{
             for(let pl of world.getAllPlayers()){

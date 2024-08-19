@@ -1,63 +1,30 @@
 {
-  "format_version": "1.18.0",
+  "format_version": "1.20.80",
   "minecraft:item": {
     "description": {
       "identifier": "touhou_little_maid:warden_skull",
-      "category": "Equipment"
+      "menu_category": {
+        "category": "equipment",
+        "group": "itemGroup.name.helmet"
+      }
     },
     "components": {
-      "minecraft:icon": { "texture": "touhou_little_maid.warden_skull"  },
+      "minecraft:icon": {
+        "textures": { "default": "touhou_little_maid:warden_skull" }
+      },
       "minecraft:display_name": { "value": "item.touhou_little_maid:warden_skull" },
       "minecraft:block_placer": {
         "block": "touhou_little_maid:warden_skull_block",
         "use_on": []
       },
-      "minecraft:foil": false,
+      "minecraft:glint": false,
       "minecraft:hand_equipped": true,
       "minecraft:wearable": {
-        "slot": "slot.armor.head"
-      },
-      "minecraft:armor": {
+        "slot": "slot.armor.head",
         "protection": 2,
-        "texture_type": "none"
+        "dispensable": true
       },
-      "minecraft:creative_category": { "parent": "itemGroup.name.head" },
-      "minecraft:use_duration": 20,
-      "minecraft:max_stack_size": 64,
-      "minecraft:render_offsets": {
-          "main_hand": {
-              "first_person": {
-                  "scale": [
-                      0.013,
-                      0.013,
-                      0.013
-                  ]
-              },
-              "third_person": {
-                  "scale": [
-                      0.03216667,
-                      0.03216667,
-                      0.03216667
-                  ]
-              }
-          },
-          "off_hand": {
-              "first_person": {
-                  "scale": [
-                      0.02166667,
-                      0.02166667,
-                      0.02166667
-                  ]
-              },
-              "third_person": {
-                  "scale": [
-                      0.03216667,
-                      0.03216667,
-                      0.03216667
-                  ]
-              }
-          }
-      }
+      "minecraft:max_stack_size": 64
     }
   }
 }

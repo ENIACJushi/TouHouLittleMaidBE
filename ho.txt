@@ -1,0 +1,65 @@
+[Texture][warning]-The block named chalkboard used in a "blocks.json" file does not exist in the registry
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:board' is being ignored.
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:photo_item' is being ignored.
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:portfolio' is being ignored.
+
+[Item][error]-components | minecraft:custom_components | minecraft:custom_components | unknown child schema option type.  Allowed types:  'object'
+
+[Item][error]- Error Parsing Item 'touhou_little_maid:power_point':
+
+
+[Item][error]- Failed to parse field ':  Invalid legacy components data'
+
+[Scripting][error]-Plugin [TouHou Little Maid BE - 1.3.2] - does not contain main file [index.js].
+
+[Texture][warning]-The block named chalkboard used in a "blocks.json" file does not exist in the registry
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:board' is being ignored.
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:photo_item' is being ignored.
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:portfolio' is being ignored.
+
+[Item][error]-Missing icon for data-driven item 'touhou_little_maid:power_point'.
+
+[Item][error]-components | minecraft:custom_components | minecraft:custom_components | unknown child schema option type.  Allowed types:  'object'
+
+[Item][error]- Error Parsing Item 'touhou_little_maid:power_point':
+
+
+[Item][error]- Failed to parse field ':  Invalid legacy components data'
+
+[Scripting][error]-Plugin [TouHou Little Maid BE - 1.3.2] - does not contain main file [index.js].
+
+[Texture][warning]-The block named chalkboard used in a "blocks.json" file does not exist in the registry
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:board' is being ignored.
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:photo_item' is being ignored.
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:portfolio' is being ignored.
+
+[Item][error]-Missing icon for data-driven item 'touhou_little_maid:power_point'.
+
+[Item][error]-components | minecraft:custom_components | minecraft:custom_components | unknown child schema option type.  Allowed types:  'object'
+
+[Item][error]- Error Parsing Item 'touhou_little_maid:power_point':
+
+
+[Item][error]- Failed to parse field ':  Invalid legacy components data'
+
+[Scripting][error]-Plugin [TouHou Little Maid BE - 1.3.2] - does not contain main file [index.js].
+
+[Texture][warning]-The block named chalkboard used in a "blocks.json" file does not exist in the registry
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:board' is being ignored.
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:photo_item' is being ignored.
+
+[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:portfolio' is being ignored.
+
+[Item][error]-Missing icon for data-driven item 'touhou_little_maid:power_point'.
+

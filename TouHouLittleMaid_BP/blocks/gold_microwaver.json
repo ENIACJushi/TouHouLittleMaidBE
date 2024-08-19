@@ -1,16 +1,16 @@
 {
-	"format_version": "1.17.0",
+	"format_version": "1.20.0",
 	"minecraft:block": {
 		"description": {
 			"identifier": "touhou_little_maid:gold_microwaver",
-			"register_to_creative_menu": false,
+			"menu_category": { "category": "none" },
 			"traits" : {
                 "minecraft:placement_direction": {
 					"enabled_states": ["minecraft:cardinal_direction"],
 					"y_rotation_offset": 0.0
 				}
             },
-			"properties": {
+			"states": {
 				"thlm:door": [false, true],
 				"thlm:item": [0, 1],
 				"thlm:status": [false, true],
@@ -19,37 +19,38 @@
 		},
 		"permutations": [
 			{
-				"condition": "query.block_property('minecraft:cardinal_direction') == 'north'",
+				"condition": "query.block_state('minecraft:cardinal_direction') == 'north'",
 				"components": {
 					"minecraft:transformation": { "rotation": [ 0, 0, 0 ] }
 				}
 			},
 			{
-				"condition": "query.block_property('minecraft:cardinal_direction') == 'east'",
+				"condition": "query.block_state('minecraft:cardinal_direction') == 'east'",
 				"components": {
 					"minecraft:transformation": { "rotation": [ 0, 270, 0 ] }
 				}
 			},
 			{
-				"condition": "query.block_property('minecraft:cardinal_direction') == 'west'",
+				"condition": "query.block_state('minecraft:cardinal_direction') == 'west'",
 				"components": {
 					"minecraft:transformation": { "rotation": [ 0, 90, 0 ] }
 				}
 			},
 			{
-				"condition": "query.block_property('minecraft:cardinal_direction') == 'south'",
+				"condition": "query.block_state('minecraft:cardinal_direction') == 'south'",
 				"components": {
 					"minecraft:transformation": { "rotation": [ 0, 180, 0 ] }
 				}
 			},
 			{
-				"condition": "query.block_property('thlm:status')||query.block_property('thlm:door')",
+				"condition": "query.block_state('thlm:status')||query.block_state('thlm:door')",
 				"components": {
 					"minecraft:light_emission": 10
 				}
 			}
 		],
 		"components": {
+			"minecraft:custom_components": ["tlm:microwaver"],
             "minecraft:destructible_by_mining": { "seconds_to_destroy": 0.5 },
 			"minecraft:light_dampening": 0,
             "minecraft:destructible_by_explosion": { "explosion_resistance": 0.25 },
@@ -58,65 +59,7 @@
 			"minecraft:material_instances": { "*": { "texture": "gold_microwaver", "render_method": "opaque" } },
             "minecraft:loot": "loot_tables/blocks/gold_microwaver.json",
 			"minecraft:collision_box": { "origin": [ -8.0, 0.0, -7.0 ], "size": [ 16.0, 11.0, 13.0 ] },
-            "minecraft:selection_box": { "origin": [ -8.0, 0.0, -7.0 ], "size": [ 16.0, 11.0, 13.0 ] },
-			"minecraft:on_player_destroyed":{
-                "event" : "thlm:destory",
-                "target": "self"
-            },
-			"minecraft:on_placed": {
-				"event": "thlm:place",
-				"condition": "query.block_property('thlm:first_place')",
-				"target": "self"
-			},
-			"minecraft:on_interact": {
-				"event": "interact",
-				"target": "self"
-			}
-        },
-		"events": {
-			"thlm:destory":{
-				"run_command": { "command": [ "event entity @e[type=touhou_little_maid:gold_microwaver,c=1,r=0.5] thlmw:d" ] }
-			},
-			"thlm:place":{
-				"sequence": [
-					{
-						"set_block_property": {
-                            "thlm:door": false,
-							"thlm:item": 0,
-							"thlm:status": false,
-							"thlm:first_place": false
-                        }
-					},
-                    {
-                        "condition": "query.block_property('minecraft:cardinal_direction') == 'north'",
-                        "run_command": { "command": [ "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ North" ] }
-                    },
-                    {
-                        "condition": "query.block_property('minecraft:cardinal_direction') == 'south'",
-                        "run_command": { "command": [ "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ South" ] }
-                    },
-					{
-                        "condition": "query.block_property('minecraft:cardinal_direction') == 'east'",
-                        "run_command": { "command": [ "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ East" ] }
-                    },
-					{
-                        "condition": "query.block_property('minecraft:cardinal_direction') == 'west'",
-                        "run_command": { "command": [ "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ West" ] }
-                    }
-                ]
-			},
-			"interact":{
-				"sequence":[
-					{
-						"condition": "query.is_item_name_any('slot.weapon.mainhand', '') == 1 && !query.is_sneaking",
-						"run_command": { "command": [ "event entity @e[type=touhou_little_maid:gold_microwaver,c=1,r=0.5] thlmw:i" ] }
-					},
-					{
-						"condition": "query.is_item_name_any('slot.weapon.mainhand', '') == 1 && query.is_sneaking",
-						"run_command": { "command": [ "event entity @e[type=touhou_little_maid:gold_microwaver,c=1,r=0.5] thlmw:s" ] }
-					}
-				]
-			}
-		}
+            "minecraft:selection_box": { "origin": [ -8.0, 0.0, -7.0 ], "size": [ 16.0, 11.0, 13.0 ] }
+        }
 	}
 }

@@ -1,21 +1,20 @@
 {
-    "format_version": "1.18.0",
-    "minecraft:item": {
-      "description": {
-        "category": "none",
-        "identifier": "touhou_little_maid:garage_kit"
+  "format_version": "1.20.80",
+  "minecraft:item": {
+    "description": {
+      "identifier": "touhou_little_maid:garage_kit",
+      "menu_category": { "category": "none" }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": { "default": "touhou_little_maid:garage_kit" }
       },
-      "components": {
-        "minecraft:icon": {
-          "texture": "touhou_little_maid.garage_kit"
-        },
-        "minecraft:display_name": {
-          "value": "item.touhou_little_maid:garage_kit"
-        },
-        "minecraft:hand_equipped": true,
-        "minecraft:max_stack_size": 64,
-        "minecraft:stacked_by_data": true
+      "minecraft:display_name": {
+        "value": "item.touhou_little_maid:garage_kit"
       },
-      "events": {}
+      "minecraft:hand_equipped": true,
+      "minecraft:max_stack_size": 64,
+      "minecraft:stacked_by_data": true
     }
   }
+}

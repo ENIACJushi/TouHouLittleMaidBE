@@ -1,30 +1,21 @@
 {
-    "format_version": "1.18.0",
-    "minecraft:item": {
-      "description": {
-        "category": "Equipment",
-        "identifier": "touhou_little_maid:smart_slab_has_maid"
+  "format_version": "1.20.80",
+  "minecraft:item": {
+    "description": {
+      "menu_category": { "category": "equipment" },
+      "identifier": "touhou_little_maid:smart_slab_has_maid"
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": { "default": "touhou_little_maid:smart_slab_has_maid" }
       },
-      "components": {
-        "minecraft:icon": {
-          "texture": "touhou_little_maid.smart_slab_has_maid"
-        },
-        "minecraft:display_name": {
-          "value": "item.touhou_little_maid:smart_slab"
-        },
-        "minecraft:hand_equipped": true,
-        "minecraft:foil": true,
-        "minecraft:on_use_on": {
-          "on_use_on": {
-            "event": "on_use_on"
-          }
-        },
-        "minecraft:max_stack_size": 1
+      "minecraft:display_name": {
+        "value": "item.touhou_little_maid:smart_slab"
       },
-      "events": {
-        "on_use_on": {
-          "swing": {}
-        }
-      }
+      "minecraft:hand_equipped": true,
+      "minecraft:glint": true,
+      "minecraft:should_despawn": false,
+      "minecraft:max_stack_size": 1
     }
   }
+}

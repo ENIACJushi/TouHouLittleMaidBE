@@ -1,8 +1,7 @@
 
 import * as Tool from "../libs/ScarletToolKit"
-import { ItemStack, EntityTypes, ItemUseOnBeforeEvent, world, Entity, WorldInitializeAfterEvent, system,
-    ProjectileHitEntityAfterEvent, ProjectileHitBlockAfterEvent,
-    EnchantmentTypes} from "@minecraft/server";
+import { EntityTypes, world, Entity, WorldInitializeAfterEvent, system,
+    ProjectileHitEntityAfterEvent, ProjectileHitBlockAfterEvent } from "@minecraft/server";
 import {DanmakuColor}  from "./DanmakuColor";
 import {DanmakuType}   from "./DanmakuType";
 import {EntityDanmaku} from "./EntityDanmaku";
@@ -36,9 +35,7 @@ export function init_dynamic_properties(e){
 }
 
 // 记录正在删除的弹幕
-var despawningDanmaku = {
-
-}
+var despawningDanmaku = {}
 /**
  * 弹幕击中实体
  * @param {ProjectileHitEntityAfterEvent} ev 
@@ -116,82 +113,6 @@ export function danmakuHitBlockEvent(ev){
     }
     
     return;
-}
-
-
-
-//////// Gohei ////////
-const GoheiSequence = Object.freeze([
-    DanmakuType.PELLET,
-    DanmakuType.BALL,
-    DanmakuType.ORBS,
-    DanmakuType.BIG_BALL,
-    DanmakuType.BUBBLE,
-    DanmakuType.HEART,
-    DanmakuType.AMULET,
-    // DanmakuType.STAR, 用八卦炉发射
-    // DanmakuType.BIG_STAR, 用八卦炉发射
-    DanmakuType.GLOWEY_BALL,
-]);
-const GoheiPrefix = "touhou_little_maid:hakurei_gohei_";
-const GoheiDefault = DanmakuType.PELLET;
-/**
- * 激活由工作台合成的御币
- * @param {ItemUseOnBeforeEvent} ev 
- */
-export function gohei_activate(ev){
-    try{
-        let pl = ev.source;
-        let slot = pl.selectedSlotIndex
-        let container = pl.getComponent("inventory").container;
-        let item = container.getItem(slot);
-
-        if(item && item.typeId == GoheiPrefix + "crafting_table") {
-            let itemStack = new ItemStack(GoheiPrefix + DanmakuType.getName(GoheiDefault), 1);
-            let ench_list = itemStack.getComponent("minecraft:enchantable");
-            ench_list.addEnchantment({type: EnchantmentTypes.get("infinity"), level: 1});
-            container.setItem(slot, itemStack);
-        }
-    }
-    catch{}
-}
-
-/**
- * 切换御币弹种
- * @param {ItemUseOnBeforeEvent} ev 
- * @param {string} itemName 去除前缀的物品名称，如 touhou_little_maid:hakurei_gohei_crafting_table → crafting_table
- */
-export function gohei_transform(ev, danmakuName){
-    let origin_item = ev.itemStack;
-    if(danmakuName === "crafting_table"){
-        gohei_activate(ev);
-    }
-    else{
-        for(let i = 0; i < GoheiSequence.length; i++){
-            let name = DanmakuType.getName(GoheiSequence[i]);
-            if(name === danmakuName){
-                // Get index
-                let index = i + 1;
-                if(index >= GoheiSequence.length) index = 0;
-                
-                // Create item
-                let itemStack = new ItemStack(GoheiPrefix + DanmakuType.getName(GoheiSequence[index]), 1);
-                itemStack.getComponent("minecraft:enchantable").addEnchantments(
-                    origin_item.getComponent("minecraft:enchantable").getEnchantments()
-                    );
-                itemStack.getComponent("minecraft:durability").damage = origin_item.getComponent("minecraft:durability").damage;
-                itemStack.setLore(origin_item.getLore());
-                itemStack.nameTag = origin_item.nameTag;
-    
-                // Set item
-                let player = ev.source;
-                player.getComponent("inventory").container.setItem(player.selectedSlotIndex, itemStack);
-    
-                // Send message
-                player.sendMessage({rawtext:[{translate: "message.touhou_little_maid:hakurei_gohei.switch"}, {translate: `danmaku.${DanmakuType.getName(GoheiSequence[index])}.name`}]});
-            }
-        }
-    }
 }
 
 //////// Entity ////////

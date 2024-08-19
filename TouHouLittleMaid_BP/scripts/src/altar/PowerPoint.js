@@ -1,22 +1,31 @@
-import { Player, world, Dimension, Entity, WorldInitializeAfterEvent,EntityTypes } from "@minecraft/server";
+import { Player, world, Dimension, Entity, WorldInitializeAfterEvent,EntityTypes, ItemComponentRegistry, WorldInitializeBeforeEvent } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 
 export default class PowerPoint {
     //////// INIT ////////
-    static init_scoreboard_world(){
+    /**
+     * 
+     * @param {WorldInitializeBeforeEvent} event 
+     */
+    static init(event){
+        // 初始化计分板
         if(world.scoreboard.getObjective("p") == null){
             world.getDimension("overworld").runCommand("scoreboard objectives add p dummy power");
         }
-    }
-    /**
-     * @param {WorldInitializeAfterEvent} event 
-     */
-    static init_dynamic_properties(event){
-        let def = new DynamicPropertiesDefinition();
-        def.defineString("target", 15, undefined);
-    
-        event.propertyRegistry.registerEntityTypeDynamicProperties(def, EntityTypes.get("touhou_little_maid:p_point"));
+
+        // 初始化 P 点投掷物属性
+        event.itemComponentRegistry.registerCustomComponent('tlm:power_point', {
+            onUse(useEvent){
+                let pl = useEvent.source;
+                Tool.ItemTool.decrementMainHandStack(pl);
+                // 发射物品
+                let projectile = pl.dimension.spawnEntity("touhou_little_maid:power_point", pl.getHeadLocation());
+                let component = projectile.getComponent("projectile")
+                component.owner = pl;
+                component.shoot(pl.getViewDirection())
+            }
+        });
     }
     /**
      * 

@@ -1,7 +1,7 @@
-import { ItemUseOnBeforeEvent, EquipmentSlot, Block, Direction, system, Dimension, Entity, ItemStack, DataDrivenEntityTriggerAfterEvent, BlockPermutation, Player, BlockVolume, BlockVolumeBase } from "@minecraft/server";
+import { ItemUseOnBeforeEvent, EquipmentSlot, Block, Direction, system, Dimension, Entity, ItemStack, DataDrivenEntityTriggerAfterEvent, BlockPermutation, Player, BlockVolume, BlockVolumeBase, WorldInitializeBeforeEvent } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import { StrMaid } from "../maid/StrMaid";
-import { ActionbarMessage, getRandomInteger, logger, lore2Str, str2Lore, title_player_actionbar_object, title_player_actionbar_translate } from "../libs/ScarletToolKit";
+import { ActionbarMessage, getRandomInteger, ItemTool, logger, lore2Str, str2Lore, title_player_actionbar_object, title_player_actionbar_translate } from "../libs/ScarletToolKit";
 import { EntityMaid } from "../maid/EntityMaid";
 import { isBadContainerBlock } from "../../data/BadContainerBlocks";
 import { MaidSkin } from "../maid/MaidSkin";
@@ -11,6 +11,26 @@ const blockGarageKit = "touhou_little_maid:garage_kit_block";
 const blockStatues = "touhou_little_maid:statues_block";
 
 export class GarageKit{
+    /**
+     * @param {WorldInitializeBeforeEvent} event 
+     */
+    static registerCC(event){
+        event.blockTypeRegistry.registerCustomComponent("tlm:garage_kit", {
+            onPlayerDestroy(e){
+                const l = e.block.location;
+                if(e.block.permutation.getState("thlm:solid")){
+                    e.dimension.runCommand(
+                        `execute positioned ${l.x} ${l.y} ${l.z} run event entity @e[r=1,family=thlm:garage_kit_solid] thlmm:u`
+                    )
+                }
+                else{
+                    e.dimension.runCommand(
+                        `execute positioned ${l.x} ${l.y} ${l.z} run event entity @e[r=1,family=thlm:garage_kit_un_solid] thlmm:u`
+                    )
+                }
+            }
+        })
+    }
     /**
      * 尺寸 从大到小排列，第一个可以烧成手办，大小不可更改
      */
@@ -137,19 +157,7 @@ export class GarageKit{
                     dimension.fillBlocks(new BlockVolume(event.block.location, endLocation), blockStatues);
                 }
 
-                let item = equippable.getEquipment(EquipmentSlot.Mainhand);
-                let unbreaking = item.getComponent("enchantable").getEnchantment("unbreaking")
-                if(unbreaking === undefined || getRandomInteger(0, unbreaking.level) === 0){
-                    // 磨损概率 1/(1+level)
-                    let damage = item.getComponent("durability").damage + 1;
-                    if(damage === item.getComponent("durability").maxDurability){
-                        equippable.setEquipment(EquipmentSlot.Mainhand);
-                    }
-                    else{
-                        item.getComponent("durability").damage = damage;
-                        equippable.setEquipment(EquipmentSlot.Mainhand, item);
-                    }
-                }
+                ItemTool.damageMainHandStack(player);
 
                 // 播放音效
                 player.playSound("land.anvil");

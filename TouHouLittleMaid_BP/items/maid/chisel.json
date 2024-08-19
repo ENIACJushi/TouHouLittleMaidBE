@@ -1,21 +1,18 @@
 {
-    "format_version": "1.18.0",
+    "format_version": "1.20.80",
     "minecraft:item": {
         "description": {
             "identifier": "touhou_little_maid:chisel",
-            "category": "Equipment"
+            "menu_category": {
+              "category": "equipment"
+            }
         },
         "components": {
             "minecraft:display_name": {
                 "value": "item.touhou_little_maid:chisel"
             },
             "minecraft:icon": {
-                "texture": "touhou_little_maid.chisel"
-            },
-            "minecraft:on_use": {
-                "on_use": {
-                  "event": "on_use"
-                }
+              "textures": { "default": "touhou_little_maid:chisel" }
             },
             "minecraft:durability": {
                 "damage_chance": {
@@ -29,11 +26,6 @@
                 "value": 15
             },
             "minecraft:max_stack_size": 1
-        },
-        "events": {
-          "on_use": {
-            "swing": {}
-          }
         }
     }
 } 

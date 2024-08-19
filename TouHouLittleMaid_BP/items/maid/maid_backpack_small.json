@@ -1,21 +1,19 @@
 {
-    "format_version": "1.18.0",
-    "minecraft:item": {
-      "description": {
-        "category": "Equipment",
-        "identifier": "touhou_little_maid:maid_backpack_small"
+  "format_version": "1.20.80",
+  "minecraft:item": {
+    "description": {
+      "menu_category": { "category": "equipment" },
+      "identifier": "touhou_little_maid:maid_backpack_small"
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": { "default": "touhou_little_maid:maid_backpack_small" }
       },
-      "components": {
-        "minecraft:icon": {
-          "texture": "touhou_little_maid.maid_backpack_small"
-        },
-        "minecraft:display_name": {
-          "value": "item.touhou_little_maid:maid_backpack_small"
-        },
-        "minecraft:hand_equipped": true,
-        "minecraft:max_stack_size": 64
+      "minecraft:display_name": {
+        "value": "item.touhou_little_maid:maid_backpack_small"
       },
-      "events": {
-      }
+      "minecraft:hand_equipped": true,
+      "minecraft:max_stack_size": 64
     }
   }
+}

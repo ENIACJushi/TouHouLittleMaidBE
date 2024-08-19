@@ -35,11 +35,11 @@ export class CommandManager{
         for(let i = 0; i < event.message.length; i++){
             version += "§" + event.message[i];
         }
-        let item = Tool.getPlayerMainHand(pl);
+        let item = Tool.ItemTool.getPlayerMainHand(pl);
         // [tlmmg<version>]
         let versionStr = `§t§l§m§m§g${version}`;
         item.setLore([versionStr]);
-        Tool.setPlayerMainHand(pl, item);
+        Tool.ItemTool.setPlayerMainHand(pl, item);
         pl.sendMessage(versionStr.replace(new RegExp('§', 'g'), '*'));
     }
     /**
@@ -48,7 +48,7 @@ export class CommandManager{
      */
     static memorizableGensokyo_get(event){
         let pl = event.sourceEntity;
-        let item = Tool.getPlayerMainHand(pl);
+        let item = Tool.ItemTool.getPlayerMainHand(pl);
         pl.sendMessage(item.getLore()[0].replace(new RegExp('§', 'g'), ''));
     }
     /**
@@ -106,7 +106,7 @@ export class CommandManager{
                 let source = event.sourceEntity;
                 if(source === undefined || source.typeId !== "minecraft:player") return;
 
-                let item = Tool.getPlayerMainHand(source);
+                let item = Tool.ItemTool.getPlayerMainHand(source);
                 if(item === undefined){
                     source.sendMessage({rawtext: [{translate: "message.tlm.admin.item.void"}]});
                     return;
@@ -205,7 +205,7 @@ export class CommandManager{
                     let source = event.sourceEntity;
                     if(source === undefined || source.typeId !== "minecraft:player") return;
 
-                    let item = Tool.getPlayerMainHand(source);
+                    let item = Tool.ItemTool.getPlayerMainHand(source);
                     if(item === undefined){
                         source.sendMessage({rawtext: [{translate: "message.tlm.admin.item.void"}]});
                         return;
@@ -260,7 +260,7 @@ export class CommandManager{
                                 return;
                             }
                             item.setLore(Tool.str2Lore(strPure));
-                            Tool.setPlayerMainHand(source, item);
+                            Tool.ItemTool.setPlayerMainHand(source, item);
 
                             // 修改后信息
                             source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.after"}]})
@@ -364,7 +364,7 @@ export class CommandManager{
         //     }
         // }
         // 手持物品
-        let item = Tool.getPlayerMainHand(pl);
+        let item = Tool.ItemTool.getPlayerMainHand(pl);
         if(item!==undefined) pl.sendMessage(`item: ${item.typeId}`);
         
     }

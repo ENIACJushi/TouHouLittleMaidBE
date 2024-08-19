@@ -1,19 +1,18 @@
 {
-  "format_version": "1.18.0",
+  "format_version": "1.20.80",
   "minecraft:item": {
     "description": {
-      "category": "Equipment",
-      "identifier": "touhou_little_maid:dragon_skull"
+      "identifier": "touhou_little_maid:dragon_skull",
+      "menu_category": { "category": "items" }
     },
     "components": {
       "minecraft:icon": {
-        "texture": "touhou_little_maid.dragon_skull"
+        "textures": { "default": "touhou_little_maid:dragon_skull" }
       },
       "minecraft:display_name": {
         "value": "item.touhou_little_maid:dragon_skull"
       },
       "minecraft:hand_equipped": true
-    },
-    "events": {}
+    }
   }
 }

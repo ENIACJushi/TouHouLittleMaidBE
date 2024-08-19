@@ -261,7 +261,7 @@ export class MaidManager{
             let maid = EntityMaid.fromStr(strPure, dimension, location, true);
             
             // 消耗照片
-            Tool.setPlayerMainHand(event.source);
+            Tool.ItemTool.setPlayerMainHand(event.source);
         }
         /**
          * 魂符使用事件
@@ -321,7 +321,7 @@ export class MaidManager{
                 emptyItem.nameTag = itemName;
             }
             
-            Tool.setPlayerMainHand(event.source, emptyItem);
+            Tool.ItemTool.setPlayerMainHand(event.source, emptyItem);
         }
         /**
          * 女仆被魂符收回事件
@@ -334,7 +334,7 @@ export class MaidManager{
             // 获取魂符物品
             let owner = EntityMaid.Owner.get(maid);
             if(owner === undefined) return;
-            let item = Tool.getPlayerMainHand(owner);
+            let item = Tool.ItemTool.getPlayerMainHand(owner);
             if(item === undefined || item.typeId !== "touhou_little_maid:smart_slab_empty") return;
 
             // 将女仆转为lore
@@ -358,7 +358,7 @@ export class MaidManager{
                 }
             }
             new_itme.setLore(lore);
-            Tool.setPlayerMainHand(owner, new_itme);
+            Tool.ItemTool.setPlayerMainHand(owner, new_itme);
         }
         /**
          * 女仆坐下事件
@@ -891,7 +891,7 @@ export class MaidManager{
 
         let players = maid.dimension.getPlayers({location:maid.location, maxDistance: 6})
         for(let pl of players){
-            let item = Tool.getPlayerMainHand(pl);
+            let item = Tool.ItemTool.getPlayerMainHand(pl);
             if(item !== undefined && item.typeId === "touhou_little_maid:npc_tool"){
                 // 发送表单
                 UI.SkinMenu(pl, maid, false);

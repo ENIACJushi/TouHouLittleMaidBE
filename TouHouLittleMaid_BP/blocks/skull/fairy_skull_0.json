@@ -101,6 +101,7 @@
 			}
 		],
 		"components": {
+			"minecraft:custom_components": ["tlm:skull"],
 			"minecraft:geometry": "geometry.touhou_little_maid.fairy_skull_block_up",
 			"minecraft:material_instances": { "*": { "texture": "fairy_skull_0", "render_method": "alpha_test" } },
 			"minecraft:map_color": "#B5E61D",
@@ -110,23 +111,7 @@
 			"minecraft:destructible_by_explosion": {
                 "explosion_resistance": 3
             },
-			"minecraft:light_dampening": 0,
-			"minecraft:on_placed": {
-				"event": "thlm:place",
-				"target": "self"
-			}
-		},
-		"events": {
-			"thlm:place": {
-				"sequence":[
-					{
-						"condition": "query.block_state('minecraft:block_face')=='down'",
-						"set_block_state": {
-							"thlm:is_down": true
-						}
-					}
-				]
-			}
+			"minecraft:light_dampening": 0
 		}
 	}
 }

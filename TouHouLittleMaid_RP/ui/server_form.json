@@ -22,8 +22,24 @@
         "value": [
           {
             "binding_type": "view",
-            "source_property_name": "(#title_text < '/' or #title_text > '/􀐏')",
+            "source_control_name": "inside_header_panel",
+            "source_property_name": "#tlm_visible",
             "target_property_name": "#visible"
+          }
+        ]
+      }
+    ]
+  },
+  "long_form_panel": {
+    "modifications": [
+      {
+        "array_name": "bindings",
+        "operation": "insert_front",
+        "value": [
+          {
+            "binding_type": "view",
+            "source_property_name": "(#title_text < '/' or #title_text > '/􀐏')",
+            "target_property_name": "#tlm_visible"
           }
         ]
       }

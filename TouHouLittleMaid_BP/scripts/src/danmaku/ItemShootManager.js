@@ -6,15 +6,12 @@
  *   shoot 定义发射函数，接收发射实体 entity 和物品 item
  *  定义文件需要在 ItemShootManager constructor 中注册
  */
-import { GoheiCherry } from "./item/GoheiCherry"
-
 import { ItemUseAfterEvent, ItemUseBeforeEvent } from "@minecraft/server";
 import * as Tool from "../libs/ScarletToolKit"
 
 export class ItemShootManager{
     constructor(){
         this.map = {};
-        this.register(GoheiCherry)
     }
     register(data){
         this.map[data.id] = data.shoot;

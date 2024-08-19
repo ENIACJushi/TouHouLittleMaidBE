@@ -1,23 +1,18 @@
 {
-    "format_version": "1.18.0",
+  "format_version": "1.20.80",
     "minecraft:item": {
       "description": {
-        "category": "Equipment",
-        "identifier": "touhou_little_maid:camera"
+        "identifier": "touhou_little_maid:camera",
+        "menu_category": { "category": "equipment" }
       },
       "components": {
         "minecraft:icon": {
-          "texture": "touhou_little_maid.camera"
+          "textures": { "default": "touhou_little_maid:camera" }
         },
         "minecraft:display_name": {
           "value": "item.touhou_little_maid:camera"
         },
         "minecraft:hand_equipped": true,
-        "minecraft:on_use": {
-          "on_use": {
-            "event": "on_use"
-          }
-        },
         "minecraft:durability": {
           "damage_chance": {
             "min": 5,
@@ -30,11 +25,6 @@
           "value": 15
         },
         "minecraft:max_stack_size": 1
-      },
-      "events": {
-        "on_use": {
-          "swing": {}
-        }
       }
     }
   }

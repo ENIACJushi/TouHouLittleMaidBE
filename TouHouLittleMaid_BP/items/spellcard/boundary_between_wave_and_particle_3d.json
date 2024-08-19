@@ -1,13 +1,14 @@
 {
-  "format_version": "1.18.0",
+  "format_version": "1.20.80",
   "minecraft:item": {
     "description": {
-      "category": "Equipment",
-      "identifier": "thlms:boundary_between_wave_and_particle_3d"
+      "identifier": "thlms:boundary_between_wave_and_particle_3d",
+      "menu_category": {"category": "equipment" }
     },
     "components": {
+      "minecraft:custom_components": ["tlm:spell_card"],
       "minecraft:icon": {
-        "texture": "touhou_little_maid.spellcard.boundary_between_wave_and_particle_3d"
+        "textures": { "default": "touhou_little_maid:spellcard:boundary_between_wave_and_particle_3d" }
       },
       "minecraft:display_name": {
         "value": "§6境符「波と粒の境界」- 3D \n§a▮§7 作者: snownee \n§a▮§7 版本: 1.0.0 \n§a▮§7 冷却: 8秒"
@@ -18,52 +19,7 @@
       },
       
       "minecraft:hand_equipped": true,
-      "minecraft:on_use": {
-        "on_use": {
-          "event": "thlm:sc"
-        }
-      },
-      
-      "minecraft:max_stack_size": 1,
-      "minecraft:render_offsets": {
-        "main_hand": {
-            "first_person": {
-                "scale": [
-                    0.0195,
-                    0.0195,
-                    0.0195
-                ]
-            },
-            "third_person": {
-                "scale": [
-                    0.04825,
-                    0.04825,
-                    0.04825
-                ]
-            }
-        },
-        "off_hand": {
-            "first_person": {
-                "scale": [
-                    0.0325,
-                    0.0325,
-                    0.0325
-                ]
-            },
-            "third_person": {
-                "scale": [
-                    0.04825,
-                    0.04825,
-                    0.04825
-                ]
-            }
-        }
-      }
-    },
-    "events": {
-      "thlm:sc": {
-        "swing": {}
-      }
+      "minecraft:max_stack_size": 1
     }
   }
 }

@@ -1,66 +1,40 @@
 {
-	"format_version": "1.17.0",
+	"format_version": "1.20.0",
 	"minecraft:block": {
 		"description": {
 			"identifier": "touhou_little_maid:garage_kit_block",
-			"register_to_creative_menu": false,
-			"properties": {
+			"menu_category": { "category": "none" },
+			"states": {
 				"thlm:solid": [false, true]
 			}
 		},
 		"permutations": [
 			{
-				"condition": "!query.block_property('thlm:solid')",
+				"condition": "!query.block_state('thlm:solid')",
 				"components": {
 					"minecraft:destructible_by_mining": { "seconds_to_destroy": 0.3 },
 					"minecraft:collision_box": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
 					"minecraft:selection_box": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
-					"minecraft:loot": "loot_tables/blocks/statues_block.json",
-					"minecraft:on_player_destroyed": {
-						"event" : "destroy",
-						"target": "self"
-					}
+					"minecraft:loot": "loot_tables/blocks/statues_block.json"
 				}
 			},
 			{
-				"condition": "query.block_property('thlm:solid')",
+				"condition": "query.block_state('thlm:solid')",
 				"components": {
 					"minecraft:destructible_by_mining": { "seconds_to_destroy": 0.0 },
 					"minecraft:collision_box": { "origin": [ -4, 0, -4 ], "size": [ 8, 14, 8 ] },
 					"minecraft:selection_box": { "origin": [ -4, 0, -4 ], "size": [ 8, 14, 8 ] },
-					"minecraft:loot": "loot_tables/empty.json",
-					"minecraft:on_player_destroyed": {
-						"event" : "destroy_solid",
-						"target": "self"
-					}
+					"minecraft:loot": "loot_tables/empty.json"
 				}
 			}
 		],
 		"components": {
+			"minecraft:custom_components": ["tlm:garage_kit"],
 			"minecraft:geometry": "geometry.touhou_little_maid.void",
 			"minecraft:material_instances": { "*": { "texture": "clay", "render_method": "alpha_test" } },
 			"minecraft:map_color": "#3E9ABF",
 			"minecraft:light_dampening": 0,
-			"minecraft:destructible_by_explosion": false,
-			"minecraft:breathability": "air"
-		},
-		"events": {
-			"destroy":{
-				"run_command": {
-                    "command": [
-                        "event entity @e[r=1,family=thlm:garage_kit_un_solid] thlmm:u"
-                    ],
-                    "target" : "self"
-                }
-			},
-			"destroy_solid":{
-				"run_command": {
-                    "command": [
-                        "event entity @e[r=1,family=thlm:garage_kit_solid] thlmm:u"
-                    ],
-                    "target" : "self"
-                }
-			}
+			"minecraft:destructible_by_explosion": false
 		}
 	}
 }

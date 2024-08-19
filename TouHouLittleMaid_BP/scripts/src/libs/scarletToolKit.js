@@ -6,7 +6,7 @@
    *  Date        :  2023.02.17                   *
   \* -------------------------------------------- */
 
-import { world, Entity, Dimension,Player, ItemStack } from "@minecraft/server";
+import { world, Entity, Dimension,Player, ItemStack, EquipmentSlot, Block } from "@minecraft/server";
 import { Vector } from "./VectorMC";
 import { config } from "../controller/Config";
 
@@ -115,30 +115,91 @@ export function pointInArea_3D(x,y,z,areaStart_x,areaStart_y,areaStart_z,areaEnd
     return true;
 }
 ////////// Tool//////////
-/**
- * 获取玩家主手物品
- * @param {Player} player
- * @returns {ItemStack|undefined} 
- */
-export function getPlayerMainHand(player){
-    let container = player.getComponent("inventory").container;
-    let slot = player.selectedSlotIndex;
-    // pl.getComponent("equippable").getEquipment(EquipmentSlot.Mainhand);
-    return container.getItem(slot);
-}
-/**
- * 设置玩家主手物品
- * @param {Player} player
- * @param {?ItemStack} item
- */
-export function setPlayerMainHand(player, item=undefined){
-    let container = player.getComponent("inventory").container;
-    let slot = player.selectedSlotIndex;
-    if(item===undefined){
-        container.setItem(slot);
+export class ItemTool{
+    /**
+     * 设置玩家主手物品
+     * @param {Player} player
+     * @param {?ItemStack} item
+     */
+    static setPlayerMainHand(player, item=undefined){
+        let container = player.getComponent("inventory").container;
+        let slot = player.selectedSlotIndex;
+        if(item===undefined){
+            container.setItem(slot);
+        }
+        else{
+            container.setItem(slot, item);
+        }
     }
-    else{
+    /**
+     * 获取玩家主手物品
+     * @param {Player} player
+     * @returns {ItemStack|undefined} 
+     */
+    static getPlayerMainHand(player){
+        let container = player.getComponent("inventory").container;
+        let slot = player.selectedSlotIndex;
+        // pl.getComponent("equippable").getEquipment(EquipmentSlot.Mainhand);
+        return container.getItem(slot);
+    }
+    /**
+     * 减少玩家主手装备的耐久
+     * @param {Player} player 
+     * @param {Number} amount 
+     */
+    static decrementMainHandStack(player, amount=1){
+        // 获取物品
+        let container = player.getComponent("inventory").container;
+        let slot = player.selectedSlotIndex;
+
+        let item = container.getItem(slot);
+        item = item.amount - amount <= 0 ? undefined : (item.amount-=amount, item);
+
         container.setItem(slot, item);
+    }
+    /**
+     * 减少玩家主手物品的数量
+     * @param {Player} player
+     */
+    static damageMainHandStack(player){
+        let equippable = player.getComponent("minecraft:equippable");
+        let item = equippable.getEquipment(EquipmentSlot.Mainhand);
+
+        let unbreaking = 0;
+        let enchantable = item.getComponent("enchantable");
+        if(enchantable!==undefined){
+            let temp = enchantable.getEnchantment("unbreaking");
+            if(temp !== undefined){
+                unbreaking = temp.level;
+            }
+        }
+        if(unbreaking === 0 || getRandomInteger(0, unbreaking.level) === 0){
+            // 磨损概率 1/(1+level)
+            let damage = item.getComponent("durability").damage + 1;
+            if(damage >= item.getComponent("durability").maxDurability){
+                equippable.setEquipment(EquipmentSlot.Mainhand);
+            }
+            else{
+                item.getComponent("durability").damage = damage;
+                equippable.setEquipment(EquipmentSlot.Mainhand, item);
+            }
+        }
+    }
+}
+
+export class BlockTool{
+    /**
+     * 在方块位置执行命令
+     * @param {Block} b 
+     * @param {String} cmd 
+     */
+    static runCommand(b, cmd){
+        const l = b.location;
+        logger(`execute positioned ${l.x} ${l.y} ${l.z} run ${cmd}`)
+    
+        b.dimension.runCommand(
+            `execute positioned ${l.x} ${l.y} ${l.z} run ${cmd}`
+        )
     }
 }
 /**

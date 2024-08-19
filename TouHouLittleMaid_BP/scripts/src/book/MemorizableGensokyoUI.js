@@ -1,5 +1,5 @@
 import { ItemStack, ItemUseBeforeEvent, Player } from "@minecraft/server";
-import { getPlayerMainHand, logger, lore2Str, setPlayerMainHand, str2Lore } from "../libs/ScarletToolKit";
+import { ItemTool, logger, lore2Str, str2Lore } from "../libs/ScarletToolKit";
 import * as mcui from '@minecraft/server-ui';
 
 // 书本各章节的页码号(自动生成)
@@ -15,7 +15,7 @@ export class MemorizableGensokyo{
      * @param {ItemUseBeforeEvent} event 
      */
     static onUseEvent(event){
-        let book = getPlayerMainHand(event.source);
+        let book = ItemTool.getPlayerMainHand(event.source);
         if(book===undefined) return;
         let page = this.getBookPage(book)
         this.sendForm(event.source, page.chapter, page.page);
@@ -76,12 +76,12 @@ export class MemorizableGensokyo{
         // 发送
         form.show(pl).then((response)=>{
             // 设置指南书页号 tlmb:<chapter>:<page>
-            let book = getPlayerMainHand(pl);
+            let book = ItemTool.getPlayerMainHand(pl);
             if(book!==undefined && book.typeId==="touhou_little_maid:memorizable_gensokyo"){
                 // 在首页退出时，selection 为 undefined
                 let page = this.getChapterByTotal(response.selection);
                 this.setBookPage(book, page.chapter, page.page);
-                setPlayerMainHand(pl, book);
+                ItemTool.setPlayerMainHand(pl, book);
             }
         });
     }

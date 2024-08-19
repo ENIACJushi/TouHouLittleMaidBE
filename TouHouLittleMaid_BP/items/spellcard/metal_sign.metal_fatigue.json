@@ -1,13 +1,14 @@
 {
-  "format_version": "1.18.0",
+  "format_version": "1.20.80",
   "minecraft:item": {
     "description": {
-      "category": "Equipment",
-      "identifier": "thlms:metal_sign.metal_fatigue"
+      "identifier": "thlms:metal_sign.metal_fatigue",
+      "menu_category": {"category": "equipment" }
     },
     "components": {
+      "minecraft:custom_components": ["tlm:spell_card"],
       "minecraft:icon": {
-        "texture": "touhou_little_maid.spellcard.metal_sign.metal_fatigue"
+        "textures": { "default": "touhou_little_maid:spellcard:metal_sign:metal_fatigue" }
       },
       "minecraft:display_name": {
         "value": "§6金符「Metal Fatigue」 \n§a▮§7 作者: tartaric_acid \n§a▮§7 版本: 1.0.0 \n§a▮§7 冷却: 9秒"
@@ -18,51 +19,7 @@
       },
 
       "minecraft:hand_equipped": true,
-      "minecraft:on_use": {
-        "on_use": {
-          "event": "thlm:sc"
-        }
-      },
-      "minecraft:max_stack_size": 1,
-      "minecraft:render_offsets": {
-        "main_hand": {
-            "first_person": {
-                "scale": [
-                    0.0195,
-                    0.0195,
-                    0.0195
-                ]
-            },
-            "third_person": {
-                "scale": [
-                    0.04825,
-                    0.04825,
-                    0.04825
-                ]
-            }
-        },
-        "off_hand": {
-            "first_person": {
-                "scale": [
-                    0.0325,
-                    0.0325,
-                    0.0325
-                ]
-            },
-            "third_person": {
-                "scale": [
-                    0.04825,
-                    0.04825,
-                    0.04825
-                ]
-            }
-        }
-      }
-    },
-    "events": {
-      "thlm:sc": {
-        "swing": {}
-      }
+      "minecraft:max_stack_size": 1
     }
   }
 }

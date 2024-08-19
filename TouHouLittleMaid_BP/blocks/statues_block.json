@@ -1,13 +1,14 @@
 {
-	"format_version": "1.17.0",
+	"format_version": "1.20.0",
 	"minecraft:block": {
 		"description": {
 			"identifier": "touhou_little_maid:statues_block",
-			"register_to_creative_menu": false
+			"menu_category": { "category": "none" }
 		},
 		"permutations": [
 		],
 		"components": {
+			"minecraft:custom_components": ["tlm:statues"],
 			"minecraft:geometry": "geometry.touhou_little_maid.void",
 			"minecraft:material_instances": { "*": { "texture": "clay", "render_method": "alpha_test" } },
 			"minecraft:destructible_by_mining": { "seconds_to_destroy": 0.3 },
@@ -16,22 +17,7 @@
 			"minecraft:map_color": "#3E9ABF",
 			"minecraft:loot": "loot_tables/blocks/statues_block.json",
 			"minecraft:light_dampening": 0,
-			"minecraft:destructible_by_explosion": false,
-			"minecraft:breathability": "air",
-			"minecraft:on_player_destroyed": {
-    			"event" : "destroy",
-    			"target": "self"
-			}
-		},
-		"events": {
-			"destroy":{
-				"run_command": {
-                    "command": [
-                        "event entity @e[family=thlm:statues,r=8] thlmm:u"
-                    ],
-                    "target" : "self"
-                }
-			}
+			"minecraft:destructible_by_explosion": false
 		}
 	}
 }

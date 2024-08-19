@@ -1,42 +1,30 @@
 {
-	"format_version": "1.17.0",
+	"format_version": "1.20.0",
 	"minecraft:block": {
 		"description": {
 			"identifier": "touhou_little_maid:altar_log_block",
-			"register_to_creative_menu": false
+			"menu_category": { "category": "none" }
 		},
 		"permutations": [
 		],
 		"components": {
+			"minecraft:custom_components": ["tlm:altar"],
 			"minecraft:geometry": "geometry.touhou_little_maid.void",
 			"minecraft:material_instances": {
 				"*": { "texture": "altar_log_block", "render_method": "alpha_test" }
 			},
-			"minecraft:destructible_by_mining": {
-				"seconds_to_destroy": 0.5
-			},
 			"tag:wood": {},
-			"minecraft:entity_collision": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
-			"minecraft:pick_collision": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
+			"minecraft:collision_box": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
+			"minecraft:selection_box": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
 			"minecraft:map_color": "#52221D",
 			"minecraft:loot": "loot_tables/blocks/altar_log_block.json",
-			"minecraft:block_light_absorption": 0,
-			"minecraft:explosion_resistance": 2,
-			"minecraft:breathability": "air",
-			"minecraft:on_player_destroyed": {
-    			"event" : "destroy",
-    			"target": "self"
-			}
-		},
-		"events": {
-			"destroy":{
-				"run_command": {
-                    "command": [
-                        "function touhou_little_maid/altar_destroy"
-                    ],
-                    "target" : "self"
-                }
-			}
+			"minecraft:destructible_by_explosion": {
+                "explosion_resistance": 2
+            },
+			"minecraft:destructible_by_mining":{
+				"seconds_to_destroy": 0.5
+			},
+			"minecraft:light_dampening": 0
 		}
 	}
 }

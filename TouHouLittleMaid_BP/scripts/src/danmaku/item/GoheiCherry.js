@@ -1,13 +1,26 @@
-import { Entity, ItemStack } from "@minecraft/server";
+import { Entity, ItemStack, WorldInitializeBeforeEvent } from "@minecraft/server";
 import { shoot } from "../custom/Cherry";
+import { ItemTool, logger } from "../../libs/ScarletToolKit";
 
-export const GoheiCherry = {
-    id : "touhou_little_maid:hakurei_gohei_cherry",
+export class GoheiCherry{
+    /**
+    * 初始化樱之御币的自定义属性
+    * @param {WorldInitializeBeforeEvent} event 
+    */
+    static registerCC(event){
+        event.itemComponentRegistry.registerCustomComponent('tlm:gohei_cherry', {
+            onUse(useEvent){
+                let pl = useEvent.source;
+                ItemTool.damageMainHandStack(pl);
+                GoheiCherry.shoot(pl);
+            }
+        });
+    }
     /**
      * @param {Entity} entity
      * @param {ItemStack} item
      */
-    shoot:function(entity, item){
+    static shoot(entity, item){
         let direction = entity.getViewDirection();
         let location = entity.getHeadLocation();
         

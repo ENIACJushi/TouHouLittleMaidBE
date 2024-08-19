@@ -1,5 +1,5 @@
 {
-  "format_version": "1.20.40",
+  "format_version": "1.20.80",
   "minecraft:item": {
     "description": {
       "identifier": "touhou_little_maid:fairy_headwear_1",
@@ -9,21 +9,16 @@
       }
     },
     "components": {
-      "minecraft:icon": { "texture": "touhou_little_maid.fairy_headwear_1"  },
-      "minecraft:display_name": { "value": "item.touhou_little_maid:fairy_headwear" },
-      "minecraft:wearable": {
-        "slot": "slot.armor.head",
-        "protection": 0
+      "minecraft:icon": {
+        "textures": { "default": "touhou_little_maid:fairy_headwear_1" }
       },
+      "minecraft:display_name": { "value": "item.touhou_little_maid:fairy_headwear" },
+      "minecraft:wearable": { "slot": "slot.armor.head", "protection": 0 },
       "minecraft:durability": {
         "damage_chance": { "min": 10, "max": 50 },
         "max_durability": 200
       },
-      "minecraft:enchantable": {
-        "slot": "elytra",
-        "value": 15
-      },
-      "minecraft:creative_category": { "parent": "itemGroup.name.head" }
+      "minecraft:enchantable": { "slot": "elytra", "value": 15 }
     }
   }
 }

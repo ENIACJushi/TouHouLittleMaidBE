@@ -1,9 +1,49 @@
-import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerAfterEvent, Entity, ItemStack, Player, BlockVolume } from "@minecraft/server";
+import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerAfterEvent, Entity, ItemStack, Player, BlockVolume, WorldInitializeBeforeEvent } from "@minecraft/server";
 import { VectorMC } from "../libs/VectorMC";
-import { logger, getPlayerMainHand, setPlayerMainHand } from "../libs/ScarletToolKit";
+import { logger, BlockTool, ItemTool } from "../libs/ScarletToolKit";
 
 
 export class GoldMicrowaver{
+    /**
+     * @param {WorldInitializeBeforeEvent} event 
+     */
+    static registerCC(event){
+        event.blockTypeRegistry.registerCustomComponent("tlm:microwaver", {
+            onPlace(e){
+                logger("place")
+                if(e.block.permutation.getState("thlm:first_place")){
+                    e.block.setPermutation(
+                        e.block.permutation
+                            .withState("thlm:door", false)
+                            .withState("thlm:item", 0)
+                            .withState("thlm:status", false)
+                            .withState("thlm:first_place", false)
+                    )
+                    switch(e.block.permutation.getState("minecraft:cardinal_direction")){
+                        case "north": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ North"); break;
+                        case "south": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ South"); break;
+                        case "east": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ East"); break;
+                        case "west": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ West"); break;
+                        default: break;
+                    }
+                }
+            },
+            onPlayerDestroy(e){
+                logger("destroy")
+                BlockTool.runCommand(e.block, 
+                    "event entity @e[type=touhou_little_maid:gold_microwaver,c=1,r=0.5] thlmw:d");
+            },
+            onPlayerInteract(e){
+                logger("interact")
+                let player = e.player;
+                let itemStack = ItemTool.getPlayerMainHand(player);
+                if(itemStack===undefined){
+                    // if(player.isSneaking) BlockTool.runCommand(e.block, "event entity @e[type=touhou_little_maid:gold_microwaver,c=1,r=0.5] thlmw:s");
+                    // else BlockTool.runCommand(e.block, "event entity @e[type=touhou_little_maid:gold_microwaver,c=1,r=0.5] thlmw:i");
+                }
+            }
+        })
+    }
     // 配方列表
     static recipes = [
         undefined, // 空气占位
@@ -349,7 +389,7 @@ export class GoldMicrowaver{
                             let success = false;
                             if(player !== undefined){
                                 // 非潜行，先尝试叠加物品
-                                let item = getPlayerMainHand(player);
+                                let item = ItemTool.getPlayerMainHand(player);
                                 let inputIndex = this.getRecipeIndexByMaterial(item.typeId);
                                 if(recipeIndex === inputIndex){
                                     let currentAmount = this.Entity.getAmount(waver);
@@ -358,7 +398,7 @@ export class GoldMicrowaver{
                                         success = true;
                                         let inputAmount = Math.min(recipe["max"] - currentAmount, item.amount);
                                         // 消耗物品
-                                        setPlayerMainHand(player, item.amount-inputAmount===0?undefined:(item.amount-=inputAmount, item));
+                                        ItemTool.setPlayerMainHand(player, item.amount-inputAmount===0?undefined:(item.amount-=inputAmount, item));
                                         // 设置数量
                                         this.Entity.setAmount(waver, currentAmount + inputAmount);
                                     }
@@ -405,7 +445,7 @@ export class GoldMicrowaver{
                         this.Block.setDoor(waverBlock, false);
                     }
                     else{
-                        let item = getPlayerMainHand(player);
+                        let item = ItemTool.getPlayerMainHand(player);
                         // 非潜行，先尝试放入物品
                         let recipeIndex = this.getRecipeIndexByMaterial(item.typeId);
                         if(recipeIndex !== 0){
@@ -414,7 +454,7 @@ export class GoldMicrowaver{
                             // 消耗物品
                             let recipe = this.recipes[recipeIndex];
                             let inputAmount = Math.min(item.amount, recipe.max)
-                            setPlayerMainHand(player, item.amount-inputAmount===0?undefined:(item.amount-=inputAmount, item));
+                            ItemTool.setPlayerMainHand(player, item.amount-inputAmount===0?undefined:(item.amount-=inputAmount, item));
                             // 设置数量
                             this.Entity.setAmount(waver, inputAmount);
                         }

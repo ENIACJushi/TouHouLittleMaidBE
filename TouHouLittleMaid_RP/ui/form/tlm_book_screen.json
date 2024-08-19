@@ -1092,7 +1092,6 @@
                 "size": [ "100%", "100%" ],
                 "offset": [19, 25],
                 "layer": "($seq + 4)",
-                "orientation": "vertical",
                 "controls":[
                   {
                     "page_content@page_content_panel": {"$index": "$p2"}
@@ -1189,8 +1188,6 @@
   //// 文本框 ////
   "page_content_panel":{
     "type": "stack_panel",
-    
-    "orientation": "vertical",
     "$index|default": 0,
     "size": [
       "100%",
