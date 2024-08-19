@@ -1,16 +1,29 @@
-import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerAfterEvent, Entity, ItemStack, Player, BlockVolume, WorldInitializeBeforeEvent } from "@minecraft/server";
+import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerAfterEvent, Entity, ItemStack, Player, BlockVolume, WorldInitializeBeforeEvent, system } from "@minecraft/server";
 import { VectorMC } from "../libs/VectorMC";
 import { logger, BlockTool, ItemTool } from "../libs/ScarletToolKit";
 
 
 export class GoldMicrowaver{
     /**
+     * 获取方块对应的实体
+     * @param {Block} block 
+     * @returns 
+     */
+    static getBlockEntity(block){
+        let entity = block.dimension.getEntities({
+            "type": "touhou_little_maid:gold_microwaver",
+            "closest": true,
+            "maxDistance": 0.5,
+            "location": {x: block.location.x+0.5, y: block.location.y, z: block.location.z+0.5}
+        });
+        return entity[0];
+    }
+    /**
      * @param {WorldInitializeBeforeEvent} event 
      */
     static registerCC(event){
         event.blockTypeRegistry.registerCustomComponent("tlm:microwaver", {
             onPlace(e){
-                logger("place")
                 if(e.block.permutation.getState("thlm:first_place")){
                     e.block.setPermutation(
                         e.block.permutation
@@ -20,26 +33,30 @@ export class GoldMicrowaver{
                             .withState("thlm:first_place", false)
                     )
                     switch(e.block.permutation.getState("minecraft:cardinal_direction")){
-                        case "north": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ North"); break;
-                        case "south": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ South"); break;
-                        case "east": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ East"); break;
-                        case "west": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~-0.5~ ~~ West"); break;
+                        case "north": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~~ ~~ North"); break;
+                        case "south": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~~ ~~ South"); break;
+                        case "east": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~~ ~~ East"); break;
+                        case "west": BlockTool.runCommand(e.block, "summon touhou_little_maid:gold_microwaver ~~~ ~~ West"); break;
                         default: break;
                     }
                 }
             },
             onPlayerDestroy(e){
-                logger("destroy")
-                BlockTool.runCommand(e.block, 
-                    "event entity @e[type=touhou_little_maid:gold_microwaver,c=1,r=0.5] thlmw:d");
+                let entity = GoldMicrowaver.getBlockEntity(e.block);
+                entity.triggerEvent("thlmw:d");
             },
             onPlayerInteract(e){
-                logger("interact")
                 let player = e.player;
                 let itemStack = ItemTool.getPlayerMainHand(player);
-                if(itemStack===undefined){
-                    // if(player.isSneaking) BlockTool.runCommand(e.block, "event entity @e[type=touhou_little_maid:gold_microwaver,c=1,r=0.5] thlmw:s");
-                    // else BlockTool.runCommand(e.block, "event entity @e[type=touhou_little_maid:gold_microwaver,c=1,r=0.5] thlmw:i");
+                if(itemStack === undefined){
+                    let entity = GoldMicrowaver.getBlockEntity(e.block);
+                    if(entity === undefined) return;
+                    entity=entity[0]
+                    if(player.isSneaking) entity.triggerEvent("thlmw:s");
+                    else entity.triggerEvent("thlmw:i")
+                }
+                else{
+                    GoldMicrowaver.interactEvent(e.block, e.player);
                 }
             }
         })
@@ -317,20 +334,10 @@ export class GoldMicrowaver{
      * 交互事件
      * @param {ItemUseOnBeforeEvent} event 
      */
-    static interactEvent(event){
-        let waverBlock = event.block;
+    static interactEvent(waverBlock, player){
         let waver = this.getEntityByBlock(waverBlock);
-        
-        let player = event.source;
-
         this.interactBaseEvent(waver, waverBlock, player);
-
         if(waver===undefined) return;
-        // logger(`${this.Entity.getStatus(waver)},${this.Entity.getDoor(waver)},${this.Entity.getItem(waver)},${this.Entity.getProgress(waver)}`)
-        
-
-        // 取消交互 避免物品再次被其它事件使用
-        event.cancel = true;
     }
     /** 
      * 交互事件 空手

@@ -12,6 +12,7 @@
 			{
 				"condition": "!query.block_state('thlm:solid')",
 				"components": {
+					"minecraft:custom_components": ["tlm:garage_kit_un_solid"],
 					"minecraft:destructible_by_mining": { "seconds_to_destroy": 0.3 },
 					"minecraft:collision_box": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
 					"minecraft:selection_box": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
@@ -21,6 +22,7 @@
 			{
 				"condition": "query.block_state('thlm:solid')",
 				"components": {
+					"minecraft:custom_components": ["tlm:garage_kit"],
 					"minecraft:destructible_by_mining": { "seconds_to_destroy": 0.0 },
 					"minecraft:collision_box": { "origin": [ -4, 0, -4 ], "size": [ 8, 14, 8 ] },
 					"minecraft:selection_box": { "origin": [ -4, 0, -4 ], "size": [ 8, 14, 8 ] },
@@ -29,7 +31,6 @@
 			}
 		],
 		"components": {
-			"minecraft:custom_components": ["tlm:garage_kit"],
 			"minecraft:geometry": "geometry.touhou_little_maid.void",
 			"minecraft:material_instances": { "*": { "texture": "clay", "render_method": "alpha_test" } },
 			"minecraft:map_color": "#3E9ABF",

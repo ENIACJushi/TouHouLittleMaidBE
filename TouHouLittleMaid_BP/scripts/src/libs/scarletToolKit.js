@@ -195,8 +195,6 @@ export class BlockTool{
      */
     static runCommand(b, cmd){
         const l = b.location;
-        logger(`execute positioned ${l.x} ${l.y} ${l.z} run ${cmd}`)
-    
         b.dimension.runCommand(
             `execute positioned ${l.x} ${l.y} ${l.z} run ${cmd}`
         )

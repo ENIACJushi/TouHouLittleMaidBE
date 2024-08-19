@@ -12,22 +12,37 @@ const blockStatues = "touhou_little_maid:statues_block";
 
 export class GarageKit{
     /**
+     * 获取方块对应的实体
+     * @param {Block} block 
+     * @param {Boolean} solid 
+     * @returns 
+     */
+    static getBlockEntity(block, solid=false){
+        let entity = block.dimension.getEntities({
+            // "type": "thlmm:maid",
+            "families": [(solid ? "thlm:garage_kit_solid" : "thlm:garage_kit_un_solid")],
+            "closest": true,
+            "maxDistance": 0.5,
+            "location": {x: block.location.x+0.5, y: block.location.y, z: block.location.z+0.5}
+        });
+        return entity[0];
+    }
+    /**
      * @param {WorldInitializeBeforeEvent} event 
      */
     static registerCC(event){
         event.blockTypeRegistry.registerCustomComponent("tlm:garage_kit", {
             onPlayerDestroy(e){
-                const l = e.block.location;
-                if(e.block.permutation.getState("thlm:solid")){
-                    e.dimension.runCommand(
-                        `execute positioned ${l.x} ${l.y} ${l.z} run event entity @e[r=1,family=thlm:garage_kit_solid] thlmm:u`
-                    )
-                }
-                else{
-                    e.dimension.runCommand(
-                        `execute positioned ${l.x} ${l.y} ${l.z} run event entity @e[r=1,family=thlm:garage_kit_un_solid] thlmm:u`
-                    )
-                }
+                let entity = GarageKit.getBlockEntity(e.block, true);
+                if(entity === undefined) return;
+                entity.triggerEvent("thlmm:u");
+            }
+        });
+        event.blockTypeRegistry.registerCustomComponent("tlm:garage_kit_un_solid", {
+            onPlayerDestroy(e){
+                let entity = GarageKit.getBlockEntity(e.block, false);
+                if(entity === undefined) return;
+                entity.triggerEvent("thlmm:u");
             }
         })
     }

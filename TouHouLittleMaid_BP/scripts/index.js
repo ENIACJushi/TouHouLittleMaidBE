@@ -150,11 +150,6 @@ class thlm {
                                     return;
                                 }
                             }; break;
-                            //// 黄金微波炉 ////
-                            case "gold_microwaver":{
-                                GoldMicrowaver.interactEvent(event);
-                                event.cancel=true;
-                            }; break;
                             default: break;
                         }
                     };
