@@ -1,4 +1,4 @@
-import { Entity, world, Dimension,system, EntityHealthComponent, Container, ItemStack, Block, Player, ContainerSlot, EntityRemoveAfterEvent } from "@minecraft/server";
+import { Entity, world, Dimension,system, EntityHealthComponent, Container, ItemStack, Block, Player, ContainerSlot, EntityRemoveAfterEvent, StructureSaveMode } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit";
 import { StrMaid } from "./StrMaid";
@@ -1223,6 +1223,7 @@ export class EntityMaid{
     }
     /**
      * 将字符转为女仆  由照片、魂符放出的女仆不会回满血
+     * @deprecated
      * @param {string} maidStr
      * @param {Dimension} dimension
      * @param {Vector} location 
@@ -1299,14 +1300,63 @@ export class EntityMaid{
 
         return maid;
     }
+
+    /**
+     * 从结构加载女仆，这样的女仆完全继承原本的样子，还能保留背包物品
+     * @param {string} maidStr
+     * @param {Dimension} dimension
+     * @param {Vector} location 
+     * @param {Player} owner 
+     * @returns {Entity|undefined} 暂无return
+     */
+    static fromStructure(structureId,dimension,location,owner){
+        const structure = world.structureManager.get(structureId)
+        if(!structure){
+            return undefined;
+        }
+        world.structureManager.place(structure, dimension, location,{
+            includeBlocks: false
+        })
+        const maid = dimension.getEntities(
+            {
+                closest: 1,
+                tags: [structureId]
+            }
+        )[0];
+        // 正常来说结构会继承tameable才对,不知道为啥不会继承
+        maid.getComponent("tameable").tame(owner); 
+        world.structureManager.delete(structureId);
+        maid.removeTag(structureId);
+        return maid;
+    }
+
+    /**
+     * 将女仆转为物品动态属性
+     * @param {Entity} maid
+     * @returns {string} 动态属性
+     */
+    static toStructure(maid){
+        if(!maid){
+            return null;
+        }
+        const structureName = `touhou_little_maid:_${maid.id}`;
+        maid.addTag(structureName)
+        const l = maid.location;
+        l.y += 300;
+        maid.teleport(l);
+        // 不可使用structureManager因为这玩意超出世界高度就会无效果
+        maid.runCommand(`structure save ${structureName} ~ ~ ~ ~ ~2 ~ disk`);
+        return structureName;
+    }
+
     /**
      * 将女仆转为物品lore
      * 会自动清除背包
      * @param {Entity} maid
      * @param {boolean} [dump=true] 
-     * @returns {string} lore
+     * @returns {string[]} lore
      */
-    static toLore(maid, dump=true){
+    static toLore(maid, dump=false){
         let strPure = this.toStr(maid, dump);
         return Tool.str2Lore(strPure);
     }

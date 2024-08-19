@@ -1,0 +1,38 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+dependencies:
+  '@minecraft/server':
+    specifier: 1.12.0-beta.1.21.3-stable
+    version: 1.12.0-beta.1.21.3-stable
+  '@minecraft/server-ui':
+    specifier: 1.2.0-beta.1.21.3-stable
+    version: 1.2.0-beta.1.21.3-stable
+
+packages:
+
+  /@minecraft/common@1.2.0:
+    resolution: {integrity: sha512-JdmEq4P3Z/FtoBzhLijFgMSVFnFRrUoLwY8DHHrgtFo0mfLTOLTB1RErYjLMsA6b7BGVNxkX/pfFRiH7QZ0XwQ==}
+    dev: false
+
+  /@minecraft/server-ui@1.2.0-beta.1.21.3-stable:
+    resolution: {integrity: sha512-mxqtugI8usTCP+vEclpppLSGtMyPZZttihGVa0l8XLKGoQTaUwUU03jQE82Y18J7ATCuOIYT6N70eIKPCS562Q==}
+    dependencies:
+      '@minecraft/common': 1.2.0
+      '@minecraft/server': 1.13.0
+    dev: false
+
+  /@minecraft/server@1.12.0-beta.1.21.3-stable:
+    resolution: {integrity: sha512-duX6X6yQy8OUVQYafTsbRjSKczIPw8f8GYPVD+B0lxw7g59K+G5jfirUAT+XNak/vWF7kelTj0WzFkzLlIHu7Q==}
+    dependencies:
+      '@minecraft/common': 1.2.0
+    dev: false
+
+  /@minecraft/server@1.13.0:
+    resolution: {integrity: sha512-LYmYRLjZZ5b+AO2GArQorBBo6Ad18ZmdoK2jx7mmo7Jo/gFXLiSq2xEJuLb5WBXTaBg4rBiersQiAbTj3QjNHQ==}
+    dependencies:
+      '@minecraft/common': 1.2.0
+    dev: false
