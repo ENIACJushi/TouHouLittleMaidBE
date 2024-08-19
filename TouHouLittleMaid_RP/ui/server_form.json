@@ -23,11 +23,7 @@
           {
             "binding_type": "view",
             "source_control_name": "inside_header_panel",
-<<<<<<< HEAD
-            "source_property_name": "#tlm_visible",
-=======
             "source_property_name": "#tlm_invisible",
->>>>>>> cec39166dc9876024262419af4b244d958747b24
             "target_property_name": "#visible"
           }
         ]
@@ -43,11 +39,7 @@
           {
             "binding_type": "view",
             "source_property_name": "(#title_text < '/' or #title_text > '/􀐏')",
-<<<<<<< HEAD
-            "target_property_name": "#tlm_visible"
-=======
             "target_property_name": "#tlm_invisible"
->>>>>>> cec39166dc9876024262419af4b244d958747b24
           }
         ]
       }
