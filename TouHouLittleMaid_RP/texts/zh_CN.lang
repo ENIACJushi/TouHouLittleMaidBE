@@ -1,8 +1,8 @@
 ### VERSION_AUTO_GENERATE_START ###
 pack.name=车万女仆
-pack.description=作者: 体宿一(b站) | 版本 1.3.3 (MC 1.21.0x, 关闭假日创造者)
-message.tlm.mc_version=1.21.0x
-message.tlm.player_join1=§e[TLM] 车万女仆 1.3.3
+pack.description=作者: 体宿一(b站) | 版本 1.4.0 (MC 1.21.2x, 关闭假日创造者)
+message.tlm.mc_version=1.21.2x
+message.tlm.player_join1=§e[TLM] 车万女仆 1.4.0
 message.tlm.player_join2=§e 访问 mcmod.cn 获取全部教程。
 ### VERSION_AUTO_GENERATE_END ###
 

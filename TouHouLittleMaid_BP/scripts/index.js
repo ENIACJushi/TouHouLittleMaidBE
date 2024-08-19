@@ -31,10 +31,11 @@ if(true){
         AltarBlock.registerCC(e);
         GarageKit.registerCC(e);
         GoldMicrowaver.registerCC(e);
+        // 注册物品自定义组件
+        GoheiCherry.registerCC(e);
+        CustomSpellCardManger.registerCC(e);
+        PowerPoint.registerCC(e);
         system.run(()=>{
-            // 注册物品自定义组件
-            GoheiCherry.registerCC(e);
-            CustomSpellCardManger.registerCC(e);
             // 初始化
             ConfigHelper.init();
             PowerPoint.init(e);

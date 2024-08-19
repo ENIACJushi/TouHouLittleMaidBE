@@ -3,17 +3,10 @@ import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 
 export default class PowerPoint {
-    //////// INIT ////////
     /**
-     * 
      * @param {WorldInitializeBeforeEvent} event 
      */
-    static init(event){
-        // 初始化计分板
-        if(world.scoreboard.getObjective("p") == null){
-            world.getDimension("overworld").runCommand("scoreboard objectives add p dummy power");
-        }
-
+    static registerCC(event){
         // 初始化 P 点投掷物属性
         event.itemComponentRegistry.registerCustomComponent('tlm:power_point', {
             onUse(useEvent){
@@ -26,6 +19,16 @@ export default class PowerPoint {
                 component.shoot(pl.getViewDirection())
             }
         });
+    }
+    //////// INIT ////////
+    /**
+     * @param {WorldInitializeBeforeEvent} event 
+     */
+    static init(event){
+        // 初始化计分板
+        if(world.scoreboard.getObjective("p") == null){
+            world.getDimension("overworld").runCommand("scoreboard objectives add p dummy power");
+        }
     }
     /**
      * 

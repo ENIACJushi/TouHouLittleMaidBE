@@ -31,14 +31,14 @@ export class GarageKit{
      * @param {WorldInitializeBeforeEvent} event 
      */
     static registerCC(event){
-        event.blockTypeRegistry.registerCustomComponent("tlm:garage_kit", {
+        event.blockComponentRegistry.registerCustomComponent("tlm:garage_kit", {
             onPlayerDestroy(e){
                 let entity = GarageKit.getBlockEntity(e.block, true);
                 if(entity === undefined) return;
                 entity.triggerEvent("thlmm:u");
             }
         });
-        event.blockTypeRegistry.registerCustomComponent("tlm:garage_kit_un_solid", {
+        event.blockComponentRegistry.registerCustomComponent("tlm:garage_kit_un_solid", {
             onPlayerDestroy(e){
                 let entity = GarageKit.getBlockEntity(e.block, false);
                 if(entity === undefined) return;

@@ -1,7 +1,7 @@
 ### VERSION_AUTO_GENERATE_START ###
 pack.name=Touhou Little Maid
-pack.description=By: ENIAC_Jushi, version 1.3.3 (For MC 1.21.0x, NO holiday creator)
-message.tlm.mc_version=1.21.0x
-message.tlm.player_join1=§e[TLM] Touhou Little Maid 1.3.3
+pack.description=By: ENIAC_Jushi, version 1.4.0 (For MC 1.21.2x, NO holiday creator)
+message.tlm.mc_version=1.21.2x
+message.tlm.player_join1=§e[TLM] Touhou Little Maid 1.4.0
 message.tlm.player_join2=§e Visit mcmod.cn for complete tutorial.
 ### VERSION_AUTO_GENERATE_END ###

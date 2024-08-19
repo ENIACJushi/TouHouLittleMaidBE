@@ -1,57 +1,48 @@
-[Texture][warning]-The block named chalkboard used in a "blocks.json" file does not exist in the registry
+[Blocks][error]-block_definitions | C:/Users/Dell/AppData/Local/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/LocalState/games/com.mojang/development_behavior_packs/TouHouLittleMaid_BP | blocks/skull/fairy_skull_2.json | C:/Users/Dell/AppData/Local/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/LocalState/games/com.mojang/development_behavior_packs/TouHouLittleMaid_BP | blocks/skull/fairy_skull_2.json | touhou_little_maid:fairy_skull_2_block | components | minecraft:collision_box: min can't be below (-8, 0, -8) and max can't be more than (8, 16, 8)
 
-[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:board' is being ignored.
+[Blocks][error]-block_definitions | C:/Users/Dell/AppData/Local/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/LocalState/games/com.mojang/development_behavior_packs/TouHouLittleMaid_BP | blocks/skull/fairy_skull_2.json | C:/Users/Dell/AppData/Local/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/LocalState/games/com.mojang/development_behavior_packs/TouHouLittleMaid_BP | blocks/skull/fairy_skull_2.json | touhou_little_maid:fairy_skull_2_block | components | minecraft:selection_box: origin with added size can't be below (-8, 0, -8) and can't be more than (8, 16, 8)
 
-[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:photo_item' is being ignored.
+[Blocks][error]-block_definitions | C:/Users/Dell/AppData/Local/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/LocalState/games/com.mojang/development_behavior_packs/TouHouLittleMaid_BP | blocks/skull/fairy_skull_1.json | C:/Users/Dell/AppData/Local/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/LocalState/games/com.mojang/development_behavior_packs/TouHouLittleMaid_BP | blocks/skull/fairy_skull_1.json | touhou_little_maid:fairy_skull_1_block | components | minecraft:collision_box: min can't be below (-8, 0, -8) and max can't be more than (8, 16, 8)
 
-[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:portfolio' is being ignored.
+[Blocks][error]-block_definitions | C:/Users/Dell/AppData/Local/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/LocalState/games/com.mojang/development_behavior_packs/TouHouLittleMaid_BP | blocks/skull/fairy_skull_1.json | C:/Users/Dell/AppData/Local/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/LocalState/games/com.mojang/development_behavior_packs/TouHouLittleMaid_BP | blocks/skull/fairy_skull_1.json | touhou_little_maid:fairy_skull_1_block | components | minecraft:selection_box: origin with added size can't be below (-8, 0, -8) and can't be more than (8, 16, 8)
 
-[Item][error]-components | minecraft:custom_components | minecraft:custom_components | unknown child schema option type.  Allowed types:  'object'
+[Item][warning]-touhou_little_maid:warden_skull -> components -> minecraft:wearable -> dispensable: this member was found in the input, but is not present in the Schema
 
-[Item][error]- Error Parsing Item 'touhou_little_maid:power_point':
+[Components][error]-Items with the 'minecraft:wearable' component and 'slot' set to 'slot.armor.head' must have a max stack size of 1.
 
+[Item][warning]-The "minecraft:shooter" component requires "minecraft:use_modifiers > use_duration" to be set with a non-zero value.
 
-[Item][error]- Failed to parse field ':  Invalid legacy components data'
+[Scripting][warning]-Component 'tlm:gohei_cherry' was not registered in script but used on an item
 
-[Scripting][error]-Plugin [TouHou Little Maid BE - 1.3.2] - does not contain main file [index.js].
+[Scripting][warning]-Component 'tlm:power_point' was not registered in script but used on an item
 
-[Texture][warning]-The block named chalkboard used in a "blocks.json" file does not exist in the registry
+[Scripting][warning]-Component 'tlm:spell_card' was not registered in script but used on an item
 
-[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:board' is being ignored.
-
-[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:photo_item' is being ignored.
-
-[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:portfolio' is being ignored.
-
-[Item][error]-Missing icon for data-driven item 'touhou_little_maid:power_point'.
-
-[Item][error]-components | minecraft:custom_components | minecraft:custom_components | unknown child schema option type.  Allowed types:  'object'
-
-[Item][error]- Error Parsing Item 'touhou_little_maid:power_point':
+[Scripting][error]-Error: Cannot register custom component outside of the WorldInitialize event    at registerCC (src/danmaku/item/GoheiCherry.js:17)
+    at <anonymous> (index.js:36)
 
 
-[Item][error]- Failed to parse field ':  Invalid legacy components data'
+[Geometry][error]-models/entity/touhou_little_maid/others/saisen_bako.json | geometry.touhou_little_maid.saisen_bako | textureheight | textureheight | unknown child schema option type.  Allowed types:  'int'
 
-[Scripting][error]-Plugin [TouHou Little Maid BE - 1.3.2] - does not contain main file [index.js].
+[Geometry][error]-thlmm:maid | thlmm:maid | Locator: Error: model already has a locator armor_offset.default_neck that doesn't exactly match the one wanting to be added - skipping new definition in touhou_little_maid_29(geometry.touhou_little_maid.tewi_inaba)
 
-[Texture][warning]-The block named chalkboard used in a "blocks.json" file does not exist in the registry
+[Geometry][error]-thlmm:maid | thlmm:maid | Locator: Error: model already has a locator armor_offset.default_neck that doesn't exactly match the one wanting to be added - skipping new definition in touhou_little_maid_23(geometry.touhou_little_maid.yukari_yakumo)
 
-[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:board' is being ignored.
+[Geometry][error]-thlmm:maid | thlmm:maid | Locator: Error: model already has a locator armor_offset.default_neck that doesn't exactly match the one wanting to be added - skipping new definition in touhou_little_maid_41(geometry.touhou_little_maid.kagiyama_hina)
 
-[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:photo_item' is being ignored.
+[Geometry][error]-thlmm:maid | thlmm:maid | Locator: Error: model already has a locator armor_offset.default_neck that doesn't exactly match the one wanting to be added - skipping new definition in touhou_little_maid_49(geometry.touhou_little_maid.kisume)
 
-[Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:portfolio' is being ignored.
+[Geometry][error]-thlmm:maid | thlmm:maid | Locator: Error: model already has a locator armor_offset.default_neck that doesn't exactly match the one wanting to be added - skipping new definition in touhou_little_maid_50(geometry.touhou_little_maid.kurodani_yamame)
 
-[Item][error]-Missing icon for data-driven item 'touhou_little_maid:power_point'.
+[Geometry][error]-thlmm:maid | thlmm:maid | Locator: Error: model already has a locator armor_offset.default_neck that doesn't exactly match the one wanting to be added - skipping new definition in touhou_little_maid_57(geometry.touhou_little_maid.nazrin)
 
-[Item][error]-components | minecraft:custom_components | minecraft:custom_components | unknown child schema option type.  Allowed types:  'object'
+[Geometry][error]-thlmm:maid | thlmm:maid | Locator: Error: model already has a locator armor_offset.default_neck that doesn't exactly match the one wanting to be added - skipping new definition in touhou_little_maid_71(geometry.touhou_little_maid.wakasagihime)
 
-[Item][error]- Error Parsing Item 'touhou_little_maid:power_point':
+[Geometry][error]-thlmm:maid | thlmm:maid | Locator: Error: model already has a locator armor_offset.default_neck that doesn't exactly match the one wanting to be added - skipping new definition in touhou_little_maid_79(geometry.touhou_little_maid.seiran)
 
+[Geometry][error]-thlmm:maid | thlmm:maid | Locator: Error: model already has a locator armor_offset.default_neck that doesn't exactly match the one wanting to be added - skipping new definition in touhou_little_maid_80(geometry.touhou_little_maid.ringo)
 
-[Item][error]- Failed to parse field ':  Invalid legacy components data'
-
-[Scripting][error]-Plugin [TouHou Little Maid BE - 1.3.2] - does not contain main file [index.js].
+[Geometry][error]-thlmm:maid | thlmm:maid | Locator: Error: model already has a locator armor_offset.default_neck that doesn't exactly match the one wanting to be added - skipping new definition in touhou_little_maid_85(geometry.touhou_little_maid.hecatia_lapislazuli)
 
 [Texture][warning]-The block named chalkboard used in a "blocks.json" file does not exist in the registry
 
@@ -60,6 +51,4 @@
 [Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:photo_item' is being ignored.
 
 [Item][error]-Resource pack has item definitions not found in the behavior pack. Item 'minecraft:portfolio' is being ignored.
-
-[Item][error]-Missing icon for data-driven item 'touhou_little_maid:power_point'.
 

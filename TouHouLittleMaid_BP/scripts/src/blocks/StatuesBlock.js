@@ -5,7 +5,7 @@ export class StatuesBlock{
      * @param {WorldInitializeBeforeEvent} event 
      */
     static registerCC(event){
-        event.blockTypeRegistry.registerCustomComponent("tlm:statues", {
+        event.blockComponentRegistry.registerCustomComponent("tlm:statues", {
             onPlayerDestroy(e){
                 const l = e.block.location;
                 e.dimension.runCommand(

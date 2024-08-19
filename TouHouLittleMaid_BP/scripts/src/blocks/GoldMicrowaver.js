@@ -22,7 +22,7 @@ export class GoldMicrowaver{
      * @param {WorldInitializeBeforeEvent} event 
      */
     static registerCC(event){
-        event.blockTypeRegistry.registerCustomComponent("tlm:microwaver", {
+        event.blockComponentRegistry.registerCustomComponent("tlm:microwaver", {
             onPlace(e){
                 if(e.block.permutation.getState("thlm:first_place")){
                     e.block.setPermutation(
@@ -51,7 +51,6 @@ export class GoldMicrowaver{
                 if(itemStack === undefined){
                     let entity = GoldMicrowaver.getBlockEntity(e.block);
                     if(entity === undefined) return;
-                    entity=entity[0]
                     if(player.isSneaking) entity.triggerEvent("thlmw:s");
                     else entity.triggerEvent("thlmw:i")
                 }

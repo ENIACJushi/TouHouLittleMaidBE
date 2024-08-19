@@ -5,7 +5,7 @@ export class AltarBlock{
      * @param {WorldInitializeBeforeEvent} event 
      */
     static registerCC(event){
-        event.blockTypeRegistry.registerCustomComponent("tlm:altar", {
+        event.blockComponentRegistry.registerCustomComponent("tlm:altar", {
             onPlayerDestroy(e){
                 const l = e.block.location;
                 e.dimension.runCommand(

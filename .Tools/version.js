@@ -1,7 +1,7 @@
 
 ///////////////////////////////
-const version = [ 1, 3, 3 ]; //
-const MC = "1.21.0x";        //
+const version = [ 1, 4, 0 ]; //
+const MC = "1.21.2x";        //
 ///////////////////////////////
 
 import * as fs from "fs"
