@@ -1,25 +1,25 @@
 import { world, system, EquipmentSlot, GameMode } from "@minecraft/server"
-import { altarStructure } from "./src/altar/AltarStructureHelper";
+import { altarStructure } from "./altar/AltarStructureHelper";
 import experiment from "./experiment"
-import PowerPoint from "./src/altar/PowerPoint"
-import * as Danmaku from "./src/danmaku/DanmakuManager"
-import { CustomSpellCardManger } from "./src/danmaku/CustomSpellCardManger";
-import * as Tool from"./src/libs/ScarletToolKit";
-import { itemShootManager } from "./src/danmaku/ItemShootManager";
-import { config, ConfigHelper } from "./src/controller/Config";
-import { GoldMicrowaver } from "./src/blocks/GoldMicrowaver";
-import { MaidManager } from "./src/maid/MaidManager";
-import { MaidSkin } from "./src/maid/MaidSkin";
-import { MaidTarget } from "./src/maid/MaidTarget"
+import PowerPoint from "./altar/PowerPoint"
+import * as Danmaku from "./danmaku/DanmakuManager"
+import { CustomSpellCardManger } from "./danmaku/CustomSpellCardManger";
+import * as Tool from"./libs/ScarletToolKit";
+import { itemShootManager } from "./danmaku/ItemShootManager";
+import { config, ConfigHelper } from "./controller/Config";
+import { GoldMicrowaver } from "./blocks/GoldMicrowaver";
+import { MaidManager } from "./maid/MaidManager";
+import { MaidSkin } from "./maid/MaidSkin";
+import { MaidTarget } from "./maid/MaidTarget"
 
-import { CommandManager } from './src/controller/Command'
-import { GarageKit } from "./src/blocks/GarageKit";
-import { MemorizableGensokyo } from "./src/book/MemorizableGensokyoUI";
-import { Gohei } from "./src/danmaku/item/Gohei";
-import { GoheiCherry } from "./src/danmaku/item/GoheiCherry";
-import { Skull } from "./src/blocks/Skull";
-import { StatuesBlock } from "./src/blocks/StatuesBlock";
-import { AltarBlock } from "./src/blocks/AltarBlock";
+import { CommandManager } from './controller/Command'
+import { GarageKit } from "./blocks/GarageKit";
+import { MemorizableGensokyo } from "./book/MemorizableGensokyoUI";
+import { Gohei } from "./danmaku/item/Gohei";
+import { GoheiCherry } from "./danmaku/item/GoheiCherry";
+import { Skull } from "./blocks/Skull";
+import { StatuesBlock } from "./blocks/StatuesBlock";
+import { AltarBlock } from "./blocks/AltarBlock";
 
 
 if(true){

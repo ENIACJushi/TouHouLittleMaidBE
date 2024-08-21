@@ -8,6 +8,7 @@
 
 ### 适配 1.21.2x
 + `blockTypeRegistry` 改为 `blockComponentRegistry`
++ 改变物品属性注册的时机
 
 ## 计划
 

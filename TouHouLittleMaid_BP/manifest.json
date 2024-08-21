@@ -20,7 +20,7 @@
       "type": "script",
       "language": "javascript",
       "uuid": "9439f1f5-116d-4f4a-8e23-9adc2b9d4721",
-      "entry": "scripts/index.js",
+      "entry": "scripts/src/index.js",
       "version": [
         1,
         4,
