@@ -123,7 +123,7 @@
 			],
 			"textures": [ "Array.skins[q.property('thlm:backpack_type')]" ],
 			"part_visibility": [
-				{ "*": "!q.is_in_ui && !q.property('thlm:backpack_invisible')" }
+				{ "*": "!query.property('thlm:is_hug') && !q.is_in_ui && !q.property('thlm:backpack_invisible')" }
 			]
 		},
 

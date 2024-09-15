@@ -106,6 +106,9 @@
                         {"wingRight": "Material.wing"},
                         { "_*": "Material.emissive"}
                     ],
+                    "part_visibility": [
+                        { "blink": "!q.is_in_ui && q.property('thlm:work')>=-1" }
+                    ],
                     "textures": [ "Array.skins[q.property('thlm:skin_pack')==<index>?q.variant+1:0]" ]
                 },
                 entity: {

@@ -1,7 +1,13 @@
 
+Added cute maids to Minecraft, who can help with battles, farming and other tasks.
+
+Supports custom models, you can easily switch the maid model, or create your own maid model.
+
 ![title](title.png)
 
-This Add-On is a port of Java MOD of the same name, which added cute maids to Minecraft. These maids are capable of assisting with battles, farming, and various other tasks. **Most tutorials can be found in the in-game guidebook, this article is just a brief introduction to the features.**
+This Add-On is a port of Java MOD of the same name, which added cute maids to Minecraft.
+
+**Most tutorials can be found in the in-game guidebook, this article is just a brief introduction to the features.**
 
 ## Guidebook
 
@@ -52,7 +58,6 @@ Different platforms operate in different ways, "Interaction" on the computer sid
 2. "Interaction" in sneaking mode to open the backpack.
 3. "Attack" in sneaking mode to open GUI:
 ![maid_interaction_2](maid_interaction_2.png)
-
 ### Skins
 
 Maid has many skins and supports the import of additional skin packs.
@@ -85,6 +90,8 @@ What's more, the custom harvest interface will be available in the future.
 
 The backpack can be used to expand the inventory of the maid. It can be applied by holding the backpack, sneaking, and right-click on the maid.
 
+![backpack](backpack.png)
+
 Use the shears to remove the maid's backpack.
 
 ### Chisel & Statues
@@ -93,11 +100,14 @@ Right-click the clay with a chisel can make statues of different sizes. Currentl
 
 Holds a photo in offhand, chisel in mainhand, then right-clicks the lower left corner of the multi-block structure to engrave the maid in the photo.
 
+![statues](statues.png)
+
 The fire roasted 1x1 size statue can be converted into Garage Kit.
 
 ### Princess Hug
 
 Hold the saddle, interact with the maid, you can pick her up, interact again, you can put her down.
+![Princess Hug](princess_hug.png)
 
 ## Player Weapons
 
