@@ -1,58 +1,77 @@
 /**
  * 将json压缩并导出发布包
  */
-const PATH_BP = "./TouhouLittleMaid_BP";
-
+// import * as AdmZip from 'adm-zip'
+// import * as fs from "fs"
+const fs = require('fs');
+const path = require('path');
 const AdmZip = require('adm-zip');
-import * as fs from "fs"
+
+const PATH_BP = "../TouhouLittleMaid_BP";
+const PATH_RP = "../TouhouLittleMaid_RP";
+const BP_NAME = "TouhouLittleMaidBP.mcpack";
+const RP_NAME = "TouhouLittleMaidRP.mcpack";
+
+const SPC_PATH = "../SkinPacksConvertor/SkinPacksConvertor.html"
+
+const PACK_NAME = "TouhouLittleMaid.zip";
+
 
 // 要解压的ZIP文件路径
 const zipFilePath = 'path/to/your/file.zip';
- 
-function zipBP(){
+
+async function main(){
+    let bp = zipPack(PATH_BP);
+    let rp = zipPack(PATH_RP);
+    await bp.writeZipPromise(BP_NAME);
+    await rp.writeZipPromise(RP_NAME);
+    
+    const mcaddon = new AdmZip();
+    mcaddon.addLocalFile(BP_NAME);
+    mcaddon.addLocalFile(RP_NAME);
+    mcaddon.addLocalFile(SPC_PATH);
+    await mcaddon.writeZipPromise(PACK_NAME);
+    fs.unlink(BP_NAME,()=>{});
+    fs.unlink(RP_NAME,()=>{});
+}
+
+function zipPack(path){
     // creating archives
     const zip = new AdmZip();
-    
-    let dir = fs.readdirSync(PATH_BP);
-    dir.forEach((val)=>{
-        
-        val
-    });
-    
+    traverseDirectory(path, zip, '');
+    return zip;
 }
-var AdmZip = require("adm-zip");
 
+/**
+ * 递归处理文件夹
+ * @param {string} dir 
+ * @param {AdmZip} zip 
+ * @param {string} zipDir 
+ */
+function traverseDirectory(dir, zip, zipDir) {
+  const files = fs.readdirSync(dir);
+  files.forEach(file => {
+    const filePath = path.join(dir, file);
+    const filePathZip = path.join(zipDir, file);
 
-
-
-
-// reading archives
-var zip = new AdmZip("./my_file.zip");
-var password = "1234567890";
-var zipEntries = zip.getEntries(); // an array of ZipEntry records - add password parameter if entries are password protected
-
-zipEntries.forEach(function (zipEntry) {
-    console.log(zipEntry.toString()); // outputs zip entries information
-    if (zipEntry.entryName == "my_file.txt") {
-        console.log(zipEntry.getData().toString("utf8"));
+    const stat = fs.statSync(filePath);
+    if (stat.isDirectory()) {
+        // 递归遍历子目录
+        traverseDirectory(filePath, zip, filePathZip);
+    } else {
+        console.log(filePathZip);
+        // 处理文件
+        try{
+            let content = fs.readFileSync(filePath, 'utf-8');
+            content = JSON.parse(content);
+            zip.addFile(filePathZip, Buffer.from(JSON.stringify(content), "utf8"));
+        }
+        catch{
+            zip.addLocalFile(filePath, zipDir);
+        }
     }
-});
-// outputs the content of some_folder/my_file.txt
-console.log(zip.readAsText("some_folder/my_file.txt"));
-// extracts the specified file to the specified location
-zip.extractEntryTo(/*entry name*/ "some_folder/my_file.txt", /*target path*/ "/home/me/tempfolder", /*maintainEntryPath*/ false, /*overwrite*/ true);
-// extracts everything
-zip.extractAllTo(/*target path*/ "/home/me/zipcontent/", /*overwrite*/ true);
+  });
+}
 
 
-// creating archives
-var zip = new AdmZip();
-// add file directly
-var content = "inner content of the file";
-zip.addFile("test.txt", Buffer.from(content, "utf8"), "entry comment goes here");
-// add local file
-zip.addLocalFile("/home/me/some_picture.png");
-// get everything as a buffer
-var willSendthis = zip.toBuffer();
-// or write everything to disk
-zip.writeZip(/*target file name*/ "/home/me/files.zip");
+main();

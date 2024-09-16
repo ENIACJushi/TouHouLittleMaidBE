@@ -116,9 +116,6 @@
 				},
 				"sittingRotationSkirt": {
 					"rotation": [-5, 0, 0]
-				},
-				"_bone53": {
-					"position": [0, 0, 0]
 				}
 			}
 		}

@@ -1,10 +1,14 @@
+/**
+ * 修改模组版本
+ */
+
+const fs = require('fs');
 
 ///////////////////////////////
 const version = [ 1, 4, 0 ]; //
 const MC = "1.21.2x";        //
 ///////////////////////////////
 
-import * as fs from "fs"
 const versionStr = version.join('.')
 const BP_PATH = "../TouHouLittleMaid_BP"
 const RP_PATH = "../TouHouLittleMaid_RP"
