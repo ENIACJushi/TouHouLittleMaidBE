@@ -16,10 +16,6 @@ const SPC_PATH = "../SkinPacksConvertor/SkinPacksConvertor.html"
 
 const PACK_NAME = "TouhouLittleMaid.zip";
 
-
-// 要解压的ZIP文件路径
-const zipFilePath = 'path/to/your/file.zip';
-
 async function main(){
     let bp = zipPack(PATH_BP);
     let rp = zipPack(PATH_RP);
@@ -36,7 +32,6 @@ async function main(){
 }
 
 function zipPack(path){
-    // creating archives
     const zip = new AdmZip();
     traverseDirectory(path, zip, '');
     return zip;

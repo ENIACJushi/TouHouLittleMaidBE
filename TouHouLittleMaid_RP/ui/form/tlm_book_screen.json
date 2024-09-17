@@ -158,13 +158,13 @@
                   /// 页码控制 ///
                   // 下一页
                   {
-                    "binding_type": "view", "source_control_name": "next_button_watcher",
+                    "binding_type": "view", "source_control_name": "next_button",
                     "source_property_name": "#page", "target_property_name": "#page_delta_next",
                     "binding_condition": "always_when_visible"
                   },
                   // 上一页
                   {
-                    "binding_type": "view", "source_control_name": "prev_button_watcher",
+                    "binding_type": "view", "source_control_name": "prev_button",
                     "source_property_name": "#page", "target_property_name": "#page_delta_prev",
                     "binding_condition": "always_when_visible"
                   },
@@ -181,16 +181,16 @@
                     "binding_condition": "always_when_visible"
                   },
                   // 章节跳转组
-                  { "binding_type": "view", "source_control_name": "chapter_watcher_1", "source_property_name": "#page", "target_property_name": "#page_delta_chapter1", "binding_condition": "always_when_visible" },
-                  { "binding_type": "view", "source_control_name": "chapter_watcher_2", "source_property_name": "#page", "target_property_name": "#page_delta_chapter2", "binding_condition": "always_when_visible" },
-                  { "binding_type": "view", "source_control_name": "chapter_watcher_3", "source_property_name": "#page", "target_property_name": "#page_delta_chapter3", "binding_condition": "always_when_visible" },
-                  { "binding_type": "view", "source_control_name": "chapter_watcher_4", "source_property_name": "#page", "target_property_name": "#page_delta_chapter4", "binding_condition": "always_when_visible" },
-                  { "binding_type": "view", "source_control_name": "chapter_watcher_5", "source_property_name": "#page", "target_property_name": "#page_delta_chapter5", "binding_condition": "always_when_visible" },
-                  { "binding_type": "view", "source_control_name": "chapter_watcher_6", "source_property_name": "#page", "target_property_name": "#page_delta_chapter6", "binding_condition": "always_when_visible" },
-                  { "binding_type": "view", "source_control_name": "chapter_watcher_7", "source_property_name": "#page", "target_property_name": "#page_delta_chapter7", "binding_condition": "always_when_visible" },
-                  { "binding_type": "view", "source_control_name": "chapter_watcher_8", "source_property_name": "#page", "target_property_name": "#page_delta_chapter8", "binding_condition": "always_when_visible" },
-                  { "binding_type": "view", "source_control_name": "chapter_watcher_9", "source_property_name": "#page", "target_property_name": "#page_delta_chapter9", "binding_condition": "always_when_visible" },
-                  { "binding_type": "view", "source_control_name": "chapter_watcher_10", "source_property_name": "#page", "target_property_name": "#page_delta_chapter10", "binding_condition": "always_when_visible" },
+                  { "binding_type": "view", "source_control_name": "chapter_button_1", "source_property_name": "#page", "target_property_name": "#page_delta_chapter1", "binding_condition": "always_when_visible" },
+                  { "binding_type": "view", "source_control_name": "chapter_button_2", "source_property_name": "#page", "target_property_name": "#page_delta_chapter2", "binding_condition": "always_when_visible" },
+                  { "binding_type": "view", "source_control_name": "chapter_button_3", "source_property_name": "#page", "target_property_name": "#page_delta_chapter3", "binding_condition": "always_when_visible" },
+                  { "binding_type": "view", "source_control_name": "chapter_button_4", "source_property_name": "#page", "target_property_name": "#page_delta_chapter4", "binding_condition": "always_when_visible" },
+                  { "binding_type": "view", "source_control_name": "chapter_button_5", "source_property_name": "#page", "target_property_name": "#page_delta_chapter5", "binding_condition": "always_when_visible" },
+                  { "binding_type": "view", "source_control_name": "chapter_button_6", "source_property_name": "#page", "target_property_name": "#page_delta_chapter6", "binding_condition": "always_when_visible" },
+                  { "binding_type": "view", "source_control_name": "chapter_button_7", "source_property_name": "#page", "target_property_name": "#page_delta_chapter7", "binding_condition": "always_when_visible" },
+                  { "binding_type": "view", "source_control_name": "chapter_button_8", "source_property_name": "#page", "target_property_name": "#page_delta_chapter8", "binding_condition": "always_when_visible" },
+                  { "binding_type": "view", "source_control_name": "chapter_button_9", "source_property_name": "#page", "target_property_name": "#page_delta_chapter9", "binding_condition": "always_when_visible" },
+                  { "binding_type": "view", "source_control_name": "chapter_button_10", "source_property_name": "#page", "target_property_name": "#page_delta_chapter10", "binding_condition": "always_when_visible" },
                   { 
                     "binding_type": "view", 
                     "source_property_name": "(#page_delta_chapter1 + #page_delta_chapter2 + #page_delta_chapter3 + #page_delta_chapter4 + #page_delta_chapter5 + #page_delta_chapter6 + #page_delta_chapter7 + #page_delta_chapter8 + #page_delta_chapter9 + #page_delta_chapter10)",
@@ -275,73 +275,6 @@
             },
             // 上一页
             {
-              "prev_button_watcher":{
-                "type": "panel",
-                // "visible": false,
-                "bindings":[
-                  {
-                    "binding_type": "view",
-                    "source_control_name": "book_panel",
-                    "source_property_name": "(#page_base-#page_base)",
-                    "target_property_name": "#page",
-                    "binding_condition": "visible",
-                    "resolve_sibling_scope": true
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "#page",
-                    "target_property_name": "#page_next",
-                    "binding_condition": "visible"
-                  },
-                  /// toggle
-                  {
-                    "binding_type": "view",
-                    "source_control_name": "prev_button",
-                    "source_property_name": "#toggle_state",
-                    "target_property_name": "#new_toggle_state",
-                    "binding_condition": "always_when_visible",
-                    "resolve_sibling_scope": true
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "((#new_toggle_state) and (not (#old_toggle_state)))",
-                    "target_property_name": "#temp",
-                    "binding_condition": "always_when_visible"
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "(((#new_toggle_state) and ((#page_next + #temp) < (#page + 2))))",
-                    "target_property_name": "#temp2",
-                    "binding_condition": "always_when_visible"
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "(#page_next + #temp2 )",
-                    "target_property_name": "#page_next",
-                    "binding_condition": "always_when_visible"
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "(((not (#new_toggle_state)) and ((#page_next) > (#page)))*1)",
-                    "target_property_name": "#temp3",
-                    "binding_condition": "always_when_visible"
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "(#page + #temp3 )",
-                    "target_property_name": "#page",
-                    "binding_condition": "always_when_visible"
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "#new_toggle_state",
-                    "target_property_name": "#old_toggle_state",
-                    "binding_condition": "always_when_visible"
-                  }
-                ]
-              }
-            },
-            {
               "prev_button@thlm_book.base_button": {
                 "$toggle_name": "prev_button",
                 "size": [ 24, 24 ],
@@ -360,7 +293,7 @@
                 "$unchecked_hover": "thlm_book.left_toggle_uncheck_hover",
                 "$unchecked": "thlm_book.left_toggle_uncheck",
                 "bindings":[
-                  // 页码控制
+                  /// 显隐控制 ///
                   {
                     "binding_type": "view",
                     "source_control_name": "book_panel",
@@ -376,96 +309,49 @@
                     "binding_condition": "always",
                     "resolve_sibling_scope": true
                   },
-                  // 通用toggle检测
-                  {
-                    "binding_type": "view",
-                    "source_control_name": "prev_button_watcher",
-                    "source_property_name": "#old_toggle_state",
-                    "target_property_name": "#next_signal",
-                    "binding_condition": "always_when_visible",
-                    "resolve_sibling_scope": true
+                  /// 初始化 ///
+                  { // page 当前值
+                    "binding_type": "view", "binding_condition": "visible",
+                    "resolve_sibling_scope": true,
+                    "source_control_name": "book_panel",
+                    "source_property_name": "(#page_base-#page_base)",
+                    "target_property_name": "#page"
                   },
-                  {
-                    "binding_type": "view",
-                    // 0 0 -> 0
-                    // 0 1 -> 0
-                    // 1 0 -> 1
-                    // 1 1 -> 0
-                    "source_property_name": "((#toggle_state) and (not (#next_signal)))",
-                    "target_property_name": "#toggle_state",
-                    "binding_condition": "always_when_visible"
+                  { // page_next 下一跳
+                    "binding_type": "view", "binding_condition": "visible",
+                    "source_property_name": "#page",
+                    "target_property_name": "#page_next"
+                  },
+                  /// 状态检测 ///
+                  { // 开关为开，且目标变量的下一跳等于当前值，则开始赋值操作
+                    "binding_type": "view", "binding_condition": "always_when_visible",
+                    "source_property_name": "(#toggle_state and (#page_next = #page))",
+                    "target_property_name": "#signal"
+                  },
+                  { // 为目标变量的下一跳加一
+                    "binding_type": "view", "binding_condition": "always_when_visible",
+                    "source_property_name": "(#page_next + #signal)",
+                    "target_property_name": "#page_next"
+                  },
+                  { // 重置赋值信号
+                    "binding_type": "view", "binding_condition": "always_when_visible",
+                    "source_property_name": "((#signal) and (not #signal))",
+                    "target_property_name": "#signal"
+                  },
+                  { // 关闭开关（有延迟）
+                    "binding_type": "view", "binding_condition": "always_when_visible",
+                    "source_property_name": "((#toggle_state) and (not #toggle_state))",
+                    "target_property_name": "#toggle_state"
+                  },
+                  { // 当开关状态恢复为关，且下一跳大于当前值，将目标变量转到下一跳
+                    "binding_type": "view", "binding_condition": "always_when_visible",
+                    "source_property_name": "(#page + ( (not #toggle_state) and (#page < #page_next) ))",
+                    "target_property_name": "#page"
                   }
                 ]
               }
             },
             // 下一页
-            {
-              "next_button_watcher":{
-                "type": "panel",
-                // "visible": false,
-                "bindings":[
-                  {
-                    "binding_type": "view",
-                    "source_control_name": "book_panel",
-                    "source_property_name": "(#page_base-#page_base)",
-                    "target_property_name": "#page",
-                    "binding_condition": "visible",
-                    "resolve_sibling_scope": true
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "#page",
-                    "target_property_name": "#page_next",
-                    "binding_condition": "visible"
-                  },
-                  /// toggle
-                  {
-                    "binding_type": "view",
-                    "source_control_name": "next_button",
-                    "source_property_name": "#toggle_state",
-                    "target_property_name": "#new_toggle_state",
-                    "binding_condition": "always_when_visible",
-                    "resolve_sibling_scope": true
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "((#new_toggle_state) and (not (#old_toggle_state)))",
-                    "target_property_name": "#temp",
-                    "binding_condition": "always_when_visible"
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "(((#new_toggle_state) and ((#page_next + #temp) < (#page + 2))))",
-                    "target_property_name": "#temp2",
-                    "binding_condition": "always_when_visible"
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "(#page_next + #temp2)",
-                    "target_property_name": "#page_next",
-                    "binding_condition": "always_when_visible"
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "(((not (#new_toggle_state)) and ((#page_next) > (#page)))*1)",
-                    "target_property_name": "#temp3",
-                    "binding_condition": "always_when_visible"
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "(#page + #temp3)",
-                    "target_property_name": "#page",
-                    "binding_condition": "always_when_visible"
-                  },
-                  {
-                    "binding_type": "view",
-                    "source_property_name": "#new_toggle_state",
-                    "target_property_name": "#old_toggle_state",
-                    "binding_condition": "always_when_visible"
-                  }
-                ]
-              }
-            },
             {
               "next_button@thlm_book.base_button": {
                 "$toggle_name": "next_button",
@@ -490,7 +376,7 @@
                 "$hover_texture": "textures/ui/book_pageright_hover",
                 "$pressed_texture": "textures/ui/book_pageright_pressed",
                 "bindings":[
-                  // 页码控制
+                  /// 显隐控制 ///
                   {
                     "binding_type": "view",
                     "source_control_name": "book_panel",
@@ -513,24 +399,44 @@
                     "target_property_name": "#visible",
                     "binding_condition": "always_when_visible"
                   },
-                  // 通用toggle检测
-                  {
-                    "binding_type": "view",
-                    "source_control_name": "next_button_watcher",
-                    "source_property_name": "#old_toggle_state",
-                    "target_property_name": "#next_signal",
-                    "binding_condition": "always_when_visible",
-                    "resolve_sibling_scope": true
+                  /// 初始化 ///
+                  { // page 当前值
+                    "binding_type": "view", "binding_condition": "visible",
+                    "resolve_sibling_scope": true,
+                    "source_control_name": "book_panel",
+                    "source_property_name": "(#page_base-#page_base)",
+                    "target_property_name": "#page"
                   },
-                  {
-                    "binding_type": "view",
-                    // 0 0 -> 0
-                    // 0 1 -> 0
-                    // 1 0 -> 1
-                    // 1 1 -> 0
-                    "source_property_name": "((#toggle_state) and (not (#next_signal)))",
-                    "target_property_name": "#toggle_state",
-                    "binding_condition": "always_when_visible"
+                  { // page_next 下一跳
+                    "binding_type": "view", "binding_condition": "visible",
+                    "source_property_name": "#page",
+                    "target_property_name": "#page_next"
+                  },
+                  /// 状态检测 ///
+                  { // 开关为开，且目标变量的下一跳等于当前值，则开始赋值操作
+                    "binding_type": "view", "binding_condition": "always_when_visible",
+                    "source_property_name": "(#toggle_state and (#page_next = #page))",
+                    "target_property_name": "#signal"
+                  },
+                  { // 为目标变量的下一跳加一
+                    "binding_type": "view", "binding_condition": "always_when_visible",
+                    "source_property_name": "(#page_next + #signal)",
+                    "target_property_name": "#page_next"
+                  },
+                  { // 重置赋值信号
+                    "binding_type": "view", "binding_condition": "always_when_visible",
+                    "source_property_name": "((#signal) and (not #signal))",
+                    "target_property_name": "#signal"
+                  },
+                  { // 关闭开关（有延迟）
+                    "binding_type": "view", "binding_condition": "always_when_visible",
+                    "source_property_name": "((#toggle_state) and (not #toggle_state))",
+                    "target_property_name": "#toggle_state"
+                  },
+                  { // 当开关状态恢复为关，且下一跳大于当前值，将目标变量转到下一跳
+                    "binding_type": "view", "binding_condition": "always_when_visible",
+                    "source_property_name": "(#page + ( (not #toggle_state) and (#page < #page_next) ))",
+                    "target_property_name": "#page"
                   }
                 ]
               }
@@ -660,27 +566,16 @@
               }
             },
             // 章节跳转组
-            { "chapter1_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_1", "$text": "#chapter_text_1", "$offset": [173, 46], "$chapter_watcher": "chapter_watcher_1", "$chapter": 0} },
-            { "chapter2_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_2", "$text": "#chapter_text_2", "$offset": [173, 57], "$chapter_watcher": "chapter_watcher_2", "$chapter": 1} },
-            { "chapter3_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_3", "$text": "#chapter_text_3", "$offset": [173, 68], "$chapter_watcher": "chapter_watcher_3", "$chapter": 2} },
-            { "chapter4_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_4", "$text": "#chapter_text_4", "$offset": [173, 79], "$chapter_watcher": "chapter_watcher_4", "$chapter": 3} },
-            { "chapter5_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_5", "$text": "#chapter_text_5", "$offset": [173, 90], "$chapter_watcher": "chapter_watcher_5", "$chapter": 4} },
-            { "chapter6_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_6", "$text": "#chapter_text_6", "$offset": [173, 101], "$chapter_watcher": "chapter_watcher_6", "$chapter": 5} },
-            { "chapter7_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_7", "$text": "#chapter_text_7", "$offset": [173, 112], "$chapter_watcher": "chapter_watcher_7", "$chapter": 6} },
-            { "chapter8_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_8", "$text": "#chapter_text_8", "$offset": [173, 123], "$chapter_watcher": "chapter_watcher_8", "$chapter": 7} },
-            { "chapter9_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_9", "$text": "#chapter_text_9", "$offset": [173, 134], "$chapter_watcher": "chapter_watcher_9", "$chapter": 8} },
-            { "chapter10_button@thlm_book.chapter_button": { "$texture": "#chapter_texture_10", "$text": "#chapter_text_10", "$offset": [173, 145], "$chapter_watcher": "chapter_watcher_10", "$chapter": 9} },
-
-            { "chapter_watcher_1@thlm_book.chapter_watcher": {"$chapter_button": "chapter1_button", "$chapter_page": "#page_chapter1"}},
-            { "chapter_watcher_2@thlm_book.chapter_watcher": {"$chapter_button": "chapter2_button", "$chapter_page": "#page_chapter2"}},
-            { "chapter_watcher_3@thlm_book.chapter_watcher": {"$chapter_button": "chapter3_button", "$chapter_page": "#page_chapter3"}},
-            { "chapter_watcher_4@thlm_book.chapter_watcher": {"$chapter_button": "chapter4_button", "$chapter_page": "#page_chapter4"}},
-            { "chapter_watcher_5@thlm_book.chapter_watcher": {"$chapter_button": "chapter5_button", "$chapter_page": "#page_chapter5"}},
-            { "chapter_watcher_6@thlm_book.chapter_watcher": {"$chapter_button": "chapter6_button", "$chapter_page": "#page_chapter6"}},
-            { "chapter_watcher_7@thlm_book.chapter_watcher": {"$chapter_button": "chapter7_button", "$chapter_page": "#page_chapter7"}},
-            { "chapter_watcher_8@thlm_book.chapter_watcher": {"$chapter_button": "chapter8_button", "$chapter_page": "#page_chapter8"}},
-            { "chapter_watcher_9@thlm_book.chapter_watcher": {"$chapter_button": "chapter9_button", "$chapter_page": "#page_chapter9"}},
-            { "chapter_watcher_10@thlm_book.chapter_watcher": {"$chapter_button": "chapter10_button", "$chapter_page": "#page_chapter10"}}
+            { "chapter_button_1@thlm_book.chapter_button": { "$texture": "#chapter_texture_1", "$text": "#chapter_text_1", "$offset": [173, 46], "$chapter_page": "#page_chapter1", "$chapter": 0} },
+            { "chapter_button_2@thlm_book.chapter_button": { "$texture": "#chapter_texture_2", "$text": "#chapter_text_2", "$offset": [173, 57], "$chapter_page": "#page_chapter2", "$chapter": 1} },
+            { "chapter_button_3@thlm_book.chapter_button": { "$texture": "#chapter_texture_3", "$text": "#chapter_text_3", "$offset": [173, 68], "$chapter_page": "#page_chapter3", "$chapter": 2} },
+            { "chapter_button_4@thlm_book.chapter_button": { "$texture": "#chapter_texture_4", "$text": "#chapter_text_4", "$offset": [173, 79], "$chapter_page": "#page_chapter4", "$chapter": 3} },
+            { "chapter_button_5@thlm_book.chapter_button": { "$texture": "#chapter_texture_5", "$text": "#chapter_text_5", "$offset": [173, 90], "$chapter_page": "#page_chapter5", "$chapter": 4} },
+            { "chapter_button_6@thlm_book.chapter_button": { "$texture": "#chapter_texture_6", "$text": "#chapter_text_6", "$offset": [173, 101], "$chapter_page": "#page_chapter6", "$chapter": 5} },
+            { "chapter_button_7@thlm_book.chapter_button": { "$texture": "#chapter_texture_7", "$text": "#chapter_text_7", "$offset": [173, 112], "$chapter_page": "#page_chapter7", "$chapter": 6} },
+            { "chapter_button_8@thlm_book.chapter_button": { "$texture": "#chapter_texture_8", "$text": "#chapter_text_8", "$offset": [173, 123], "$chapter_page": "#page_chapter8", "$chapter": 7} },
+            { "chapter_button_9@thlm_book.chapter_button": { "$texture": "#chapter_texture_9", "$text": "#chapter_text_9", "$offset": [173, 134], "$chapter_page": "#page_chapter9", "$chapter": 8} },
+            { "chapter_button_10@thlm_book.chapter_button": { "$texture": "#chapter_texture_10", "$text": "#chapter_text_10", "$offset": [173, 145], "$chapter_page": "#page_chapter10", "$chapter": 9} }
           ],
           "bindings":[
             { "binding_type": "view", "binding_condition": "visible", "source_control_name": "chapter_wrapper_1",
@@ -788,8 +683,8 @@
     "size": [120, 12],
     "$text": "#chapter_text_1",
     "$texture": "#chapter_texture_1",
-    "$chapter_watcher": "chapter_watcher_1",
     "$chapter": 0,
+    "$chapter_page": "#page_chapter1",
     "controls": [
       {
         "image":{
@@ -837,7 +732,7 @@
       { "checked_hover@toggle_style": {"layer": 999, "size": ["100%", "100%"], "$toggle_image":"textures/ui/tlm_book_chapter_select"} }
     ],
     "bindings":[
-      // 页码控制
+      /// 显隐控制 ///
       {
         "binding_type": "view",
         "source_control_name": "book_panel",
@@ -860,104 +755,61 @@
         "target_property_name": "#visible",
         "binding_condition": "always"
       },
-      // 通用toggle检测
-      {
-        "binding_type": "view",
-        "source_control_name": "$chapter_watcher",
-        "source_property_name": "#old_toggle_state",
-        "target_property_name": "#next_signal",
-        "binding_condition": "always_when_visible",
-        "resolve_sibling_scope": true
-      },
-      {
-        "binding_type": "view",
-        // 0 0 -> 0
-        // 0 1 -> 0
-        // 1 0 -> 1
-        // 1 1 -> 0
-        "source_property_name": "((#toggle_state) and (not (#next_signal)))",
-        "target_property_name": "#toggle_state",
-        "binding_condition": "always_when_visible"
-      }
-    ],
-    "$pressed_button_name": "button.menu_settings"
-  },
-  "chapter_watcher":{
-    "type": "panel",
-    "$chapter_button|default": "chapter_wrapper_1",
-    "$chapter_page|default": "#page_chapter1",
-    // "visible": false,
-    "bindings":[
-      // 初始化置零
+      /// 初始化页码 ///
       {
         "binding_type": "view",
         "source_control_name": "book_panel",
-        "source_property_name": "(#page_base-#page_base)",
-        "target_property_name": "#page",
-        "binding_condition": "visible",
-        "resolve_sibling_scope": true
-      },
-      {
-        "binding_type": "view",
-        "source_property_name": "#page",
-        "target_property_name": "#page_next",
-        "binding_condition": "visible"
-      },
-      // 初始化页码
-      {
-        "binding_type": "view",
-        "source_control_name": "book_panel",
-        "source_property_name": "(($chapter_page)+2)",// 从首页跳转到第0页要+2
+        "source_property_name": "(($chapter_page)+2)", // 从首页跳转到第0页要+2
         "target_property_name": "#chapter_page",
         "binding_condition": "visible",
         "resolve_sibling_scope": true
       },
-      /// toggle
-      {
-        "binding_type": "view",
-        "source_control_name": "$chapter_button",
-        "source_property_name": "#toggle_state",
-        "target_property_name": "#new_toggle_state",
-        "binding_condition": "always_when_visible",
-        "resolve_sibling_scope": true
+      /// 初始化 ///
+      { // page 当前值
+        "binding_type": "view", "binding_condition": "visible",
+        "resolve_sibling_scope": true,
+        "source_control_name": "book_panel",
+        "source_property_name": "(#page_base-#page_base)",
+        "target_property_name": "#page"
+      },
+      { // page_next 下一跳
+        "binding_type": "view", "binding_condition": "visible",
+        "source_property_name": "#page",
+        "target_property_name": "#page_next"
+      },
+      /// 状态检测 ///
+      { // 开关为开，且目标变量的下一跳等于当前值，则开始赋值操作
+        "binding_type": "view", "binding_condition": "always_when_visible",
+        "source_property_name": "(#toggle_state and (#page_next = #page))",
+        "target_property_name": "#signal"
+      },
+      { // 为目标变量的下一跳加一
+        "binding_type": "view", "binding_condition": "always_when_visible",
+        "source_property_name": "(#page_next + (#signal*#chapter_page))",
+        "target_property_name": "#page_next"
+      },
+      { // 重置赋值信号
+        "binding_type": "view", "binding_condition": "always_when_visible",
+        "source_property_name": "((#signal) and (not #signal))",
+        "target_property_name": "#signal"
+      },
+      { // 关闭开关（有延迟）
+        "binding_type": "view", "binding_condition": "always_when_visible",
+        "source_property_name": "((#toggle_state) and (not #toggle_state))",
+        "target_property_name": "#toggle_state"
       },
       {
-        "binding_type": "view",
-        "source_property_name": "((#new_toggle_state) and (not (#old_toggle_state)))",
-        "target_property_name": "#temp",
-        "binding_condition": "always_when_visible"
+        "binding_type": "view", "binding_condition": "always_when_visible",
+        "source_property_name": "((not #toggle_state) and (#page < #page_next))",
+        "target_property_name": "#page_temp"
       },
-      {
-        "binding_type": "view",
-        "source_property_name": "(((#new_toggle_state) and ((#page_next + #temp) < (#page + 2))))",
-        "target_property_name": "#temp2",
-        "binding_condition": "always_when_visible"
-      },
-      {
-        "binding_type": "view",
-        "source_property_name": "(#page_next + #temp2)",
-        "target_property_name": "#page_next",
-        "binding_condition": "always_when_visible"
-      },
-      {
-        "binding_type": "view",
-        "source_property_name": "(((not (#new_toggle_state)) and ((#page_next) > (#page)))*1)",
-        "target_property_name": "#temp3",
-        "binding_condition": "always_when_visible"
-      },
-      {
-        "binding_type": "view",
-        "source_property_name": "(#page + (#temp3*(#chapter_page)))",
-        "target_property_name": "#page",
-        "binding_condition": "always_when_visible"
-      },
-      {
-        "binding_type": "view",
-        "source_property_name": "#new_toggle_state",
-        "target_property_name": "#old_toggle_state",
-        "binding_condition": "always_when_visible"
+      { // 当开关状态恢复为关，且下一跳大于当前值，将目标变量转到下一跳
+        "binding_type": "view", "binding_condition": "always_when_visible",
+        "source_property_name": "(#page + (#page_temp * #chapter_page))",
+        "target_property_name": "#page"
       }
-    ]
+    ],
+    "$pressed_button_name": "button.menu_settings"
   },
   //// 书本内容 ////
   "book_close_and_grid":{
@@ -1206,7 +1058,7 @@
             // {
             //   "binding_type": "view",
             //   "source_control_name": "book_panel",
-            //   "source_property_name": "(','+ (#temp0) )",
+            //   "source_property_name": "(','+ (#page_delta_next) )",
             //   "target_property_name": "#text"
             // }
             //// 工作时
@@ -1265,9 +1117,7 @@
   "base_button@common.toggle": {
     "type": "toggle",
     "layer": 1000,
-    "property_bag": {
-      "#toggle_state": true
-    },
+    "property_bag": { "#toggle_state": true },
 
     "$checked": "thlm_book.left_toggle_check",
     "$checked_hover": "thlm_book.left_toggle_check_hover",
@@ -1281,20 +1131,9 @@
     "controls": [
       { "unchecked@$unchecked_control": {} },
       { "checked@$checked_control": {} },
-
       { "unchecked_hover@$unchecked_hover_control": {} },
       { "checked_hover@$checked_hover_control": {} }
-      
-      // { "unchecked_locked@$unchecked_locked_control": {} },
-      // { "checked_locked@$checked_locked_control": {} },
-      
-      // { "unchecked_locked_hover@$unchecked_locked_hover_control": {} },
-      // { "checked_locked_hover@$checked_locked_hover_control": {} }
     ],
-    // "checked_locked_control": "checked_locked",
-    // "unchecked_locked_control": "unchecked_locked",
-    // "checked_locked_hover_control": "checked_locked_hover",
-    // "unchecked_locked_hover_control": "unchecked_locked_hover",
     "$pressed_button_name": "button.menu_settings"
   },
 
