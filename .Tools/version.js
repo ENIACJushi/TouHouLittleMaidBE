@@ -5,8 +5,8 @@
 const fs = require('fs');
 
 ///////////////////////////////
-const version = [ 1, 4, 1 ]; //
-const MC = "1.21.2x";        //
+const version = [ 1, 5, 0 ]; //
+const MC = "1.21.3x";        //
 ///////////////////////////////
 
 const versionStr = version.join('.')
