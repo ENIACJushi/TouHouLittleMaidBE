@@ -2,7 +2,7 @@ import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, sy
 import * as Tool from"../libs/ScarletToolKit";
 import { StrMaid } from "../maid/StrMaid";
 import { MaidSkin } from "../maid/MaidSkin";
-import { ConfigHelper } from "./Config";
+import { ConfigForm, ConfigHelper } from "./Config";
 import {EntityMaid} from '../maid/EntityMaid'
 
 export class CommandManager{
@@ -12,7 +12,6 @@ export class CommandManager{
      * @returns 
      */
     static scriptEvent(event){
-        // 不要求使用者为玩家的命令，返回值均在世界范围广播
         switch(event.id){
             case "thlm:skin_set": this.setSkin(event); break;
             case "thlm:config"  : this.config(event) ; break;
@@ -45,28 +44,9 @@ export class CommandManager{
      * @param {ScriptEventCommandMessageAfterEvent} event 
      */
     static config(event){
-        try{
-            let strList = event.message.split(":");
-            if(strList.length===1){
-                switch(event.message){
-                    case "show":
-                        if(event.sourceEntity !== undefined){
-                            event.sourceEntity.runCommand(`tellraw @s {"rawtext":[{"text": "${ConfigHelper.tostring()}"}]}`);
-                        }
-                        
-                        break;
-                    default: Tool.logger("Unknown config command."); break;
-                }
-            }
-            else{
-                let value = parseInt(strList[1])
-                ConfigHelper.set(strList[0], value)
-                Tool.logger(`Config set: ${strList[0]} - ${value}`);
-            }
-        }
-        catch{
-            Tool.logger("Invalid config command.");
-        }
+        let source = event.sourceEntity;
+        if(source === undefined || source.typeId !== "minecraft:player") return;
+        ConfigForm.mainForm(event.sourceEntity);
     }
     /**
      * 管理用指令

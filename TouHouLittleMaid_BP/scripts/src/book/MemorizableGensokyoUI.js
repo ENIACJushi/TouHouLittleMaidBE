@@ -9,24 +9,24 @@ const BOOK = [12,16,10];
 
 const chapterButtonDelta = BOOK.length + BOOK.length % 2;
 
-export class MemorizableGensokyo{
+export class MemorizableGensokyo {
     /**
-     * 
+     * 接收物品使用事件
      * @param {ItemUseBeforeEvent} event 
      */
-    static onUseEvent(event){
+    static onUseEvent(event) {
         let book = ItemTool.getPlayerMainHand(event.source);
         if(book===undefined) return;
-        let page = this.getBookPage(book)
+        let page = this.getBookItemPage(book)
         this.sendForm(event.source, page.chapter, page.page);
     }
     /**
-     * 
+     * 发送书本表单
      * @param {Player} pl
      * @param {Number} chapter 打开书的章节，为负时在首页
      * @param {Number} page 章节的页面
      */
-    static sendForm(pl, chapter, page){
+    static sendForm(pl, chapter, page) {
         let bodyStr = "";
         // 计算章节页码起点
         let startPage = 0;
@@ -80,7 +80,7 @@ export class MemorizableGensokyo{
             if(book!==undefined && book.typeId==="touhou_little_maid:memorizable_gensokyo"){
                 // 在首页退出时，selection 为 undefined
                 let page = this.getChapterByTotal(response.selection);
-                this.setBookPage(book, page.chapter, page.page);
+                this.setBookItemPage(book, page.chapter, page.page);
                 ItemTool.setPlayerMainHand(pl, book);
             }
         });
@@ -90,7 +90,7 @@ export class MemorizableGensokyo{
      * @param {Number} _page_total 总页号
      * @returns {{chapter:Number; page:Number}}
      */
-    static getChapterByTotal(_page_total){
+    static getChapterByTotal(_page_total) {
         if(_page_total===undefined) return {chapter: -1, page: 0};
 
         let page_total = _page_total-chapterButtonDelta;
@@ -106,12 +106,15 @@ export class MemorizableGensokyo{
         return {chapter: chapter, page: page};
     }
     /**
-     * 根据章节和页码获得总页号
+     * 根据章节和页码获得在整本书中的页号
      * @param {Number} chapter 
      * @param {Number} page 
      */
-    static getTotalByChapter(chapter, page){
-        if(chapter===undefined||chapter<0||page===undefined||page<0) return 0; // 在首页时返回任意非负数即可
+    static getTotalByChapter(chapter, page) {
+        if (chapter === undefined || chapter < 0
+            || page === undefined || page < 0) {
+            return 0; // 在首页时返回任意非负数即可
+        }
         let res = page;
         for(let i = 0; i < chapter; i++){
             res += BOOK[i];
@@ -119,20 +122,20 @@ export class MemorizableGensokyo{
         return res;
     }
     /**
-     * 设置书本页码
+     * 设置物品书本的页码
      * @param {ItemStack} itemStack 
      * @param {String} chapter 
      * @param {String} page 
      */
-    static setBookPage(itemStack, chapter, page){
+    static setBookItemPage(itemStack, chapter, page) {
         itemStack.setLore(str2Lore(`tlmb:${chapter}:${page}`));
     }
     /**
-     * 获取书本页码
+     * 获取物品书本的页码
      * @param {ItemStack} itemStack
      * @returns {{chapter:Number; page:Number}}
      */
-    static getBookPage(itemStack){
+    static getBookItemPage(itemStack) {
         let lore = itemStack.getLore()
         if(lore !== undefined && lore.length === 1){
             let str = lore2Str(lore[0]);
