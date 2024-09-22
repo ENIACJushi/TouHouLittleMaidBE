@@ -6,7 +6,7 @@
     "version": [
       1,
       4,
-      0
+      1
     ],
     "description": "pack.description",
     "min_engine_version": [
@@ -24,7 +24,7 @@
       "version": [
         1,
         4,
-        0
+        1
       ]
     },
     {
@@ -33,7 +33,7 @@
       "version": [
         1,
         4,
-        0
+        1
       ]
     }
   ],
@@ -43,7 +43,7 @@
       "version": [
         1,
         4,
-        0
+        1
       ]
     },
     {

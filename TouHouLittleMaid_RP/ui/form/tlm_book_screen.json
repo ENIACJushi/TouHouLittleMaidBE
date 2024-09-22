@@ -798,12 +798,12 @@
         "source_property_name": "((#toggle_state) and (not #toggle_state))",
         "target_property_name": "#toggle_state"
       },
-      {
+      { // 当开关状态恢复为关，且下一跳大于当前值，将目标变量转到下一跳 (1)
         "binding_type": "view", "binding_condition": "always_when_visible",
         "source_property_name": "((not #toggle_state) and (#page < #page_next))",
         "target_property_name": "#page_temp"
       },
-      { // 当开关状态恢复为关，且下一跳大于当前值，将目标变量转到下一跳
+      { // 当开关状态恢复为关，且下一跳大于当前值，将目标变量转到下一跳 (2)
         "binding_type": "view", "binding_condition": "always_when_visible",
         "source_property_name": "(#page + (#page_temp * #chapter_page))",
         "target_property_name": "#page"

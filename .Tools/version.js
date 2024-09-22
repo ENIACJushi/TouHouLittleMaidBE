@@ -5,7 +5,7 @@
 const fs = require('fs');
 
 ///////////////////////////////
-const version = [ 1, 4, 0 ]; //
+const version = [ 1, 4, 1 ]; //
 const MC = "1.21.2x";        //
 ///////////////////////////////
 
@@ -21,14 +21,14 @@ const TEXT_ENDER = "### VERSION_AUTO_GENERATE_END ###"
 const LANG_TEMPLATE = {
     "zh_CN": {
         "pack.name": `车万女仆`,
-        "pack.description": `作者: 体宿一(b站) | 版本 ${versionStr} (MC ${MC}, 关闭假日创造者)`,
+        "pack.description": `作者: 体宿一(b站) | 版本 ${versionStr} (MC ${MC})`,
         "message.tlm.mc_version": MC,
         "message.tlm.player_join1": `§e[TLM] 车万女仆 ${versionStr}`,
         "message.tlm.player_join2": `§e 访问 mcmod.cn 获取全部教程。`
     },
     "en_US": {
         "pack.name": `Touhou Little Maid`,
-        "pack.description": `By: ENIAC_Jushi, version ${versionStr} (For MC ${MC}, NO holiday creator)`,
+        "pack.description": `By: ENIAC_Jushi, version ${versionStr} (For MC ${MC})`,
         "message.tlm.mc_version": MC,
         "message.tlm.player_join1": `§e[TLM] Touhou Little Maid ${versionStr}`,
         "message.tlm.player_join2": `§e Visit mcmod.cn for complete tutorial.`
