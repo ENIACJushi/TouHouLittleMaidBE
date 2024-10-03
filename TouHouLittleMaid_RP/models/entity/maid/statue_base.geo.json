@@ -6,13 +6,18 @@
 				"identifier": "geometry.touhou_little_maid.statue_base",
 				"texture_width": 256,
 				"texture_height": 256,
-				"visible_bounds_width": 4,
-				"visible_bounds_height": 2.5,
-				"visible_bounds_offset": [0, 0.75, 0]
+				"visible_bounds_width": 5,
+				"visible_bounds_height": 3.5,
+				"visible_bounds_offset": [0, 1.25, 0]
 			},
 			"bones": [
 				{
+					"name": "root",
+					"pivot": [0, 0, 0]
+				},
+				{
 					"name": "statue_base",
+					"parent": "root",
 					"pivot": [0, 0, -5],
 					"cubes": [
 						{"origin": [-24, 0, -24], "size": [48, 2, 48], "uv": [0, 0]},

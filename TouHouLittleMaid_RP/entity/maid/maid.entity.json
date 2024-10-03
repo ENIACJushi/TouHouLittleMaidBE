@@ -303,10 +303,10 @@
         ],
         "should_update_bones_and_effects_offscreen": true,
         "animate": [
-          "statue_base",
 
           "backpack_offset",
           {"blink" : "query.property('thlm:work') >= -1"},
+          {"statue_base": "(q.property('thlm:work') >= -4) && (q.property('thlm:work') <= -2)"},
           "wing",
           {"look_at_target": "!query.property('thlm:is_hug')"},
           {"walk" : "!query.property('thlm:is_sitting')"},
@@ -334,8 +334,8 @@
       "render_controllers": [
         "controller.render.touhou_little_maid.maid.maid_backpack",
         "controller.render.touhou_little_maid.maid.emote",
-        "controller.render.touhou_little_maid.maid_touhou_little_maid"
-        // "controller.render.touhou_little_maid.maid.statue_base"
+        "controller.render.touhou_little_maid.maid_touhou_little_maid",
+        "controller.render.touhou_little_maid.maid.statue_base"
       ],
       "spawn_egg": {
         "base_color": "#ffffff",

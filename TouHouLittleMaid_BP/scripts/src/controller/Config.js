@@ -57,7 +57,6 @@ export class ConfigHelper {
             system.runTimeout(() => {
                 this.init();
             }, 1);
-            Tool.logger("what");
             return;
         }
         // 读取或初始化计分板
@@ -69,7 +68,6 @@ export class ConfigHelper {
                 this.set(key, CONFIG_DEFINITION[key].default);
             }
         }
-        Tool.logger(config["ui_enable"]);
     }
 
     /**
