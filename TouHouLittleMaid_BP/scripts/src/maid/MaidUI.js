@@ -11,7 +11,7 @@ import { config } from '../controller/Config';
  * @param {Entity} maid 
  */
 export function MainMenu(player, maid){
-    if(config["ui_enable"] === 1){
+    if(config["ui_enable"]){
         let form = new MaidMenuUI(player, maid);
         form.main();
     }
@@ -27,7 +27,7 @@ export function MainMenu(player, maid){
  * @param {Entity} maid 
  */
 export function SkinMenu(player, maid, selectSkin=true){
-    if(config["ui_enable"] === 1){
+    if(config["ui_enable"]){
         let form = new MaidMenuUI(player, maid);
         form.skinpackSelection(selectSkin);
     }
