@@ -5,7 +5,7 @@
 			"loop": true,
 			"bones": {
 				"statue_base": {
-					"position": [0, -3.2, 3.5],
+					"position": [0, 0, 3.5],
 					"scale": 0.3
 				},
 				"root": {
@@ -46,6 +46,9 @@
 		"animation.touhou_little_maid.maid.sit": {
 			"loop": true,
 			"bones": {
+				"root": {
+					"position": [0, -7, 0]
+				},
 				"armLeft": {
 					"rotation": [-50.60796, 20.86371, 14.12716]
 				},
@@ -87,6 +90,10 @@
 		"animation.touhou_little_maid.maid.hug": {
 			"loop": true,
 			"bones": {
+				"root": {
+					"rotation": [-149.51553, -66.34466, 85.00942],
+					"position": [3, -11.3, -9.4]
+				},
 				"head": {
 					"rotation": [30.56687, 6.35214, -2.72699],
 					"position": [0, 0.9, -0.7]

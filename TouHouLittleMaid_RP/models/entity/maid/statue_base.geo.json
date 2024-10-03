@@ -12,12 +12,7 @@
 			},
 			"bones": [
 				{
-					"name": "root",
-					"pivot": [0, 0, 0]
-				},
-				{
 					"name": "statue_base",
-					"parent": "root",
 					"pivot": [0, 0, -5],
 					"cubes": [
 						{"origin": [-24, 0, -24], "size": [48, 2, 48], "uv": [0, 0]},
