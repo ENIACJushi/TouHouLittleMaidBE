@@ -4,7 +4,7 @@ import * as mcui from '@minecraft/server-ui';
 
 // 书本各章节的页码号(自动生成)
 // MG_AUTO_GENERATE_START
-const BOOK = [12,16,10];
+const BOOK = [12, 16, 10];
 // MG_AUTO_GENERATE_END
 
 const chapterButtonDelta = BOOK.length + BOOK.length % 2;

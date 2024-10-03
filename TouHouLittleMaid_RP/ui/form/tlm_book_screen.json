@@ -642,6 +642,7 @@
       { "chapter_wrapper_10@thlm_book.chapter_button_wrapper": { "$chapter": 9 } }
     ]
   },
+
   //// 章节跳转按钮 ////
   "chapter_button_wrapper":{
     "type": "panel",
@@ -819,7 +820,8 @@
     "size": [ "100%", "100%" ],
     "offset": [ 0, 0 ],
     "controls": [
-      { 
+      // 关闭按钮，对应左页的选择按钮
+      {
         "select_button_panel": {
           "type": "stack_panel",
           "collection_name": "form_buttons",
@@ -863,6 +865,7 @@
           }]
         }
       },
+      // 左右正文
       {
         "book_grid@book_grid":{}
       }
@@ -890,6 +893,7 @@
       }
     ]
   },
+  // 左右正文
   "book_grid": {
     "type": "grid",
     "$p1|default": 2,
@@ -909,19 +913,14 @@
           "$page_content_offset": [ 5, 0 ],
           "controls":[
             {
-              "page_content_root":{
+              "page_content_root": {
                 "type": "panel",
-                "size": [
-                  "100%",
-                  "100%"
-                ],
+                "size": [ "100%", "100%" ],
                 "offset": [19,25],
                 "layer": "($seq + 4)",
-                "controls":[
-                  {
-                    "page_content@page_content_panel": {"$index": "$p1"}
-                  }
-                ]
+                "controls":[ {
+                  "page_content@page_content_panel": {"$index": "$p1"}
+                } ]
               }
               
             }
@@ -944,25 +943,9 @@
                 "size": [ "100%", "100%" ],
                 "offset": [19, 25],
                 "layer": "($seq + 4)",
-                "controls":[
-                  {
-                    "page_content@page_content_panel": {"$index": "$p2"}
-                  }
-                  // {
-                  //   "scrolling_panel@common.scrolling_panel": {
-                  //     "$index": "$p2",
-                  //     "anchor_to": "top_left",
-                  //     "anchor_from": "top_left",
-                  //     "$show_background": false,
-                  //     "size": ["100%", "100% - 10px"],
-                  //     "offset": [ 0, 5 ],
-                  //     "$scrolling_content": "thlm_book.page_content_panel",
-                  //     "$scroll_size": [ 5, "100% - 4px" ],
-                  //     "$scroll_bar_right_padding_size": [ 5, 0 ],
-                  //     "$scroll_bar_right_padding_size_touch": [ 5, 0 ]
-                  //   }
-                  // }
-                ]
+                "controls":[ {
+                  "page_content@page_content_panel": {"$index": "$p2"}
+                } ]
               }
               
             }
@@ -971,6 +954,7 @@
       }
     ]
   },
+  // 背景图片
   "book_background_grid": {
     "type": "grid",
     "$p1|default": 2,
@@ -1037,7 +1021,7 @@
       }
     ]
   },
-  //// 文本框 ////
+  // 单页控件（最小单元）
   "page_content_panel":{
     "type": "stack_panel",
     "$index|default": 0,
@@ -1050,6 +1034,7 @@
     "offset": "$page_content_offset",
     "layer": "($seq + 4)",
     "controls":[
+      // 文本
       {
         "page_text": {
           "collection_index": "$index", // 不能被赋予#值 所以是一开始就决定了的
@@ -1080,6 +1065,7 @@
           "color": "$book_page_text_color"
         }
       },
+      // 特殊元素控制器
       {
         "page_img": {
           "collection_index": "$index",
@@ -1113,6 +1099,7 @@
       }
     ]
   },
+  
   //// 翻页按钮 ////
   "base_button@common.toggle": {
     "type": "toggle",
