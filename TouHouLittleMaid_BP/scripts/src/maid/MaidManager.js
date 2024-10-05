@@ -101,9 +101,10 @@ export class MaidManager{
                 EntityMaid.Work.set(maid, work);
                 maid.setDynamicProperty("temp_work");
             }
+            // 设置拾取模式
+            EntityMaid.Pick.set(maid, EntityMaid.Pick.get(maid));
             
             // 播放语音 从魂符、照片、祭坛复活的女仆不会播放
-            
             EntityMaid.Sound.tamed(maid);
         }
         /**

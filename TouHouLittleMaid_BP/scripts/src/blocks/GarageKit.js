@@ -77,15 +77,17 @@ export class GarageKit{
             return;
         }
         let skin;
+        let lore = offhand.getLore();
+        let maidStr = '';
         switch(offhand.typeId){
             case "touhou_little_maid:photo":
                 // 获取女仆编号
-                let lore = offhand.getLore();
                 if(lore === undefined){
                     ActionbarMessage.translate(player, "message.touhou_little_maid:photo.have_no_nbt_data.name"); // 这该死的照片没有 NBT 数据
                     return;
                 }
-                skin = StrMaid.Skin.get(lore2Str(lore))
+                maidStr = lore2Str(lore);
+                skin = StrMaid.Skin.get(maidStr);
                 break;
             default:
                 ActionbarMessage.translate(player, "message.touhou_little_maid:chisel.offhand_not_photo.name"); // 请副手持有一张女仆照片
@@ -139,10 +141,16 @@ export class GarageKit{
                         startLocation.x+0.5, startLocation.y, startLocation.z+0.5
                     ));
                     maid.setDynamicProperty("spawn_set",true);
+                    // 设置大小
                     EntityMaid.Statues.scale.set(maid, size.scale);
                     EntityMaid.Statues.space.set(maid, new Vector(size.space[0], size.space[1], size.space[2]));
+                    // 设置皮肤
                     EntityMaid.Skin.setPack(maid, skin.pack);
                     EntityMaid.Skin.setIndex(maid, skin.index);
+                    // 设置坐下状态
+                    if (StrMaid.Sit.get(maidStr)) {
+                        EntityMaid.sitDown(maid);
+                    }
                     maid.triggerEvent("become_garage_kit_un_solid");
                     
                     maid.teleport(maid.location, {"facingLocation": 
@@ -160,10 +168,17 @@ export class GarageKit{
                         startLocation.x + offset[0]/2 + 0.5, startLocation.y, startLocation.z + offset[2]/2 + 0.5
                     ));
                     maid.setDynamicProperty("spawn_set",true);
+                    // 设置大小
                     EntityMaid.Statues.scale.set(maid, size.scale);
                     EntityMaid.Statues.space.set(maid, new Vector(size.space[0], size.space[1], size.space[2]));
+                    // 设置皮肤
                     EntityMaid.Skin.setPack(maid, skin.pack);
                     EntityMaid.Skin.setIndex(maid, skin.index);
+                    // 设置坐下状态
+                    if (StrMaid.Sit.get(maidStr)) {
+                        EntityMaid.sitDown(maid);
+                    }
+
                     maid.triggerEvent("become_statues");
 
                     maid.teleport(maid.location, {"facingLocation": 
@@ -262,10 +277,11 @@ export class GarageKit{
                     let item = new ItemStack("touhou_little_maid:garage_kit", 1);
                     let pack = EntityMaid.Skin.getPack(maid);
                     let index = EntityMaid.Skin.getIndex(maid);
+                    let sit = EntityMaid.isSitting(maid) ? 'sit': 'stand';
                     // item.nameTag = JSON.stringify({rawtext:[MaidSkin.getSkinDisplayName(pack, index)]}); // 无法显示translate文本
                     
                     // 设置属性
-                    item.setLore([`${pack},${index}`]);
+                    item.setLore([`${pack},${index},${sit}`]);
                     
                     // 生成物品
                     maid.dimension.spawnItem(item, maid.location);
@@ -325,8 +341,14 @@ export class GarageKit{
         let size = this.SIZE[0];
         EntityMaid.Statues.scale.set(maid, size.scale);
         EntityMaid.Statues.space.set(maid, new Vector(size.space[0], size.space[1], size.space[2]));
-        EntityMaid.Skin.setPack(maid, Number(infoStr[0]));
-        EntityMaid.Skin.setIndex(maid, Number(infoStr[1]));
+        try {
+            EntityMaid.Skin.setPack(maid, Number(infoStr[0]));
+            EntityMaid.Skin.setIndex(maid, Number(infoStr[1]));
+            if(infoStr[2] === 'sit') {
+                EntityMaid.sitDown(maid);
+            }
+        } catch {};
+        
         maid.triggerEvent("become_garage_kit_solid");
         rotation.x = 0;
         if(rotation.y >= 0){

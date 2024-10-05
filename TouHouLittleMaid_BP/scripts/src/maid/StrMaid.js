@@ -93,6 +93,7 @@ export class StrMaid{
             return StrHelper.setValue(maidStr, 'L', str);
         }
     }
+    // K 杀敌数
     static Kill = {
         /**
          * 获取杀敌数
@@ -267,11 +268,11 @@ export class StrMaid{
         /**
          * 获取模式
          * @param {string} maidStr
-         * @returns {boolean|undefined}
+         * @returns {boolean}
          */
         get(maidStr){
             let str = StrHelper.getValue(maidStr, 'P', 1);
-            if(str === undefined) return undefined;
+            if(str === undefined) return true;
             return StrHelper.str2bool(str);
         },
         /**
@@ -290,11 +291,11 @@ export class StrMaid{
         /**
          * 获取模式
          * @param {string} maidStr
-         * @returns {boolean|undefined}
+         * @returns {boolean}
          */
         get(maidStr){
             let str = StrHelper.getValue(maidStr, 'M', 1);
-            if(str === undefined) return undefined;
+            if(str === undefined) return false;
             return StrHelper.str2bool(str);
         },
         /**
@@ -306,6 +307,29 @@ export class StrMaid{
         set(maidStr, value){
             let str = StrHelper.bool2str(value);
             return StrHelper.setValue(maidStr, 'M', str);
+        }
+    }
+    // I 是否坐下
+    static Sit = {
+        /**
+         * 获取模式
+         * @param {string} maidStr
+         * @returns {boolean}
+         */
+        get(maidStr){
+            let str = StrHelper.getValue(maidStr, 'I', 1);
+            if(str === undefined) return false;
+            return StrHelper.str2bool(str);
+        },
+        /**
+         * 设置模式
+         * @param {string} maidStr
+         * @param {boolean} value
+         * @returns {string} New Maid String
+         */
+        set(maidStr, value){
+            let str = StrHelper.bool2str(value);
+            return StrHelper.setValue(maidStr, 'I', str);
         }
     }
     /**
@@ -421,7 +445,6 @@ export class StrMaid{
             }
         }
     }
-
 }
 
 class StrHelper{

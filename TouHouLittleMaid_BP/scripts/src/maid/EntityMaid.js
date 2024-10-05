@@ -67,7 +67,7 @@ export class EntityMaid{
         if(DP.getInt    (maid, "home_dim") === undefined) DP.setInt    (maid, "home_dim" , 0);
         if(DP.getInt    (maid, "level")    === undefined) DP.setInt    (maid, "level"    , 1);
         if(DP.getInt    (maid, "kill")     === undefined) DP.setInt    (maid, "kill"     , 0);
-        if(DP.getBoolean(maid, "pick")     === undefined) DP.setBoolean(maid, "pick"    , false);
+        if(DP.getBoolean(maid, "pick")     === undefined) DP.setBoolean(maid, "pick"    , true);
     }
     // 等级
     static Level = {
@@ -1158,12 +1158,13 @@ export class EntityMaid{
         // 添加女仆属性
         maid.triggerEvent(reborn ? "become_maid_reborn" : "become_maid");
         
-        if(!reborn){
+        // 首次生成
+        if (!reborn) {
             // 设置动态属性
             EntityMaid.initDynamicProperties(maid);
             system.runTimeout(()=>{
                 if(EntityMaid.Work.get(maid)<0) return;
-                // 首次生成选择随机皮肤
+                // 选择随机皮肤
                 if(!EntityMaid.Owner.has(maid)){
                     EntityMaid.Skin.setRandom(maid);
                 }
@@ -1206,6 +1207,8 @@ export class EntityMaid{
         maidStr = StrMaid.backpackInvisibility.set(maidStr, this.Backpack.getInvisible(maid));
         // 背包等级
         maidStr = StrMaid.backpackType.set(maidStr, this.Backpack.getType(maid));
+        // 是否坐下
+        maidStr = StrMaid.Sit.set(maidStr, this.isSitting(maid));
 
         // 字符类数据最后设置
         if(o_id !== undefined){
@@ -1294,9 +1297,20 @@ export class EntityMaid{
         // 设置主人
         if(hasOwner){
             this.Sound.disableTamed(maid);
-            system.runTimeout(()=>{maid.getComponent("tameable").tame(ownerEntity);},1); // 等待女仆属性设置完成
+            system.runTimeout(()=>{maid.getComponent("tameable").tame(ownerEntity);}, 1); // 等待女仆属性设置完成
         }
 
+        // 设置坐下状态
+        if(StrMaid.Sit.get(maidStr) === true){
+            system.runTimeout(()=>{
+                try{
+                    if(maid !== undefined){
+                        this.sitDown(maid);
+                    }
+                }
+                catch { }
+            }, 2);
+        }
         return maid;
     }
     /**

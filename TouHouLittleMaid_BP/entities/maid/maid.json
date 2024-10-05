@@ -1095,15 +1095,28 @@
       },
       "become_garage_kit_solid":{
         "sequence": [
-          {"trigger": "quit_maid"},
           {
-            "remove": { "component_groups": [ "thlmm:garage_kit_un_solid" ] },
+            "remove": { "component_groups": [
+              "thlmm:maid_basic",
+              "thlmm:maid_basic_stand_movement",
+              "thlmm:maid_basic_sit_movement",
+              "thlmm:maid_wild",
+              "environment:simple",
+              "backpack:default",
+              "thlmm:lv1_basic",
+              "thlmm:lv1_tame",
+              "status:follow_standard",
+              "status:follow_sit",
+              "thlmm:maid_tame",
+              "thlmm:garage_kit_un_solid"
+            ] },
             "add": { "component_groups": [ "thlmm:garage_kit_solid" ] },
             "set_property": { "thlm:work": -4 },
             "queue_command": {"command": [
               "setblock ~~~ touhou_little_maid:garage_kit_block [\"thlm:solid\"=true]"
             ]}
           },
+          // 由待烘烤状态转化时产生粒子
           {
             "filters": { "test": "is_family", "subject": "self", "value": "thlm:garage_kit_un_solid" },
             "queue_command": {"command": [
