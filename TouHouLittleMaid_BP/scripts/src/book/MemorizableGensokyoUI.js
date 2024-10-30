@@ -5,6 +5,7 @@ import * as mcui from '@minecraft/server-ui';
 // 书本各章节的页码号(自动生成)
 // MG_AUTO_GENERATE_START
 const BOOK = [12, 16, 10];
+const BOOK_OP = 10; // op 章节
 // MG_AUTO_GENERATE_END
 
 const chapterButtonDelta = BOOK.length + BOOK.length % 2;
@@ -16,7 +17,7 @@ export class MemorizableGensokyo {
      */
     static onUseEvent(event) {
         let book = ItemTool.getPlayerMainHand(event.source);
-        if(book===undefined) return;
+        if(book === undefined) return;
         let page = this.getBookItemPage(book)
         this.sendForm(event.source, page.chapter, page.page);
     }
