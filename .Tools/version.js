@@ -7,9 +7,10 @@ const fs = require('fs');
 ///////////////////////////////
 const version = [ 1, 6, 0 ]; //
 const MC = "1.21.4x";        //
+const HOTFIX = 1;            //
 ///////////////////////////////
 
-const versionStr = version.join('.')
+const versionStr = version.join('.') + `${HOTFIX===0 ? '' : ' - hotfix ' + HOTFIX}`;
 const BP_PATH = "../TouHouLittleMaid_BP"
 const RP_PATH = "../TouHouLittleMaid_RP"
 const BP_UUID = "fed26523-2c16-4560-9076-aff6ad49a1e3";
