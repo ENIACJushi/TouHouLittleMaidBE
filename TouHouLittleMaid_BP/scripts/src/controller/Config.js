@@ -61,7 +61,13 @@ export class ConfigHelper {
         }
         // 读取或初始化计分板
         for(let key in CONFIG_DEFINITION){
-            let value = scoreboard.getScore(key);
+            let value;
+            try {
+                value = scoreboard.getScore(key);
+            } catch { 
+                // 没有该项目时失败
+            }
+
             if (value !== undefined) {
                 this.set(key, value);
             } else {
