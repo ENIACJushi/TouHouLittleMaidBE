@@ -1,43 +1,43 @@
 import { world, system, Entity, Player } from "@minecraft/server";
-import * as Tool from "../libs/ScarletToolKit"
+import { lang } from "../libs/ScarletToolKit"
 import { ActionFormData, MessageFormData, ModalFormData } from "@minecraft/server-ui";
 
 const CONFIG_DEFINITION = {
     ui_enable: {
         changable: true,
         default: true,
-        name: '特殊UI',
-        description: 'UI与其他模组冲突时可关闭此选项，展示普通UI'
+        name: lang('message.tlm.config.ui_enable.name'),
+        description: lang('message.tlm.config.ui_enable.description'),
     },
     fairy_damage: {
         changable: true,
         default: 100,
-        name: '妖精女仆攻击倍数',
-        description: '妖精女仆的弹幕伤害会乘上 (设置项/100)'
+        name: lang('message.tlm.config.fairy_damage.name'),
+        description: lang('message.tlm.config.fairy_damage.description'),
     },
     maid_damage: {
         changable: true,
         default: 100,
-        name: '女仆攻击倍数',
-        description: '女仆的弹幕伤害会乘上 (设置项/100)'
+        name: lang('message.tlm.config.maid_damage.name'),
+        description: lang('message.tlm.config.maid_damage.description'),
     },
     danmaku_damage: {
         changable: true,
         default: 6,
-        name: '默认弹幕攻击力',
-        description: '弹幕的默认伤害，弹幕没有设置伤害时生效，目前只对玩家使用普通御币发射的弹幕有效'
+        name: lang('message.tlm.config.danmaku_damage.name'),
+        description: lang('message.tlm.config.danmaku_damage.description'),
     },
     player_damage: {
         changable: true,
         default: 100,
-        name: '玩家攻击倍数',
-        description: '玩家的弹幕伤害会乘上 (设置项/100)'
+        name: lang('message.tlm.config.player_damage.name'),
+        description: lang('message.tlm.config.player_damage.description'),
     },
     logger_enable: {
         changable: true,
         default: false,
-        name: '日志输出',
-        description: '广播调试日志到世界'
+        name: lang('message.tlm.config.logger_enable.name'),
+        description: lang('message.tlm.config.logger_enable.description'),
     },
 }
 export var config = {};

@@ -6,7 +6,15 @@
    *  Date        :  2023.02.17                   *
   \* -------------------------------------------- */
 
-import { world, Entity, Dimension,Player, ItemStack, EquipmentSlot, Block } from "@minecraft/server";
+import { 
+    world, 
+    Entity, 
+    Dimension,
+    Player, 
+    ItemStack, 
+    EquipmentSlot, 
+    Block,
+} from "@minecraft/server";
 import { Vector } from "./VectorMC";
 import { config } from "../controller/Config";
 
@@ -115,7 +123,7 @@ export function pointInArea_3D(x,y,z,areaStart_x,areaStart_y,areaStart_z,areaEnd
     return true;
 }
 ////////// Tool//////////
-export class ItemTool{
+export class ItemTool {
     /**
      * 设置玩家主手物品
      * @param {Player} player
@@ -187,7 +195,7 @@ export class ItemTool{
     }
 }
 
-export class BlockTool{
+export class BlockTool {
     /**
      * 在方块位置执行命令
      * @param {Block} b 
@@ -199,6 +207,15 @@ export class BlockTool{
             `execute positioned ${l.x} ${l.y} ${l.z} run ${cmd}`
         )
     }
+}
+
+/**
+ * 返回 rawtext
+ * @param {string} key 
+ * @returns {object}
+ */
+export function lang(key) {
+    return { rawtext: [{translate: key}]}
 }
 /**
  * 将维度字符转为数字

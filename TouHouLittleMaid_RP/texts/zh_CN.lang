@@ -171,6 +171,21 @@ message.tlm.admin.set.level.out_of_range=§c设置失败, 等级无效。§r
 message.tlm.admin.set.kill.success=§e设置杀敌数: §r
 message.tlm.admin.set.kill.out_of_range=§c设置失败, 杀敌数无效。§r
 
+## 配置信息
+
+message.tlm.config.ui_enable.name=特殊UI
+message.tlm.config.ui_enable.description=UI与其他模组冲突时可关闭此选项, 展示普通UI
+message.tlm.config.fairy_damage.name=妖精女仆攻击倍数
+message.tlm.config.fairy_damage.description=妖精女仆的弹幕伤害会乘上 (设置项/100)
+message.tlm.config.maid_damage.name=女仆攻击倍数
+message.tlm.config.maid_damage.description=女仆的弹幕伤害会乘上 (设置项/100)
+message.tlm.config.danmaku_damage.name=默认弹幕攻击力
+message.tlm.config.danmaku_damage.description=弹幕的默认伤害，弹幕没有设置伤害时生效，目前只对玩家使用普通御币发射的弹幕有效
+message.tlm.config.player_damage.name=玩家攻击倍数
+message.tlm.config.player_damage.description=玩家的弹幕伤害会乘上 (设置项/100)
+message.tlm.config.logger_enable.name=日志输出
+message.tlm.config.logger_enable.description=广播调试日志到世界
+
 ##### 其它 #####
 danmaku.pellet.name=§a点弹
 danmaku.ball.name=§a小玉

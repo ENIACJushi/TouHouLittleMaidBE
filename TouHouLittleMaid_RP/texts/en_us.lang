@@ -89,6 +89,20 @@ message.touhou_little_maid:photo.have_no_nbt_data.name=This damnable photo don't
 message.touhou_little_maid:chisel.hit_block_error.name=Please right click on the clay block
 message.touhou_little_maid:chisel.offhand_not_photo.name=Please have a photo of the maid in your offhand
 
+## Config
+
+message.tlm.config.ui_enable.name=Special UI
+message.tlm.config.ui_enable.description=This option can be disabled when UI conflicts with other modules, displaying the default UI
+message.tlm.config.fairy_damage.name=Fairy Maid Attack Multiplier
+message.tlm.config.fairy_damage.description=The bullet damage of the Fairy Maid will be multiplied by (value / 100)
+message.tlm.config.maid_damage.name=Maid Attack Multiplier
+message.tlm.config.maid_damage.description=The bullet damage of the Maid will be multiplied by (value / 100)
+message.tlm.config.danmaku_damage.name=Default Bullet Damage
+message.tlm.config.danmaku_damage.description=The default damage of the bullet, which takes effect when the bullet has no damage setting and is currently only effective for bullets fired by players using Gohei.
+message.tlm.config.player_damage.name=Player Attack Multiplier
+message.tlm.config.player_damage.description=The bullet damage of the player will be multiplied by (value / 100)
+message.tlm.config.logger_enable.name=Log Enable
+message.tlm.config.logger_enable.description=Broadcast debug logs to the world.
 
 action.interact.camera=Photo
 action.interact.thlm.npc=Turn into NPC
