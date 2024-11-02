@@ -116,6 +116,9 @@ gui.touhou_little_maid:left_panel.title= Work
 gui.touhou_little_maid:button.skin.name=Change Skin
 gui.touhou_little_maid:button.pickup.true.name=Pick Mode Is Enable
 gui.touhou_little_maid:button.pickup.false.name=Pick Mode Is Disable
+
+gui.touhou_little_maid:button.mute.true.name=Mute is on
+gui.touhou_little_maid:button.mute.false.name=Mute is off
 ##### Others #####
 danmaku.pellet.name=§aPellet
 danmaku.ball.name=§aBall
