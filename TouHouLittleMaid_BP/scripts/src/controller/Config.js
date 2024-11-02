@@ -5,7 +5,7 @@ import { ActionFormData, MessageFormData, ModalFormData } from "@minecraft/serve
 const CONFIG_DEFINITION = {
     ui_enable: {
         changable: true,
-        default: false,
+        default: true,
         name: '特殊UI',
         description: 'UI与其他模组冲突时可关闭此选项，展示普通UI'
     },
@@ -22,7 +22,7 @@ const CONFIG_DEFINITION = {
         description: '女仆的弹幕伤害会乘上 (设置项/100)'
     },
     danmaku_damage: {
-        changable: false,
+        changable: true,
         default: 6,
         name: '默认弹幕攻击力',
         description: '弹幕的默认伤害，弹幕没有设置伤害时生效，目前只对玩家使用普通御币发射的弹幕有效'
