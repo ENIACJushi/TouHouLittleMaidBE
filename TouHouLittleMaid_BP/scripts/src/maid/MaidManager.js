@@ -732,7 +732,7 @@ export class MaidManager{
         static summonInteractEntity(maid, player){
             let hugMaid = player.dimension.spawnEntity("touhou_little_maid:hug_maid", new Vector(
                 player.location.x,
-                -60,
+                player.location.y,
                 player.location.z
             ));
             hugMaid.getComponent("tameable").tame(player);

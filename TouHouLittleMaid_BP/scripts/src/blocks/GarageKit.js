@@ -137,9 +137,9 @@ export class GarageKit{
                 // 生成未烘烤手办
                 if(index === 0){
                     // 实体
-                    let maid = dimension.spawnEntity("thlmm:maid", new Vector(
-                        startLocation.x+0.5, startLocation.y, startLocation.z+0.5
-                    ));
+                    let maid = dimension.spawnEntity("thlmm:maid", 
+                        new Vector(startLocation.x+0.5, startLocation.y, startLocation.z+0.5)
+                    );
                     maid.setDynamicProperty("spawn_set",true);
                     // 设置大小
                     EntityMaid.Statues.scale.set(maid, size.scale);

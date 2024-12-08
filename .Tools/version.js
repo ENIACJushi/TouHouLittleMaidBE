@@ -5,9 +5,9 @@
 const fs = require('fs');
 
 ///////////////////////////////
-const version = [ 1, 6, 0 ]; //
-const MC = "1.21.4x";        //
-const HOTFIX = 1;            //
+const version = [ 1, 7, 0 ]; //
+const MC = "1.21.5x";        //
+const HOTFIX = 0;            //
 ///////////////////////////////
 
 const versionStr = version.join('.') + `${HOTFIX===0 ? '' : ' - hotfix ' + HOTFIX}`;
