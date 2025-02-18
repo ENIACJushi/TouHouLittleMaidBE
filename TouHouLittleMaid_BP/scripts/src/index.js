@@ -20,6 +20,7 @@ import { GoheiCherry } from "./danmaku/item/GoheiCherry";
 import { Skull } from "./blocks/Skull";
 import { StatuesBlock } from "./blocks/StatuesBlock";
 import { AltarBlock } from "./blocks/AltarBlock";
+import { HakureiGohei } from "./danmaku/item/HakureiGohei";
 
 
 if(true){
@@ -33,6 +34,7 @@ if(true){
         GoldMicrowaver.registerCC(e);
         // 注册物品自定义组件
         GoheiCherry.registerCC(e);
+        HakureiGohei.registerCC(e);
         CustomSpellCardManger.registerCC(e);
         PowerPoint.registerCC(e);
         system.run(()=>{

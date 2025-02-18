@@ -2,22 +2,18 @@
   "format_version": "1.20.80",
   "minecraft:item": {
     "description": {
-      "menu_category": { "category": "none" },
-      "identifier": "touhou_little_maid:hakurei_gohei_heart"
+      "identifier": "touhou_little_maid:hakurei_gohei_heart",
+      "menu_category": { "category": "none" }
     },
     "components": {
-      "minecraft:icon": {
-        "textures": { "default": "touhou_little_maid:hakurei_gohei" }
-      },
+      "minecraft:icon": { "textures": { "default": "touhou_little_maid:hakurei_gohei" } },
+      "minecraft:display_name": { "value": "item.touhou_little_maid:hakurei_gohei" },
+      "minecraft:max_stack_size": 1,
       "minecraft:hand_equipped": true,
-      "minecraft:projectile": {
-        "minimum_critical_power": 1.25,
-        "projectile_entity": "thlmd:danmaku_basic_heart"
-      },
-      "minecraft:enchantable":{
-        "slot": "bow",
-        "value": 15
-      },
+      "minecraft:allow_off_hand": true,
+      "minecraft:use_modifiers": { "use_duration": 99999, "movement_modifier": 0.85 },
+      "minecraft:durability": { "max_durability": 300, "damage_chance": { "min": 10, "max": 50 }},
+      "minecraft:enchantable":{ "slot": "bow", "value": 15 },
       "minecraft:shooter": {
         "ammunition": [
           {            
@@ -31,6 +27,10 @@
         "scale_power_by_draw_duration": true,
         "charge_on_draw": false
       },
+      "minecraft:projectile": {
+        "minimum_critical_power": 1.25,
+        "projectile_entity": "thlmd:danmaku_basic_heart"
+      },
       "minecraft:repairable": {
         "repair_items": [
           {
@@ -38,18 +38,7 @@
             "repair_amount": 110
           }
         ]
-      },
-      "minecraft:durability": {
-        "damage_chance": {
-          "min": 10,
-          "max": 50
-        },
-        "max_durability": 300
-      },
-      "minecraft:display_name": {
-        "value": "item.touhou_little_maid:hakurei_gohei"
-      },
-      "minecraft:max_stack_size": 1
+      }
     }
   }
 }
