@@ -126,6 +126,9 @@ export class DanmakuShoot{
         let danmaku = new EntityDanmaku(this.world, this.thrower)
                 .setDamage(this.damage).setGravityVelocity(this.gravity)
                 .setDanmakuType(this.type).setColor(this.color);
+        if (this.enable_shoot_location) {
+            danmaku.setThrowerLocation(this.shoot_location)
+        }
         danmaku.setLifeTime(this.lifeTime)
         // 设置主人
         if(this.ownerID!==undefined){ danmaku.setOwnerID(this.ownerID); }
@@ -146,6 +149,9 @@ export class DanmakuShoot{
                 .setDamage(this.damage).setGravityVelocity(this.gravity)
                 .setDanmakuType(this.type).setColor(this.color);
         
+        if (this.enable_shoot_location) {
+            danmaku.setThrowerLocation(this.shoot_location)
+        }
         danmaku.setLifeTime(this.lifeTime);
 
         // 设置主人
@@ -204,7 +210,10 @@ export class DanmakuShoot{
     directionShoot(direction){
         let danmaku = new EntityDanmaku(this.world, this.thrower)
             .setDamage(this.damage).setGravityVelocity(this.gravity)
-            .setDanmakuType(this.type).setColor(this.color);
+            .setDanmakuType(this.type).setColor(this.color)
+        if (this.enable_shoot_location) {
+            danmaku.setThrowerLocation(this.shoot_location)
+        }
         
         danmaku.shoot(direction, this.velocity, this.inaccuracy);
     }

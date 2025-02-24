@@ -166,7 +166,7 @@ export class ItemTool {
         container.setItem(slot, item);
     }
     /**
-     * 减少玩家主手物品的数量
+     * 损耗玩家主手物品 带耐久判定
      * @param {Player} player
      */
     static damageMainHandStack(player){
@@ -187,11 +187,33 @@ export class ItemTool {
             if(damage >= item.getComponent("durability").maxDurability){
                 equippable.setEquipment(EquipmentSlot.Mainhand);
             }
-            else{
-                item.getComponent("durability").damage = damage;
-                equippable.setEquipment(EquipmentSlot.Mainhand, item);
+            item.getComponent("durability").damage = damage;
+            equippable.setEquipment(EquipmentSlot.Mainhand, item);
+        }
+    }
+    /**
+     * 损耗物品 带耐久判定
+     * @param {ItemStack} item
+     * @returns {ItemStack | undefined}
+     */
+    static damageItem (item) {
+        let unbreaking = 0;
+        let enchantable = item.getComponent("enchantable");
+        if(enchantable !== undefined){
+            let temp = enchantable.getEnchantment("unbreaking");
+            if(temp !== undefined){
+                unbreaking = temp.level;
             }
         }
+        if(unbreaking === 0 || getRandomInteger(0, unbreaking.level) === 0){
+            // 磨损概率 1/(1+level)
+            let damage = item.getComponent("durability").damage + 1;
+            if(damage >= item.getComponent("durability").maxDurability){
+                return undefined;
+            }
+            item.getComponent("durability").damage = damage;
+        }
+        return item;
     }
 }
 

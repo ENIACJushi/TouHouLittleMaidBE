@@ -18,7 +18,7 @@ import { StrMaid } from "./StrMaid";
 import {DanmakuShoot}  from "../danmaku/DanmakuShoot";
 import {DanmakuColor}  from "../danmaku/DanmakuColor";
 import {DanmakuType}   from "../danmaku/DanmakuType";
-import { shoot as cherryShoot } from "../danmaku/custom/Cherry";
+import { shoot as cherryShoot } from "../danmaku/patterns/Cherry";
 import { Cocoa, Farm, MaidTarget, Melon } from "./MaidTarget";
 import { isBadContainerBlock } from "../../data/BadContainerBlocks";
 import * as DP from '../libs/DynamicPropertyInterface'

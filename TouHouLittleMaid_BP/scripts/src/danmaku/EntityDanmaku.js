@@ -243,7 +243,7 @@ export class EntityDanmaku{
      /**
      * 指定发射位置
      * @param {Entity} thrower 
-     * @returns {DanmakuShoot}
+     * @returns {EntityDanmaku}
      */
     setThrower(thrower){
         this.thrower = thrower;
@@ -253,7 +253,7 @@ export class EntityDanmaku{
     /**
      * 指定发射位置
      * @param {Vector} location 
-     * @returns {DanmakuShoot}
+     * @returns {EntityDanmaku}
      */
     setThrowerLocation(location){
         this.Throwerlocation = location;

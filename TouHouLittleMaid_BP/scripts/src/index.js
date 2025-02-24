@@ -15,12 +15,12 @@ import { MaidTarget } from "./maid/MaidTarget"
 import { CommandManager } from './controller/Command'
 import { GarageKit } from "./blocks/GarageKit";
 import { MemorizableGensokyo } from "./book/MemorizableGensokyoUI";
-import { Gohei } from "./danmaku/item/Gohei";
-import { GoheiCherry } from "./danmaku/item/GoheiCherry";
+import { Gohei } from "./items/Gohei";
+import { GoheiCherry } from "./items/GoheiCherry";
 import { Skull } from "./blocks/Skull";
 import { StatuesBlock } from "./blocks/StatuesBlock";
 import { AltarBlock } from "./blocks/AltarBlock";
-import { HakureiGohei } from "./danmaku/item/HakureiGohei";
+import { hakureiGohei } from "./items/hakurei_gohei/index";
 
 
 if(true){
@@ -34,7 +34,7 @@ if(true){
         GoldMicrowaver.registerCC(e);
         // 注册物品自定义组件
         GoheiCherry.registerCC(e);
-        HakureiGohei.registerCC(e);
+        hakureiGohei.registerCC(e);
         CustomSpellCardManger.registerCC(e);
         PowerPoint.registerCC(e);
         system.run(()=>{
@@ -128,6 +128,24 @@ class thlm {
         });
 
         //// Item ////
+        world.afterEvents.itemStartUse.subscribe(event => {
+            system.run(() => {
+                if (event.itemStack.typeId === 'touhou_little_maid:hakurei_gohei_v2') {
+                    hakureiGohei.startUseEvent(event);
+                }
+            });
+        })
+        // world.afterEvents.itemReleaseUse.subscribe(event => {
+        //     if (event.itemStack.typeId === 'touhou_little_maid:hakurei_gohei_v2') {
+        //         hakureiGohei.releaseUseEvent(event);
+        //     }
+        // })
+        world.afterEvents.itemStopUse.subscribe(event => {
+            if (event.itemStack.typeId === 'touhou_little_maid:hakurei_gohei_v2') {
+                hakureiGohei.stopUseEvent(event);
+            }
+        })
+
         // Before Use On
         var on_use_player = {}; // 使用冷却
         world.beforeEvents.itemUseOn.subscribe(event => {

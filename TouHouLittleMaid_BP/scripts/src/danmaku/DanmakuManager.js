@@ -7,7 +7,7 @@ import {DanmakuType}   from "./DanmakuType";
 import {EntityDanmaku} from "./EntityDanmaku";
 import {DanmakuShoot}  from "./DanmakuShoot";
 import { config } from "../controller/Config";
-import { GoheiCherry } from "./item/GoheiCherry";
+import { GoheiCherry } from "../items/GoheiCherry";
 import { DanmakuInterface } from "./DanmakuInterface";
 import { Vector, VectorMC } from "../libs/VectorMC"
 /**

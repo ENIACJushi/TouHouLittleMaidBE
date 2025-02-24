@@ -117,7 +117,7 @@ export class DanmakuInterface{
             if(damage === undefined) damage = config.danmaku_damage;
             if(damage !== 0){
                 // 伤害倍率
-                switch(source.typeId){
+                switch (source.typeId) {
                     case "minecraft:player": damage = damage*(config.player_damage/100); break;
                     case "thlmm:maid"      : damage = damage*(config.maid_damage/100); break;
                     case "touhou_little_maid:fairy": damage = damage*(config.fairy_damage/100); break;

@@ -1,6 +1,6 @@
-import {DanmakuType}   from "../DanmakuType";
+import { DanmakuType }   from "../danmaku/DanmakuType";
 import { ItemStack, ItemUseOnBeforeEvent, EnchantmentTypes} from "@minecraft/server";
-export class Gohei{
+export class Gohei {
     static goheiSequence = Object.freeze([
         DanmakuType.PELLET,
         DanmakuType.BALL,
