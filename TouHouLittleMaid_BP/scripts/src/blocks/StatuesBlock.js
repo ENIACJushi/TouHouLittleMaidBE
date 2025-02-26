@@ -1,17 +1,15 @@
 import { WorldInitializeBeforeEvent } from "@minecraft/server";
-
-export class StatuesBlock{
+export class StatuesBlock {
     /**
-     * @param {WorldInitializeBeforeEvent} event 
+     * @param {WorldInitializeBeforeEvent} event
      */
-    static registerCC(event){
+    static registerCC(event) {
         event.blockComponentRegistry.registerCustomComponent("tlm:statues", {
-            onPlayerDestroy(e){
+            onPlayerDestroy(e) {
                 const l = e.block.location;
-                e.dimension.runCommand(
-                    `execute positioned ${l.x} ${l.y} ${l.z} run event entity @e[family=thlm:statues,r=8] thlmm:u`
-                )
+                e.dimension.runCommand(`execute positioned ${l.x} ${l.y} ${l.z} run event entity @e[family=thlm:statues,r=8] thlmm:u`);
             }
-        })
+        });
     }
 }
+//# sourceMappingURL=StatuesBlock.js.map

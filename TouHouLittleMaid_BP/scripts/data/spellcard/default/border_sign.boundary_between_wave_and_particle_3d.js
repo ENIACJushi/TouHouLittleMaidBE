@@ -1,11 +1,9 @@
-
 import { Dimension, Entity, system } from "@minecraft/server";
 import { Vector } from "../../../src/libs/VectorMC";
 import { DanmakuColor as Color } from "../../../src/danmaku/DanmakuColor";
 import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
 import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";
-import * as Tool from "../../../src/libs/ScarletToolKit"
-
+import * as Tool from "../../../src/libs/ScarletToolKit";
 function fibonacciSphere(radius, samples, rotation) {
     rotation += 1;
     var offset = 2.0 / samples;
@@ -21,19 +19,16 @@ function fibonacciSphere(radius, samples, rotation) {
     }
     return points;
 }
-
 function shoot($d, danmaku) {
     return function () {
         shoot_basic($d, danmaku);
-    }
+    };
 }
-
-function shoot_basic($d, danmaku){
+function shoot_basic($d, danmaku) {
     fibonacciSphere(0.2, 50, $d / 100).forEach(function (v) {
         danmaku.shoot_bedrock(v, 0);
     });
 }
-
 export const SpellCard = {
     id: "thlms:boundary_between_wave_and_particle_3d",
     author: "snownee",
@@ -58,4 +53,5 @@ export const SpellCard = {
             system.runTimeout(shoot(d, danmaku), 4 * i);
         }
     }
-}
+};
+//# sourceMappingURL=border_sign.boundary_between_wave_and_particle_3d.js.map

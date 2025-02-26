@@ -1,18 +1,16 @@
 import { WorldInitializeBeforeEvent } from "@minecraft/server";
-
-export class AltarBlock{
+export class AltarBlock {
     /**
-     * @param {WorldInitializeBeforeEvent} event 
+     * @param {WorldInitializeBeforeEvent} event
      */
-    static registerCC(event){
+    static registerCC(event) {
         event.blockComponentRegistry.registerCustomComponent("tlm:altar", {
-            onPlayerDestroy(e){
+            onPlayerDestroy(e) {
                 const l = e.block.location;
-                e.dimension.runCommand(
-                    `execute positioned ${l.x} ${l.y} ${l.z} run function touhou_little_maid/altar_destroy`
-                )
+                e.dimension.runCommand(`execute positioned ${l.x} ${l.y} ${l.z} run function touhou_little_maid/altar_destroy`);
             },
-            onPlayerInteract(e){}
-        })
+            onPlayerInteract(e) { }
+        });
     }
 }
+//# sourceMappingURL=AltarBlock.js.map

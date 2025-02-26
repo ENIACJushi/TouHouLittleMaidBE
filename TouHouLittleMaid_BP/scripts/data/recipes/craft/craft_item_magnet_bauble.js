@@ -1,33 +1,34 @@
 export const recipe = {
-  "type": "touhou_little_maid:altar_crafting",
-  "output": {
-    "type": "minecraft:item",
-    "nbt": {
-      "Item": {
-        "id": "touhou_little_maid:item_magnet_bauble",
-        "Count": 1
-      }
-    }
-  },
-  "power": 0.2,
-  "ingredients": [
-    {
-      "tag": "forge:dusts/redstone"
+    "type": "touhou_little_maid:altar_crafting",
+    "output": {
+        "type": "minecraft:item",
+        "nbt": {
+            "Item": {
+                "id": "touhou_little_maid:item_magnet_bauble",
+                "Count": 1
+            }
+        }
     },
-    {
-      "tag": "forge:dusts/redstone"
-    },
-    {
-      "tag": "forge:dusts/redstone"
-    },
-    {
-      "tag": "forge:ingots/iron"
-    },
-    {
-      "tag": "forge:ingots/iron"
-    },
-    {
-      "tag": "forge:ingots/iron"
-    }
-  ]
-}
+    "power": 0.2,
+    "ingredients": [
+        {
+            "tag": "forge:dusts/redstone"
+        },
+        {
+            "tag": "forge:dusts/redstone"
+        },
+        {
+            "tag": "forge:dusts/redstone"
+        },
+        {
+            "tag": "forge:ingots/iron"
+        },
+        {
+            "tag": "forge:ingots/iron"
+        },
+        {
+            "tag": "forge:ingots/iron"
+        }
+    ]
+};
+//# sourceMappingURL=craft_item_magnet_bauble.js.map
