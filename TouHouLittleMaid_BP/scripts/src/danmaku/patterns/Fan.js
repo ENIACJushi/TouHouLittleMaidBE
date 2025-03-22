@@ -1,0 +1,52 @@
+import { Vector, VectorMC } from "../../../src/libs/VectorMC";
+import { BulletPatternBase, } from "./BulletPatternBase";
+const MIN_FAN_NUM = 2;
+const MAX_YAW = 2 * Math.PI;
+export class FanShapedPattern extends BulletPatternBase {
+    shootByVelocity(data, velocity, inaccuracy) {
+        let yawTotal = data.yawTotal;
+        let fanNum = data.fanNum;
+        // 入参不符合条件 退出
+        if (yawTotal < 0 || yawTotal > MAX_YAW || fanNum < MIN_FAN_NUM) {
+            return false;
+        }
+        // 处理扇形偏转
+        let yaw = -(yawTotal / 2);
+        let addYaw = yawTotal / (fanNum - 1);
+        let yawAxis;
+        // 计算旋转轴
+        let v = VectorMC.normalized(velocity);
+        if (v.y === 0) {
+            // 发射向量与水平面平行，取y轴为旋转轴
+            yawAxis = new Vector(0, 1, 0);
+        }
+        else {
+            // 旋转轴与发射向量垂直，且二者所在平面与水平面垂直
+            // 即与两向量垂直的向量（平面的法向量）与水平面平行（y=0）
+            // 由点积，设该法向量为（1，0，-x1/z1）
+            if (v.x === 0) {
+                yawAxis = new Vector(0, -v.y, v.z);
+            }
+            else {
+                yawAxis = new Vector(1, -(v.x + (v.z * v.z) / v.x) / v.y, v.z / v.x);
+            }
+        }
+        yawAxis = VectorMC.normalized(yawAxis);
+        // 绕发射向量旋转旋转向量
+        if (data.axisRotation) {
+            yawAxis = VectorMC.rotate_axis(yawAxis, v, data.axisRotation);
+        }
+        // 绕发射和中轴所在平面的法向量旋转发射向量
+        if (data.directionRotation) {
+            v = VectorMC.rotate_axis(v, new Vector(1, 0, -v.x / v.z), data.directionRotation);
+        }
+        // 计算每个弹幕的向量并发射
+        for (let i = 1; i <= fanNum; i++) {
+            let v1 = VectorMC.rotate_axis(velocity, yawAxis, yaw);
+            yaw = yaw + addYaw;
+            this.bulletShoot.shootByVelocity(v1, inaccuracy);
+        }
+        return true;
+    }
+}
+//# sourceMappingURL=Fan.js.map

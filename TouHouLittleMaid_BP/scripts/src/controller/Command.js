@@ -140,7 +140,7 @@ export class CommandManager {
                                         try {
                                             value = parseInt(input[1]);
                                         }
-                                        catch { }
+                                        catch (_a) { }
                                         ;
                                         if (typeof (value) !== 'number' || isNaN(value) || value < 1 || value > EntityMaid.Level.max) {
                                             source.sendMessage({ rawtext: [{ translate: "message.tlm.admin.set.level.out_of_range" }] });
@@ -219,7 +219,7 @@ export class CommandManager {
                                                     try {
                                                         value = parseInt(input[1]);
                                                     }
-                                                    catch { }
+                                                    catch (_b) { }
                                                     ;
                                                     if (typeof (value) !== 'number' || isNaN(value) || value < 1 || value > EntityMaid.Level.max) {
                                                         source.sendMessage({ rawtext: [{ translate: "message.tlm.admin.set.level.out_of_range" }] });

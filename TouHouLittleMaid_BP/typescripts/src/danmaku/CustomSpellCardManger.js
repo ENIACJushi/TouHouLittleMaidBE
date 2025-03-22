@@ -19,7 +19,6 @@ export class CustomSpellCardManger{
      * @param {ItemComponentUseEvent} event
      */
     static onSpellCardUseEvent(event){
-        
         let item = event.itemStack;
         let player = event.source;
 

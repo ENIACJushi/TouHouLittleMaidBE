@@ -21,7 +21,7 @@ export default class experiment {
                 showForm(event.player);
                 Tool.showEntityComponents(event.player);
             }
-            catch { }
+            catch (_a) { }
         });
         // 测试字符
         world.afterEvents.chatSend.subscribe(event => {

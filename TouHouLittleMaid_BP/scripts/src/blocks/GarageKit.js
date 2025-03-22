@@ -189,7 +189,7 @@ export class GarageKit {
                             return false;
                         }
                     }
-                    catch {
+                    catch (_a) {
                         return false;
                     }
                 }
@@ -321,7 +321,7 @@ export class GarageKit {
                 EntityMaid.sitDown(maid);
             }
         }
-        catch { }
+        catch (_a) { }
         ;
         maid.triggerEvent("become_garage_kit_solid");
         rotation.x = 0;

@@ -235,7 +235,7 @@ export class EntityMaid {
                         this.sitDown(maid);
                     }
                 }
-                catch { }
+                catch (_b) { }
             }, 2);
         }
         return maid;

@@ -1,4 +1,3 @@
-import { DanmakuType } from "../../danmaku/DanmakuType";
 import { ItemStack, WorldInitializeBeforeEvent, ItemStartUseAfterEvent, ItemReleaseUseAfterEvent, world, } from "@minecraft/server";
 import { ItemTool, logger } from '../../libs/ScarletToolKit';
 import { GoheiItemInterface } from "./GoheiItemInterface";

@@ -100,7 +100,8 @@ class AmuletMode extends GoheiBaseMode {
      * @param {ItemStack} item
      */
     damage(item) {
-        let step = item.getDynamicProperty(DAMAGE_PROPERTY_KEY) ?? 0;
+        var _a;
+        let step = (_a = item.getDynamicProperty(DAMAGE_PROPERTY_KEY)) !== null && _a !== void 0 ? _a : 0;
         step++;
         if (step >= DAMAGE_STEP_FULL) {
             step = 0;

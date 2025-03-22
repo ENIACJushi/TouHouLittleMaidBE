@@ -132,7 +132,7 @@ export class DanmakuInterface {
                 }
             }
         }
-        catch { }
+        catch (_a) { }
         return false;
     }
     /**

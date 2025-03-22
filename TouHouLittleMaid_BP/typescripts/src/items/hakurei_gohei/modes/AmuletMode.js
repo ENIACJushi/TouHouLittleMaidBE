@@ -24,29 +24,29 @@ class AmuletMode extends GoheiBaseMode {
     let playerId = event.source.id;
     let slot = event.source.selectedSlotIndex;
     let intervalId = system.runTimeout(() => {
-      // 事件取消 取消
+      // 事件取消
       if (intervalId !== this.getPlayerInterval(playerId)) {
         this.clearPlayerInterval(playerId);
         return;
       }
-      // 玩家消失 取消
+      // 玩家消失
       let player = world.getEntity(playerId);
       if (!player) {
         this.clearPlayerInterval(playerId);
         return;
       }
-      // 物品栏切换 取消
+      // 物品栏切换
       if (slot !== player.selectedSlotIndex) {
         this.clearPlayerInterval(playerId);
         return;
       }
-      // 物品消失 取消
+      // 物品消失
       let item = ItemTool.getPlayerMainHand(player);
       if (!item) {
         this.clearPlayerInterval(playerId);
         return;
       }
-      // 物品不是御币 取消
+      // 物品不是御币
       if (!GoheiItemInterface.isGohei(item)) {
         this.clearPlayerInterval(playerId);
         return;

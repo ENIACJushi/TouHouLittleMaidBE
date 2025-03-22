@@ -42,9 +42,9 @@ export function logger_debug(str) {
  */
 export function getRandom(a = 0, b = 1) {
     if (a < b)
-        return (a + Math.random() * (a - b));
+        return (a + Math.random() * (b - a));
     else
-        return (b + Math.random() * (b - a));
+        return (b + Math.random() * (a - b));
 }
 /**
  * 获取随机整数 两边都是闭区间

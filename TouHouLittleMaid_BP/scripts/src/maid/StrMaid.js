@@ -392,7 +392,7 @@ StrMaid.Str = {
                 return undefined;
             return JSON.parse(str);
         }
-        catch {
+        catch (_a) {
             return undefined;
         }
     },
@@ -406,7 +406,7 @@ StrMaid.Str = {
         try {
             return StrHelper.setValue(maidStr, 'N', JSON.stringify(value));
         }
-        catch {
+        catch (_a) {
             return maidStr;
         }
     },

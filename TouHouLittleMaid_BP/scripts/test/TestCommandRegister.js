@@ -16,8 +16,9 @@ class TestCommandRegister {
         system.afterEvents.scriptEventReceive.subscribe(event => {
             logger('register script event');
             system.run(() => {
+                var _a;
                 if (event.id === 'thlm:test' && event.sourceEntity) {
-                    this.callbackMap.get(event.message)?.(event.sourceEntity);
+                    (_a = this.callbackMap.get(event.message)) === null || _a === void 0 ? void 0 : _a(event.sourceEntity);
                 }
             });
         }, { namespaces: ["thlm"] });

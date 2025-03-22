@@ -1,19 +1,11 @@
-import { Dimension, Entity, system } from "@minecraft/server";
+import { system } from "@minecraft/server";
 import { Vector, VectorMC } from "../../../src/libs/VectorMC";
-import { DanmakuColor as Color } from "../../../src/danmaku/DanmakuColor";
-import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
-import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";
 import * as Tool from "../../../src/libs/ScarletToolKit";
+import { GeneralBulletColor as Color, GeneralBulletType as Type, GeneralBullet, } from "../../../src/danmaku/shapes/main";
+import { BulletShoot } from "../../../src/danmaku/shoots/BulletShoot";
+import { EntityDanmakuActor } from "../../../src/danmaku/actors/EntityDanmakuActor";
 /**
  * entity.getRotation()获取 [-180, 180]，对应(-180~180)的角度
- */
-/**
- *
- * @param {Vector} vec3d
- * @param {float} yawIn
- * @param {float} yOffset
- * @param {Entity} entity
- * @returns {Vector}
  */
 export function getRotationVector(vec3d, yawIn, yOffset, entity) {
     let yaw = (entity.getRotation().y + yawIn) * -0.01745329251; // PI/180
@@ -27,21 +19,26 @@ export const SpellCard = {
     id: "thlms:magic_sign.milky_way",
     /**
      * 执行的符卡逻辑，函数签名固定，会直接调用
-     * @param {Dimension} world 当前所处的世界
-     * @param {Entity} entity 释放符卡的实体
      */
     spellCard: function (world, entity) {
         // 中心散发的大星弹
         for (var i = 0; i < 50; i++) {
             var shoot_basic = function ($times) {
                 for (var j = 0; j < 9; j++) {
-                    var danmaku = new Danmaku(world, entity).setDamage(2).setThrowerOffset(new Vector(0, 0.8, 0)).
-                        setDanmakuType(Type.BIG_STAR).setColor(Color.RED);
+                    let bulletShoot = new BulletShoot({
+                        thrower: new EntityDanmakuActor(entity)
+                            .setOffset(new Vector(0, 1, 0)),
+                        shape: new GeneralBullet()
+                            .setDamage(2)
+                            .setGeneralBulletType(Type.BIG_STAR)
+                            .setColor(Color.RED)
+                    });
                     if ($times % 2 == 1) {
-                        danmaku.setColor(Color.BLUE);
+                        bulletShoot.shape.setColor(Color.BLUE);
                     }
-                    let direction = VectorMC.rotate_axis(new Vector(0, 0, 1), new Vector(0, -1, 0), Tool.angle2raduis(-5 * $times + 40 * j)); // 旋转弹幕感觉没必要跟着转 Tool.angle2raduis(entity.getRotation().y - 5 * $times + 40 * j)
-                    danmaku.shoot(direction, 0.7, 0);
+                    // 旋转弹幕感觉没必要跟着转 Tool.angle2raduis(entity.getRotation().y - 5 * $times + 40 * j)
+                    let direction = VectorMC.rotate_axis(new Vector(0, 0, 1), new Vector(0, -1, 0), Tool.angle2raduis(-5 * $times + 40 * j));
+                    bulletShoot.shootByDirection(direction, 0.7, 0);
                 }
             };
             var shoot = function ($times) { return function () { shoot_basic($times); }; };
@@ -52,21 +49,33 @@ export const SpellCard = {
             system.runTimeout(() => {
                 for (var j = 0; j < 5; j++) {
                     var pos = getRotationVector(new Vector(-15, 0, Math.random() * 30 - 10), 0, -0.1, entity);
-                    var danmaku = new Danmaku(world, entity).setDamage(2)
-                        .setDanmakuType(Type.STAR).setColor(Color.YELLOW);
-                    danmaku.setThrowerLocation(pos);
+                    let bulletShoot = new BulletShoot({
+                        thrower: new EntityDanmakuActor(entity)
+                            .setOffset(new Vector(0, 1, 0))
+                            .lockLocation(entity.dimension, pos),
+                        shape: new GeneralBullet()
+                            .setDamage(2)
+                            .setGeneralBulletType(Type.STAR)
+                            .setColor(Color.YELLOW)
+                    });
                     let direction = VectorMC.rotate_axis(new Vector(0, 0, 1), new Vector(0, -1, 0), Tool.angle2raduis(entity.getRotation().y - 60));
-                    danmaku.shoot(direction, 0.3, 0);
+                    bulletShoot.shootByDirection(direction, 0.3, 0);
                 }
             }, 10 * i + 50);
             system.runTimeout(() => {
                 for (var j = 0; j < 5; j++) {
                     var pos = getRotationVector(new Vector(15, 0, Math.random() * 30 - 10), 0, -0.1, entity);
-                    var danmaku = new Danmaku(world, entity).setDamage(2)
-                        .setDanmakuType(Type.STAR).setColor(Color.GREEN);
-                    danmaku.setThrowerLocation(pos);
+                    let bulletShoot = new BulletShoot({
+                        thrower: new EntityDanmakuActor(entity)
+                            .setOffset(new Vector(0, 1, 0))
+                            .lockLocation(entity.dimension, pos),
+                        shape: new GeneralBullet()
+                            .setDamage(2)
+                            .setGeneralBulletType(Type.STAR)
+                            .setColor(Color.GREEN)
+                    });
                     let direction = VectorMC.rotate_axis(new Vector(0, 0, 1), new Vector(0, -1, 0), Tool.angle2raduis(entity.getRotation().y + 60));
-                    danmaku.shoot(direction, 0.3, 0);
+                    bulletShoot.shootByDirection(direction, 0.3, 0);
                 }
             }, 10 * i + 50);
         }

@@ -31,7 +31,7 @@ class FarmBlocks {
                     this.addSeed(seed, addonData.seeds[seed]);
                 }
             }
-            catch { }
+            catch (_a) { }
         }
         // logger(JSON.stringify(this.Data.crops));
         // logger(JSON.stringify(this.Data.seeds))
@@ -42,7 +42,7 @@ class FarmBlocks {
         try {
             this.corpList.push(BlockPermutation.resolve(key, value.state));
         }
-        catch { }
+        catch (_a) { }
         ;
     }
     // 添加种子信息

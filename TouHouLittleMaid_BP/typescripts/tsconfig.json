@@ -1,7 +1,4 @@
 {
-  "include": [
-    "../typescripts/**/*"
-  ],
   "compilerOptions": {
     "allowJs": true,
     "allowUnreachableCode": true,
@@ -11,7 +8,7 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "listFiles": false,
-    "module": "ES2020",
+    "module": "es6",
     "moduleResolution": "node",
     "noLib": false,
     "noImplicitAny": true,
@@ -19,14 +16,9 @@
     "noImplicitUseStrict": false,
     "outDir": "../scripts",
     "pretty": true,
-    "rootDir": "../typescripts",
     "sourceMap": true,
     "strict": true,
-    "target": "ES2020",
-    
-
-
-    "baseUrl": "behavior_packs/",
+    "target": "es6",
   },
   "compileOnSave": false
 }

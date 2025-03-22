@@ -46,7 +46,7 @@ export class GoheiItemInterface {
      * @returns {number}
      */
     static setStartUseTime(itemStack, time) {
-        let res = time ?? new Date().getTime();
+        let res = time !== null && time !== void 0 ? time : new Date().getTime();
         itemStack.setDynamicProperty(TIME_PROPERTY_KEY, res);
         return res;
     }
@@ -55,7 +55,8 @@ export class GoheiItemInterface {
      * @param {ItemStack} itemStack
      */
     static getStartUseTime(itemStack) {
-        return itemStack.getDynamicProperty(TIME_PROPERTY_KEY) ?? 0;
+        var _a;
+        return (_a = itemStack.getDynamicProperty(TIME_PROPERTY_KEY)) !== null && _a !== void 0 ? _a : 0;
     }
     /**
      * 获取物品使用时长

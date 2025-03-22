@@ -201,7 +201,7 @@ export class AltarCraftHelper {
             }
             return true;
         }
-        catch {
+        catch (_a) {
             return false;
         }
     }

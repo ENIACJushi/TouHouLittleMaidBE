@@ -18,7 +18,7 @@ export class GoheiCherry{
     }
     /**
      * @param {Entity} entity
-     * @param {ItemStack} item
+     * @param {ItemStack|undefined} item
      */
     static shoot(entity, item){
         let direction = entity.getViewDirection();

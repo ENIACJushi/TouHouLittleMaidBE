@@ -1,8 +1,6 @@
-import { Entity } from "@minecraft/server";
-import { Vector } from "../../../libs/VectorMC";
-import { DanmakuShoot } from "../../DanmakuShoot";
-import { DanmakuType } from "../../DanmakuType";
-import { EntityDanmaku } from "../../EntityDanmaku";
+import { GeneralBullet, GeneralBulletType } from "../../shapes/main";
+import { BulletShoot } from "../../shoots/BulletShoot";
+import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 /**
  *
  * @param {Entity} entity
@@ -12,10 +10,12 @@ import { EntityDanmaku } from "../../EntityDanmaku";
  * @param {number} piercing 穿透力 暂未实现
  */
 export function shoot(entity, location, direction, damage = 3, piercing = 0) {
-    new EntityDanmaku(entity.dimension, entity)
-        .setDanmakuType(DanmakuType.AMULET)
-        .setThrowerLocation(location)
-        .setDamage(damage)
-        .shoot(direction, 0.5, 0.05);
+    let bulletShoot = new BulletShoot({
+        thrower: new EntityDanmakuActor(entity),
+        shape: new GeneralBullet()
+            .setDamage(damage)
+            .setGeneralBulletType(GeneralBulletType.AMULET)
+    });
+    bulletShoot.shootByDirection(direction, 0.5, 0.05);
 }
 //# sourceMappingURL=Amulet.js.map

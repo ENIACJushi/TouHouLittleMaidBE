@@ -15,13 +15,14 @@ import * as Tool from "../libs/ScarletToolKit";
 import * as UI from "./MaidUI";
 import { EntityMaid } from './EntityMaid';
 import { StrMaid } from "./StrMaid";
-import { DanmakuShoot } from "../danmaku/DanmakuShoot";
-import { DanmakuColor } from "../danmaku/DanmakuColor";
-import { DanmakuType } from "../danmaku/DanmakuType";
+import { BulletShoot } from "../danmaku/shoots/BulletShoot";
 import { shoot as cherryShoot } from "../danmaku/patterns/Cherry";
 import { Cocoa, Farm, MaidTarget, Melon } from "./MaidTarget";
 import { isBadContainerBlock } from "../../data/BadContainerBlocks";
 import * as DP from '../libs/DynamicPropertyInterface';
+import { EntityDanmakuActor } from "../danmaku/actors/EntityDanmakuActor";
+import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "../danmaku/shapes/main";
+import { FanShapedPattern } from "../danmaku/patterns/Fan";
 const HOME_RADIUS = 32;
 export class MaidManager {
     ///// 其它事件 /////
@@ -341,7 +342,7 @@ MaidManager.Interact = class {
                     EntityMaid.Owner.set(maid, player);
                 }, 1);
             }
-            catch { }
+            catch (_a) { }
         }
         else {
             try {
@@ -353,7 +354,7 @@ MaidManager.Interact = class {
                 // 放置
                 maid = EntityMaid.fromStr(str, dimension, location, true);
             }
-            catch { }
+            catch (_b) { }
         }
         // 没有成功召唤 直接退出
         if (maid === undefined) {
@@ -592,14 +593,14 @@ MaidManager.Shedule = class {
                         healthComponent.setCurrentValue(Math.min(healthComponent.defaultValue, healthComponent.currentValue + Tool.getRandomInteger(healAmount[0], healAmount[1])));
                     }
                 }
-                catch { }
+                catch (_a) { }
                 // 扫描 坐下时不执行
                 try {
                     if (!EntityMaid.isSitting(maid)) {
                         MaidTarget.search(maid, 15);
                     }
                 }
-                catch { }
+                catch (_b) { }
             }
             // 11步 - 33秒
             else if (healStep % 11 === 0) {
@@ -609,12 +610,12 @@ MaidManager.Shedule = class {
                         try {
                             EntityMaid.playSound(maid, "mob.thlmm.maid.idle");
                         }
-                        catch { }
+                        catch (_a) { }
                     }, Tool.getRandomInteger(0, 100));
                 }
             }
         }
-        catch { }
+        catch (_c) { }
     }
     /**
      * 女仆击杀
@@ -659,17 +660,25 @@ MaidManager.Shedule = class {
                 switch (random) {
                     case 0:
                         {
-                            // 中程密集扇形弹幕
-                            let shoot = DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid).setThrowerOffSet(new Vector(0, 1, 0))
-                                .setTargetOffSet(new Vector(0, yOffset, 0)).setOwnerID(EntityMaid.Owner.getID(maid))
-                                .setRandomColor().setRandomType()
-                                .setDamage((distanceFactor + basicDamage + 0.5) * delta / amount).setGravity(0)
-                                .setVelocity(0.5 * (distanceFactor + 1))
-                                .setInaccuracy(0.02).setFanNum(12).setYawTotal(Math.PI / 2).setLifeTime(30);
+                            let bulletShoot = new BulletShoot({
+                                thrower: new EntityDanmakuActor(maid)
+                                    .setOffset(new Vector(0, 1, 0)),
+                                target: new EntityDanmakuActor(maid.target)
+                                    .setOffset(new Vector(0, yOffset, 0)),
+                                shape: new GeneralBullet()
+                                    .setRandomColor()
+                                    .setRandomType()
+                                    .setDamage((distanceFactor + basicDamage + 0.5) * delta / amount)
+                                    .setLifeTime(30)
+                            })
+                                .setOwnerID(EntityMaid.Owner.getID(maid));
+                            let fanShapedShot = new FanShapedPattern(bulletShoot);
                             for (let i = 0; i < amount; i++) {
                                 system.runTimeout(() => {
-                                    shoot.setTarget(maid.target)
-                                        .setRandomColor().setRandomType().fanShapedShot();
+                                    fanShapedShot.shootByTarget({
+                                        fanNum: 12,
+                                        yawTotal: Math.PI / 2
+                                    }, 0.5 * (distanceFactor + 1), 0.02);
                                 }, i * 20);
                             }
                         }
@@ -678,31 +687,45 @@ MaidManager.Shedule = class {
                     case 1:
                         {
                             // 星弹
-                            var aimDanmakuShoot_small = DanmakuShoot.create().setWorld(maid.dimension)
-                                .setThrower(maid).setTarget(maid.target).setThrowerOffSet(new Vector(0, 1, 0))
-                                .setTargetOffSet(new Vector(0, yOffset, 0)).setColor(DanmakuColor.RANDOM).setType(DanmakuType.STAR)
-                                .setDamage((distanceFactor + basicDamage + 0.5) * delta / 18).setGravity(0).setLifeTime(40)
-                                .setVelocity(0.5 * (distanceFactor + 1)).setInaccuracy(Math.PI / 7);
-                            var aimDanmakuShoot_big = DanmakuShoot.create().setWorld(maid.dimension)
-                                .setThrower(maid).setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, yOffset, 0))
-                                .setLifeTime(45).setColor(DanmakuColor.RANDOM).setType(DanmakuType.BIG_STAR)
-                                .setDamage((distanceFactor + basicDamage + 0.5) * delta / 10).setGravity(0)
-                                .setVelocity(0.5 * (distanceFactor + 1)).setInaccuracy(Math.PI / 15);
+                            let bulletShootSmall = new BulletShoot({
+                                thrower: new EntityDanmakuActor(maid)
+                                    .setOffset(new Vector(0, 1, 0)),
+                                target: new EntityDanmakuActor(maid.target)
+                                    .setOffset(new Vector(0, yOffset, 0)),
+                                shape: new GeneralBullet()
+                                    .setColor(GeneralBulletColor.RANDOM)
+                                    .setGeneralBulletType(GeneralBulletType.STAR)
+                                    .setDamage((distanceFactor + basicDamage + 0.5) * delta / 18)
+                                    .setLifeTime(40)
+                            })
+                                .setOwnerID(EntityMaid.Owner.getID(maid));
+                            let bulletShootBig = new BulletShoot({
+                                thrower: new EntityDanmakuActor(maid)
+                                    .setOffset(new Vector(0, 1, 0)),
+                                target: new EntityDanmakuActor(maid.target)
+                                    .setOffset(new Vector(0, yOffset, 0)),
+                                shape: new GeneralBullet()
+                                    .setColor(GeneralBulletColor.RANDOM)
+                                    .setGeneralBulletType(GeneralBulletType.BIG_STAR)
+                                    .setDamage((distanceFactor + basicDamage + 0.5) * delta / 10)
+                                    .setLifeTime(45)
+                            })
+                                .setOwnerID(EntityMaid.Owner.getID(maid));
                             for (let i = 0; i < 5; i++) {
                                 system.runTimeout(() => {
-                                    aimDanmakuShoot_big.setTarget(maid.target).setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                                    bulletShootBig.shootByTarget(Tool.getRandom(0.3, 1), Math.PI / 15);
                                 }, i * 8);
                                 system.runTimeout(() => {
-                                    aimDanmakuShoot_small.setTarget(maid.target).setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                                    bulletShootSmall.shootByTarget(Tool.getRandom(0.3, 1), Math.PI / 7);
                                 }, 1 + i * 8);
                                 system.runTimeout(() => {
-                                    aimDanmakuShoot_small.setTarget(maid.target).setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                                    bulletShootSmall.shootByTarget(Tool.getRandom(0.3, 1), Math.PI / 7);
                                 }, 2 + i * 8);
                                 system.runTimeout(() => {
-                                    aimDanmakuShoot_big.setTarget(maid.target).setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                                    bulletShootBig.shootByTarget(Tool.getRandom(0.3, 1), Math.PI / 15);
                                 }, 3 + i * 8);
                                 system.runTimeout(() => {
-                                    aimDanmakuShoot_small.setTarget(maid.target).setVelocity(Tool.getRandom(0.3, 1)).aimedShot();
+                                    bulletShootSmall.shootByTarget(Tool.getRandom(0.3, 1), Math.PI / 7);
                                 }, 4 + i * 8);
                             }
                         }
@@ -714,15 +737,22 @@ MaidManager.Shedule = class {
             // 单体
             else {
                 const amount = 4;
-                let shoot = DanmakuShoot.create().setWorld(maid.dimension).setThrower(maid)
-                    .setThrowerOffSet(new Vector(0, 1, 0)).setTargetOffSet(new Vector(0, yOffset, 0))
+                let bulletShootBig = new BulletShoot({
+                    thrower: new EntityDanmakuActor(maid)
+                        .setOffset(new Vector(0, 1, 0)),
+                    target: new EntityDanmakuActor(maid.target)
+                        .setOffset(new Vector(0, yOffset, 0)),
+                    shape: new GeneralBullet()
+                        .setRandomColor()
+                        .setRandomType()
+                        .setDamage((distanceFactor + basicDamage) / amount)
+                        .setLifeTime(45)
+                })
                     .setOwnerID(EntityMaid.Owner.getID(maid))
-                    .setDamage((distanceFactor + basicDamage) / amount).setGravity(0)
-                    .setVelocity(0.5 * (distanceFactor + 1)).enablePreJudge()
-                    .setInaccuracy(0.05);
+                    .enablePreJudge();
                 for (let i = 0; i < amount; i++) {
                     system.runTimeout(() => {
-                        shoot.setTarget(maid.target).setRandomColor().setRandomType().aimedShot();
+                        bulletShootBig.shootByTarget(0.5 * (distanceFactor + 1), 0.05);
                     }, i * 12);
                 }
             }
@@ -834,7 +864,7 @@ MaidManager.Hug = class {
                 seat.remove();
             }
         }
-        catch { }
+        catch (_a) { }
     }
     /**
      * 女仆扫描

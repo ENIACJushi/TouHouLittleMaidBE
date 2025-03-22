@@ -62,7 +62,7 @@ export class ConfigHelper {
             try {
                 value = scoreboard.getScore(key);
             }
-            catch {
+            catch (_a) {
                 // 没有该项目时失败
             }
             if (value !== undefined) {

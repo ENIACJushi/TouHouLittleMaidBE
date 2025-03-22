@@ -1,9 +1,8 @@
-import { Dimension, Entity, system } from "@minecraft/server";
+import { system } from "@minecraft/server";
 import { Vector } from "../../../src/libs/VectorMC";
-import { DanmakuColor as Color } from "../../../src/danmaku/DanmakuColor";
-import { DanmakuType as Type } from "../../../src/danmaku/DanmakuType";
-import { EntityDanmaku as Danmaku } from "../../../src/danmaku/EntityDanmaku";
-import * as Tool from "../../../src/libs/ScarletToolKit";
+import { GeneralBulletColor as Color, GeneralBulletType as Type, GeneralBullet, } from "../../../src/danmaku/shapes/main";
+import { BulletShoot } from "../../../src/danmaku/shoots/BulletShoot";
+import { EntityDanmakuActor } from "../../../src/danmaku/actors/EntityDanmakuActor";
 function fibonacciSphere(radius, samples, rotation) {
     rotation += 1;
     var offset = 2.0 / samples;
@@ -19,14 +18,14 @@ function fibonacciSphere(radius, samples, rotation) {
     }
     return points;
 }
-function shoot($d, danmaku) {
+function shoot($d, shooter) {
     return function () {
-        shoot_basic($d, danmaku);
+        shoot_basic($d, shooter);
     };
 }
-function shoot_basic($d, danmaku) {
+function shoot_basic($d, shooter) {
     fibonacciSphere(0.2, 50, $d / 100).forEach(function (v) {
-        danmaku.shoot_bedrock(v, 0);
+        shooter.shootByVelocity(v, 0);
     });
 }
 export const SpellCard = {
@@ -40,17 +39,18 @@ export const SpellCard = {
      * @param {Entity} shooter 释放符卡的实体
      */
     spellCard: function (world, shooter) {
-        // var pos = new Vector(shooter.location.x, shooter.location.y + 1, shooter.location.z);
         var d = 0.0;
-        // danmaku.setMotion(v);
-        // danmaku.setPosition(pos);
-        // danmaku.setLifeTime(100);
-        var danmaku = new Danmaku(world, shooter).setDamage(2).
-            setDanmakuType(Type.PELLET).setColor(Color.MAGENTA).
-            setThrowerLocation(new Vector(shooter.location.x, shooter.location.y + 1, shooter.location.z));
+        let bulletShoot = new BulletShoot({
+            thrower: new EntityDanmakuActor(shooter)
+                .setOffset(new Vector(0, 1, 0)),
+            shape: new GeneralBullet()
+                .setDamage(2)
+                .setGeneralBulletType(Type.PELLET)
+                .setColor(Color.MAGENTA)
+        });
         for (var i = 0; i < 30; i++) {
             d += i;
-            system.runTimeout(shoot(d, danmaku), 4 * i);
+            system.runTimeout(shoot(d, bulletShoot), 4 * i);
         }
     }
 };

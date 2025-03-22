@@ -53,7 +53,7 @@ class PowerPoint {
             this.summon_power_velocity(Math.ceil(Tool.getRandom(30, 90)), dimension, summon_location, [en.getVelocity().x / 2, 0, en.getVelocity().z / 2]);
             dimension.spawnParticle("touhou_little_maid:splash_power_point", summon_location);
         }
-        catch { }
+        catch (_a) { }
         en.triggerEvent("despawn");
     }
     /**
@@ -83,7 +83,7 @@ class PowerPoint {
                     en.setDynamicProperty("target", pl.id);
                 }
             }
-            catch {
+            catch (_a) {
             }
         }
     }

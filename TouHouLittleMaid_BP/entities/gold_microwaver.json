@@ -7,7 +7,7 @@
       "is_summonable": true,
       "properties":{
         "thlm:item"       : {"type": "int"  , "default": 0    , "range":[0, 999]       , "client_sync": true},
-        "thlm:progress"   : {"type": "float", "default": 0.0  , "range":[0.0, 1.0]     , "client_sync": true},
+        "thlm:progress"   : {"type": "float", "default": 0.01 , "range":[0.0, 1.0]     , "client_sync": true},
         "thlm:time"       : {"type": "int"  , "default": 0    , "range":[0, 2147483647], "client_sync": true},
         "thlm:total_time" : {"type": "int"  , "default": 180  , "range":[0, 2147483647], "client_sync": true},
         "thlm:amount"     : {"type": "int"  , "default": 0    , "range":[0, 2147483647], "client_sync": true},

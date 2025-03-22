@@ -20,7 +20,7 @@ export class VectorMC{
     /**
      * 取模
      * @param {Vector} v
-     * @returns {string}
+     * @returns {number}
      */
     static length(v){
         return Math.sqrt(v.x*v.x + v.y*v.y + v.z*v.z);

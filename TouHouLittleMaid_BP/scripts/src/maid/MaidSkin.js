@@ -25,7 +25,7 @@ export class MaidSkin {
                     this.SkinList[i] = score;
                     i++;
                 }
-                catch {
+                catch (_a) {
                     break;
                 }
             }

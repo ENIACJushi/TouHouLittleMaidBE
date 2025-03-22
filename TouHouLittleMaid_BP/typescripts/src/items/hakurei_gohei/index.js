@@ -1,4 +1,3 @@
-import { DanmakuType } from "../../danmaku/DanmakuType";
 import {
   ItemStack,
   WorldInitializeBeforeEvent,

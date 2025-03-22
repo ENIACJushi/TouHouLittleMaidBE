@@ -80,7 +80,7 @@ export class MaidTarget {
                         target.triggerEvent("cooldown");
                     }
                 }
-                catch { }
+                catch (_a) { }
             }, i * 20);
         }
     }
@@ -617,7 +617,7 @@ class SugarCane {
                             let block = dimension.getBlock(new Vector(x, _y, z));
                             return block !== undefined && block.typeId === "minecraft:reeds";
                         }
-                        catch {
+                        catch (_a) {
                             return false;
                         }
                     };
@@ -861,7 +861,7 @@ export class Melon {
                                         default: break;
                                     }
                                 }
-                                catch { }
+                                catch (_a) { }
                             }
                             matrix[ix + range][iz + range] = true;
                             break;
