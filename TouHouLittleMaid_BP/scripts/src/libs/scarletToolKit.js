@@ -10,14 +10,14 @@ import { Vector } from "./VectorMC";
 import { config } from "../controller/Config";
 ////////// Logger //////////
 export function logger(str) {
-    if (!config.logger_enable)
+    if (!config.logger_enable.value)
         return;
     for (let pl of world.getPlayers()) {
         pl.sendMessage({ rawtext: [{ "text": `${str}` }] });
     }
 }
 export function error(str, position = undefined) {
-    if (!config.logger_enable)
+    if (!config.logger_enable.value)
         return;
     let msg = `§e[THLM] §cError: ${str}`;
     if (position !== undefined) {
@@ -27,7 +27,7 @@ export function error(str, position = undefined) {
 }
 const debug = true;
 export function logger_debug(str) {
-    if (!config.logger_enable)
+    if (!config.logger_enable.value)
         return;
     if (!debug)
         return;

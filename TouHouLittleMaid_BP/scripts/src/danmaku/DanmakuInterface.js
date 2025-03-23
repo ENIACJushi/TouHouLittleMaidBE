@@ -1,6 +1,5 @@
-import { Entity, EntityDamageCause, world } from "@minecraft/server";
+import { EntityDamageCause, world } from "@minecraft/server";
 import { EntityMaid } from "../maid/EntityMaid";
-import { logger } from "../libs/ScarletToolKit";
 import { config } from "../controller/Config";
 /**
  * 对弹幕实体的通用操作接口
@@ -9,48 +8,47 @@ import { config } from "../controller/Config";
 export class DanmakuInterface {
     /**
      * 设置伤害
-     * @param {Entity} danmaku
-     * @param {number} damage
+     * @param danmaku
+     * @param damage
      */
     static setDamage(danmaku, damage) {
         danmaku.setDynamicProperty("damage", damage);
     }
     /**
      * 设置投掷者
-     * @param {Entity} danmaku
-     * @param {string} id 生物id
+     * @param danmaku
+     * @param id 生物id
      */
     static setTrower(danmaku, id) {
         danmaku.setDynamicProperty("source", id);
     }
     /**
      * 设置穿透力
-     * @param {Entity} danmaku
-     * @param {string} count
+     * @param danmaku
+     * @param count
      */
     static setPiercing(danmaku, count) {
         danmaku.setDynamicProperty("piercing", count);
     }
     /**
      * 设置主人id（女仆专用）
-     * @param {*} danmaku
-     * @param {*} ownerID
      */
     static setOwner(danmaku, ownerID) {
         danmaku.setDynamicProperty("owner", ownerID);
     }
     /**
      * 施加伤害，成功则返回 true
-     * @param {Entity|undefined} source 发射者(可为空)
-     * @param {Entity} danmaku 弹幕
-     * @param {Entity} target 受击者
-     * @returns {boolean}
+     * @param source 发射者(可为空)
+     * @param danmaku 弹幕
+     * @param target 受击者
      */
     static applyDamage(_source, danmaku, target) {
         try {
             // Get source entity by event or property
             // const damageOptions = {"damagingProjectile": projectile}; // 弹射物伤害
-            var damageOptions = { "cause": EntityDamageCause.magic }; // 魔法伤害
+            var damageOptions = {
+                "cause": EntityDamageCause.magic
+            }; // 魔法伤害
             //// 设置伤害施加者 ////
             let source = _source;
             if (source === undefined) {
@@ -64,11 +62,12 @@ export class DanmakuInterface {
                     source = world.getEntity(id);
                 }
             }
-            if (source !== undefined)
-                damageOptions["damagingEntity"] = source;
+            if (source !== undefined) {
+                damageOptions.damagingEntity = source;
+            }
             //// 免伤判断 ////
             // 不伤害自己
-            if (target.id == source.id) {
+            if (target.id === (source === null || source === void 0 ? void 0 : source.id)) {
                 return false;
             }
             ;
@@ -90,7 +89,7 @@ export class DanmakuInterface {
                         return false;
                     }
                     // 御币发射
-                    if (source.id !== undefined && targetOwnerID === source.id) {
+                    if ((source === null || source === void 0 ? void 0 : source.id) !== undefined && targetOwnerID === source.id) {
                         return false;
                     }
                 }
@@ -111,19 +110,20 @@ export class DanmakuInterface {
             }
             // 免伤失败，施加伤害
             let damage = danmaku.getDynamicProperty("damage");
-            if (damage === undefined)
-                damage = config.danmaku_damage;
+            if (damage === undefined) {
+                damage = config.danmaku_damage.value;
+            }
             if (damage !== 0) {
                 // 伤害倍率
-                switch (source.typeId) {
+                switch (source === null || source === void 0 ? void 0 : source.typeId) {
                     case "minecraft:player":
-                        damage = damage * (config.player_damage / 100);
+                        damage = damage * (config.player_damage.value / 100);
                         break;
                     case "thlmm:maid":
-                        damage = damage * (config.maid_damage / 100);
+                        damage = damage * (config.maid_damage.value / 100);
                         break;
                     case "touhou_little_maid:fairy":
-                        damage = damage * (config.fairy_damage / 100);
+                        damage = damage * (config.fairy_damage.value / 100);
                         break;
                     default: break;
                 }
@@ -138,15 +138,14 @@ export class DanmakuInterface {
     /**
      * 为一个弹幕设置子弹幕
      * 当主弹幕因击中目标而销毁时，子弹幕也会随之销毁
-     * @param {string} mainId
-     * @param {string} forkId
      */
     static addFork(mainId, forkId) {
-        if (this.Group[mainId] === undefined) {
-            this.Group[mainId] = [forkId];
+        let ori = this.group.get(mainId);
+        if (ori === undefined) {
+            this.group.set(mainId, [forkId]);
         }
         else {
-            this.Group[mainId].push(forkId);
+            ori.push(forkId);
         }
     }
     /**
@@ -155,7 +154,7 @@ export class DanmakuInterface {
      * @returns {string[]|undefined}
      */
     static getForks(mainId) {
-        return this.Group[mainId];
+        return this.group.get(mainId);
     }
     /**
      * 清除一个弹幕与其所有子弹幕的绑定 不会清除实体！
@@ -165,7 +164,7 @@ export class DanmakuInterface {
         let forks = this.getForks(mainId);
         if (forks === undefined)
             return false;
-        delete this.Group[mainId];
+        this.group.delete(mainId);
         return true;
     }
 }
@@ -173,5 +172,5 @@ export class DanmakuInterface {
  * 弹幕编组
  * {"mainId":["forkId"...]}
  */
-DanmakuInterface.Group = {};
+DanmakuInterface.group = new Map();
 //# sourceMappingURL=DanmakuInterface.js.map

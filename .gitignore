@@ -5,3 +5,4 @@ cloc-1.98.exe
 cloc
 fork
 */node_modules/*
+**/node_modules/**

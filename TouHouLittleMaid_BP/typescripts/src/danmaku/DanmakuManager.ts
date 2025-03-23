@@ -5,7 +5,6 @@ import {
   ProjectileHitEntityAfterEvent, ProjectileHitBlockAfterEvent
 } from "@minecraft/server";
 import { BulletShoot } from "./shoots/BulletShoot";
-import { config } from "../controller/Config";
 import { DanmakuInterface } from "./DanmakuInterface";
 import { Vector, VectorMC } from "../libs/VectorMC"
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "./shapes/main";

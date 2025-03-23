@@ -20,14 +20,14 @@ import { config } from "../controller/Config";
 
 ////////// Logger //////////
 export function logger(str){
-    if(!config.logger_enable) return;
+    if(!config.logger_enable.value) return;
     for(let pl of world.getPlayers()){
         pl.sendMessage({rawtext:[{"text": `${str}`}]})
     }
 }
 
 export function error(str, position=undefined){
-    if(!config.logger_enable) return;
+    if(!config.logger_enable.value) return;
     let msg = `§e[THLM] §cError: ${str}`
     if(position!==undefined){
         msg += `\n§a At ${position}`
@@ -36,7 +36,7 @@ export function error(str, position=undefined){
 }
 const debug = true;
 export function logger_debug(str){
-    if(!config.logger_enable) return;
+    if(!config.logger_enable.value) return;
     if(!debug) return;
     world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
 }

@@ -24,7 +24,7 @@
         "environment:weather"     :{"type": "int", "client_sync": true, "default": 0 , "range": [0, 5]}, // 0 无天气  1 雨  1 雷电  2 雪
         "environment:daytime"     :{"type": "int", "client_sync": true, "default": -1, "range": [-1, 1]}, // 为了在生成时发出声音，默认设为-1
         // 缩放大小 仅用于雕塑
-        "thlm:scale": {"type": "float", "client_sync": true, "default": 1.0, "range": [0.0, 999.0]}
+        "thlm:scale": {"type": "float", "client_sync": true, "default": 1.01, "range": [-0.1, 999.1]}
       }
     },
     "component_groups": {

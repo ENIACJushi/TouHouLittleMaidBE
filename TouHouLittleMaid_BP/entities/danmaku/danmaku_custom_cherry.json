@@ -8,10 +8,10 @@
         "is_experimental": false,
         "runtime_identifier": "minecraft:xp_bottle",
         "properties": {
-          "thlm:r_x":{"type": "float", "default": 0.01  , "range":[-400.0, 400.0]   , "client_sync": true},
-          "thlm:r_y":{"type": "float", "default": 0.01  , "range":[-400.0, 400.0]   , "client_sync": true},
-          "thlm:r_z":{"type": "float", "default": 0.01  , "range":[-400.0, 400.0]   , "client_sync": true},
-          "thlm:distance":{"type": "float", "default": 0.01, "range":[0.0, 99999.0] , "client_sync": true},
+          "thlm:r_x":{"type": "float", "default": 0.01  , "range":[-400.1, 400.1]   , "client_sync": true},
+          "thlm:r_y":{"type": "float", "default": 0.01  , "range":[-400.1, 400.1]   , "client_sync": true},
+          "thlm:r_z":{"type": "float", "default": 0.01  , "range":[-400.1, 400.1]   , "client_sync": true},
+          "thlm:distance":{"type": "float", "default": 0.01, "range":[-0.1, 99999.1] , "client_sync": true},
           "thlm:enable":{"type": "bool", "default": false, "client_sync": true}
         }
       },

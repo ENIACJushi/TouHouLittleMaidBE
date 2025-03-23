@@ -11,7 +11,7 @@ import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
  */
 export function shoot(entity, location, direction, damage = 3, piercing = 0) {
     let bulletShoot = new BulletShoot({
-        thrower: new EntityDanmakuActor(entity),
+        thrower: new EntityDanmakuActor(entity, true),
         shape: new GeneralBullet()
             .setDamage(damage)
             .setGeneralBulletType(GeneralBulletType.AMULET)
