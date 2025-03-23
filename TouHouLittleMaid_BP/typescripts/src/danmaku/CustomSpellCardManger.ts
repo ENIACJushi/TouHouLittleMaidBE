@@ -5,9 +5,8 @@ import * as Tool from "../libs/ScarletToolKit"
 export class CustomSpellCardManger {
   /**
   * 初始化樱之御币的自定义属性
-  * @param {WorldInitializeBeforeEvent} event 
   */
-  static registerCC(event) {
+  static registerCC(event: WorldInitializeBeforeEvent) {
     event.itemComponentRegistry.registerCustomComponent('tlm:spell_card', {
       onUse(useEvent) {
         CustomSpellCardManger.onSpellCardUseEvent(useEvent);
@@ -16,16 +15,15 @@ export class CustomSpellCardManger {
   }
   /**
    * 吓我一跳释放符卡
-   * @param {ItemComponentUseEvent} event
    */
-  static onSpellCardUseEvent(event) {
+  static onSpellCardUseEvent(event: ItemComponentUseEvent) {
     let item = event.itemStack;
     let player = event.source;
 
     for (let spellCard of spellCardList) {
-      if (spellCard["id"] == item.typeId) {
+      if (spellCard["id"] == item?.typeId) {
         spellCard.spellCard(player.dimension, player);
-        item.getComponent("cooldown").startCooldown(player);
+        item.getComponent("cooldown")?.startCooldown(player);
         return true;
       }
     }

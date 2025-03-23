@@ -35,7 +35,7 @@ export class DanmakuInterface {
    * @param danmaku 
    * @param count 
    */
-  static setPiercing(danmaku: Entity, count: string) {
+  static setPiercing(danmaku: Entity, count: number) {
     danmaku.setDynamicProperty("piercing", count);
   }
   /**
