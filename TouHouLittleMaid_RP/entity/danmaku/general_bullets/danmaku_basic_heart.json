@@ -25,11 +25,7 @@
       },
       "render_controllers": [
         "controller.render.danmaku_basic"
-      ],
-      "spawn_egg": {
-        "texture": "touhou_little_maid:p_point",
-        "texture_index": 0
-      }
+      ]
     }
   }
 }

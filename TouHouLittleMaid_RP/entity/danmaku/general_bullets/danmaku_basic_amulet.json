@@ -2,16 +2,16 @@
   "format_version": "1.10.0",
   "minecraft:client_entity": {
     "description": {
-      "identifier": "thlmd:danmaku_basic_orbs",
+      "identifier": "thlmd:danmaku_basic_amulet",
       "min_engine_version": "1.8.0",
       "materials": {
         "default": "danmaku_blending"
       },
       "textures": {
-        "default": "textures/entity/danmaku/danmaku_new.png"
+        "default": "textures/entity/danmaku/amulet_danmaku.png"
       },
       "geometry": {
-        "default": "geometry.danmaku_basic_orbs"
+        "default": "geometry.danmaku_basic_amulet"
       },
       "animations": {
         "rotate": "animation.touhou_little_maid.camera_rot_by_danmaku",
@@ -25,11 +25,7 @@
       },
       "render_controllers": [
         "controller.render.danmaku_basic"
-      ],
-      "spawn_egg": {
-        "texture": "touhou_little_maid:p_point",
-        "texture_index": 0
-      }
+      ]
     }
   }
 }
