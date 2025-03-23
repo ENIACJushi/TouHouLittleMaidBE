@@ -8,9 +8,9 @@
       "is_experimental": false,
       "runtime_identifier": "minecraft:xp_bottle",
       "properties": {
-        "thlm:dir_x": {"type": "float", "client_sync": true, "default": 0.01, "range": [-720.1, 720.1]},
-        "thlm:dir_y": {"type": "float", "client_sync": true, "default": 0.01, "range": [-720.1, 720.1]},
-        "thlm:dir_z": {"type": "float", "client_sync": true, "default": 0.01, "range": [-720.1, 720.1]}
+        "thlm:r_x": {"type": "float", "client_sync": true, "default": 0.01, "range": [-720.1, 720.1]},
+        "thlm:r_y": {"type": "float", "client_sync": true, "default": 0.01, "range": [-720.1, 720.1]},
+        "thlm:r_z": {"type": "float", "client_sync": true, "default": 0.01, "range": [-720.1, 720.1]}
       }
     },
     "component_groups": {

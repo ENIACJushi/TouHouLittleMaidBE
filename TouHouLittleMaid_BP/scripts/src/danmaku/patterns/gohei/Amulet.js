@@ -1,4 +1,4 @@
-import { GeneralBullet, GeneralBulletType } from "../../shapes/main";
+import { Amulet } from "../../shapes/main";
 import { BulletShoot } from "../../shoots/BulletShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 /**
@@ -10,12 +10,18 @@ import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
  * @param {number} piercing 穿透力 暂未实现
  */
 export function shoot(entity, location, direction, damage = 3, piercing = 0) {
-    let bulletShoot = new BulletShoot({
+    let bulletShoot0 = new BulletShoot({
         thrower: new EntityDanmakuActor(entity, true),
-        shape: new GeneralBullet()
+        shape: new Amulet()
             .setDamage(damage)
-            .setGeneralBulletType(GeneralBulletType.AMULET)
     });
-    bulletShoot.shootByDirection(direction, 0.5, 0.05);
+    bulletShoot0.shootByDirection(direction, 0.1, 0.05);
+    // let bulletShoot = new BulletShoot({
+    //   thrower: new EntityDanmakuActor(entity, true),
+    //   shape: new GeneralBullet()
+    //     .setDamage(damage)
+    //     .setGeneralBulletType(GeneralBulletType.AMULET)
+    // })
+    // bulletShoot.shootByDirection(direction, 0.5, 0.05);
 }
 //# sourceMappingURL=Amulet.js.map

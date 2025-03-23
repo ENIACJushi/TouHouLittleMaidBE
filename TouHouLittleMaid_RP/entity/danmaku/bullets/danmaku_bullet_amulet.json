@@ -2,7 +2,7 @@
   "format_version": "1.10.0",
   "minecraft:client_entity": {
     "description": {
-      "identifier": "thlmd:danmaku_basic_amulet",
+      "identifier": "thlmd:bullet_amulet",
       "min_engine_version": "1.8.0",
       "materials": {
         "default": "danmaku_blending"
@@ -11,10 +11,10 @@
         "default": "textures/entity/danmaku/amulet_danmaku.png"
       },
       "geometry": {
-        "default": "geometry.danmaku_basic_amulet"
+        "default": "geometry.danmaku_bullet_amulet"
       },
       "animations": {
-        "rotate": "animation.touhou_little_maid.camera_rot_by_danmaku",
+        "rotate": "animation.touhou_little_maid.danmaku.rot_by_param",
         "life":"animation.touhou_little_maid.danmaku.life"
       },
       "scripts": {

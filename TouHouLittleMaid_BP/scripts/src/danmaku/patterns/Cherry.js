@@ -1,15 +1,9 @@
-import { Entity } from "@minecraft/server";
-import { Vector, VectorMC } from "../../libs/VectorMC";
+import { VectorMC } from "../../libs/VectorMC";
 import { system } from "@minecraft/server";
 import { DanmakuInterface } from "../DanmakuInterface";
 const PI = 180 / Math.PI;
 /**
- *
- * @param {Entity} entity
- * @param {Location} location
- * @param {Vector} direction
- * @param {number} damage
- * @param {number} piercing 穿透力
+ * @param piercing 穿透力
  */
 export function shoot(entity, location, direction, damageCenter = 9, damageArea = 3, piercing = 3) {
     const dimension = entity.dimension;
@@ -26,11 +20,11 @@ export function shoot(entity, location, direction, damageCenter = 9, damageArea 
     /// 确定行进距离 ///
     var distance = 128; // 行进距离
     // 处理实体并施加伤害
-    var attacklist = {};
+    var attacklist = new Map();
     DanmakuInterface.setDamage(danmaku, damageCenter);
     var victims = dimension.getEntitiesFromRay(location, direction); // 由近到远排列，会包含实体自身，会被方块阻挡
     for (let victim of victims) {
-        attacklist[victim.entity.id] = true;
+        attacklist.set(victim.entity.id, true);
         if (DanmakuInterface.applyDamage(entity, danmaku, victim.entity)) {
             piercing--;
             if (piercing <= 0) {
@@ -67,8 +61,8 @@ export function shoot(entity, location, direction, damageCenter = 9, damageArea 
             offset = VectorMC.rotate_axis(offset, direction, rotateOnce);
             // dimension.spawnEntity("thlmd:danmaku_basic_ball", VectorMC.add(location, offset));
             for (let victim of areaVictims) {
-                if (attacklist[victim.entity.id] === undefined) {
-                    attacklist[victim.entity.id] = true;
+                if (!attacklist.get(victim.entity.id)) {
+                    attacklist.set(victim.entity.id, true);
                     areaAttackList.push(victim.entity);
                 }
             }

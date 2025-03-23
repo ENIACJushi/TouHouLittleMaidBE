@@ -1,0 +1,13 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.touhou_little_maid.danmaku.star_rotate": {
+			"loop": true,
+			"bones": {
+				"star": {
+					"rotation": [0, 0, "q.life_time*v.speed*23"]
+				}
+			}
+		}
+	}
+}
