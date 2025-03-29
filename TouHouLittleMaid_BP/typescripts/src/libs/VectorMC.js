@@ -2,6 +2,8 @@
 import { Direction } from "@minecraft/server";
 import { logger } from "./ScarletToolKit";
 
+const HALF_PI = Math.PI / 2;
+
 // 仅用于快速创建向量和指定类型
 export class Vector {
     x; y; z;
@@ -128,16 +130,45 @@ export class VectorMC{
     }
     ////// 高级运算 //////
     /**
+     * @deprecated MC的转动顺序是ZYX，这种方法难以实现后续的滚动角计算
      * 获取向量(0,1,0))到v2的欧拉角（仅z,x，弧度制）
      * @param {Vector} v 
      * @returns {Array}
      */
-    static getEulerAngle(v){
+    static getEulerAngleXZ(v){
         let z = Math.atan2(v.x, v.y);
         let x = Math.acos(Math.sqrt(v.x*v.x + v.y*v.y) / this.length(v));
 
-        if(v.z < 0) x = -1*x;
+        if(v.z < 0) {
+            x = -1*x;
+        }
         return [x, z];
+    }
+    /**
+     * @deprecated 欧拉角的滚动角难以指定，如果要给弹幕计算旋转角，可使用一种固定坐标系和相对坐标系混合的转法
+     * 获取向量 (1,0,0) 到 v 的欧拉角（Z-Y，弧度制）
+     * @param {Vector} v 
+     * @returns {Array} 
+     */
+    static getEulerAngle(v) {
+        let z = Math.atan2(v.y, v.x);
+        let y = Math.atan2(v.z, Math.sqrt(v.x*v.x + v.y*v.y));
+        if (v.x < 0) {
+            // Z 在 +-PI/2 之间
+            z = z + (z < 0 ? Math.PI : -Math.PI);
+            y = (y < 0 ? -Math.PI : Math.PI) - y;
+        }
+        return [z, y];
+    }
+    /**
+     * 获取向量 (1,0,0) 到 v 的弹幕角（Y绕固定坐标系转动，Z X 绕相对坐标系转动）
+     * @param {Vector} v 
+     * @returns {Array} 
+     */
+    static getDanmakuAngle(v) {
+        let z = Math.atan2(v.y, v.x);
+        let y = Math.atan2(v.z, v.x);
+        return [z, y];
     }
     /**
      * 获取任意一条与给定非零向量垂直的向量

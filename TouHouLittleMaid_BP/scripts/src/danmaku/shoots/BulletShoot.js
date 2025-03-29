@@ -35,7 +35,7 @@ export class BulletShoot {
         }
         // 应用动量
         let v = BulletShoot.applyInaccuracy(velocity, inaccuracy);
-        danmaku.applyImpulse(v);
+        this.shape.initVelocity(danmaku, v);
         return danmaku;
     }
     //////// 进阶射击函数 ////////

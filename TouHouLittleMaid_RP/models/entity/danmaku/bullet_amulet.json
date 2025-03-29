@@ -16,15 +16,32 @@
 					"pivot": [0, 0, 0]
 				},
 				{
-					"name": "rot_bone",
+					"name": "rot_y",
 					"parent": "danmaku",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "rot_zx",
+					"parent": "rot_y",
 					"pivot": [0, 0, 0],
 					"cubes": [
 						{
-							"origin": [-6, -7, 0],
-							"size": [12, 14, 0],
+							"origin": [-7, -6, 0],
+							"size": [14, 12, 0],
 							"uv": {
-								"south": {"uv": [10, 9], "uv_size": [12, 14]}
+								"north": {"uv": [10, 9], "uv_size": [12, 14]}
+							}
+						},
+						{
+							"origin": [-7, 4, -1],
+							"size": [2, 2, 2],
+							"uv": {
+								"north": {"uv": [15, 11], "uv_size": [2, 2]},
+								"east": {"uv": [17, 13], "uv_size": [-3, -2]},
+								"south": {"uv": [15, 12], "uv_size": [2, 2]},
+								"west": {"uv": [16, 13], "uv_size": [2, 2]},
+								"up": {"uv": [17, 14], "uv_size": [-2, -2]},
+								"down": {"uv": [17, 13], "uv_size": [-2, -2]}
 							}
 						}
 					]

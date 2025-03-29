@@ -2,7 +2,7 @@ import { Entity } from "@minecraft/server";
 import { Vector, VectorMC } from "../../libs/VectorMC";
 import { system } from "@minecraft/server";
 import { DanmakuInterface } from "../DanmakuInterface";
-const PI = 180 / Math.PI
+const ANGLE_PI = 180 / Math.PI
 /**
  * @param piercing 穿透力
  */
@@ -13,12 +13,12 @@ export function shoot(entity: Entity, location: Vector, direction: Vector, damag
 
   DanmakuInterface.setTrower(danmaku, entity.id);
   DanmakuInterface.setPiercing(danmaku, 5);
-  let euler = VectorMC.getEulerAngle(direction);
+  let euler = VectorMC.getEulerAngleXZ(direction);
   // logger(`${(direction.x).toFixed(2)}, ${(direction.y).toFixed(2)}, ${(direction.z).toFixed(2)}`)
   // logger(`${(PI*euler[0]).toFixed(0)}, ${(PI*euler[1]).toFixed(0)}`)
-  danmaku.setProperty("thlm:r_x", PI * euler[0]);
+  danmaku.setProperty("thlm:r_x", ANGLE_PI * euler[0]);
   danmaku.setProperty("thlm:r_y", 0);
-  danmaku.setProperty("thlm:r_z", PI * euler[1]);
+  danmaku.setProperty("thlm:r_z", ANGLE_PI * euler[1]);
 
   /// 确定行进距离 ///
   var distance = 128; // 行进距离

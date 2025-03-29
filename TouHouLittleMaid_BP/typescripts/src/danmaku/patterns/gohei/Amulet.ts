@@ -17,7 +17,7 @@ export function shoot (entity: Entity, location: Location, direction: Vector, da
     shape: new Amulet()
       .setDamage(damage)
   })
-  bulletShoot0.shootByDirection(direction, 0.1, 0.05);
+  bulletShoot0.shootByDirection(direction, 0.1, 0);
 
   // let bulletShoot = new BulletShoot({
   //   thrower: new EntityDanmakuActor(entity, true),

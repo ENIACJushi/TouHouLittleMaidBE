@@ -54,6 +54,21 @@ export class BulletBase {
         this.lifeTime = tick;
         return this;
     }
+    //////// 实体操作函数 ////////
+    /**
+     * 弹种类是弹幕实体的接口层，所有的实体操作尽量靠弹种类来执行
+     * 便于定义该弹种的实体在进行特定操作时做出的响应
+     */
+    initVelocity(entity, velocity) {
+        entity.applyImpulse(velocity);
+    }
+    setEntityVelocity(entity, velocity) {
+        entity.clearVelocity();
+        entity.applyImpulse(velocity);
+    }
+    applyEntityImpulse(entity, velocity) {
+        entity.applyImpulse(velocity);
+    }
     //////// Unused ////////
     /**
      * 用于判定两个可驯服实体的主人是否相同

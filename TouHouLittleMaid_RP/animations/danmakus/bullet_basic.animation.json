@@ -9,12 +9,14 @@
 				}
 			}
 		},
-		
 		"animation.touhou_little_maid.danmaku.rot_by_param": {
 			"loop": true,
 			"bones": {
-				"rot_bone": {
-					"rotation": ["q.property('thlm:r_x')", "q.property('thlm:r_y')", "q.property('thlm:r_z')"]
+				"rot_y": {
+					"rotation": [0, "math.atan2(q.property('thlm:v_z'), q.property('thlm:v_x'))", 0]
+				},
+				"rot_zx": {
+					"rotation": [0, 0, "math.atan2(q.property('thlm:v_y'), math.sqrt(q.property('thlm:v_x')*q.property('thlm:v_x') + q.property('thlm:v_z')*q.property('thlm:v_z')))"]
 				}
 			}
 		},
