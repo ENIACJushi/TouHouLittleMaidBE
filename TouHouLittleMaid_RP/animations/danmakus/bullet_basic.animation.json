@@ -16,7 +16,7 @@
 					"rotation": [0, "math.atan2(q.property('thlm:v_z'), q.property('thlm:v_x'))", 0]
 				},
 				"rot_zx": {
-					"rotation": [0, 0, "math.atan2(q.property('thlm:v_y'), math.sqrt(q.property('thlm:v_x')*q.property('thlm:v_x') + q.property('thlm:v_z')*q.property('thlm:v_z')))"]
+					"rotation": ["q.property('thlm:r_x')", 0, "math.atan2(q.property('thlm:v_y'), math.sqrt(q.property('thlm:v_x')*q.property('thlm:v_x') + q.property('thlm:v_z')*q.property('thlm:v_z')))"]
 				}
 			}
 		},

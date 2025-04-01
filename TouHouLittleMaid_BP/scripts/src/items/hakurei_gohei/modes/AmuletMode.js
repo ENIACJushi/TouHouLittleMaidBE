@@ -46,7 +46,13 @@ class AmuletMode extends GoheiBaseMode {
                 return;
             }
             // 发射弹幕
-            amuletShoot(player, player.getHeadLocation(), player.getViewDirection());
+            // amuletShoot(player, player.getHeadLocation(), player.getViewDirection());
+            for (let i = 0; i < 5; i++) {
+                system.runTimeout(() => {
+                    amuletShoot(player, player.getHeadLocation(), player.getViewDirection());
+                    amuletShoot(player, player.getHeadLocation(), player.getViewDirection());
+                }, i);
+            }
             // 损耗物品
             this.damage(item);
             ItemTool.setPlayerMainHand(player, item);

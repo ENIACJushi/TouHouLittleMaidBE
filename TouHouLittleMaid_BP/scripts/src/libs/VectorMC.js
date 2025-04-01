@@ -119,6 +119,15 @@ export class VectorMC {
         let k = Math.sqrt((speed * speed) / (direction.x * direction.x + direction.y * direction.y + direction.z * direction.z));
         return new Vector(direction.x * k, direction.y * k, direction.z * k);
     }
+    /**
+     * 获取两个向量的夹角
+     * @param {Vector} v1
+     * @param {Vector} v2
+     * @returns {number}
+     */
+    static getAngle(v1, v2) {
+        return Math.acos(VectorMC.dot(v1, v2) / (VectorMC.length(v1) * VectorMC.length(v2)));
+    }
     ////// 高级运算 //////
     /**
      * @deprecated MC的转动顺序是ZYX，这种方法难以实现后续的滚动角计算
