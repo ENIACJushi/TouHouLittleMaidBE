@@ -31,7 +31,7 @@ export function shoot (entity: Entity, location: Location, direction: Vector, da
   let amuletController = new AmuletController(bullet)
     .setTurningIncrement(5)
     .setTurningStep(1);
-  amuletController.startTurningTask(new Vector(1, 0, 0));
+  amuletController.startTurningTask(entity.getViewDirection());
   // let bulletShoot = new BulletShoot({
   //   thrower: new EntityDanmakuActor(entity, true),
   //   shape: new GeneralBullet()

@@ -103,28 +103,35 @@ export class AmuletController {
                 this.turningTaskId = undefined;
                 return;
             }
-            currentAngle += (_a = this.turningIncrement) !== null && _a !== void 0 ? _a : 360;
-            let currentV0 = this.bulletEntity.getVelocity();
-            let currentV0Length = VectorMC.length(currentV0);
-            // 旋转完成 结束任务
-            if (!this.turningIncrement || currentAngle >= totalAngle) {
-                // 最终动量
-                let finalV = VectorMC.multiply(v, currentV0Length);
-                // 施加目标动量
-                Amulet.setDirectionProperty(this.bulletEntity, finalV);
+            try {
+                currentAngle += (_a = this.turningIncrement) !== null && _a !== void 0 ? _a : 360;
+                let currentV0 = this.bulletEntity.getVelocity();
+                let currentV0Length = VectorMC.length(currentV0);
+                // 旋转完成 结束任务
+                if (!this.turningIncrement || currentAngle >= totalAngle) {
+                    // 最终动量
+                    let finalV = VectorMC.multiply(v, currentV0Length);
+                    // 施加目标动量
+                    Amulet.setDirectionProperty(this.bulletEntity, finalV);
+                    this.bulletEntity.clearVelocity();
+                    this.bulletEntity.applyImpulse(finalV);
+                    // 完成任务
+                    system.clearRun(this.turningTaskId);
+                    this.turningTaskId = undefined;
+                    return;
+                }
+                // 计算下一步动量
+                let nextV = VectorMC.rotate_axis(currentV0, rotateNormalV, this.turningIncrement * PI_ANGLE);
+                // 施加动量
+                Amulet.setDirectionProperty(this.bulletEntity, nextV);
                 this.bulletEntity.clearVelocity();
-                this.bulletEntity.applyImpulse(finalV);
-                // 完成任务
+                this.bulletEntity.applyImpulse(nextV);
+            }
+            catch (_b) {
                 system.clearRun(this.turningTaskId);
                 this.turningTaskId = undefined;
                 return;
             }
-            // 计算下一步动量
-            let nextV = VectorMC.rotate_axis(currentV0, rotateNormalV, this.turningIncrement * PI_ANGLE);
-            // 施加动量
-            Amulet.setDirectionProperty(this.bulletEntity, nextV);
-            this.bulletEntity.clearVelocity();
-            this.bulletEntity.applyImpulse(nextV);
         }, this.turningStep);
     }
     /**
