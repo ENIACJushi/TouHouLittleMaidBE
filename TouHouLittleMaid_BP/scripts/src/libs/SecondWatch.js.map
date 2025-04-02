@@ -1,1 +1,0 @@
-{"version":3,"file":"SecondWatch.js","sourceRoot":"","sources":["../../../typescripts/src/libs/SecondWatch.js"],"names":[],"mappings":"AAAE;;;;;;kDAMkD;AAEpD,MAAM,OAAO,KAAK;IACd,KAAK;QACD,IAAI,CAAC,IAAI,GAAG,IAAI,IAAI,EAAE,CAAC,eAAe,EAAE,CAAC;IAC7C,CAAC;IACD;;;OAGG;IACH,IAAI;QACA,OAAO,IAAI,IAAI,EAAE,CAAC,eAAe,EAAE,GAAG,IAAI,CAAC,IAAI,CAAC;IACpD,CAAC;CACJ"}

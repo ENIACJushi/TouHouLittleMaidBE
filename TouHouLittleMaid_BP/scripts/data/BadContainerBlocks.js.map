@@ -1,1 +1,0 @@
-{"version":3,"file":"BadContainerBlocks.js","sourceRoot":"","sources":["../../typescripts/data/BadContainerBlocks.js"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,4BAA4B,CAAC;AAEpD,MAAM,kBAAkB,GAAG;IACvB,iBAAiB;IACjB,sBAAsB;IACtB,yBAAyB;CAC5B,CAAA;AAED,MAAM,UAAU,mBAAmB,CAAC,MAAM;IACtC,OAAO,kBAAkB,CAAC,QAAQ,CAAC,MAAM,CAAC,CAAC;AAC/C,CAAC"}
