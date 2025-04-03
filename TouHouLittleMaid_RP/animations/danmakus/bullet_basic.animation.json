@@ -9,14 +9,41 @@
 				}
 			}
 		},
+		"animation.touhou_little_maid.danmaku.rot_by_param0": {
+			"loop": true,
+			"bones": {
+				"rot_y": {
+					"rotation": [
+						0, 
+						"math.atan2(q.property('thlm:v_z'), q.property('thlm:v_x'))", 
+						0
+					]
+				},
+				"rot_zx": {
+					"rotation": [
+						"q.property('thlm:r_x')",
+						0,
+						"math.atan2(q.property('thlm:v_y'), math.sqrt(q.property('thlm:v_x')*q.property('thlm:v_x') + q.property('thlm:v_z')*q.property('thlm:v_z')))"
+					]
+				}
+			}
+		},
 		"animation.touhou_little_maid.danmaku.rot_by_param": {
 			"loop": true,
 			"bones": {
 				"rot_y": {
-					"rotation": [0, "math.atan2(q.property('thlm:v_z'), q.property('thlm:v_x'))", 0]
+					"rotation": [
+						0, 
+						"math.atan2(v.dir_z, v.dir_x)", 
+						0
+					]
 				},
 				"rot_zx": {
-					"rotation": ["q.property('thlm:r_x')", 0, "math.atan2(q.property('thlm:v_y'), math.sqrt(q.property('thlm:v_x')*q.property('thlm:v_x') + q.property('thlm:v_z')*q.property('thlm:v_z')))"]
+					"rotation": [
+						"q.property('thlm:r_x')",
+						0,
+						"math.atan2(v.dir_y, math.sqrt(v.dir_x*v.dir_x + v.dir_z*v.dir_z))"
+					]
 				}
 			}
 		},
