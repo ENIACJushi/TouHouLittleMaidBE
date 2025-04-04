@@ -80,5 +80,6 @@ function traverseDirectory(dir, zip, zipDir) {
   });
 }
 
-
-main();
+if(require.main === module) {
+    main();
+}

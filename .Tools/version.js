@@ -4,11 +4,11 @@
 
 const fs = require('fs');
 
-//////////////////////////////////////
+///////////////////////////////
 const version = [ 1, 9, 0 ]; //
 const MC = "1.21.7x";        //
 const HOTFIX = 0;            //
-//////////////////////////////////////
+///////////////////////////////
 
 module.exports = {
     version, MC, HOTFIX
@@ -39,12 +39,6 @@ const LANG_TEMPLATE = {
         "message.tlm.player_join2": `§e Visit mcmod.cn for complete tutorial.`
     }
 }
-
-
-editManifest(true);
-editManifest(false);
-editLang(BP_PATH);
-editLang(RP_PATH);
 
 /**
  * @param {Boolean} BP 是行为包 
@@ -116,4 +110,13 @@ function getLangStr(langTemplate){
         res += `${key}=${langTemplate[key]}\n`;
     }
     return res;
+}
+
+if(require.main === module) {
+    console.log('Start set version.');
+    editManifest(true);
+    editManifest(false);
+    editLang(BP_PATH);
+    editLang(RP_PATH);
+    console.log('Finish set version.');
 }
