@@ -50,7 +50,7 @@
         ]
       },
       "render_controllers": [
-        "controller.render.danmaku_basic"
+        "controller.render.danmaku_amulet"
       ]
     }
   }

@@ -1,6 +1,6 @@
 import { Vector, VectorMC } from "../../../src/libs/VectorMC";
 import { BulletBase, GeneralBullet } from "../shapes/main";
-import { Entity } from "@minecraft/server";
+import { Entity, EntityProjectileComponent } from "@minecraft/server";
 import { getRandom } from "../../../src/libs/ScarletToolKit";
 import { DanmakuActor } from "../actors/DanmakuActor";
 import { EntityDanmakuActor } from "../actors/EntityDanmakuActor";
@@ -54,8 +54,14 @@ export class BulletShoot {
       return undefined;
     }
     // 应用动量
-    let v = BulletShoot.applyInaccuracy(velocity, inaccuracy);
-    this.shape.initVelocity(danmaku, v);
+    const projectileComp = danmaku.getComponent("minecraft:projectile") as EntityProjectileComponent;
+    if (!projectileComp) {
+      danmaku.triggerEvent('despawn');
+      return undefined;
+    }
+    projectileComp.shoot(velocity, {
+      uncertainty: inaccuracy
+    });
     return danmaku;
   }
 

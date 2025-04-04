@@ -67,29 +67,6 @@
 			  }
 		},
 
-		"controller.render.danmaku_basic": {
-			"geometry": "Geometry.default",
-			"materials": [{"*": "Material.default"}],
-			"textures": ["Texture.default"],
-			"uv_anim": {
-				"offset": [
-					"query.variant / 13",
-					0.0
-				],
-				"scale": [
-					1.0,
-					1.0
-				]
-			},
-			"overlay_color": {
-				"r": 0.0,
-				"g": 0.0,
-				"b": 0.0,
-				"a": 0.0
-				// "a": "-math.mod(math.floor(query.life_time * 15),14) / 7"
-			},
-			"ignore_lighting": true
-		},
 		"controller.render.maid_target": {
 			"geometry": "Geometry.default",
 			"materials": [{"*": "Material.default"}],

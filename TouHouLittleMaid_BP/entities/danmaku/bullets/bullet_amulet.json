@@ -6,7 +6,7 @@
       "is_spawnable": false,
       "is_summonable": true,
       "is_experimental": false,
-      "runtime_identifier": "minecraft:xp_bottle",
+      "runtime_identifier": "minecraft:arrow",
       "properties": {
         "thlm:r_x": {"type": "float", "client_sync": true, "default": 0.01, "range": [-720.1, 720.1]},
         "thlm:v_x": {"type": "float", "client_sync": true, "default": 0.01, "range": [-720.1, 720.1]},

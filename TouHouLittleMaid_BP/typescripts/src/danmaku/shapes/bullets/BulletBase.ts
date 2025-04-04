@@ -65,19 +65,6 @@ export abstract class BulletBase {
    * 便于定义该弹种的实体在进行特定操作时做出的响应
    */
 
-  public initVelocity(entity: Entity, velocity: Vector) {
-    entity.applyImpulse(velocity);
-  }
-  
-  public setEntityVelocity(entity: Entity, velocity: Vector) {
-    entity.clearVelocity();
-    entity.applyImpulse(velocity);
-  }
-
-  public applyEntityImpulse(entity: Entity, velocity: Vector) {
-    entity.applyImpulse(velocity);
-  }
-
   //////// Unused ////////
   /**
    * 用于判定两个可驯服实体的主人是否相同

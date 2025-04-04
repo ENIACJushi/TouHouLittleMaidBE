@@ -13,29 +13,12 @@ export class Amulet extends BulletBase {
   }
   public createBulletEntity (world: Dimension, location: Vector): Entity {
     let bullet = super.createBulletEntity(world, location);
-    
+
     return bullet;
   }
 
-  public initVelocity(entity: Entity, velocity: Vector) {
-    super.initVelocity(entity, velocity);
-    Amulet.setDirectionProperty(entity, VectorMC.normalized(velocity));
-  }
-  
-  public setEntityVelocity(entity: Entity, velocity: Vector) {
-    super.setEntityVelocity(entity, velocity);
-    Amulet.setDirectionProperty(entity, velocity);
-  }
-
-  
-  public applyEntityImpulse(entity: Entity, velocity: Vector) {
-    entity.applyImpulse(velocity);
-    Amulet.setDirectionProperty(entity, velocity);
-  }
-
-
   /**
-   * 设置弹幕的运动方向
+   * 设置弹幕的运动方向 通常只在且必须在生成时设置
    * 角度：Z - Y 决定朝向， X 决定自转角
    */
   static setDirectionProperty(entity: Entity, direction: Vector) {
@@ -61,38 +44,20 @@ export class Amulet extends BulletBase {
  */
 export class AmuletController {
   private bulletEntity: Entity;
-  
-  /**
-   * 转向增量 为空时瞬间变向 角度制单位
-   */
-  private turningIncrement?: number;
-  /**
-   * 每隔 turningStep 刻进行一次变向
-   */
-  private turningStep: number = 1;
   private turningTaskId?: number;
+  private speedingTaskId?: number;
 
   constructor(entity: Entity) {
     this.bulletEntity = entity;
   }
 
   /**
-   * 设置每一步转弯的角度
+   * 开始新的转向任务 仅变向，不变速
+   * @param _v 目标方向
+   * @param turningIncrement 转向增量 为空时瞬间变向 角度制单位
+   * @param turningStep  每隔 turningStep 刻进行一次变向
    */
-  setTurningIncrement(increment: number): this {
-    this.turningIncrement = increment;
-    return this;
-  }
-  setTurningStep(step: number): this {
-    this.turningStep = step;
-    return this;
-  }
-
-  /**
-   * 开始新的转向任务
-   * 仅变向，不变速
-   */
-  startTurningTask(_v: Vector) {
+  startTurningTask(_v: Vector, turningIncrement: number, turningStep: number, finishCallback: ()=>void) {
     let v = VectorMC.normalized(_v);
     /**
      * v, v0 平面的法向量垂直于v0  符札平面向量也垂直于v0  所以只需要计算 v-v0平面法向量 与 符札平面法向量 的夹角，然后用PI/2减去它
@@ -105,6 +70,7 @@ export class AmuletController {
 
     // 当外积为0，原运动方向与目标运动方向平行，不需要旋转
     if (rotateNormalV.x === 0 && rotateNormalV.y === 0 && rotateNormalV.z === 0) {
+      finishCallback();
       return;
     }
 
@@ -133,28 +99,27 @@ export class AmuletController {
         return;
       }
       try {
-        currentAngle += this.turningIncrement ?? 360;
+        currentAngle += turningIncrement ?? 360;
         let currentV0 = this.bulletEntity.getVelocity();
         let currentV0Length = VectorMC.length(currentV0);
         // 旋转完成 结束任务
-        if (!this.turningIncrement || currentAngle >= totalAngle) {
+        if (turningIncrement <= 0 || currentAngle >= totalAngle) {
           // 最终动量
           let finalV = VectorMC.multiply(v, currentV0Length);
           // 施加目标动量
-          Amulet.setDirectionProperty(this.bulletEntity, finalV);
           this.bulletEntity.clearVelocity();
           this.bulletEntity.applyImpulse(finalV);
           // 完成任务
           system.clearRun(this.turningTaskId!);
           this.turningTaskId = undefined;
+          finishCallback();
           return;
         }
   
         // 计算下一步动量
-        let nextV = VectorMC.rotate_axis(currentV0, rotateNormalV, this.turningIncrement * PI_ANGLE);
+        let nextV = VectorMC.rotate_axis(currentV0, rotateNormalV, turningIncrement * PI_ANGLE);
         
         // 施加动量
-        Amulet.setDirectionProperty(this.bulletEntity, nextV);
         this.bulletEntity.clearVelocity();
         this.bulletEntity.applyImpulse(nextV);
       } catch {
@@ -162,9 +127,8 @@ export class AmuletController {
         this.turningTaskId = undefined;
         return;
       }
-    }, this.turningStep);
+    }, turningStep);
   }
-
 
   /**
    * 中止转向任务
@@ -175,5 +139,41 @@ export class AmuletController {
     }
     system.clearRun(this.turningTaskId);
     this.turningTaskId = undefined;
+  }
+
+  /**
+   * 开始新的加速任务 仅加速，不变向
+   * @param a 加速度（标量）
+   * @param t 次数
+   * @param speedingStep  每隔 turningStep 刻进行一次变向
+   */
+  startSpeedingTask(a: number, t: number, speedingStep: number) {
+    let step = 0;
+    this.speedingTaskId = system.runInterval(() => {
+      // 实体消失 结束任务
+      if(!this.bulletEntity || step >= t) {
+        system.clearRun(this.speedingTaskId!);
+        this.speedingTaskId = undefined;
+        return;
+      }
+      try {
+        this.speedUp(a);
+      } catch {
+        system.clearRun(this.speedingTaskId!);
+        this.speedingTaskId = undefined;
+        return;
+      }
+      step++;
+    }, speedingStep);
+  }
+
+  /**
+   * 立即加速，不变向
+   * @param v
+   */
+  speedUp(v: number) {
+    let v0 = this.bulletEntity.getVelocity();
+    let deltaV = VectorMC.multiply(VectorMC.normalized(v0), v) ;
+    this.bulletEntity.applyImpulse(deltaV);
   }
 }
