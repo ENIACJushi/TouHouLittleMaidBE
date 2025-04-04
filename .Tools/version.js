@@ -5,8 +5,8 @@
 const fs = require('fs');
 
 ///////////////////////////////
-const version = [ 1, 8, 1 ]; //
-const MC = "1.21.6x";        //
+const version = [ 1, 9, 0 ]; //
+const MC = "1.21.7x";        //
 const HOTFIX = 0;            //
 ///////////////////////////////
 

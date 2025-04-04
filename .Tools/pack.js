@@ -16,6 +16,12 @@ const SPC_PATH = "../SkinPacksConvertor/SkinPacksConvertor.html"
 
 const PACK_NAME = "TouhouLittleMaid.zip";
 
+/**
+ * 路径包含以下字符串的所有文件会被排除
+ */
+const excludeList = [
+    'typescripts\\'
+]
 async function main(){
     let bp = zipPack(PATH_BP);
     let rp = zipPack(PATH_RP);
@@ -48,7 +54,12 @@ function traverseDirectory(dir, zip, zipDir) {
   files.forEach(file => {
     const filePath = path.join(dir, file);
     const filePathZip = path.join(zipDir, file);
-
+    for (let str of excludeList) {
+        if (filePath.indexOf(str) >= 0) {
+            console.warn('exclude:', filePathZip);
+            return;
+        }
+    }
     const stat = fs.statSync(filePath);
     if (stat.isDirectory()) {
         // 递归遍历子目录
