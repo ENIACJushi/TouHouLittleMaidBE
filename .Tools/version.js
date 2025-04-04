@@ -4,11 +4,15 @@
 
 const fs = require('fs');
 
-///////////////////////////////
+//////////////////////////////////////
 const version = [ 1, 9, 0 ]; //
 const MC = "1.21.7x";        //
 const HOTFIX = 0;            //
-///////////////////////////////
+//////////////////////////////////////
+
+module.exports = {
+    version, MC, HOTFIX
+}
 
 const versionStr = version.join('.') + `${HOTFIX===0 ? '' : ' - hotfix ' + HOTFIX}`;
 const BP_PATH = "../TouHouLittleMaid_BP"

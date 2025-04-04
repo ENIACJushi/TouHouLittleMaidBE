@@ -6,6 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const AdmZip = require('adm-zip');
+const { version, MC, HOTFIX } = require('./version');
 
 const PATH_BP = "../TouhouLittleMaid_BP";
 const PATH_RP = "../TouhouLittleMaid_RP";
@@ -14,7 +15,7 @@ const RP_NAME = "TouhouLittleMaidRP.mcpack";
 
 const SPC_PATH = "../SkinPacksConvertor/SkinPacksConvertor.html"
 
-const PACK_NAME = "TouhouLittleMaid.zip";
+const PACK_NAME = `TouhouLittleMaidBE_${version.join('.')}${HOTFIX===0 ? '' : '_hotfix' + HOTFIX}_${MC}.zip`;
 
 /**
  * 路径包含以下字符串的所有文件会被排除
