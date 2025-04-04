@@ -11,6 +11,8 @@ import {
 import { BulletShoot } from "../../../src/danmaku/shoots/BulletShoot";
 import { EntityDanmakuActor } from "../../../src/danmaku/actors/EntityDanmakuActor";
 
+const INACCURACY = 12;
+
 export const SpellCard = {
   // 释放该符卡的物品id，必须以thlms为开头
   id: "thlms:gossip",
@@ -39,11 +41,11 @@ export const SpellCard = {
     for (let i = 0; i < 20; i++) {
       system.runTimeout(() => {
         let direction = entity.getViewDirection();
-        smallStarShoot.shootByDirection(direction, getRandom(0.3, 1), Math.PI / 7);
-        smallStarShoot.shootByDirection(direction, getRandom(0.3, 1), Math.PI / 7);
-        smallStarShoot.shootByDirection(direction, getRandom(0.3, 1), Math.PI / 7);
-        bigStarShoot.shootByDirection(direction, getRandom(0.3, 1), Math.PI / 15);
-        bigStarShoot.shootByDirection(direction, getRandom(0.3, 1), Math.PI / 15);
+        smallStarShoot.shootByDirection(direction, getRandom(0.3, 1), INACCURACY);
+        smallStarShoot.shootByDirection(direction, getRandom(0.3, 1), INACCURACY);
+        smallStarShoot.shootByDirection(direction, getRandom(0.3, 1), INACCURACY);
+        bigStarShoot.shootByDirection(direction, getRandom(0.3, 1), INACCURACY);
+        bigStarShoot.shootByDirection(direction, getRandom(0.3, 1), INACCURACY);
       }, i * 2);
     }
   }

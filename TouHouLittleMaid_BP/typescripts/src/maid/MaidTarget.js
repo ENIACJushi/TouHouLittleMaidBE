@@ -495,17 +495,15 @@ export class Farm{
             }
             for(let ix = 0; ix < range; ix = ix > 0 ? -ix : 2-ix){
                 // 获取作物方块
+                let blockVolume = new BlockVolume(
+                    new Vector(location.x + ix, location.y-2, location.z - range),
+                    new Vector(location.x + ix + 1, location.y+2, location.z + range)
+                );
                 let lands = dimension.getBlocks(
-                    new BlockVolume(
-                        new Vector(location.x + ix, location.y-2, location.z - range),
-                        new Vector(location.x + ix + 1, location.y+2, location.z + range)
-                    ),
+                    blockVolume,
                     {
-                        // includePermutations: [
-                        //     BlockPermutation.resolve("minecraft:wheat", {"growth": 7})
-                        // ]
                         "includePermutations": FarmBlocks.getInstance().getCorpPermutations(),
-                        // "includeTypes": FarmBlocks.getInstance().getLands()
+                        "includeTypes": FarmBlocks.getInstance().getLands()
                     },
                     true
                 );

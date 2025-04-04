@@ -673,19 +673,19 @@ export class MaidManager {
 
               for (let i = 0; i < 5; i++) {
                 system.runTimeout(() => {
-                  bulletShootBig.shootByTarget(Tool.getRandom(0.3, 1), Math.PI / 15);
+                  bulletShootBig.shootByTarget(Tool.getRandom(0.3, 1), 12);
                 }, i * 8);
                 system.runTimeout(() => {
-                  bulletShootSmall.shootByTarget(Tool.getRandom(0.3, 1), Math.PI / 7);
+                  bulletShootSmall.shootByTarget(Tool.getRandom(0.3, 1), 25.7);
                 }, 1 + i * 8);
                 system.runTimeout(() => {
-                  bulletShootSmall.shootByTarget(Tool.getRandom(0.3, 1), Math.PI / 7);
+                  bulletShootSmall.shootByTarget(Tool.getRandom(0.3, 1), 25.7);
                 }, 2 + i * 8);
                 system.runTimeout(() => {
-                  bulletShootBig.shootByTarget(Tool.getRandom(0.3, 1), Math.PI / 15);
+                  bulletShootBig.shootByTarget(Tool.getRandom(0.3, 1), 12);
                 }, 3 + i * 8);
                 system.runTimeout(() => {
-                  bulletShootSmall.shootByTarget(Tool.getRandom(0.3, 1), Math.PI / 7);
+                  bulletShootSmall.shootByTarget(Tool.getRandom(0.3, 1), 25.7);
                 }, 4 + i * 8);
               }
             }; break;
@@ -712,7 +712,7 @@ export class MaidManager {
 
           for (let i = 0; i < amount; i++) {
             system.runTimeout(() => {
-              bulletShootBig.shootByTarget(0.5 * (distanceFactor + 1), 0.05)
+              bulletShootBig.shootByTarget(0.5 * (distanceFactor + 1), 3)
             }, i * 12);
           }
         }

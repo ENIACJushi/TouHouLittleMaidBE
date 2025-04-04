@@ -35,11 +35,11 @@ export class FairyPatternTest3{
     });
     for (let i = 0; i < 20; i++) {
       system.runTimeout(() => {
-        bulletShootSmall.shootByTarget(getRandom(0.3, 1), Math.PI / 7);
-        bulletShootSmall.shootByTarget(getRandom(0.3, 1), Math.PI / 7);
-        bulletShootSmall.shootByTarget(getRandom(0.3, 1), Math.PI / 7);
-        bulletShootBig.shootByTarget(getRandom(0.3, 1), Math.PI / 15);
-        bulletShootBig.shootByTarget(getRandom(0.3, 1), Math.PI / 15);
+        bulletShootSmall.shootByTarget(getRandom(0.3, 1), 25);
+        bulletShootSmall.shootByTarget(getRandom(0.3, 1), 25);
+        bulletShootSmall.shootByTarget(getRandom(0.3, 1), 25);
+        bulletShootBig.shootByTarget(getRandom(0.3, 1), 12);
+        bulletShootBig.shootByTarget(getRandom(0.3, 1), 12);
       }, i + 10);
     }
     return true;

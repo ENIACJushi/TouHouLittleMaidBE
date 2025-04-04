@@ -143,7 +143,7 @@ export function fairy_shoot(fairy: Entity) {
         thrower: new EntityDanmakuActor(fairy, true),
         target: new EntityDanmakuActor(target, true).setOffset(new Vector(0, -0.4, 0)),
         preJudge: true,
-      }).shootByTarget(speed, 0.05);
+      }).shootByTarget(speed, 2.9);
     } else {
       let shoot = new BulletShoot({
         shape: new GeneralBullet().setRandomColor().setRandomType().setDamage(distanceFactor + 1.5),
@@ -156,7 +156,7 @@ export function fairy_shoot(fairy: Entity) {
         yawTotal: Math.PI / 6,
         axisRotation: 0,
         directionRotation: 0,
-      }, speed, 0.02);
+      }, speed, 1.14);
     }
 
   }

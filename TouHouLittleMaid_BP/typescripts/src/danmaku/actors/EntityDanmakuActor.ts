@@ -35,16 +35,20 @@ export class EntityDanmakuActor extends DanmakuActor {
   }
 
   public getLocation(): [Dimension, Vector] {
-    if (this.isLocationLocked) {
+    try {
+      if (this.isLocationLocked) {
+        return this.lastLocation;
+      }
+      if (this.entity) {
+        this.lastLocation = [
+          this.entity.dimension, 
+          this.getPosition()
+        ];
+      }
+      return this.lastLocation;
+    } catch {
       return this.lastLocation;
     }
-    if (this.entity) {
-      this.lastLocation = [
-        this.entity.dimension, 
-        this.getPosition()
-      ];
-    }
-    return this.lastLocation;
   }
 
   private getPosition(): Vector {

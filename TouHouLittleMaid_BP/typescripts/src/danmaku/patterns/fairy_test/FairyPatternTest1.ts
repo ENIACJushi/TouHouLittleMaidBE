@@ -23,7 +23,7 @@ export class FairyPatternTest1 {
 
     for (let i = 0; i < 40; i++) {
       system.runTimeout(() => {
-        bulletShoot.shootByTarget(0.6, Math.PI / 30);
+        bulletShoot.shootByTarget(0.6, 6);
       }, i + 10);
     }
     return true;

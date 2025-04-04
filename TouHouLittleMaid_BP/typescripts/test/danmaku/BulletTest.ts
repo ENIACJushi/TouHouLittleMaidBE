@@ -14,7 +14,7 @@ export class BulletTest {
         shape: new GeneralBullet().setRandomColor().setRandomType().setDamage(1).setLifeTime(20),
         thrower: new EntityDanmakuActor(source, true),
         preJudge: true,
-      }).shootByDirection(source.getViewDirection(), 0.05);
+      }).shootByDirection(source.getViewDirection(), 2.8);
     });
     testCommandRegister.register('b2', (source: Entity) => {
       logger('test: bullet');
@@ -22,7 +22,7 @@ export class BulletTest {
         shape: new GeneralBullet().setRandomColor().setRandomType().setDamage(1).setLifeTime(20),
         thrower: new EntityDanmakuActor(source, true),
         preJudge: true,
-      }).shootByVelocity(source.getViewDirection(), 0.05);
+      }).shootByVelocity(source.getViewDirection(), 2.8);
     });
   }
 }
