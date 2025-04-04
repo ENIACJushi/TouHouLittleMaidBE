@@ -1,10 +1,10 @@
-import { Player, world, Dimension, Entity, WorldInitializeAfterEvent,EntityTypes, ItemComponentRegistry, WorldInitializeBeforeEvent } from "@minecraft/server";
+import { Player, world, Dimension, Entity, StartupEvent } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 
 export default class PowerPoint {
     /**
-     * @param {WorldInitializeBeforeEvent} event 
+     * @param {StartupEvent} event 
      */
     static registerCC(event){
         // 初始化 P 点投掷物属性
@@ -22,7 +22,7 @@ export default class PowerPoint {
     }
     //////// INIT ////////
     /**
-     * @param {WorldInitializeBeforeEvent} event 
+     * @param {StartupEvent} event 
      */
     static init(event){
         // 初始化计分板

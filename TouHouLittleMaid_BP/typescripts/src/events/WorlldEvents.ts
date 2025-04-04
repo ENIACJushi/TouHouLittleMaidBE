@@ -1,4 +1,4 @@
-import { ScriptEventCommandMessageAfterEvent, system, world, WorldInitializeBeforeEvent } from "@minecraft/server";
+import { ScriptEventCommandMessageAfterEvent, system, StartupEvent } from "@minecraft/server";
 import { CommandManager } from "../controller/Command";
 import { Skull } from "../blocks/Skull";
 import { StatuesBlock } from "../blocks/StatuesBlock";
@@ -19,13 +19,14 @@ export class WorldEvents {
       system.run(() => { this.thlmScriptEventReceive(event); })
     }, { namespaces: ["thlm"] });
 
-    world.beforeEvents.worldInitialize.subscribe((e) => {
+    
+    system.beforeEvents.startup.subscribe((e) => {
       this.worldInitialize(e);
     });
   }
 
   // 世界初始化
-  private worldInitialize(e: WorldInitializeBeforeEvent) {
+  private worldInitialize(e: StartupEvent) {
     // 注册方块自定义组件
     Skull.registerCC(e);
     StatuesBlock.registerCC(e);

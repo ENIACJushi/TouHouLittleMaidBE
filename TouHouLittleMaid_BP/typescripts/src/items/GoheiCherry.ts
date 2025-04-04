@@ -1,4 +1,4 @@
-import { Entity, ItemReleaseUseAfterEvent, ItemStack, ItemStartUseAfterEvent, WorldInitializeBeforeEvent } from "@minecraft/server";
+import { Entity, ItemReleaseUseAfterEvent, ItemStack, ItemStartUseAfterEvent, StartupEvent } from "@minecraft/server";
 import { shoot } from "../danmaku/patterns/Cherry";
 import { ItemTool, logger } from "../libs/ScarletToolKit";
 
@@ -6,7 +6,7 @@ export class GoheiCherry {
   /**
   * 初始化樱之御币的自定义属性
   */
-  static registerCC(event: WorldInitializeBeforeEvent) {
+  static registerCC(event: StartupEvent) {
     event.itemComponentRegistry.registerCustomComponent('tlm:gohei_cherry', {
       onUse(useEvent) {
         let pl = useEvent.source;

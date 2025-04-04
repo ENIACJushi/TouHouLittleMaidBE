@@ -2,7 +2,7 @@ import {
   ItemStartUseAfterEvent,
   ItemStopUseAfterEvent,
   ItemUseBeforeEvent,
-  ItemUseOnBeforeEvent,
+  PlayerInteractWithBlockBeforeEvent,
   system,
   world,
 } from "@minecraft/server";
@@ -23,7 +23,7 @@ export class ItemEvents {
 
     if (item.typeId.substring(0, 18) === "touhou_little_maid") {
       switch (item.typeId.substring(19)) {
-        case "hakurei_gohei_crafting_table": Gohei.activate(event); break;
+        case "hakurei_gohei_crafting_table": Gohei.activate(event.source); break;
         case "memorizable_gensokyo": MemorizableGensokyo.onUseEvent(event); break;
         default: break;
       }
@@ -31,9 +31,9 @@ export class ItemEvents {
   }
 
   // 对方块使用前
-  private itemUseOnBefore(event: ItemUseOnBeforeEvent) {
+  private PlayerInteractWithBlockBeforeEvent(event: PlayerInteractWithBlockBeforeEvent) {
     const block = event.block;
-    const player = event.source;
+    const player = event.player;
     const itemStack = event.itemStack;
 
     if (!this.playerOnUse.get(player.name)) {
@@ -58,7 +58,7 @@ export class ItemEvents {
       };
 
       //// 物品筛选 ////
-      if (itemStack.typeId.substring(0, 18) === "touhou_little_maid") {
+      if (itemStack && itemStack.typeId.substring(0, 18) === "touhou_little_maid") {
         let itemName = itemStack.typeId.substring(19);
         switch (itemName) {
           // case "gold_microwaver_item": GoldMicrowaver.placeEvent(event); break;
@@ -105,8 +105,8 @@ export class ItemEvents {
     world.afterEvents.itemStopUse.subscribe(event => {
       this.itemStopUseAfter(event);
     });
-    world.beforeEvents.itemUseOn.subscribe(event => {
-      system.run(() => { this.itemUseOnBefore(event); });
+    world.beforeEvents.playerInteractWithBlock.subscribe(event => {
+      system.run(() => { this.PlayerInteractWithBlockBeforeEvent(event); });
     });
     world.beforeEvents.itemUse.subscribe(event => {
       system.run(() => { this.itemUseBefore(event); });

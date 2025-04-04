@@ -251,9 +251,3 @@ export class BulletShoot {
     ));
   }
 }
-
-new BulletShoot({
-  shape: new GeneralBullet(),
-  thrower: new LocationDanmakuActor(),
-  ownerId: 'string'
-})

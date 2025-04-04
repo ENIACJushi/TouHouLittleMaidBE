@@ -1,5 +1,5 @@
 
-import { ItemStack, ItemUseOnBeforeEvent, EnchantmentTypes, ItemUseBeforeEvent } from "@minecraft/server";
+import { ItemStack, PlayerInteractWithBlockBeforeEvent, EnchantmentTypes, ItemUseBeforeEvent, Player } from "@minecraft/server";
 import { GeneralBulletType } from "../danmaku/shapes/main";
 
 
@@ -20,11 +20,9 @@ export class Gohei {
   static goheiDefault = GeneralBulletType.PELLET;
   /**
    * 激活由工作台合成的御币
-   * @param {ItemUseBeforeEvent} ev 
    */
-  static activate(ev: ItemUseBeforeEvent) {
+  static activate(pl?: Player) {
     try {
-      let pl = ev.source;
       if (!pl) {
         return;
       }
@@ -54,10 +52,13 @@ export class Gohei {
    * @param ev 
    * @param danmakuName 去除前缀的物品名称，如 touhou_little_maid:hakurei_gohei_crafting_table → crafting_table
    */
-  static transform(ev: ItemUseOnBeforeEvent, danmakuName: string) {
+  static transform(ev: PlayerInteractWithBlockBeforeEvent, danmakuName: string) {
     let origin_item = ev.itemStack;
+    if (!origin_item) {
+      return;
+    }
     if (danmakuName === "crafting_table") {
-      this.activate(ev);
+      this.activate(ev.player);
     }
     else {
       for (let i = 0; i < this.goheiSequence.length; i++) {
@@ -77,7 +78,7 @@ export class Gohei {
           itemStack.nameTag = origin_item.nameTag;
 
           // Set item
-          let player = ev.source;
+          let player = ev.player;
           if(!player) {
             return;
           }

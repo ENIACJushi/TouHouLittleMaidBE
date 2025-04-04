@@ -9,7 +9,7 @@
  *  thlmm:<女仆id>
  *  thlmo:<主人生物id>
  */
-import { Direction, ItemStack, world, DataDrivenEntityTriggerAfterEvent, system, System, EntityDieAfterEvent, ItemUseOnBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent, Entity, Player } from "@minecraft/server";
+import { Direction, ItemStack, world, DataDrivenEntityTriggerAfterEvent, system, System, EntityDieAfterEvent, PlayerInteractWithBlockBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent, Entity, Player } from "@minecraft/server";
 import { Vector, VectorMC } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 import * as UI from "./MaidUI"
@@ -233,7 +233,7 @@ export class MaidManager {
     /**
      * 照片使用事件
      * 当照片无 lore 或 使用者不为主人时，使用失败
-     * @param {ItemUseOnBeforeEvent} event 
+     * @param {PlayerInteractWithBlockBeforeEvent} event 
      */
     static photoOnUseEvent(event) {
       let lore = event.itemStack.getLore();
@@ -243,7 +243,7 @@ export class MaidManager {
       if (isBadContainerBlock(event.block.typeId)) return;
 
       //// 检测放置位置是否有两格空间 ////
-      const player = event.source;
+      const player = event.player;
       const dimension = player.dimension;
       let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
       if (location === undefined) {
@@ -257,17 +257,17 @@ export class MaidManager {
       let strPure = Tool.lore2Str(lore);
 
       // 使用者不是主人
-      if (StrMaid.Owner.getId(strPure) !== event.source.id) return;
+      if (StrMaid.Owner.getId(strPure) !== player.id) return;
 
       // 放置
       let maid = EntityMaid.fromStr(strPure, dimension, location, true);
 
       // 消耗照片
-      Tool.ItemTool.setPlayerMainHand(event.source);
+      Tool.ItemTool.setPlayerMainHand(player);
     }
     /**
      * 魂符使用事件
-     * @param {ItemUseOnBeforeEvent} event 
+     * @param {PlayerInteractWithBlockBeforeEvent} event 
      */
     static smartSlabOnUseEvent(event) {
       let itemStack = event.itemStack;
@@ -277,7 +277,7 @@ export class MaidManager {
       if (isBadContainerBlock(event.block.typeId)) return;
 
       //// 检测放置位置是否有两格空间 ////
-      const player = event.source;
+      const player = event.player;
       const dimension = player.dimension;
       let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
       if (location === undefined) {
@@ -307,7 +307,7 @@ export class MaidManager {
           let str = Tool.lore2Str(lore);
 
           // 使用者不是主人
-          if (StrMaid.Owner.getId(str) !== event.source.id) return;
+          if (StrMaid.Owner.getId(str) !== player.id) return;
 
           // 放置
           maid = EntityMaid.fromStr(str, dimension, location, true);
@@ -323,7 +323,7 @@ export class MaidManager {
         emptyItem.nameTag = itemName;
       }
 
-      Tool.ItemTool.setPlayerMainHand(event.source, emptyItem);
+      Tool.ItemTool.setPlayerMainHand(player, emptyItem);
     }
     /**
      * 女仆被魂符收回事件
@@ -398,7 +398,7 @@ export class MaidManager {
         case EntityMaid.Work.melon: EntityMaid.Work.enter(maid, EntityMaid.Work.melon); break; // 恢复瓜类模式
         case EntityMaid.Work.cocoa: EntityMaid.Work.enter(maid, EntityMaid.Work.cocoa); break; // 恢复可可模式
       }
-      MaidTarget.search(maid, 15);
+      MaidTarget.search(maid, 15, true);
 
       // 拾物模式
       if (EntityMaid.Pick.get(maid)) {

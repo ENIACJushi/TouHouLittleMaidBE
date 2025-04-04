@@ -1,8 +1,8 @@
-import { WorldInitializeBeforeEvent } from "@minecraft/server";
+import { StartupEvent } from "@minecraft/server";
 
 export class StatuesBlock{
     /**
-     * @param {WorldInitializeBeforeEvent} event 
+     * @param {StartupEvent} event 
      */
     static registerCC(event){
         event.blockComponentRegistry.registerCustomComponent("tlm:statues", {

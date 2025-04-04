@@ -2,7 +2,7 @@ import { EntityHitEntityAfterEvent, Entity, Dimension, system, BlockPermutation,
 import { Vector } from "../libs/VectorMC";
 import { EntityMaid } from "./EntityMaid";
 import { logger, pointInArea_3D } from "../libs/ScarletToolKit";
-import { farmBlocks } from "../../data/FarmBlocks/index";
+import { FarmBlocks } from "../../data/FarmBlocks/index";
 
 
 
@@ -31,9 +31,9 @@ export class MaidTarget{
      * @param {number} height
      * @returns {object}
      */
-    static search(maid, range=6){
+    static search(maid, range=6, force=false){
         switch(EntityMaid.Work.get(maid)){
-            case EntityMaid.Work.farm: Farm.search(maid, range); break;
+            case EntityMaid.Work.farm: Farm.search(maid, range, force); break;
             case EntityMaid.Work.sugar_cane: SugarCane.search(maid, range); break;
             case EntityMaid.Work.melon: Melon.search(maid, range); break;
             case EntityMaid.Work.cocoa: Cocoa.search(maid, range); break;
@@ -140,6 +140,7 @@ export class Farm{
      * @returns {Entity}
      */
     static placeCorp(dimension, location){
+        console.log('search farm job placeCorp')
         // 若该位置已经有目标，则不放置
         let entities = dimension.getEntitiesAtBlockLocation(location);
         for(let entity of entities){
@@ -160,6 +161,7 @@ export class Farm{
      * @returns {Entity}
      */
     static placeSeed(dimension, location){
+        console.log('search farm job placeSeed')
         // 若该位置已经有目标，则不放置
         let entities = dimension.getEntitiesAtBlockLocation(location);
         for(let entity of entities){
@@ -183,7 +185,7 @@ export class Farm{
      */
     static plantSeed(maid, location, seedName, landName){
         if(EntityMaid.Backpack.removeItem_type(maid, seedName, 1) === true){
-            let seedInfos = farmBlocks.getSeed(seedName);
+            let seedInfos = FarmBlocks.getInstance().getSeed(seedName);
             if(seedInfos !== undefined){
                 for(let seedInfo of seedInfos){
                     if(seedInfo.land.includes(landName)){
@@ -233,7 +235,7 @@ export class Farm{
                 for(let key in names){
                     if(names[key] > max){
                         // 是否能种在方块上
-                        farmBlocks.getLand()
+                        FarmBlocks.getInstance().getLand()
                         type = key;
                         max = names[key];
                     }
@@ -245,7 +247,7 @@ export class Farm{
 
             // 种植（规定类型）
             if(type !== undefined){
-                let corpInfo = farmBlocks.getCorp(type);
+                let corpInfo = FarmBlocks.getInstance().getCorp(type);
                 if(corpInfo !== undefined){
                     if(this.plantSeed(maid, location, corpInfo.seed, landBlock.typeId)){
                         target.triggerEvent("despawn");
@@ -269,7 +271,7 @@ export class Farm{
 
             // 种植（规定类型的执行失败 -> 尝试不规定类型）
             if(landBlock !== undefined && landBlock.typeId !== "minecraft:air"){
-                let seedList = farmBlocks.getLand(landBlock.typeId);
+                let seedList = FarmBlocks.getInstance().getLand(landBlock.typeId);
                 if(seedList !== undefined){
                     for(let seed of seedList){
                         if(this.plantSeed(maid, location, seed, landBlock.typeId)){
@@ -285,7 +287,7 @@ export class Farm{
             ///// 收获 ///// 
             // 被收获的方块应该是成熟的作物
             let cropName = selfBlock.typeId;
-            let info = farmBlocks.getCorp(cropName);
+            let info = FarmBlocks.getInstance().getCorp(cropName);
             if(info!==undefined && selfBlock.permutation.matches(cropName, info.state)){
                 if(info.keep===undefined){
                     dimension.runCommand(`setblock ${location.x} ${location.y} ${location.z} air destroy`);
@@ -333,8 +335,11 @@ export class Farm{
      * @param {number} range
      * @returns {object} 
      */
-    static search(maid, _range=6){
-        if(maid.target!==undefined) return; // 已经有目标，不需要扫描
+    static search(maid, _range=6, force=false){
+        // 已经有目标时不需要扫描
+        if(maid.target !== undefined) {
+            return; 
+        }
         ///// 需求判断 /////
         const dimension = maid.dimension;
         const location = maid.location;
@@ -348,8 +353,12 @@ export class Farm{
         ///// 频率调整 /////
         let range = _range;
         let temp = SpeedController.beforeSearch(maid, this.maxLack, this.lackStep);
-        if(!temp.run) return;
-        if(temp.lackmode) range = range + 10; // 若进入了慢扫描模式，则增大扫描范围
+        if(!force && !temp.run) {
+            return;
+        }
+        if(temp.lackmode) {
+            range = range + 10; // 若进入了慢扫描模式，则增大扫描范围
+        }
 
         ///// 搜索 /////
         /**
@@ -368,6 +377,8 @@ export class Farm{
         let xStart = Math.floor(location.x);
         let zStart = Math.floor(location.z);
         let count = targets.length;
+        
+        console.log('search farm 3')
         function* searchJob(){
             for(let ix = 0; ix < range; ix = ix > 0 ? -ix : 1-ix){
                 for(let iz = 0; iz < range; iz = iz > 0 ? -iz : 1-iz){
@@ -389,7 +400,7 @@ export class Farm{
                         }
 
                         // 耕地判断
-                        if(farmBlocks.getLand(block.typeId) !== undefined){
+                        if(FarmBlocks.getInstance().getLand(block.typeId) !== undefined){
                             // 是耕地，找上方一格
                             y = A+i;
                             let block = dimension.getBlock(new Vector(x, A+i+1, z));
@@ -404,7 +415,7 @@ export class Farm{
                         }
 
                         // 作物判断
-                        let corpInfo = farmBlocks.getCorp(block.typeId);
+                        let corpInfo = FarmBlocks.getInstance().getCorp(block.typeId);
                         if(corpInfo !== undefined){
                             // 是作物，判断是否成熟（无论成不成熟都结束扫描）
                             let mature = true;
@@ -436,7 +447,7 @@ export class Farm{
                         }
 
                         // 耕地判断
-                        if(farmBlocks.getLand(block.typeId) !== undefined){
+                        if(FarmBlocks.getInstance().getLand(block.typeId) !== undefined){
                             // 是耕地，在上方放置种植标记
                             if(upAir) Farm.placeSeed(dimension, new Vector(x, A-i+1, z));
                             count++;
@@ -444,7 +455,7 @@ export class Farm{
                         }
 
                         // 作物判断
-                        let corpInfo = farmBlocks.getCorp(block.typeId);
+                        let corpInfo = FarmBlocks.getInstance().getCorp(block.typeId);
                         if(corpInfo !== undefined){
                             // 是作物，判断是否成熟（无论成不成熟都结束扫描）
                             let mature = true;
@@ -472,6 +483,7 @@ export class Farm{
             SpeedController.afterSearch(maid, count, Farm.maxLack, Farm.minCount);
         }
         function* newSearchJob(){
+            console.log('search farm job targets.length', targets.length)
             let areaLength = range*2+2;
             let searchMatrix = new Array(areaLength);
             for(let i = 0; i < areaLength; i++){
@@ -489,8 +501,11 @@ export class Farm{
                         new Vector(location.x + ix + 1, location.y+2, location.z + range)
                     ),
                     {
-                        "includePermutations": farmBlocks.getCorpPermutations(),
-                        "includeTypes": farmBlocks.getLands()
+                        // includePermutations: [
+                        //     BlockPermutation.resolve("minecraft:wheat", {"growth": 7})
+                        // ]
+                        "includePermutations": FarmBlocks.getInstance().getCorpPermutations(),
+                        // "includeTypes": FarmBlocks.getInstance().getLands()
                     },
                     true
                 );
@@ -503,7 +518,7 @@ export class Farm{
 
                     let block = dimension.getBlock(pos);
                     // 耕地判断
-                    if(farmBlocks.getLand(block.typeId) !== undefined){
+                    if(FarmBlocks.getInstance().getLand(block.typeId) !== undefined){
                         // 检查上方方块
                         let blockLocation = new Vector(pos.x, pos.y+1, pos.z);
                         block = dimension.getBlock(blockLocation);
@@ -517,13 +532,13 @@ export class Farm{
                     }
 
                     // 作物判断
-                    let corpInfo = farmBlocks.getCorp(block.typeId);
+                    let corpInfo = FarmBlocks.getInstance().getCorp(block.typeId);
                     if(corpInfo !== undefined){
                         // 是作物，判断是否成熟
-                        
                         let mature = true;
                         for(let key in corpInfo.state){
                             if(block.permutation.getState(key) !== corpInfo.state[key]){
+                                console.info('not mature, exit')
                                 mature = false;
                                 break;
                             }

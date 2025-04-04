@@ -16,7 +16,18 @@ var checkList = [
 import { BlockPermutation, ItemStack } from "@minecraft/server";
 import { logger, logger_debug } from "../../src/libs/ScarletToolKit";
 
-class FarmBlocks {
+export class FarmBlocks {
+  static instance;
+  /**
+   * @returns {FarmBlocks}
+   */
+  static getInstance() {
+    if (!this.instance) {
+      this.instance = new FarmBlocks();
+    }
+    return this.instance;
+  }
+
   Data = {
     crops: {}, // 作物
     seeds: {}, // 种子
@@ -39,8 +50,6 @@ class FarmBlocks {
       }
       catch { }
     }
-    // logger(JSON.stringify(this.Data.crops));
-    // logger(JSON.stringify(this.Data.seeds))
   }
 
   // 添加作物信息
@@ -115,5 +124,3 @@ class FarmBlocks {
     return this.corpList;
   }
 }
-
-export const farmBlocks = new FarmBlocks();

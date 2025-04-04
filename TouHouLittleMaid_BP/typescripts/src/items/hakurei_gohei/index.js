@@ -1,6 +1,6 @@
 import {
   ItemStack,
-  WorldInitializeBeforeEvent,
+  StartupEvent,
   ItemStartUseAfterEvent,
   ItemReleaseUseAfterEvent,
   world,
@@ -16,7 +16,7 @@ class HakureiGohei {
   ]
   /**
   * 初始化御币的自定义属性
-  * @param {WorldInitializeBeforeEvent} event 
+  * @param {StartupEvent} event 
   */
   registerCC (event) {
     event.itemComponentRegistry.registerCustomComponent('tlm:hakurei_gohei', {

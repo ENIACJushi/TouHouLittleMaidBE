@@ -20,7 +20,9 @@ system.runTimeout(() => {
   new ScheduleEvents().startAllEvents();
 }, 20);
 
-world.sendMessage("§e[Touhou Little Maid] Addon Loaded!");
+system.run(() => {
+  world.sendMessage("§e[Touhou Little Maid] Addon Loaded!");
+})
 
 // todo: 移走下面这些
 if (false) {

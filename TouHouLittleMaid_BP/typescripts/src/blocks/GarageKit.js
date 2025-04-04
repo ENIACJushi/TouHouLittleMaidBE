@@ -1,4 +1,4 @@
-import { ItemUseOnBeforeEvent, EquipmentSlot, Block, Direction, system, Dimension, Entity, ItemStack, DataDrivenEntityTriggerAfterEvent, BlockPermutation, Player, BlockVolume, BlockVolumeBase, WorldInitializeBeforeEvent } from "@minecraft/server";
+import { PlayerInteractWithBlockBeforeEvent, EquipmentSlot, Block, Direction, system, Dimension, Entity, ItemStack, DataDrivenEntityTriggerAfterEvent, BlockPermutation, Player, BlockVolume, BlockVolumeBase, StartupEvent } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import { StrMaid } from "../maid/StrMaid";
 import { ActionbarMessage, getRandomInteger, ItemTool, logger, lore2Str, str2Lore, title_player_actionbar_object, title_player_actionbar_translate } from "../libs/ScarletToolKit";
@@ -28,7 +28,7 @@ export class GarageKit{
         return entity[0];
     }
     /**
-     * @param {WorldInitializeBeforeEvent} event 
+     * @param {StartupEvent} event 
      */
     static registerCC(event){
         event.blockComponentRegistry.registerCustomComponent("tlm:garage_kit", {
@@ -58,10 +58,10 @@ export class GarageKit{
     /**
      * 刻刀使用事件（激活手办）
      * 1x1x1（0.5），1x1x2（1），2x2x4（2），3x3x6（3）
-     * @param {ItemUseOnBeforeEvent} event 
+     * @param {PlayerInteractWithBlockBeforeEvent} event 
      */
     static activate(event){
-        let player = event.source;
+        let player = event.player;
         let block = event.block;
         // 必须对黏土使用
         if(!isClay(block)){
@@ -295,7 +295,7 @@ export class GarageKit{
     }
     /**
      * 手办放置事件
-     * @param {ItemUseOnBeforeEvent} event 
+     * @param {PlayerInteractWithBlockBeforeEvent} event 
      */
     static placeEvent(event){
         // 检测被交互的方块是否会复制物品
@@ -314,7 +314,7 @@ export class GarageKit{
         }
         
         // 可放置判断
-        let player = event.source;
+        let player = event.player;
         let dimension = player.dimension;
         const block = dimension.getBlock(location);
         if(!block.isAir) return;

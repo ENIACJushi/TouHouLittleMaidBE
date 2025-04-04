@@ -1,4 +1,4 @@
-import { Direction, Block, BlockPermutation, Dimension, ItemUseOnBeforeEvent, DataDrivenEntityTriggerAfterEvent, Entity, ItemStack, Player, BlockVolume, WorldInitializeBeforeEvent, system } from "@minecraft/server";
+import { Direction, Block, BlockPermutation, Dimension, PlayerInteractWithBlockBeforeEvent, DataDrivenEntityTriggerAfterEvent, Entity, ItemStack, Player, BlockVolume, StartupEvent, system } from "@minecraft/server";
 import { VectorMC } from "../libs/VectorMC";
 import { logger, BlockTool, ItemTool } from "../libs/ScarletToolKit";
 
@@ -19,7 +19,7 @@ export class GoldMicrowaver{
         return entity[0];
     }
     /**
-     * @param {WorldInitializeBeforeEvent} event 
+     * @param {StartupEvent} event 
      */
     static registerCC(event){
         event.blockComponentRegistry.registerCustomComponent("tlm:microwaver", {
@@ -271,7 +271,7 @@ export class GoldMicrowaver{
     }
     /**
      * 放置事件 弃用
-     * @param {ItemUseOnBeforeEvent} event 
+     * @param {PlayerInteractWithBlockBeforeEvent} event 
      */
     static placeEvent(event){
         // 决定位置  PS: faceLocation 是交互面上被点的坐标
@@ -287,7 +287,7 @@ export class GoldMicrowaver{
         }
         
         // 可放置判断
-        let player = event.source;
+        let player = event.player;
         let dimension = player.dimension;
         const block = dimension.getBlock(location);
         if(!block.isAir) return;
@@ -331,7 +331,6 @@ export class GoldMicrowaver{
     }
     /**
      * 交互事件
-     * @param {ItemUseOnBeforeEvent} event 
      */
     static interactEvent(waverBlock, player){
         let waver = this.getEntityByBlock(waverBlock);

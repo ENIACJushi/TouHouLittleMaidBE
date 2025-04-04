@@ -1,8 +1,12 @@
 
 import * as Tool from "../libs/ScarletToolKit"
 import {
-  EntityTypes, world, Entity, WorldInitializeAfterEvent, system,
-  ProjectileHitEntityAfterEvent, ProjectileHitBlockAfterEvent
+  EntityTypes,
+  world,
+  Entity,
+  system,
+  ProjectileHitEntityAfterEvent,
+  ProjectileHitBlockAfterEvent,
 } from "@minecraft/server";
 import { BulletShoot } from "./shoots/BulletShoot";
 import { DanmakuInterface } from "./DanmakuInterface";

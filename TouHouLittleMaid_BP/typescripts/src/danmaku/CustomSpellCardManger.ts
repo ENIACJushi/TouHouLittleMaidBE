@@ -1,4 +1,4 @@
-import { ItemStack, ItemUseBeforeEvent, Player, WorldInitializeBeforeEvent, ItemComponentUseEvent } from "@minecraft/server";
+import { ItemStack, ItemUseBeforeEvent, Player, ItemComponentUseEvent, StartupEvent } from "@minecraft/server";
 import { spellCardList } from "../../data/spellcard/CustomSpellCardEntry"
 import * as Tool from "../libs/ScarletToolKit"
 
@@ -6,7 +6,7 @@ export class CustomSpellCardManger {
   /**
   * 初始化樱之御币的自定义属性
   */
-  static registerCC(event: WorldInitializeBeforeEvent) {
+  static registerCC(event: StartupEvent) {
     event.itemComponentRegistry.registerCustomComponent('tlm:spell_card', {
       onUse(useEvent) {
         CustomSpellCardManger.onSpellCardUseEvent(useEvent);
