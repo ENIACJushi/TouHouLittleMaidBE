@@ -1,5 +1,4 @@
 import { ItemStack, system, world } from "@minecraft/server";
-import { logger } from "../../libs/ScarletToolKit";
 
 const MODE_PROPERTY_KEY = 'tlm_hg:mode';
 const TIME_PROPERTY_KEY = 'tlm_hg:time';

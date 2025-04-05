@@ -1,7 +1,7 @@
 import { Direction, Block, BlockPermutation, Dimension, PlayerInteractWithBlockBeforeEvent, DataDrivenEntityTriggerAfterEvent, Entity, ItemStack, Player, BlockVolume, StartupEvent, system } from "@minecraft/server";
 import { VectorMC } from "../libs/VectorMC";
-import { logger, BlockTool, ItemTool } from "../libs/ScarletToolKit";
-
+import { BlockTool, ItemTool } from "../libs/ScarletToolKit";
+import { Logger } from "../controller/Logger";
 
 export class GoldMicrowaver{
     /**

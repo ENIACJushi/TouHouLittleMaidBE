@@ -61,7 +61,7 @@ export class EntityEvents {
 
   // 数驱事件
   private dataDrivenEntityTrigger(event: DataDrivenEntityTriggerAfterEvent) {
-    // Tool.logger(event.eventId);
+    // Logger.info(event.eventId);
     // const {entity, id, modifiers} = data;
     if (event.eventId.substring(0, 4) === 'thlm') {
       switch (event.eventId.substring(4, 5)) {

@@ -1,4 +1,3 @@
-import { logger } from "../src/libs/ScarletToolKit";
 
 const BadContainerBlocks = [
     "minecraft:frame",

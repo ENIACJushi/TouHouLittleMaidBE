@@ -1,7 +1,7 @@
 import { EntityHitEntityAfterEvent, Entity, Dimension, system, BlockPermutation, BlockVolume } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import { EntityMaid } from "./EntityMaid";
-import { logger, pointInArea_3D } from "../libs/ScarletToolKit";
+import { pointInArea_3D } from "../libs/ScarletToolKit";
 import { FarmBlocks } from "../../data/FarmBlocks/index";
 
 

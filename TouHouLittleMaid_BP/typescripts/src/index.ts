@@ -1,6 +1,5 @@
 import { world, system } from "@minecraft/server"
 import experiment from "./experiment"
-import * as Tool from "./libs/ScarletToolKit";
 import { initTest } from "../test/index";
 import { BlockEvents } from "./events/BlockEvents";
 import { EntityEvents } from "./events/EntityEvents";
@@ -8,6 +7,7 @@ import { ItemEvents } from "./events/ItemEvents";
 import { PlayerEvents } from "./events/PlayerEvents";
 import { WorldEvents } from "./events/WorlldEvents";
 import { ScheduleEvents } from "./events/ScheduleEvents";
+import { Logger } from "./controller/main";
 
 const TEST = true; // 是否启用测试模块
 
@@ -26,7 +26,7 @@ system.run(() => {
 
 // todo: 移走下面这些
 if (false) {
-  Tool.logger("§e[Touhou Little Maid] 现在是实验模式。")
+  world.sendMessage('§e[Touhou Little Maid] 现在是实验模式。');
   experiment.main();
 }
 
@@ -43,7 +43,7 @@ if (false) {
   var start = 0; // ms
   world.afterEvents.entityHurt.subscribe(event => {
     //// 伤害信息 ////
-    Tool.logger(` ${event?.damageSource?.damagingEntity?.typeId ?? '?'
+    Logger.info(` ${event?.damageSource?.damagingEntity?.typeId ?? '?'
       } -> ${event.hurtEntity.typeId}: ${event.damage.toFixed(2)}`);
 
     //// 伤害统计 ////
@@ -64,7 +64,7 @@ if (false) {
     // 极值
     max = Math.max(max, event.damage);
     min = Math.min(min, event.damage);
-    Tool.logger(` Hit: ${count.toFixed(2)} | MIN: ${min.toFixed(2) } | MAX:${max.toFixed(2)
+    Logger.info(` Hit: ${count.toFixed(2)} | MIN: ${min.toFixed(2) } | MAX:${max.toFixed(2)
       } | DPH :${average1.toFixed(2)} | DPS: ${average2.toFixed(2)}`);
   });
 }

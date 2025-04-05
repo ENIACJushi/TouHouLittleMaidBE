@@ -1,7 +1,6 @@
 import { Dimension, Entity, system } from "@minecraft/server";
 import { BulletBase } from "./BulletBase";
 import { Vector, VectorMC } from "../../../libs/VectorMC";
-import { logger } from "../../../libs/ScarletToolKit";
 
 const ANGLE_PI = 180 / Math.PI;
 const PI_ANGLE = Math.PI / 180;

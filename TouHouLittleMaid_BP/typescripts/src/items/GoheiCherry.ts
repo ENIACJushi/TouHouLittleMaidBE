@@ -1,6 +1,6 @@
 import { Entity, ItemReleaseUseAfterEvent, ItemStack, ItemStartUseAfterEvent, StartupEvent } from "@minecraft/server";
 import { shoot } from "../danmaku/patterns/Cherry";
-import { ItemTool, logger } from "../libs/ScarletToolKit";
+import { ItemTool } from "../libs/ScarletToolKit";
 
 export class GoheiCherry {
   /**

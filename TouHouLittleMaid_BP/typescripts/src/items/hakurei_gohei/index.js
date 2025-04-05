@@ -5,9 +5,10 @@ import {
   ItemReleaseUseAfterEvent,
   world,
 } from "@minecraft/server";
-import { ItemTool, logger } from '../../libs/ScarletToolKit';
+import { ItemTool } from '../../libs/ScarletToolKit';
 import { GoheiItemInterface } from "./GoheiItemInterface";
 import { amuletMode } from "./modes/AmuletMode";
+import { Logger } from "../../controller/Logger";
 
 
 class HakureiGohei {
@@ -21,7 +22,7 @@ class HakureiGohei {
   registerCC (event) {
     event.itemComponentRegistry.registerCustomComponent('tlm:hakurei_gohei', {
       onUseOn: (event) => {
-        logger('onUse hakurei gohei');
+        Logger.info('onUse hakurei gohei');
         GoheiItemInterface.getMode(event.itemStack);
       }
     });

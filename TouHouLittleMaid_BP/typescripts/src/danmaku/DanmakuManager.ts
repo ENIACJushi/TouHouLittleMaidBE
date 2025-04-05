@@ -40,7 +40,7 @@ export function danmakuHitEntityEvent(ev: ProjectileHitEntityAfterEvent) {
     if (hit_info === undefined) {
       return;
     }
-    // Tool.logger(`${danmaku.location.x}, ${danmaku.location.y}, ${danmaku.location.z}`)
+    // Logger.info(`${danmaku.location.x}, ${danmaku.location.y}, ${danmaku.location.z}`)
 
     // 施加伤害
     if (!hit_info.entity || !DanmakuInterface.applyDamage(ev.source, danmaku, hit_info.entity)) {

@@ -5,7 +5,7 @@ import { MaidSkin } from "../maid/MaidSkin";
 import { ConfigForm, ConfigHelper } from "./Config";
 import {EntityMaid} from '../maid/EntityMaid'
 
-export class CommandManager{
+export class CommandManager {
     /**
      * 
      * @param {ScriptEventCommandMessageAfterEvent} event 
@@ -31,12 +31,12 @@ export class CommandManager{
         let strList = event.message.split(",");
         let numList = [];
         for(let str of strList){
-            Tool.logger(str);
+            Logger.info(str);
             numList.push(parseInt(str));
         }
         MaidSkin.setSkin(numList);
         
-        Tool.logger(`Add skin: ${numList}`);
+        Logger.info(`Add skin: ${numList}`);
     }
     /**
      * 修改配置项
@@ -233,7 +233,7 @@ export class CommandManager{
      */
     static test(event){
         let pl = event.sourceEntity;
-        Tool.logger("test")
+        Logger.info("test")
         pl.postClientMessage("id", "value")
     }
     /**
@@ -310,7 +310,7 @@ export class CommandManager{
         //         for(let i = 0; i < container.size; i++){
         //             let item = container.getItem(i);
         //             if(item !== undefined){
-        //                 Tool.logger(`${item.typeId} ${item.amount}`);
+        //                 Logger.info(`${item.typeId} ${item.amount}`);
         //             }
         //         }
         //     }

@@ -11,14 +11,14 @@
     info = StrMaid.Work.set(info, 6);
     info = StrMaid.backpackInvisibility.set(info, true);
 
-    Tool.logger(info);
-    Tool.logger(`OwnerID:${StrMaid.Owner.getId(info)}`);
+    Logger.info(info);
+    Logger.info(`OwnerID:${StrMaid.Owner.getId(info)}`);
     let health = StrMaid.Health.get(info);
-    Tool.logger(`Health:${health.current},${health.max}`);
+    Logger.info(`Health:${health.current},${health.max}`);
     let skin = StrMaid.Skin.get(info);
-    Tool.logger(`Skin:${skin.pack},${skin.index}`);
-    Tool.logger(`Work:${StrMaid.Work.get(info)}`);
-    Tool.logger(`backpackInvisibility:${StrMaid.backpackInvisibility.get(info)}`);
+    Logger.info(`Skin:${skin.pack},${skin.index}`);
+    Logger.info(`Work:${StrMaid.Work.get(info)}`);
+    Logger.info(`backpackInvisibility:${StrMaid.backpackInvisibility.get(info)}`);
  */
 
 import * as Tool from "../libs/ScarletToolKit"

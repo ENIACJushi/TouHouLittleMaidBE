@@ -14,7 +14,6 @@ var checkList = [
 //////////////////////////////////////////////////////////////////////
 
 import { BlockPermutation, ItemStack } from "@minecraft/server";
-import { logger, logger_debug } from "../../src/libs/ScarletToolKit";
 
 export class FarmBlocks {
   static instance;
@@ -39,7 +38,7 @@ export class FarmBlocks {
     for (let addonData of checkList) {
       try {
         new ItemStack(addonData.tester, 1);
-        // logger("添加了一个模组" + addonData.tester);
+        // Logger.info("添加了一个模组" + addonData.tester);
 
         for (let crop in addonData.crops) {
           this.addCrop(crop, addonData.crops[crop]);

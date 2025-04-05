@@ -10,15 +10,7 @@
 
 import { Block, Dimension, BlockPermutation, BlockType } from "@minecraft/server"
 import { world } from "@minecraft/server";
-
-function logger(str){
-    world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
-}
-const debug = false;
-function logger_debug(str){
-    if(!debug) return;
-    world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
-}
+import { Logger } from "../controller/Logger";
 
 export class MultiBlockStructrueManager {
     /**
@@ -40,12 +32,12 @@ export class MultiBlockStructrueManager {
     activate(dimension, baseLocation, rotates = [0, 1, 2, 3]){
         let rotate = this.isStructrueUnbroken(dimension, baseLocation, rotates, "deactivated");
         if(rotate == -1) return -1;
-        logger_debug(`Structure activating: rotate ${rotate}`);
+        Logger.debug(`Structure activating: rotate ${rotate}`);
         // Activate structure, as structure pending activate is always unbroken, there is no need to check if the previous block matches the deactivated structure block.
         for(let structureBlock of this.blocks){
             // Calculate world coordinate
             let location = this.rotateCoordinate(structureBlock.location, rotate);
-            logger_debug("activating 1")
+            Logger.debug("activating 1")
             // Set Block
             const block = dimension.getBlock({x: baseLocation[0] + location[0], y: baseLocation[1] + location[1], z: baseLocation[2] + location[2]});
             if(structureBlock["activated"] == null){
@@ -136,7 +128,7 @@ export class MultiBlockStructrueManager {
             if(rotate < 0 || rotate > 3) continue;
             // If check background, use a scan matrix to increase speed.
             if(background){
-                logger_debug("scan structure: start")
+                Logger.debug("scan structure: start")
                 // Create scan matrix [x][y][z].
                 let scanMatrix = [];
                 for(let x = 0; x < this.size[0]; x++){
@@ -153,7 +145,7 @@ export class MultiBlockStructrueManager {
                     let location = this.rotateCoordinate(this.blocks[i].location, rotate);
                     scanMatrix[location[0]][location[1]][location[2]] = i;
                 }
-                logger_debug("scan structure: check")
+                Logger.debug("scan structure: check")
                 // Check the structure in the world if it is broken.
                 let broken = false;
                 for(let x = 0; x < scanMatrix.length; x++){
@@ -231,7 +223,7 @@ export class MultiBlockStructrueManager {
       * @param {String} mode "activated" or "deactivated".
       */
     isBlockInStructrue(block, structureBlock){
-        // logger(`${block.typeId},${this.blocks[iter][mode].name}`);
+        // Logger.info(`${block.typeId},${this.blocks[iter][mode].name}`);
         if(block.typeId == structureBlock.name){
             let dataMatched = true;
             if(structureBlock.data != null){
@@ -239,7 +231,7 @@ export class MultiBlockStructrueManager {
                     let expected_value = structureBlock.data[key];
                     if(expected_value === "r") continue; // Ingnore rotation state
                     if(block.permutation.getState(key) != expected_value){
-                        logger_debug(`Broken permutation: ${key} - expected ${expected_value}, but ${block.permutation.getState(key)}`);
+                        Logger.debug(`Broken permutation: ${key} - expected ${expected_value}, but ${block.permutation.getState(key)}`);
                         return false;
                     }
                 }
@@ -247,7 +239,7 @@ export class MultiBlockStructrueManager {
             if(dataMatched) return true;
         }
         else{
-            logger_debug(`Broken id: expected ${structureBlock.name}, but ${block.typeId}`);
+            Logger.debug(`Broken id: expected ${structureBlock.name}, but ${block.typeId}`);
             return false;
         }
         

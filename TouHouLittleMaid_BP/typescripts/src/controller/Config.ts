@@ -37,6 +37,11 @@ class Config {
     changable: true,
     configName: 'logger_enable'
   });
+  logger_level = new ConfigItemNumber({
+    defaultValue: 0,
+    changable: true,
+    configName: 'logger_level'
+  });
 }
 
 abstract class ConfigItem<T> {

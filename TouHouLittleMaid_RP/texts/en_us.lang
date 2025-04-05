@@ -101,8 +101,10 @@ message.tlm.config.danmaku_damage.name=Default Bullet Damage
 message.tlm.config.danmaku_damage.description=The default damage of the bullet, which takes effect when the bullet has no damage setting and is currently only effective for bullets fired by players using Gohei.
 message.tlm.config.player_damage.name=Player Attack Multiplier
 message.tlm.config.player_damage.description=The bullet damage of the player will be multiplied by (value / 100)
-message.tlm.config.logger_enable.name=Log Enable
+message.tlm.config.logger_enable.name=Broadcast Log Enable
 message.tlm.config.logger_enable.description=Broadcast debug logs to the world.
+message.tlm.config.logger_level.name=Log Level
+message.tlm.config.logger_level.description=0:Debug 1:info 2:error
 
 action.interact.camera=Photo
 action.interact.thlm.npc=Turn into NPC

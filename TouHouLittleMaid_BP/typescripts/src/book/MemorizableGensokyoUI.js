@@ -1,5 +1,5 @@
 import { ItemStack, ItemUseBeforeEvent, Player } from "@minecraft/server";
-import { ItemTool, logger, lore2Str, str2Lore } from "../libs/ScarletToolKit";
+import { ItemTool, lore2Str, str2Lore } from "../libs/ScarletToolKit";
 import * as mcui from '@minecraft/server-ui';
 
 // 书本各章节的页码号(自动生成)

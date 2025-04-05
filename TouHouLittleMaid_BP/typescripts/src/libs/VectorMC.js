@@ -1,6 +1,5 @@
 // 发现mc自己有向量运算方法后，修改原来的基于数组的方法
 import { Direction } from "@minecraft/server";
-import { logger } from "./ScarletToolKit";
 
 const HALF_PI = Math.PI / 2;
 

@@ -9,7 +9,7 @@ import {
 import { shoot as amuletShoot } from "../../../danmaku/patterns/gohei/Amulet";
 import { GoheiItemInterface } from "../GoheiItemInterface";
 import { GoheiBaseMode } from "./GoheiBaseMode";
-import { getRandom, ItemTool, logger } from "../../../libs/ScarletToolKit";
+import { getRandom, ItemTool } from "../../../libs/ScarletToolKit";
 
 const DAMAGE_PROPERTY_KEY = 'tlm_gh:ad';
 const DAMAGE_STEP_FULL = 3; // 要发射几次才会触发损坏判定

@@ -2,6 +2,7 @@ import { Player, world, system } from "@minecraft/server"
 import * as Tool from"./libs/ScarletToolKit";
 import * as mcui from "@minecraft/server-ui"
 import { StrMaid } from "./maid/StrMaid";
+import { Logger } from "./controller/Logger";
 
 export default class experiment {
     static main(){
@@ -29,10 +30,10 @@ export default class experiment {
         world.afterEvents.chatSend.subscribe(event=>{
             let player = event.sender;
             // 显示字符ASCII码
-            // Tool.logger('􀐏'.charCodeAt(0).toString(16));
-            // Tool.logger('一'.charCodeAt(0).toString(16));
-            // Tool.logger(String.fromCodePoint(0x00008da3));
-            // Tool.logger('\u{20BB7}');
+            // Logger.info('􀐏'.charCodeAt(0).toString(16));
+            // Logger.info('一'.charCodeAt(0).toString(16));
+            // Logger.info(String.fromCodePoint(0x00008da3));
+            // Logger.info('\u{20BB7}');
             let info = ""
             info = StrMaid.Owner.setID(info, "-987842477023");
             info = StrMaid.Health.set(info, 9961, 65535)
@@ -40,14 +41,14 @@ export default class experiment {
             info = StrMaid.Work.set(info, 6);
             info = StrMaid.backpackInvisibility.set(info, true);
 
-            Tool.logger(info);
-            Tool.logger(`OwnerID:${StrMaid.Owner.getId(info)}`);
+            Logger.info(info);
+            Logger.info(`OwnerID:${StrMaid.Owner.getId(info)}`);
             let health = StrMaid.Health.get(info);
-            Tool.logger(`Health:${health.current},${health.max}`);
+            Logger.info(`Health:${health.current},${health.max}`);
             let skin = StrMaid.Skin.get(info);
-            Tool.logger(`Skin:${skin.pack},${skin.index}`);
-            Tool.logger(`Work:${StrMaid.Work.get(info)}`);
-            Tool.logger(`backpackInvisibility:${StrMaid.backpackInvisibility.get(info)}`);
+            Logger.info(`Skin:${skin.pack},${skin.index}`);
+            Logger.info(`Work:${StrMaid.Work.get(info)}`);
+            Logger.info(`backpackInvisibility:${StrMaid.backpackInvisibility.get(info)}`);
 
             return;
             let msg = event.message;
@@ -61,7 +62,7 @@ export default class experiment {
                         for(let i2=0; i2<16; i2++){
                             output += String.fromCodePoint(base + i*16 + i2);//
                         }
-                        Tool.logger(output);
+                        Logger.info(output);
                     }
                 }
                 else{
@@ -70,7 +71,7 @@ export default class experiment {
                     let interv = system.runInterval(()=>{
                     if(base>=16*16) system.clearRun(interv);
                     let output = "";
-                    Tool.logger(base);
+                    Logger.info(base);
                     for(let i=0; i<256; i++){
                         output += String.fromCodePoint(base*16*16 + i);//base + i*16 + i2
                     }
@@ -100,7 +101,7 @@ export default class experiment {
                             }
 
                             time = (new Date().getTime()) - time;
-                            Tool.logger(`实验次数：${count} | 总耗时：${time} (ms) | 平均耗时：${time/count} (ms)`)
+                            Logger.info(`实验次数：${count} | 总耗时：${time} (ms) | 平均耗时：${time/count} (ms)`)
                         }
 
                         if(true){
@@ -123,7 +124,7 @@ export default class experiment {
                                 }
                             }
                             time = (new Date().getTime()) - time;
-                            Tool.logger(`实验次数：${length*length} | 总耗时：${time} (ms) | 平均耗时：${time/(length*length)} (ms)`)
+                            Logger.info(`实验次数：${length*length} | 总耗时：${time} (ms) | 平均耗时：${time/(length*length)} (ms)`)
                         }
                     }; break;
                     default:

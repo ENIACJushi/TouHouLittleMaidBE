@@ -1,7 +1,7 @@
 import { Entity, EntityApplyDamageOptions, EntityDamageCause, world } from "@minecraft/server";
 import { EntityMaid } from "../maid/EntityMaid";
-import { logger } from "../libs/ScarletToolKit";
 import { config } from "../controller/Config";
+
 /**
  * 对弹幕实体的通用操作接口
  *  可用于默认弹幕和自定义弹幕

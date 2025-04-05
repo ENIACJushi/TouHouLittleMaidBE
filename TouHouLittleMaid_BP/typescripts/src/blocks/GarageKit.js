@@ -1,11 +1,12 @@
 import { PlayerInteractWithBlockBeforeEvent, EquipmentSlot, Block, Direction, system, Dimension, Entity, ItemStack, DataDrivenEntityTriggerAfterEvent, BlockPermutation, Player, BlockVolume, BlockVolumeBase, StartupEvent } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import { StrMaid } from "../maid/StrMaid";
-import { ActionbarMessage, getRandomInteger, ItemTool, logger, lore2Str, str2Lore, title_player_actionbar_object, title_player_actionbar_translate } from "../libs/ScarletToolKit";
+import { ActionbarMessage, getRandomInteger, ItemTool, lore2Str, str2Lore, title_player_actionbar_object, title_player_actionbar_translate } from "../libs/ScarletToolKit";
 import { EntityMaid } from "../maid/EntityMaid";
 import { isBadContainerBlock } from "../../data/BadContainerBlocks";
 import { MaidSkin } from "../maid/MaidSkin";
 import { Watch } from "../libs/SecondWatch"
+import { Logger } from "../controller/Logger";
 
 const blockGarageKit = "touhou_little_maid:garage_kit_block";
 const blockStatues = "touhou_little_maid:statues_block";

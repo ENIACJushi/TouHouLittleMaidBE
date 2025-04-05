@@ -183,8 +183,10 @@ message.tlm.config.danmaku_damage.name=默认弹幕攻击力
 message.tlm.config.danmaku_damage.description=弹幕的默认伤害，弹幕没有设置伤害时生效，目前只对玩家使用普通御币发射的弹幕有效
 message.tlm.config.player_damage.name=玩家攻击倍数
 message.tlm.config.player_damage.description=玩家的弹幕伤害会乘上 (设置项/100)
-message.tlm.config.logger_enable.name=日志输出
-message.tlm.config.logger_enable.description=广播调试日志到世界
+message.tlm.config.logger_enable.name=日志输出到聊天栏
+message.tlm.config.logger_enable.description=将调试日志广播到世界
+message.tlm.config.logger_level.name=日志等级
+message.tlm.config.logger_level.description=0:Debug 1:info 2:error
 
 ##### 其它 #####
 danmaku.pellet.name=§a点弹

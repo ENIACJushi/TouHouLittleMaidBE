@@ -18,30 +18,6 @@ import {
 import { Vector } from "./VectorMC";
 import { config } from "../controller/Config";
 
-////////// Logger //////////
-export function logger(str){
-    if(!config.logger_enable.value) return;
-    for(let pl of world.getPlayers()){
-        pl.sendMessage({rawtext:[{"text": `${str}`}]})
-    }
-}
-
-export function error(str, position=undefined){
-    if(!config.logger_enable.value) return;
-    let msg = `§e[THLM] §cError: ${str}`
-    if(position!==undefined){
-        msg += `\n§a At ${position}`
-    }
-    logger(msg);
-}
-const debug = true;
-export function logger_debug(str){
-    if(!config.logger_enable.value) return;
-    if(!debug) return;
-    world.getDimension("overworld").runCommand(`tellraw @a { "rawtext": [ { "text": "${str}" } ] }`);
-}
-
-
 ////////// Math //////////
 /**
  * 获取一个随机值
@@ -389,7 +365,7 @@ export function testEntitySpeed(){
             location: pl.location
         });
         for(let en of results){
-            Tool.logger(`${en.getVelocity().x.toFixed(3)}, ${en.getVelocity().y.toFixed(3)}, ${en.getVelocity().z.toFixed(3)}`);
+            Logger.info(`${en.getVelocity().x.toFixed(3)}, ${en.getVelocity().y.toFixed(3)}, ${en.getVelocity().z.toFixed(3)}`);
         }
     }
 }
@@ -415,17 +391,17 @@ export function testEntityMSpeed(entity){
     vecn[1] = Math.min(vecn[1], y);
     vecn[2] = Math.min(vecn[2], z);
 
-    Tool.logger(`MAX: ${vec[0]}, ${vec[1]}, ${vec[2]}`);
-    Tool.logger(`MIN: ${vecn[0]}, ${vecn[1]}, ${vecn[2]}`);
+    Logger.info(`MAX: ${vec[0]}, ${vec[1]}, ${vec[2]}`);
+    Logger.info(`MIN: ${vecn[0]}, ${vecn[1]}, ${vecn[2]}`);
 }
 
 /**
  * @param {Entity} en 
 */
 export function showEntityComponents(en){
-    logger(`Entity type:${en.typeId}`);
+    Logger.info(`Entity type:${en.typeId}`);
     for(let component of en.getComponents()){
-        logger(component.typeId);
+        Logger.info(component.typeId);
     }
 }
 /**
@@ -439,7 +415,7 @@ export function testBlockInfo(dimension, blockLocation){
     var block_p = bl.permutation;
     var states = block_p.getAllStates();
     for(let s in states){
-        logger(`${s} -- ${block_p.getState(s)}`);
+        Logger.info(`${s} -- ${block_p.getState(s)}`);
     }
 }
 

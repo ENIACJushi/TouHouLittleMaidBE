@@ -1,5 +1,4 @@
 import { StartupEvent } from "@minecraft/server";
-import { logger } from "../libs/ScarletToolKit";
 
 export class Skull{
     /**
