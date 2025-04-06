@@ -1,7 +1,19 @@
-import { PlayerInteractWithBlockBeforeEvent, EquipmentSlot, Block, Direction, system, Dimension, Entity, ItemStack, DataDrivenEntityTriggerAfterEvent, BlockPermutation, Player, BlockVolume, BlockVolumeBase, StartupEvent } from "@minecraft/server";
+import {
+  PlayerInteractWithBlockBeforeEvent,
+  EquipmentSlot,
+  Block,
+  Direction,
+  Dimension,
+  Entity,
+  ItemStack,
+  DataDrivenEntityTriggerAfterEvent,
+  BlockPermutation,
+  BlockVolume,
+  StartupEvent,
+} from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import { StrMaid } from "../maid/StrMaid";
-import { ActionbarMessage, getRandomInteger, ItemTool, lore2Str, str2Lore, title_player_actionbar_object, title_player_actionbar_translate } from "../libs/ScarletToolKit";
+import { ActionbarMessage, ItemTool, lore2Str} from "../libs/ScarletToolKit";
 import { EntityMaid } from "../maid/EntityMaid";
 import { isBadContainerBlock } from "../../data/BadContainerBlocks";
 import { Logger } from "../controller/Logger";
@@ -405,4 +417,4 @@ export class GarageKit {
  */
 function isClay(block?: Block): boolean {
   return block === undefined ? false : block.typeId === "minecraft:clay";
-} 
+}

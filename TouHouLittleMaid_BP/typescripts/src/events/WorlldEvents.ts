@@ -46,9 +46,6 @@ export class WorldEvents {
       PowerPoint.init(e);
       MaidManager.Core.init();
       MaidSkin.initScoreboard();
-      Logger.debug('test', 'huh debug')
-      Logger.info('test', 'huh info')
-      Logger.warn('test', 'huh warn')
     });
   }
 

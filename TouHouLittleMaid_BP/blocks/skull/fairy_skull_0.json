@@ -4,20 +4,20 @@
 		"description": {
 			"identifier": "touhou_little_maid:fairy_skull_0_block",
 			"menu_category": {
-                "category": "items",
+        "category": "items",
 				"group": "itemGroup.name.skull"
-            },
-            "traits" : {
+      },
+      "traits" : {
 				"minecraft:placement_position": {
-					"enabled_states": [
+				  "enabled_states": [
 					  "minecraft:block_face"
 					]
 				},
-                "minecraft:placement_direction": {
+        "minecraft:placement_direction": {
 					"enabled_states": ["minecraft:cardinal_direction"],
 					"y_rotation_offset": 180.0
 				}
-            },
+      },
 			"states": {
 				"thlm:is_down": [false, true]
 			}
