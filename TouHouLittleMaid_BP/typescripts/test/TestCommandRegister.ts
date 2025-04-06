@@ -1,6 +1,8 @@
 import { Entity, Player, system } from "@minecraft/server";
 import { Logger } from "../src/controller/Logger";
 
+const TAG = 'TestCommandRegister';
+
 class TestCommandRegister {
   callbackMap: Map<string, (source: Entity) => void> = new Map();
 
@@ -15,7 +17,7 @@ class TestCommandRegister {
   
   registerScriptEvent () {
     system.afterEvents.scriptEventReceive.subscribe(event => {
-      Logger.info('register script event')
+      Logger.info(TAG, 'register script event')
       system.run(()=>{
         if (event.id === 'thlm:test' && event.sourceEntity) {
           this.callbackMap.get(event.message)?.(event.sourceEntity);

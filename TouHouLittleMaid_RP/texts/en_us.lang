@@ -104,7 +104,7 @@ message.tlm.config.player_damage.description=The bullet damage of the player wil
 message.tlm.config.logger_enable.name=Broadcast Log Enable
 message.tlm.config.logger_enable.description=Broadcast debug logs to the world.
 message.tlm.config.logger_level.name=Log Level
-message.tlm.config.logger_level.description=0:Debug 1:info 2:error
+message.tlm.config.logger_level.description=0:NONE 1:ERROR 2:WARN 3: INFO 4: DEBUG
 
 action.interact.camera=Photo
 action.interact.thlm.npc=Turn into NPC

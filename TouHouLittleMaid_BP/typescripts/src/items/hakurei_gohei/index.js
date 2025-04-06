@@ -10,6 +10,7 @@ import { GoheiItemInterface } from "./GoheiItemInterface";
 import { amuletMode } from "./modes/AmuletMode";
 import { Logger } from "../../controller/Logger";
 
+const TAG = 'HakureiGohei';
 
 class HakureiGohei {
   modeList = [
@@ -22,7 +23,7 @@ class HakureiGohei {
   registerCC (event) {
     event.itemComponentRegistry.registerCustomComponent('tlm:hakurei_gohei', {
       onUseOn: (event) => {
-        Logger.info('onUse hakurei gohei');
+        Logger.debug(TAG, 'Hakurei gohei onUse.');
         GoheiItemInterface.getMode(event.itemStack);
       }
     });

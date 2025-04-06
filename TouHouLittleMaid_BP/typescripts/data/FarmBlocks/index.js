@@ -38,8 +38,6 @@ export class FarmBlocks {
     for (let addonData of checkList) {
       try {
         new ItemStack(addonData.tester, 1);
-        // Logger.info("添加了一个模组" + addonData.tester);
-
         for (let crop in addonData.crops) {
           this.addCrop(crop, addonData.crops[crop]);
         }

@@ -12,6 +12,7 @@ import PowerPoint from "../altar/PowerPoint";
 import { ConfigHelper } from "../controller/Config";
 import { MaidManager } from "../maid/MaidManager";
 import { MaidSkin } from "../maid/MaidSkin";
+import { Logger } from "../controller/Logger";
 
 export class WorldEvents {
   public registerAllEvents () {
@@ -45,6 +46,9 @@ export class WorldEvents {
       PowerPoint.init(e);
       MaidManager.Core.init();
       MaidSkin.initScoreboard();
+      Logger.debug('test', 'huh debug')
+      Logger.info('test', 'huh info')
+      Logger.warn('test', 'huh warn')
     });
   }
 

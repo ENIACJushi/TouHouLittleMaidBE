@@ -14,8 +14,6 @@ export function shoot(entity: Entity, location: Vector, direction: Vector, damag
   DanmakuInterface.setTrower(danmaku, entity.id);
   DanmakuInterface.setPiercing(danmaku, 5);
   let euler = VectorMC.getEulerAngleXZ(direction);
-  // Logger.info(`${(direction.x).toFixed(2)}, ${(direction.y).toFixed(2)}, ${(direction.z).toFixed(2)}`)
-  // Logger.info(`${(PI*euler[0]).toFixed(0)}, ${(PI*euler[1]).toFixed(0)}`)
   danmaku.setProperty("thlm:r_x", ANGLE_PI * euler[0]);
   danmaku.setProperty("thlm:r_y", 0);
   danmaku.setProperty("thlm:r_z", ANGLE_PI * euler[1]);

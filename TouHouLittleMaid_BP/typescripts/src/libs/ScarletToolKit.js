@@ -18,6 +18,8 @@ import {
 import { Vector } from "./VectorMC";
 import { config } from "../controller/Config";
 
+const TAG = 'ScarletToolKit';
+
 ////////// Math //////////
 /**
  * 获取一个随机值
@@ -365,7 +367,7 @@ export function testEntitySpeed(){
             location: pl.location
         });
         for(let en of results){
-            Logger.info(`${en.getVelocity().x.toFixed(3)}, ${en.getVelocity().y.toFixed(3)}, ${en.getVelocity().z.toFixed(3)}`);
+            Logger.info(TAG, `${en.getVelocity().x.toFixed(3)}, ${en.getVelocity().y.toFixed(3)}, ${en.getVelocity().z.toFixed(3)}`);
         }
     }
 }
@@ -391,17 +393,17 @@ export function testEntityMSpeed(entity){
     vecn[1] = Math.min(vecn[1], y);
     vecn[2] = Math.min(vecn[2], z);
 
-    Logger.info(`MAX: ${vec[0]}, ${vec[1]}, ${vec[2]}`);
-    Logger.info(`MIN: ${vecn[0]}, ${vecn[1]}, ${vecn[2]}`);
+    Logger.info(TAG, `MAX: ${vec[0]}, ${vec[1]}, ${vec[2]}`);
+    Logger.info(TAG, `MIN: ${vecn[0]}, ${vecn[1]}, ${vecn[2]}`);
 }
 
 /**
  * @param {Entity} en 
 */
 export function showEntityComponents(en){
-    Logger.info(`Entity type:${en.typeId}`);
+    Logger.info(TAG, `Entity type:${en.typeId}`);
     for(let component of en.getComponents()){
-        Logger.info(component.typeId);
+        Logger.info(TAG, component.typeId);
     }
 }
 /**
@@ -415,7 +417,7 @@ export function testBlockInfo(dimension, blockLocation){
     var block_p = bl.permutation;
     var states = block_p.getAllStates();
     for(let s in states){
-        Logger.info(`${s} -- ${block_p.getState(s)}`);
+        Logger.info(TAG, `${s} -- ${block_p.getState(s)}`);
     }
 }
 

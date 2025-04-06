@@ -1,9 +1,11 @@
-import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
+import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, system, world } from "@minecraft/server";
 import * as Tool from"../libs/ScarletToolKit";
 import { StrMaid } from "../maid/StrMaid";
 import { MaidSkin } from "../maid/MaidSkin";
 import { ConfigForm, ConfigHelper } from "./Config";
 import {EntityMaid} from '../maid/EntityMaid'
+
+const TAG = 'Command';
 
 export class CommandManager {
     /**
@@ -31,12 +33,11 @@ export class CommandManager {
         let strList = event.message.split(",");
         let numList = [];
         for(let str of strList){
-            Logger.info(str);
             numList.push(parseInt(str));
         }
         MaidSkin.setSkin(numList);
         
-        Logger.info(`Add skin: ${numList}`);
+        world.sendMessage(`Add skin: ${numList}`);
     }
     /**
      * 修改配置项
@@ -233,7 +234,7 @@ export class CommandManager {
      */
     static test(event){
         let pl = event.sourceEntity;
-        Logger.info("test")
+        Logger.info(TAG, "test")
         pl.postClientMessage("id", "value")
     }
     /**
@@ -310,7 +311,7 @@ export class CommandManager {
         //         for(let i = 0; i < container.size; i++){
         //             let item = container.getItem(i);
         //             if(item !== undefined){
-        //                 Logger.info(`${item.typeId} ${item.amount}`);
+        //                 Logger.info(TAG, `${item.typeId} ${item.amount}`);
         //             }
         //         }
         //     }

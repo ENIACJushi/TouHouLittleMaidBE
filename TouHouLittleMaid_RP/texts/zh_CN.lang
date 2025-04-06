@@ -186,7 +186,7 @@ message.tlm.config.player_damage.description=玩家的弹幕伤害会乘上 (设
 message.tlm.config.logger_enable.name=日志输出到聊天栏
 message.tlm.config.logger_enable.description=将调试日志广播到世界
 message.tlm.config.logger_level.name=日志等级
-message.tlm.config.logger_level.description=0:Debug 1:info 2:error
+message.tlm.config.logger_level.description=0:NONE 1:ERROR 2:WARN 3: INFO 4: DEBUG
 
 ##### 其它 #####
 danmaku.pellet.name=§a点弹

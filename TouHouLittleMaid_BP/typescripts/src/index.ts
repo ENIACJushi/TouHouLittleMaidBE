@@ -9,7 +9,8 @@ import { WorldEvents } from "./events/WorlldEvents";
 import { ScheduleEvents } from "./events/ScheduleEvents";
 import { Logger } from "./controller/main";
 
-const TEST = true; // 是否启用测试模块
+const TAG = 'INDEX';
+const TEST = false; // 是否启用测试模块
 
 new WorldEvents().registerAllEvents();
 system.runTimeout(() => {
@@ -43,7 +44,7 @@ if (false) {
   var start = 0; // ms
   world.afterEvents.entityHurt.subscribe(event => {
     //// 伤害信息 ////
-    Logger.info(` ${event?.damageSource?.damagingEntity?.typeId ?? '?'
+    Logger.info(TAG, ` ${event?.damageSource?.damagingEntity?.typeId ?? '?'
       } -> ${event.hurtEntity.typeId}: ${event.damage.toFixed(2)}`);
 
     //// 伤害统计 ////
@@ -64,7 +65,7 @@ if (false) {
     // 极值
     max = Math.max(max, event.damage);
     min = Math.min(min, event.damage);
-    Logger.info(` Hit: ${count.toFixed(2)} | MIN: ${min.toFixed(2) } | MAX:${max.toFixed(2)
+    Logger.info(TAG, ` Hit: ${count.toFixed(2)} | MIN: ${min.toFixed(2) } | MAX:${max.toFixed(2)
       } | DPH :${average1.toFixed(2)} | DPS: ${average2.toFixed(2)}`);
   });
 }
