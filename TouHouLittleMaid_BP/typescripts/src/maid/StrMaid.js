@@ -174,15 +174,17 @@ export class StrMaid {
         /**
          * 获取皮肤
          * @param {string} maidStr
-         * @returns {object|undefined} {pack:1, index:1}
+         * @returns {{pack:number; index:number}} {pack:1, index:1}
          */
         get(maidStr){
             let str = StrHelper.getValue(maidStr, 'S', 4);
-            if(str === undefined) return undefined;
+            if (str === undefined) {
+                return { pack: 0, index: 0 };
+            }
             return {
                 pack: StrHelper.str2int(str.slice(0, 2)),
                 index: StrHelper.str2int(str.slice(2, 4))
-            }
+            };
         },
         /**
          * 设置生命值 当前值和最大值需要同时设定
