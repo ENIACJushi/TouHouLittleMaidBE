@@ -39,7 +39,18 @@ export class Logger {
       return;
     }
     let msg = `${ADDON_TAG}§7[${tag}] §c${message}`;
-    console.log(msg);
+    console.warn(msg);
+    if (config.logger_enable) {
+      world.sendMessage(msg);
+    }
+  }
+
+  static error(tag: string, message: string) {
+    if (config.logger_level.value < LoggerLevel.ERROR) {
+      return;
+    }
+    let msg = `${ADDON_TAG}§7[${tag}] §c${message}`;
+    console.error(msg);
     if (config.logger_enable) {
       world.sendMessage(msg);
     }

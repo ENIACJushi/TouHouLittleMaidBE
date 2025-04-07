@@ -1,6 +1,7 @@
 import { world, system, Entity, Player, RawText } from "@minecraft/server";
 import { lang } from "../libs/ScarletToolKit"
 import { ActionFormData, MessageFormData, ModalFormData } from "@minecraft/server-ui";
+import { LoggerLevel } from "./Logger";
 
 // 计分项名称
 const SCORE_NAME = "thlmconfig";
@@ -38,7 +39,7 @@ class Config {
     configName: 'logger_enable'
   });
   logger_level = new ConfigItemNumber({
-    defaultValue: 0,
+    defaultValue: LoggerLevel.WARN,
     changable: true,
     configName: 'logger_level'
   });
