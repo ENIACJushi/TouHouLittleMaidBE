@@ -38,7 +38,7 @@ export class Logger {
     if (config.logger_level.value < LoggerLevel.WARN) {
       return;
     }
-    let msg = `${ADDON_TAG}§7[${tag}] §c${message}`;
+    let msg = `${ADDON_TAG}§7[${tag}] §e${message}`;
     console.warn(msg);
     if (config.logger_enable) {
       world.sendMessage(msg);
