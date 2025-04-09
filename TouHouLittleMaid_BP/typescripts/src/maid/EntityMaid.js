@@ -4,8 +4,8 @@ import * as Tool from "../libs/ScarletToolKit";
 import { StrMaid } from "./StrMaid";
 import { emote } from "../../data/emote";
 import { MaidSkin } from "./MaidSkin";
-import * as Tag from '../libs/TagDataInterface'
-import * as DP from '../libs/DynamicPropertyInterface'
+import { TagDataHelper } from '../libs/TagDataInterface'
+import { DP } from '../libs/DynamicPropertyInterface';
 import { MaidTarget } from "./MaidTarget";
 
 export class EntityMaid{
@@ -191,7 +191,7 @@ export class EntityMaid{
          * @returns {string|undefined}
          */
         getID(maid){
-            return Tag.get(maid, "thlmo:");
+            return TagDataHelper.get(maid, "thlmo:");
         },
         /**
          * 设置主人ID
@@ -199,8 +199,8 @@ export class EntityMaid{
          * @param {string} id 
          */
         setID(maid, id){
-            Tag.del(maid, "thlmo:")
-            Tag.set(maid, "thlmo:", id);
+            TagDataHelper.del(maid, "thlmo:")
+            TagDataHelper.set(maid, "thlmo:", id);
         },
         /**
          * 获取主人名称
@@ -208,7 +208,7 @@ export class EntityMaid{
          * @returns {string|undefined}
          */
         getName(maid){
-            return Tag.get(maid, "thlmn:");
+            return TagDataHelper.get(maid, "thlmn:");
         },
         /**
          * 设置主人名称
@@ -216,8 +216,8 @@ export class EntityMaid{
          * @param {string} name 
          */
         setName(maid, name){
-            Tag.del(maid, "thlmn:");
-            Tag.set(maid, "thlmn:", name);
+            TagDataHelper.del(maid, "thlmn:");
+            TagDataHelper.set(maid, "thlmn:", name);
         },
         /**
          * 获取主人实体

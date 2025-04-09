@@ -19,7 +19,7 @@ import { BulletShoot } from "../danmaku/shoots/BulletShoot";
 import { shoot as cherryShoot } from "../danmaku/patterns/Cherry";
 import { Cocoa, Farm, MaidTarget, Melon } from "./MaidTarget";
 import { isBadContainerBlock } from "../../data/BadContainerBlocks";
-import * as DP from '../libs/DynamicPropertyInterface'
+import { DP } from '../libs/DynamicPropertyInterface';
 import { EntityDanmakuActor } from "../danmaku/actors/EntityDanmakuActor";
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "../danmaku/shapes/main";
 import { FanShapedPattern } from "../danmaku/patterns/Fan";
