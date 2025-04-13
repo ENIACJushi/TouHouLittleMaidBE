@@ -2,7 +2,7 @@
 /**
  * 预判测试
  */
-import { Vector, VectorMC } from "../../../libs/VectorMC";
+import { Vector, VO } from "../../../libs/VectorMC";
 import { BulletShoot } from "../../shoots/BulletShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "../../shapes/main";
@@ -38,7 +38,7 @@ export class FairyPatternTest5{
 
         if (target === undefined) return;
 
-        let distance = VectorMC.length({
+        let distance = VO.length({
           x: thrower.location.x - target.location.x,
           y: thrower.location.y - target.location.y,
           z: thrower.location.z - target.location.z

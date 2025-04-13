@@ -10,7 +10,7 @@ import {
   BlockVolume,
   StartupEvent,
 } from "@minecraft/server";
-import { VectorMC } from "../libs/VectorMC";
+import { VO } from "../libs/VectorMC";
 import { BlockTool, ItemTool } from "../libs/ScarletToolKit";
 
 export class GoldMicrowaver {
@@ -307,7 +307,7 @@ export class GoldMicrowaver {
 
     // 决定方向 xz
     let view = player.getViewDirection();
-    let direction = VectorMC.getDirectionByView2D(view);
+    let direction = VO.Advanced.getDirectionByView2D(view);
     let directionNum = 0;
     switch (direction) {
       case Direction.North: directionNum = 1; break;

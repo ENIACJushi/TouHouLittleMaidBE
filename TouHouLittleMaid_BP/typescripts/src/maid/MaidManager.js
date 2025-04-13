@@ -10,7 +10,7 @@
  *  thlmo:<主人生物id>
  */
 import { Direction, ItemStack, world, DataDrivenEntityTriggerAfterEvent, system, System, EntityDieAfterEvent, PlayerInteractWithBlockBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent, Entity, Player } from "@minecraft/server";
-import { Vector, VectorMC } from "../libs/VectorMC";
+import { Vector, VO } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
@@ -123,7 +123,7 @@ export class MaidManager {
           let ownerID = DP.getString(tombstone, "owner_id");
           if (ownerID !== undefined) {
             let player = world.getEntity(ownerID);
-            if (VectorMC.length(VectorMC.sub(player.location, tombstone.location)) > 6) {
+            if (VO.length(VO.sub(player.location, tombstone.location)) > 6) {
               return;
             }
           }
@@ -604,7 +604,7 @@ export class MaidManager {
         }
 
         // 默认攻击方式
-        let distance = VectorMC.length(new Vector(
+        let distance = VO.length(new Vector(
           maid.location.x - maid.target.location.x,
           maid.location.y - maid.target.location.y,
           maid.location.z - maid.target.location.z,));

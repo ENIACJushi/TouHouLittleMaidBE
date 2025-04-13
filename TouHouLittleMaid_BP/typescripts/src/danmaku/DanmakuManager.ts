@@ -10,7 +10,7 @@ import {
 } from "@minecraft/server";
 import { BulletShoot } from "./shoots/BulletShoot";
 import { DanmakuInterface } from "./DanmakuInterface";
-import { Vector, VectorMC } from "../libs/VectorMC"
+import { Vector, VO } from "../libs/VectorMC"
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "./shapes/main";
 import { EntityDanmakuActor } from "./actors/EntityDanmakuActor";
 import { FanShapedPattern } from "./patterns/Fan";
@@ -127,7 +127,7 @@ export function fairy_shoot(fairy: Entity) {
   if (fairy === undefined) return;
   let target = fairy.target
   if (target !== undefined) {
-    let distance = VectorMC.length({
+    let distance = VO.length({
       x: fairy.location.x - target.location.x,
       y: fairy.location.y - target.location.y,
       z: fairy.location.z - target.location.z

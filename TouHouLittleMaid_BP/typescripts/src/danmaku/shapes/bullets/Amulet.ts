@@ -1,6 +1,6 @@
 import { Dimension, Entity, system } from "@minecraft/server";
 import { BulletBase } from "./BulletBase";
-import { Vector, VectorMC } from "../../../libs/VectorMC";
+import { Vector, VO } from "../../../libs/VectorMC";
 
 const ANGLE_PI = 180 / Math.PI;
 const PI_ANGLE = Math.PI / 180;
@@ -21,7 +21,7 @@ export class Amulet extends BulletBase {
    * 角度：Z - Y 决定朝向， X 决定自转角
    */
   static setDirectionProperty(entity: Entity, direction: Vector) {
-    let input = VectorMC.normalized(direction);
+    let input = VO.normalized(direction);
     // 速度信息，动画坐标系的xz和世界坐标系相反
     entity.setProperty("thlm:v_x", -input.x);
     entity.setProperty("thlm:v_y", input.y);
@@ -57,7 +57,7 @@ export class AmuletController {
    * @param turningStep  每隔 turningStep 刻进行一次变向
    */
   startTurningTask(_v: Vector, turningIncrement: number, turningStep: number, finishCallback: ()=>void) {
-    let v = VectorMC.normalized(_v);
+    let v = VO.normalized(_v);
     /**
      * v, v0 平面的法向量垂直于v0  符札平面向量也垂直于v0  所以只需要计算 v-v0平面法向量 与 符札平面法向量 的夹角，然后用PI/2减去它
      */
@@ -65,7 +65,7 @@ export class AmuletController {
     let v0 = this.bulletEntity.getVelocity();
     
     // 旋转轴向量 | 即 v-v0 平面法向量 | 即 v0, v 的叉积，v0 遵照右手法则旋得 v
-    let rotateNormalV = VectorMC.cross(v0, v);
+    let rotateNormalV = VO.cross(v0, v);
 
     // 当外积为0，原运动方向与目标运动方向平行，不需要旋转
     if (rotateNormalV.x === 0 && rotateNormalV.y === 0 && rotateNormalV.z === 0) {
@@ -77,12 +77,12 @@ export class AmuletController {
     let selfNormalV = new Vector(-v0.z, 0, v0.x);
 
     // 需要旋转的度数
-    let v0Length = VectorMC.length(v0);
-    let totalAngle = Math.acos(VectorMC.dot(v0, v) / VectorMC.length(v0)) * ANGLE_PI; // v 已经单位化了 直接取 1
-    // let totalAngle = VectorMC.getAngle(v0, v);
+    let v0Length = VO.length(v0);
+    let totalAngle = Math.acos(VO.dot(v0, v) / VO.length(v0)) * ANGLE_PI; // v 已经单位化了 直接取 1
+    // let totalAngle = VO.getAngle(v0, v);
 
     // theta | 符札平面法向量 与 旋转轴向量的夹角
-    let theta = VectorMC.getAngle(selfNormalV, rotateNormalV);
+    let theta = VO.Secondary.getIncludedAngle(selfNormalV, rotateNormalV);
     // 自转角 | 当符札平面法向量 和 旋转平面上的目标符札平面法向量 在旋转轴向量同侧，为 PI/2-theta 异侧为 PI/2+theta
     // 同/异侧判断 | 因为 符札平面法向量 总是z-x平面上的向量，所以可以靠旋转轴向量所在象限来判断自转角的旋转方向: xz平面上方为同侧，下方为异侧
     let rotateAngle = rotateNormalV.y > 0 ? Math.PI / 2 - theta : Math.PI / 2 + theta;
@@ -100,11 +100,11 @@ export class AmuletController {
       try {
         currentAngle += turningIncrement ?? 360;
         let currentV0 = this.bulletEntity.getVelocity();
-        let currentV0Length = VectorMC.length(currentV0);
+        let currentV0Length = VO.length(currentV0);
         // 旋转完成 结束任务
         if (turningIncrement <= 0 || currentAngle >= totalAngle) {
           // 最终动量
-          let finalV = VectorMC.multiply(v, currentV0Length);
+          let finalV = VO.multiply(v, currentV0Length);
           // 施加目标动量
           this.bulletEntity.clearVelocity();
           this.bulletEntity.applyImpulse(finalV);
@@ -116,7 +116,7 @@ export class AmuletController {
         }
   
         // 计算下一步动量
-        let nextV = VectorMC.rotate_axis(currentV0, rotateNormalV, turningIncrement * PI_ANGLE);
+        let nextV = VO.Secondary.rotate_axis(currentV0, rotateNormalV, turningIncrement * PI_ANGLE);
         
         // 施加动量
         this.bulletEntity.clearVelocity();
@@ -172,7 +172,7 @@ export class AmuletController {
    */
   speedUp(v: number) {
     let v0 = this.bulletEntity.getVelocity();
-    let deltaV = VectorMC.multiply(VectorMC.normalized(v0), v) ;
+    let deltaV = VO.multiply(VO.normalized(v0), v) ;
     this.bulletEntity.applyImpulse(deltaV);
   }
 }
