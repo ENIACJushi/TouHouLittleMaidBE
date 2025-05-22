@@ -1,22 +1,29 @@
 {
   "materials": {
     "version": "1.0.0",
-    "power_point:entity":{
-      "+defines": [ "USE_UV_ANIM", "ALPHA_TEST", "USE_EMISSIVE" ]
+    "danmaku_pbr_glow:entity":{
+      "+defines":[
+        "ALPHA_TEST",
+        "USE_EMISSIVE"
+      ]
     },
-    "danmaku_blending:entity": {
-        "+defines":[
-            "USE_UV_ANIM",
-            "ALPHA_TEST",
-            "Blending",
-            "USE_OVERLAY",
-            "USE_MASK"
-        ]
-    },
-    "wing_default:entity":{
+    "danmaku_pbr_gem:entity":{
+      "+defines":[
+        "USE_UV_ANIM",
+        "ALPHA_TEST"
+      ],
       "+states":[
-            "Blending","DisableCulling"
-        ]
+        "Blending",
+        "DisableCulling"
+      ],
+      "blendSrc":"One",
+      "blendDst":"One",
+      "+samplerStates":[
+        {
+          "samplerIndex":0,
+          "textureWrap":"Repeat"
+        }
+      ]
     }
   }
 }

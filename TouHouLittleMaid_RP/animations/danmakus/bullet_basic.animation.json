@@ -47,6 +47,25 @@
 				}
 			}
 		},
+		"animation.touhou_little_maid.danmaku.rot_auto": {
+			"loop": true,
+			"bones": {
+				"rot_y": {
+					"rotation": [
+						0,
+						"90-query.target_y_rotation",
+						0
+					]
+				},
+				"rot_zx": {
+					"rotation": [
+						0,
+						0,
+						"-query.target_x_rotation"
+					]
+				}
+			}
+		},
 		"animation.touhou_little_maid.danmaku.arrow": {
 			"loop": true,
 			"bones": {
