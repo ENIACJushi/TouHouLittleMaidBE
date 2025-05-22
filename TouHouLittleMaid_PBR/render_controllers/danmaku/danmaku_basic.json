@@ -1,0 +1,41 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+	"controller.render.danmaku_basic_pbr": {
+	  "geometry": "Geometry.default",
+	  "materials": [
+		  {"*": "Material.default"},
+		  {"transparent": "Material.transparent"},
+		  {"gem": "Material.gem"},
+		  {"solid": "Material.solid"}
+	  ],
+	  "arrays": {
+		"textures": {
+		  "Array.skins": [
+            "Texture.color_1",
+            "Texture.color_2",
+            "Texture.color_3",
+            "Texture.color_4",
+            "Texture.color_5",
+            "Texture.color_6",
+            "Texture.color_7",
+            "Texture.color_8",
+            "Texture.color_9",
+            "Texture.color_10",
+            "Texture.color_11",
+            "Texture.color_12",
+            "Texture.color_13"
+		  ]
+		}
+	  },
+	  "textures": [ "Array.skins[query.variant]" ],
+	  "overlay_color": {
+		  "r": 0.0,
+		  "g": 0.0,
+		  "b": 0.0,
+		  "a": 0.0
+	  },
+	  "ignore_lighting": true
+	}
+  }
+}

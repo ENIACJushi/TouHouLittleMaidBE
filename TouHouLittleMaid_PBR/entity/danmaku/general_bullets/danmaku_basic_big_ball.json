@@ -1,0 +1,43 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "thlmd:danmaku_basic_big_ball",
+      "min_engine_version": "1.8.0",
+      "materials": {
+        "default": "danmaku_pbr_glow"
+      },
+      "textures": {
+        "color_1": "textures/entity/danmaku/danmaku_color_pbr_0000_1.png",
+        "color_2": "textures/entity/danmaku/danmaku_color_pbr_0001_2.png",
+        "color_3": "textures/entity/danmaku/danmaku_color_pbr_0002_3.png",
+        "color_4": "textures/entity/danmaku/danmaku_color_pbr_0003_4.png",
+        "color_5": "textures/entity/danmaku/danmaku_color_pbr_0004_5.png",
+        "color_6": "textures/entity/danmaku/danmaku_color_pbr_0005_6.png",
+        "color_7": "textures/entity/danmaku/danmaku_color_pbr_0006_7.png",
+        "color_8": "textures/entity/danmaku/danmaku_color_pbr_0007_8.png",
+        "color_9": "textures/entity/danmaku/danmaku_color_pbr_0008_9.png",
+        "color_10": "textures/entity/danmaku/danmaku_color_pbr_0009_10.png",
+        "color_11": "textures/entity/danmaku/danmaku_color_pbr_0010_11.png",
+        "color_12": "textures/entity/danmaku/danmaku_color_pbr_0011_12.png",
+        "color_13": "textures/entity/danmaku/danmaku_color_pbr_0012_13.png"
+      },
+      "geometry": {
+        "default": "geometry.danmaku_basic_big_ball_pbr"
+      },
+      "animations": {
+        "rotate": "animation.touhou_little_maid.danmaku.rot_auto",
+        "life":"animation.touhou_little_maid.danmaku.life"
+      },
+      "scripts": {
+        "animate": [
+          "rotate",
+          "life"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.danmaku_basic_pbr"
+      ]
+    }
+  }
+}

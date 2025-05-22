@@ -1,0 +1,69 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.danmaku_basic_bubble_pbr",
+				"texture_width": 32,
+				"texture_height": 32,
+				"visible_bounds_width": 5,
+				"visible_bounds_height": 5,
+				"visible_bounds_offset": [0, 0.5, 0]
+			},
+			"bones": [
+				{
+					"name": "danmaku",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "rot_y",
+					"parent": "danmaku",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "rot_zx",
+					"parent": "rot_y",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "outer",
+					"parent": "rot_zx",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{
+							"origin": [-8, -8, -8],
+							"size": [16, 16, 16],
+							"uv": {
+								"north": {"uv": [5, 4], "uv_size": [21.66667, 21.66667]},
+								"east": {"uv": [5, 4], "uv_size": [21.66667, 21.66667]},
+								"south": {"uv": [5, 4], "uv_size": [22, 21.66667]},
+								"west": {"uv": [5, 4], "uv_size": [21.66667, 21.66667]},
+								"up": {"uv": [26.66667, 25.66667], "uv_size": [-21.66667, -21.66667]},
+								"down": {"uv": [26.66667, 25.66667], "uv_size": [-21.66667, -21.66667]}
+							}
+						}
+					]
+				},
+				{
+					"name": "transparent",
+					"parent": "rot_zx",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{
+							"origin": [-8, -8, -8],
+							"size": [16, 16, 16],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [2.66667, 2.66667]},
+								"east": {"uv": [0, 0], "uv_size": [2.66667, 2.66667]},
+								"south": {"uv": [0, 0], "uv_size": [2.66667, 2.66667]},
+								"west": {"uv": [0, 0], "uv_size": [2.66667, 2.66667]},
+								"up": {"uv": [2.66667, 2.66667], "uv_size": [-2.66667, -2.66667]},
+								"down": {"uv": [2.66667, 2.66667], "uv_size": [-2.66667, -2.66667]}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}
