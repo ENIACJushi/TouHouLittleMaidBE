@@ -1,5 +1,5 @@
 import { Dimension } from "@minecraft/server";
-import { Vector, VectorMC } from "../../libs/VectorMC";
+import { Vector, VO } from "../../libs/VectorMC";
 
 export abstract class DanmakuActor {
   private offset?: Vector;
@@ -13,7 +13,7 @@ export abstract class DanmakuActor {
 
   public applyOffset(position: Vector): Vector {
     if (this.offset) {
-      return VectorMC.add(position, this.offset);
+      return VO.add(position, this.offset);
     }
     return position;
   }

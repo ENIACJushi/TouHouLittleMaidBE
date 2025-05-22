@@ -1,4 +1,4 @@
-import { Vector, VectorMC } from "../../../src/libs/VectorMC";
+import { Vector, VO } from "../../../src/libs/VectorMC";
 import { BulletShoot } from "../shoots/BulletShoot";
 import { Entity } from "@minecraft/server";
 import { DanmakuActor } from "../actors/DanmakuActor";
@@ -26,7 +26,7 @@ export abstract class BulletPatternBase<T> {
       bedrockVelocity = new Vector(0, 0, 0);
     }
     else {
-      bedrockVelocity = VectorMC.getVector_speed_direction(velocity, new Vector(direction.x, direction.y, direction.z));
+      bedrockVelocity = VO.Secondary.getVector_speed_direction(velocity, new Vector(direction.x, direction.y, direction.z));
     }
     return this.shootByVelocity(data, bedrockVelocity, inaccuracy);
   }

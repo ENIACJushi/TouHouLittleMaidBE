@@ -1,4 +1,4 @@
-import { Vector, VectorMC } from "../../../src/libs/VectorMC";
+import { Vector, VO } from "../../../src/libs/VectorMC";
 import { BulletBase, GeneralBullet } from "../shapes/main";
 import { Entity, EntityProjectileComponent } from "@minecraft/server";
 import { getRandom } from "../../../src/libs/ScarletToolKit";
@@ -80,7 +80,7 @@ export class BulletShoot {
       bedrockVelocity = new Vector(0, 0, 0);
     }
     else {
-      bedrockVelocity = VectorMC.getVector_speed_direction(velocity, new Vector(direction.x, direction.y, direction.z));
+      bedrockVelocity = VO.Secondary.getVector_speed_direction(velocity, new Vector(direction.x, direction.y, direction.z));
     }
     return this.shootByVelocity(bedrockVelocity, inaccuracy);
   }
@@ -200,9 +200,9 @@ export class BulletShoot {
       }
     }
     // 绕方向向量旋转旋转轴 0~2PI
-    rotate_axis = VectorMC.rotate_axis(rotate_axis, input, getRandom(0, 2 * Math.PI));
+    rotate_axis = VO.Secondary.rotate_axis(rotate_axis, input, getRandom(0, 2 * Math.PI));
     // 绕旋转轴旋转方向向量 0~inaccuracy
-    return VectorMC.rotate_axis(input, rotate_axis, getRandom(0, inaccuracy));
+    return VO.Secondary.rotate_axis(input, rotate_axis, getRandom(0, inaccuracy));
   }
   /**
    * 计算到目标的
@@ -224,7 +224,7 @@ export class BulletShoot {
     let t_location = targetLocation[1];
 
     // 位置相同时直接返回
-    if (VectorMC.equals(s_location, t_location)) {
+    if (VO.equals(s_location, t_location)) {
       return new Vector(velocity, 0, 0);
     }
 
@@ -236,15 +236,15 @@ export class BulletShoot {
         targetV.y = 0;
       }
       // 因为弹幕创建存在延迟，这里要加一个时间差
-      let targetLocationOnShot = VectorMC.add(t_location, VectorMC.multiply(targetV, 5));
+      let targetLocationOnShot = VO.add(t_location, VO.multiply(targetV, 5));
       // 发射点和计算时间差后的目标点不能重合
-      if (!VectorMC.equals(s_location, targetLocationOnShot)) {
-        return VectorMC.preJudge(s_location, targetLocationOnShot, velocity, targetV);
+      if (!VO.equals(s_location, targetLocationOnShot)) {
+        return VO.Advanced.preJudge(s_location, targetLocationOnShot, velocity, targetV);
       }
     }
     
     // 不使用预瞄或预瞄点与发射点重合
-    return VectorMC.getVector_speed_direction(velocity, new Vector(
+    return VO.Secondary.getVector_speed_direction(velocity, new Vector(
       t_location.x - s_location.x,
       t_location.y - s_location.y,
       t_location.z - s_location.z

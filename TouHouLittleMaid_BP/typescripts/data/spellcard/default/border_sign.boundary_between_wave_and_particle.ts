@@ -1,5 +1,5 @@
 import { Dimension, Entity, system } from "@minecraft/server";
-import { Vector, VectorMC } from "../../../src/libs/VectorMC";
+import { Vector, VO } from "../../../src/libs/VectorMC";
 import * as Tool from "../../../src/libs/ScarletToolKit";
 import {
   GeneralBullet as Danmaku,
@@ -40,7 +40,7 @@ export const SpellCard = {
           });
 
           // 旋转角设置
-          let direction = VectorMC.rotate_axis(
+          let direction = VO.Secondary.rotate_axis(
             new Vector(0, 0, 1), 
             new Vector(0, -1, 0), 
             Tool.angle2raduis(- 40 * j + 5 * Math.pow($times / 4, 2))

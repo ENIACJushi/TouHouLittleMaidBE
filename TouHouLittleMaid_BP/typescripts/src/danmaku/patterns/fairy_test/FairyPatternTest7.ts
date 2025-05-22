@@ -3,7 +3,7 @@
 /**
  * 曲线激光（伪）
  */
-import { Vector, VectorMC } from "../../../libs/VectorMC";
+import { Vector, VO } from "../../../libs/VectorMC";
 import { BulletShoot } from "../../shoots/BulletShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "../../shapes/main";
@@ -35,7 +35,7 @@ export class FairyPatternTest7{
     });
 
     let direction = thrower.getViewDirection();
-    let axis = VectorMC.normalized(VectorMC.getAnyVerticalVector(direction));
+    let axis = VO.normalized(VO.Advanced.getAnyVerticalVector(direction));
     var shootNext = function () {
       system.runTimeout(() => {
         if (laserRadius > 60 || laserRadius < -60) {
@@ -43,7 +43,7 @@ export class FairyPatternTest7{
         }
         laserRadius += laserStep;
 
-        let direction_shoot = VectorMC.rotate_axis(direction, axis, laserRadius * Math.PI / 180);
+        let direction_shoot = VO.Secondary.rotate_axis(direction, axis, laserRadius * Math.PI / 180);
         bulletShoot.shootByDirection(new Vector(direction_shoot.x, direction_shoot.y, direction_shoot.z), 0.1);
         shootNext();
       }, 1)

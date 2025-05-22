@@ -1,4 +1,4 @@
-import { Vector, VectorMC } from "../../../src/libs/VectorMC";
+import { Vector, VO } from "../../../src/libs/VectorMC";
 import { 
   BulletPatternBase,
 } from "./BulletPatternBase";
@@ -27,7 +27,7 @@ export class FanShapedPattern extends BulletPatternBase<FanShapedPatternData> {
     let yawAxis;
 
     // 计算旋转轴
-    let v = VectorMC.normalized(velocity);
+    let v = VO.normalized(velocity);
     if (v.y === 0) {
       // 发射向量与水平面平行，取y轴为旋转轴
       yawAxis = new Vector(0, 1, 0);
@@ -47,19 +47,19 @@ export class FanShapedPattern extends BulletPatternBase<FanShapedPatternData> {
         );
       }
     }
-    yawAxis = VectorMC.normalized(yawAxis)
+    yawAxis = VO.normalized(yawAxis)
     // 绕发射向量旋转旋转向量
     if (data.axisRotation) {
-      yawAxis = VectorMC.rotate_axis(yawAxis, v, data.axisRotation);
+      yawAxis = VO.Secondary.rotate_axis(yawAxis, v, data.axisRotation);
     }
     // 绕发射和中轴所在平面的法向量旋转发射向量
     if (data.directionRotation) {
-      v = VectorMC.rotate_axis(v, new Vector(1, 0, -v.x / v.z), data.directionRotation);
+      v = VO.Secondary.rotate_axis(v, new Vector(1, 0, -v.x / v.z), data.directionRotation);
     }
 
     // 计算每个弹幕的向量并发射
     for (let i = 1; i <= fanNum; i++) {
-      let v1 = VectorMC.rotate_axis(velocity, yawAxis, yaw);
+      let v1 = VO.Secondary.rotate_axis(velocity, yawAxis, yaw);
       yaw = yaw + addYaw;
       this.bulletShoot.shootByVelocity(v1, inaccuracy);
     }

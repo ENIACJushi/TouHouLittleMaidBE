@@ -2,7 +2,7 @@
  * 金符「Metal Fatigue」
  */
 import { Dimension, Entity, system } from "@minecraft/server";
-import { Vector, VectorMC } from "../../../src/libs/VectorMC";
+import { Vector, VO } from "../../../src/libs/VectorMC";
 import * as Tool from "../../../src/libs/ScarletToolKit"
 import {
   GeneralBullet as Danmaku,
@@ -18,8 +18,8 @@ function getRotationVector(vec3d: Vector, yawIn: number, yOffset: number, entity
   let yaw = (entity.getRotation().y + yawIn) * -0.01745329251;// PI/180
   let pos = entity.location;
 
-  let result = VectorMC.rotate_axis(vec3d, new Vector(0, 1, 0), yaw);
-  result = VectorMC.add(result, new Vector(pos.x, pos.y + 1 + yOffset, pos.z));
+  let result = VO.Secondary.rotate_axis(vec3d, new Vector(0, 1, 0), yaw);
+  result = VO.add(result, new Vector(pos.x, pos.y + 1 + yOffset, pos.z));
   
   return result;
 }
@@ -49,7 +49,7 @@ export const SpellCard = {
           .setLifeTime(31)
       });
 
-      let direction = VectorMC.rotate_axis(
+      let direction = VO.Secondary.rotate_axis(
         new Vector(0, 0, 1), 
         new Vector(0, -1, 0), 
         Tool.angle2raduis(entity.getRotation().y + 15 + 45 * j)
@@ -71,7 +71,7 @@ export const SpellCard = {
               .setColor(Color.YELLOW)
               .setLifeTime(31)
           });
-          let direction = VectorMC.rotate_axis(
+          let direction = VO.Secondary.rotate_axis(
             new Vector(0, 0, 1),
             new Vector(0, -1, 0), 
             Tool.angle2raduis(entity.getRotation().y + 45 * j)
@@ -95,7 +95,7 @@ export const SpellCard = {
               .setColor(Color.YELLOW)
               .setLifeTime(31)
           });
-          let direction = VectorMC.rotate_axis(
+          let direction = VO.Secondary.rotate_axis(
             new Vector(0, 0, 1), 
             new Vector(0, -1, 0), 
             Tool.angle2raduis(entity.getRotation().y + 30 + 45 * j)
@@ -118,7 +118,7 @@ export const SpellCard = {
                 .setColor(Color.YELLOW)
                 .setLifeTime(31)
             });
-            let direction = VectorMC.rotate_axis(
+            let direction = VO.Secondary.rotate_axis(
               new Vector(0, 0, 1), 
               new Vector(0, -1, 0), 
               Tool.angle2raduis(entity.getRotation().y + 30 + 45 * j)

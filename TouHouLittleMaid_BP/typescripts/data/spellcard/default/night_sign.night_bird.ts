@@ -2,7 +2,7 @@
  * 夜符「Night Bird」
  */
 import { Dimension, Entity, system } from "@minecraft/server";
-import { Vector, VectorMC } from "../../../src/libs/VectorMC";
+import { Vector, VO } from "../../../src/libs/VectorMC";
 import * as Tool from "../../../src/libs/ScarletToolKit"
 import {
   GeneralBullet as Danmaku,
@@ -41,7 +41,7 @@ export const SpellCard = {
                 .setColor(Color.PURPLE)
             });
 
-            let direction = VectorMC.rotate_axis(
+            let direction = VO.Secondary.rotate_axis(
               new Vector(0, 0, 1),
               new Vector(0, -1, 0), 
               Tool.angle2raduis(entity.getRotation().y + 90.0 - 135.0 / 16.0 * j - 3)
@@ -64,7 +64,7 @@ export const SpellCard = {
                 .setColor(Color.CYAN)
             });
 
-            let direction = VectorMC.rotate_axis(
+            let direction = VO.Secondary.rotate_axis(
               new Vector(0, 0, 1), 
               new Vector(0, -1, 0), 
               Tool.angle2raduis(entity.getRotation().y - 90.0 + 135.0 / 16.0 * j)
@@ -87,7 +87,7 @@ export const SpellCard = {
                 .setColor(Color.PURPLE)
             });
 
-            let direction = VectorMC.rotate_axis(
+            let direction = VO.Secondary.rotate_axis(
               new Vector(0, 0, 1), 
               new Vector(0, -1, 0), 
               Tool.angle2raduis(entity.getRotation().y + 90.0 - 135.0 / 16.0 * j - 2)
@@ -110,7 +110,7 @@ export const SpellCard = {
                 .setColor(Color.CYAN)
             });
 
-            let direction = VectorMC.rotate_axis(
+            let direction = VO.Secondary.rotate_axis(
               new Vector(0, 0, 1), 
               new Vector(0, -1, 0), 
               Tool.angle2raduis(entity.getRotation().y - 90.0 + 135.0 / 16.0 * j - 1)
