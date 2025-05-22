@@ -9,3 +9,4 @@ export { FairyPatternTest4 } from "./FairyPatternTest4";
 export { FairyPatternTest5 } from "./FairyPatternTest5";
 export { FairyPatternTest6 } from "./FairyPatternTest6";
 export { FairyPatternTest7 } from "./FairyPatternTest7";
+export { FairyPatternTest8 } from "./FairyPatternTest8";

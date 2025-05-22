@@ -22,6 +22,7 @@ import { FairyPatternTest2 } from "./patterns/fairy_test/FairyPatternTest2";
 import { FairyPatternTest4 } from "./patterns/fairy_test/FairyPatternTest4";
 import { FairyPatternTest6 } from "./patterns/fairy_test/FairyPatternTest6";
 import { FairyPatternTest7 } from "./patterns/fairy_test/FairyPatternTest7";
+import { FairyPatternTest8 } from "./patterns/fairy_test/FairyPatternTest8";
 
 
 // 记录正在删除的弹幕
@@ -189,6 +190,7 @@ export function debug_shoot(entity: Entity) {
     case 5: break;
     case 6: new FairyPatternTest6().shoot(entity, target); break;
     case 7: new FairyPatternTest7().shoot(entity, target); break;
+    case 8: new FairyPatternTest8().shoot(entity, target); break;
     default:
       // 默认弹幕（妖精女仆）
       fairy_shoot(entity);
