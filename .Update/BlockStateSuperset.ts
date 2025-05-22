@@ -4,5 +4,9 @@
  * 如果找不着文件，就从 minecraft-server 的 withState 方法的参数定位过去
  */
 export type BlockStateSuperset = {
+  ['thlm:item']?: number;
+  ['thlm:status']?: boolean;
+  ['thlm:door']?: boolean;
+  ['thlm:first_place']?: boolean;
   ['thlm:is_down']?: boolean;
 };
