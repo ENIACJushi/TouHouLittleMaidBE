@@ -6,7 +6,7 @@
         "is_spawnable": false,
         "is_summonable": true,
         "is_experimental": false,
-        "runtime_identifier": "minecraft:xp_bottle"
+        "runtime_identifier": "minecraft:arrow"
       },
       "component_groups": {
         "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } },
