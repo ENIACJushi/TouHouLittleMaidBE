@@ -1,6 +1,5 @@
-import { Vector, VO } from "../../../src/libs/VectorMC";
+import { Vector, VO } from "../../libs/VectorMC";
 import { BulletShoot } from "../shoots/BulletShoot";
-import { Entity } from "@minecraft/server";
 import { DanmakuActor } from "../actors/DanmakuActor";
 
 /**
@@ -15,7 +14,6 @@ export abstract class BulletPatternBase<T> {
   /**
    * 图案需要提供指定发射向量的发射方法
    * 其它发射方法会自动基于这种方法给定
-   * @param data
    */
   abstract shootByVelocity (data: T, velocity: Vector, inaccuracy: number): boolean;
   

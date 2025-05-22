@@ -1,4 +1,4 @@
-import { Vector, VO } from "../../../src/libs/VectorMC";
+import { Vector, VO } from "../../libs/VectorMC";
 import { 
   BulletPatternBase,
 } from "./BulletPatternBase";
@@ -51,10 +51,6 @@ export class FanShapedPattern extends BulletPatternBase<FanShapedPatternData> {
     // 绕发射向量旋转旋转向量
     if (data.axisRotation) {
       yawAxis = VO.Secondary.rotate_axis(yawAxis, v, data.axisRotation);
-    }
-    // 绕发射和中轴所在平面的法向量旋转发射向量
-    if (data.directionRotation) {
-      v = VO.Secondary.rotate_axis(v, new Vector(1, 0, -v.x / v.z), data.directionRotation);
     }
 
     // 计算每个弹幕的向量并发射

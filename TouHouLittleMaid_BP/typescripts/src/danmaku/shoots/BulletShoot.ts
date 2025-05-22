@@ -1,10 +1,9 @@
-import { Vector, VO } from "../../../src/libs/VectorMC";
-import { BulletBase, GeneralBullet } from "../shapes/main";
+import { Vector, VO } from "../../libs/VectorMC";
+import { BulletBase } from "../shapes/main";
 import { Entity, EntityProjectileComponent } from "@minecraft/server";
-import { getRandom } from "../../../src/libs/ScarletToolKit";
+import { getRandom } from "../../libs/ScarletToolKit";
 import { DanmakuActor } from "../actors/DanmakuActor";
 import { EntityDanmakuActor } from "../actors/EntityDanmakuActor";
-import { LocationDanmakuActor } from "../actors/LocationDanmakuActor";
 
 export interface BulletShootData {
   shape: BulletBase;
@@ -69,9 +68,9 @@ export class BulletShoot {
   /**
    * 指定方向和动量大小，发射一个弹幕
    * 若要一个静止的弹幕，则把velocity设为0。xyz任何时候都不能同时为0
-   * @param {Vector} direction
-   * @param {Float} velocity 
-   * @param {Float} inaccuracy In Radius(0~PI)
+   * @param direction
+   * @param velocity
+   * @param inaccuracy In Radius(0~PI)
    */
   public shootByDirection (direction: Vector, velocity: number, inaccuracy: number = 0): Entity | undefined {
     // 转换并动量
