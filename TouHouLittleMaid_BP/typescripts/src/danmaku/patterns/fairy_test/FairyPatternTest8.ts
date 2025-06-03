@@ -19,7 +19,7 @@ export class FairyPatternTest8 {
             target: new EntityDanmakuActor(target)
                 .setOffset(new Vector(0, 1, 0)),
             shape: new GeneralBullet()
-                .setGeneralBulletType(GeneralBulletType.ORBS)
+                .setGeneralBulletType(GeneralBulletType.STAR)
                 .setColor(GeneralBulletColor.RED)
                 .setDamage(0)
         });

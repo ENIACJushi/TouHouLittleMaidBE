@@ -26,6 +26,17 @@
       ]
     }
   ],
-  "dependencies": [
-  ]
+  "subpacks": [
+    {
+      "folder_name": "simple",
+      "name": "Simple",
+      "memory_tier": 0
+    },
+    {
+      "folder_name": "blockly",
+      "name": "Blockly",
+      "memory_tier": 1
+    }
+  ],
+  "dependencies": []
 }
