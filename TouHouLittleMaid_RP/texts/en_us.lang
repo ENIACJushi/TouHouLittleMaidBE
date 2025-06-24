@@ -6,6 +6,13 @@ message.tlm.player_join1=§e[TLM] Touhou Little Maid 1.10.0
 message.tlm.player_join2=§e Visit mcmod.cn for complete tutorial.
 ### VERSION_AUTO_GENERATE_END ###
 
+message.tlm.not_support_1=If you see this message, it indicates that the Add-On is not operating properly. Please try the following solutions:
+
+message.tlm.not_support_2= 1. Open all the experimental gameplay;
+
+message.tlm.not_support_3_1= 2. Check the version of Minecraft. The current version supported by the Add-On is §e
+message.tlm.not_support_3_2= §f, If not supported, go to the download page and select the appropriate version for download.
+
 ##### UI #####
 gui.touhou_little_maid.author.name=Authors:
 
