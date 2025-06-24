@@ -190,7 +190,9 @@ export class ConfigForm {
   static boolForm(player: Player, key: keyof Config, definition: any) {
     let form = new ModalFormData()
       .title(definition.name)
-      .toggle(definition.description, config[key].value as boolean)
+      .toggle(definition.description, {
+        defaultValue: config[key].value as boolean
+      })
       .submitButton('提交');
 
     form.show(player).then((response) => {
@@ -207,7 +209,9 @@ export class ConfigForm {
     let oriValue = config[key].value as number
     let form = new ModalFormData()
       .title(definition.name)
-      .textField(definition.description, oriValue.toString(), oriValue.toString())
+      .textField(definition.description, oriValue.toString(), {
+        defaultValue: oriValue.toString()
+      })
       .submitButton('提交');
 
     form.show(player).then((response) => {

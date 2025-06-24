@@ -54,7 +54,7 @@ export class GarageKit {
   static registerCC(event: StartupEvent) {
     // 手办
     event.blockComponentRegistry.registerCustomComponent("tlm:garage_kit", {
-      onPlayerDestroy(e) {
+      onPlayerBreak(e) {
         let entity = GarageKit.getBlockEntity(e.block, true);
         if (entity === undefined) return;
         entity.triggerEvent("thlmm:u");
@@ -62,7 +62,7 @@ export class GarageKit {
     });
     // 待烘烤手办
     event.blockComponentRegistry.registerCustomComponent("tlm:garage_kit_un_solid", {
-      onPlayerDestroy(e) {
+      onPlayerBreak(e) {
         let entity = GarageKit.getBlockEntity(e.block, false);
         if (entity === undefined) return;
         entity.triggerEvent("thlmm:u");
@@ -155,7 +155,7 @@ export class GarageKit {
       if (this.match(dimension, size.space, startLocation, xSign, zSign)) {
         if (index === 0) {
           // 生成未烘烤手办
-          let maid = dimension.spawnEntity("thlmm:maid",
+          let maid = dimension.spawnEntity("thlmm:maid" as any,
             new Vector(startLocation.x + 0.5, startLocation.y, startLocation.z + 0.5),
             { initialRotation: rot }
           );
@@ -180,7 +180,7 @@ export class GarageKit {
           let endLocation = new Vector(
             startLocation.x + offset[0], startLocation.y + offset[1], startLocation.z + offset[2]);
           // 实体
-          let maid = dimension.spawnEntity("thlmm:maid",
+          let maid = dimension.spawnEntity("thlmm:maid" as any,
             new Vector(startLocation.x + offset[0] / 2 + 0.5, startLocation.y, startLocation.z + offset[2] / 2 + 0.5),
             { initialRotation: rot }
           );
@@ -368,7 +368,7 @@ export class GarageKit {
     ///// 放置实体 /////
     location.x += 0.5;
     location.z += 0.5;
-    let maid = dimension.spawnEntity("thlmm:maid", location, {
+    let maid = dimension.spawnEntity("thlmm:maid" as any, location, {
       initialRotation: rot
     });
     maid.setDynamicProperty("spawn_set", true);

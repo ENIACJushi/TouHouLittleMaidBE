@@ -1,4 +1,4 @@
-import { Player, world, Dimension, Entity, StartupEvent } from "@minecraft/server";
+import {Player, world, Dimension, Entity, StartupEvent, EntityTypes} from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 import { Logger } from "../controller/Logger";
@@ -15,7 +15,7 @@ export default class PowerPoint {
       onUse(useEvent) {
         let pl = useEvent.source;
         // 发射物品
-        let projectile = pl.dimension.spawnEntity("touhou_little_maid:power_point", pl.getHeadLocation());
+        let projectile = pl.dimension.spawnEntity("touhou_little_maid:power_point" as any, pl.getHeadLocation());
         let component = projectile.getComponent("projectile");
         if (!component) {
           Logger.error(TAG, 'Failed to shoot power point: Projectile Component Not Found.');
@@ -70,10 +70,10 @@ export default class PowerPoint {
    * @param {Entity} en 
    */
   static fairy_death(en: Entity) {
-    en.dimension.spawnEntity("touhou_little_maid:p_point", en.location).triggerEvent("init_p1");
-    en.dimension.spawnEntity("touhou_little_maid:p_point", en.location).triggerEvent("init_p1");
-    en.dimension.spawnEntity("touhou_little_maid:p_point", en.location).triggerEvent("init_p3");
-    en.dimension.spawnEntity("touhou_little_maid:p_point", en.location).triggerEvent("init_p3");
+    en.dimension.spawnEntity("touhou_little_maid:p_point" as any, en.location).triggerEvent("init_p1");
+    en.dimension.spawnEntity("touhou_little_maid:p_point" as any, en.location).triggerEvent("init_p1");
+    en.dimension.spawnEntity("touhou_little_maid:p_point" as any, en.location).triggerEvent("init_p3");
+    en.dimension.spawnEntity("touhou_little_maid:p_point" as any, en.location).triggerEvent("init_p3");
   }
 
 
@@ -258,7 +258,7 @@ export default class PowerPoint {
     let count = count_;
     const overworld = world.getDimension("overworld");
     while (true) {
-      let temp = dimension.spawnEntity("touhou_little_maid:p_point", location);
+      let temp = dimension.spawnEntity("touhou_little_maid:p_point" as any, location);
       let drectionX = Tool.getRandom() < 0.5 ? 1 : -1;
       let drectionZ = Tool.getRandom() < 0.5 ? 1 : -1;
 

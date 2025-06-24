@@ -5,7 +5,7 @@
     "uuid": "fed26523-2c16-4560-9076-aff6ad49a1e3",
     "version": [
       1,
-      9,
+      10,
       0
     ],
     "description": "pack.description",
@@ -23,7 +23,7 @@
       "entry": "scripts/src/index.js",
       "version": [
         1,
-        9,
+        10,
         0
       ]
     },
@@ -32,7 +32,7 @@
       "uuid": "f3249f90-9682-4b1a-a084-e111881b678f",
       "version": [
         1,
-        9,
+        10,
         0
       ]
     }
@@ -42,17 +42,17 @@
       "uuid": "919b50d9-d6ab-40bb-828d-9e2f40f664a5",
       "version": [
         1,
-        9,
+        10,
         0
       ]
     },
     {
       "module_name": "@minecraft/server",
-      "version": "2.0.0-beta"
+      "version": "2.1.0-beta"
     },
     {
       "module_name": "@minecraft/server-ui",
-      "version": "2.0.0-beta"
+      "version": "2.1.0-beta"
     }
   ]
 }

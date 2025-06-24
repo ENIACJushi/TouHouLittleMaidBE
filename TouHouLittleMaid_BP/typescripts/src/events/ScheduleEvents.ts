@@ -39,7 +39,7 @@ export class ScheduleEvents {
  
     // 创造模式方块实体破坏检测
     system.runInterval(() => {
-      for (let pl of world.getPlayers({ "gameMode": GameMode.creative })) {
+      for (let pl of world.getPlayers({ "gameMode": GameMode.Creative })) {
         pl.runCommand("function touhou_little_maid/check");
       }
     }, 80);

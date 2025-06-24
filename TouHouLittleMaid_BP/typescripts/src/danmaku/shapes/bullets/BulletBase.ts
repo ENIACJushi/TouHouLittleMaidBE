@@ -16,7 +16,7 @@ export abstract class BulletBase {
    * 创建子弹实体 实现类也可以自行实现
    */
   public createBulletEntity (world: Dimension, location: Vector): Entity {
-    let bullet = world.spawnEntity(this.getBulletEntityName(), location);
+    let bullet = world.spawnEntity(this.getBulletEntityName() as any, location);
     this.applyDamage(bullet); // 应用伤害
     this.applyLifeTime(bullet); // 应用留存时间
     return bullet;

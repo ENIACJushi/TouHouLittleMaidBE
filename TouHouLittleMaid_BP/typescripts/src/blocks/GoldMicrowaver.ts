@@ -9,6 +9,7 @@ import {
   Player,
   BlockVolume,
   StartupEvent,
+  system,
 } from "@minecraft/server";
 import { VO } from "../libs/VectorMC";
 import { BlockTool, ItemTool } from "../libs/ScarletToolKit";
@@ -32,31 +33,37 @@ export class GoldMicrowaver {
   static registerCC(event: StartupEvent) {
     event.blockComponentRegistry.registerCustomComponent("tlm:microwaver", {
       beforeOnPlayerPlace(e) {
-        if (!e.permutationToPlace.getState("thlm:first_place")) {
-          return;
-        }
-        
-        // 设置方块状态
-        e.permutationToPlace = e.permutationToPlace
-          .withState("thlm:door", false)
-          .withState("thlm:item", 0)
-          .withState("thlm:status", false)
-          .withState("thlm:first_place", false);
+        system.run(() => {
 
-        // 生成方块实体
-        let rot = 0;
-        switch (e.permutationToPlace.getState("minecraft:cardinal_direction")) {
-          case "north": rot = 0; break;
-          case "south": rot = 180; break;
-          case "east": rot = 90; break;
-          case "west": rot = -90; break;
-          default: return;
-        }
-        e.dimension.spawnEntity('touhou_little_maid:gold_microwaver', e.block.bottomCenter(), { initialRotation: rot });
+          if (!e.permutationToPlace.getState("thlm:first_place")) {
+            return;
+          }
+
+          // 设置方块状态
+          e.permutationToPlace = e.permutationToPlace
+            .withState("thlm:door", false)
+            .withState("thlm:item", 0)
+            .withState("thlm:status", false)
+            .withState("thlm:first_place", false);
+
+          // 生成方块实体
+          let rot = 0;
+          switch (e.permutationToPlace.getState("minecraft:cardinal_direction")) {
+            case "north": rot = 0; break;
+            case "south": rot = 180; break;
+            case "east": rot = 90; break;
+            case "west": rot = -90; break;
+            default: return;
+          }
+          e.dimension.spawnEntity('touhou_little_maid:gold_microwaver' as any,
+            e.block.bottomCenter(), { initialRotation: rot });
+        })
       },
-      onPlayerDestroy(e) {
-        let entity = GoldMicrowaver.getBlockEntity(e.block);
-        entity.triggerEvent("thlmw:d");
+      onPlayerBreak(e) {
+        system.run(() => {
+          let entity = GoldMicrowaver.getBlockEntity(e.block);
+          entity.triggerEvent("thlmw:d");
+        })
       },
       onPlayerInteract(e) {
         const player = e.player;
@@ -325,7 +332,7 @@ export class GoldMicrowaver {
     // 放置实体
     location.x += 0.5;
     location.z += 0.5;
-    let entity = dimension.spawnEntity("touhou_little_maid:gold_microwaver", location);
+    let entity = dimension.spawnEntity("touhou_little_maid:gold_microwaver" as any, location);
     entity.triggerEvent(direction);
 
     // 消耗物品

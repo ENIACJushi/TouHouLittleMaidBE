@@ -9,7 +9,7 @@ const ANGLE_PI = 180 / Math.PI
 export function shoot(entity: Entity, location: Vector, direction: Vector, damageCenter = 9, damageArea = 3, piercing: number = 3) {
   const dimension = entity.dimension;
   // 发射中心弹幕 中心弹幕只是用来展示粒子，实际伤害在这里就会施加
-  let danmaku = dimension.spawnEntity("thlmc:danmaku_custom_cherry", location);
+  let danmaku = dimension.spawnEntity("thlmc:danmaku_custom_cherry" as any, location);
 
   DanmakuInterface.setTrower(danmaku, entity.id);
   DanmakuInterface.setPiercing(danmaku, 5);
