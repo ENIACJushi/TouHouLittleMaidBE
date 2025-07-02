@@ -671,7 +671,7 @@ export class EntityMaid{
         /**
          * 获取家的位置
          * @param {Entity} maid 
-         * @returns {number[]|undefined}
+         * @returns {[number,number,number,string]|undefined}
          */
         getLocation(maid){
             let location = DP.getVector(maid, "home");

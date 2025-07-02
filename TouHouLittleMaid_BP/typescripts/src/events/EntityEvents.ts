@@ -14,6 +14,7 @@ import * as Danmaku from "../danmaku/DanmakuManager";
 import PowerPoint from "../altar/PowerPoint";
 import { GarageKit } from "../blocks/GarageKit";
 import { GoldMicrowaver } from "../blocks/GoldMicrowaver";
+import {MaidEvents} from "../maid/events/MaidEvents";
 
 export class EntityEvents {
   // 弹射物命中方块
@@ -92,14 +93,14 @@ export class EntityEvents {
         // 女仆专用事件
         case "m":
           switch (event.eventId.substring(6, 7)) {
-            case "a": MaidManager.Shedule.danmakuAttack(event); break; // a Danmaku Attack
+            case "a": MaidEvents.schedule.tryDanmakuAttack(event); break; // a Danmaku Attack
             case "d": MaidManager.Core.onDeathEvent(event); break; // d Death
             case "f": MaidManager.Core.onTamed(event); break; // f on tamed
-            case "h": MaidManager.Shedule.returnHomeEvent(event); break; // h Home
+            case "h": MaidEvents.schedule.tryReturnHome(event); break; // h Home
             case "i": MaidManager.Interact.inventoryModeEvent(event); break; // i Inventory mode
             case "j": MaidManager.Hug.startEvent(event); break; // j Hug
             case "k": MaidManager.Hug.stopEvent(event); break; // k Hug stop
-            case "l": MaidManager.setLevelEvent(event); break; // l Level
+            case "l": MaidEvents.schedule.setLevel(event); break; // l Level
             case "m": MaidManager.Interact.onInteractEvent(event); break; // m Master interact
             case "n": MaidManager.onNPCEvent(event); break; // n NPC
             case "p": MaidManager.Interact.onPhotoEvent(event); break; // p Photo

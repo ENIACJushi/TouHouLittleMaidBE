@@ -44,7 +44,6 @@ export class WorldEvents {
       // 初始化
       ConfigHelper.init();
       PowerPoint.init(e);
-      MaidManager.Core.init();
       MaidSkin.initScoreboard();
     });
   }
