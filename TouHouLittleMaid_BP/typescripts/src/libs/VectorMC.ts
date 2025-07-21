@@ -14,6 +14,16 @@ export class Vector {
   }
 }
 
+// 用三个向量指定一个坐标系，仅用于快速创建坐标系和指定类型
+export class Axis {
+  x: Vector = new Vector(1, 0, 0);
+  y: Vector = new Vector(0, 1, 0);
+  z: Vector = new Vector(0, 0, 1);
+
+  constructor(x: Vector, y: Vector, z: Vector) {
+    return { x: x, y: y, z: z };
+  }
+}
 /**
  * VO - Vector Operation
  * Secondary: 二级运算
@@ -86,7 +96,17 @@ export namespace VO {
    * 将向量转为字符
    */
   export function toString(vector: Vector): string {
-    return `x:${vector.x.toFixed(2)},y:${vector.y.toFixed(2)},z:${vector.z.toFixed(2)}`
+    return `${vector.x.toFixed(2)}  ${vector.y.toFixed(2)}  ${vector.z.toFixed(2)}`;
+  }
+
+  export function isZero(vector: Vector): boolean {
+    return vector.x === 0 && vector.y === 0 && vector.z === 0;
+  }
+  /**
+   * 复制一个向量
+   */
+  export function copy(vector: Vector): Vector {
+    return new Vector(vector.x, vector.y, vector.z);
   }
 
   export namespace Secondary {
@@ -185,6 +205,24 @@ export namespace VO {
       }
       // 与xz平面有一定夹角，取xy平面上与向量垂直的一个向量
       return new Vector(1, -vector.x / vector.y, 0);
+    }
+
+    /**
+     * 由视线获取屏幕坐标系
+     * @param view 视线向量 作为坐标系的 x 轴
+     * @param isRolling 是否处于翻滚状态。若不在翻滚，则 y 轴处于 zOx 平面上方；若在翻滚，则 y 轴位于  zOx 平面下方。
+     *    两种情况的 y 轴向量正好相反
+     */
+    export function getAxisByView(view: Vector, isRolling: boolean=false): Axis {
+      let roll = isRolling ? -1 : 1;
+      let x = VO.normalized(view);
+      let xzLength = Math.sqrt(x.x*x.x + x.z*x.z);
+      let temp = roll * (xzLength / x.y);
+      return {
+        x,
+        y: new Vector(x.x * temp , roll * xzLength , x.z * temp),
+        z: VO.normalized(new Vector(x.z, 0, -x.x)),
+      }
     }
 
     /**
