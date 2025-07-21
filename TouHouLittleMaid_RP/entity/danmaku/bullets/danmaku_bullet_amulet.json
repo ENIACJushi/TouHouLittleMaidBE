@@ -22,7 +22,7 @@
           "v.temp_dir_x = q.position(0) - v.pos_x;",
           "v.temp_dir_y = q.position(1) - v.pos_y;",
           "v.temp_dir_z = q.position(2) - v.pos_z;",
-          "v.is_moving = (v.temp_dir_x!=0)&&(v.temp_dir_y!=0)&&(v.temp_dir_z!=0);",
+          "v.is_moving = (v.temp_dir_x!=0)||(v.temp_dir_y!=0)||(v.temp_dir_z!=0);",
           "v.dir_x = v.is_moving ? -v.temp_dir_x : v.dir_x;",
           "v.dir_y = v.is_moving ? v.temp_dir_y : v.dir_y;",
           "v.dir_z = v.is_moving ? -v.temp_dir_z : v.dir_z;",
