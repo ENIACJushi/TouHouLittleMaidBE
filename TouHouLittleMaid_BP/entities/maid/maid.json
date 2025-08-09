@@ -1001,6 +1001,7 @@
       }
     },
     "components": {
+      "minecraft:dimension_bound": {},
       "minecraft:variant": { "value": 0 },
       "minecraft:knockback_resistance": { "value": 1.0 },
       "minecraft:collision_box": { "width": 0, "height": 0},

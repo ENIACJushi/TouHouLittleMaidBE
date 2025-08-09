@@ -49,8 +49,12 @@ export namespace VO {
   /**
    * 加
    */
-  export function add(v1: Vector, v2: Vector): Vector {
-    return new Vector(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
+  export function add(...v: Vector[]): Vector {
+    return new Vector(
+      v.reduce((total, curr) => { return total + curr.x }, 0),
+      v.reduce((total, curr) => { return total + curr.y }, 0),
+      v.reduce((total, curr) => { return total + curr.z }, 0)
+    );
   }
 
   /**
@@ -95,8 +99,8 @@ export namespace VO {
   /**
    * 将向量转为字符
    */
-  export function toString(vector: Vector): string {
-    return `${vector.x.toFixed(2)}  ${vector.y.toFixed(2)}  ${vector.z.toFixed(2)}`;
+  export function toString(vector: Vector, fix: number = 2): string {
+    return `${vector.x.toFixed(fix)}  ${vector.y.toFixed(fix)}  ${vector.z.toFixed(fix)}`;
   }
 
   export function isZero(vector: Vector): boolean {
@@ -217,12 +221,25 @@ export namespace VO {
       let roll = isRolling ? -1 : 1;
       let x = VO.normalized(view);
       let xzLength = Math.sqrt(x.x*x.x + x.z*x.z);
-      let temp = roll * (xzLength / x.y);
+      let temp = roll * (x.y / xzLength);
       return {
         x,
-        y: new Vector(x.x * temp , roll * xzLength , x.z * temp),
+        y: new Vector(-x.x * temp , roll * xzLength , -x.z * temp),
         z: VO.normalized(new Vector(x.z, 0, -x.x)),
       }
+    }
+
+    /**
+     * 获取向量在给定坐标系下的坐标（向量和坐标系均以世界坐标系指定分量）
+     * @param axis
+     * @param vector
+     */
+    export function transVectorByAxis(axis: Axis, vector: Vector): Vector {
+      return {
+        x: VO.dot(axis.x, vector),
+        y: VO.dot(axis.y, vector),
+        z: VO.dot(axis.z, vector),
+      };
     }
 
     /**
