@@ -166,6 +166,7 @@ export class ConfigForm {
         form.button(definition.name);
       }
     }
+    // @ts-ignore
     form.show(player).then((response) => {
       if (response.canceled || response.selection === undefined || response.selection >= keys.length) {
         return;
@@ -195,6 +196,7 @@ export class ConfigForm {
       })
       .submitButton('提交');
 
+    // @ts-ignore
     form.show(player).then((response) => {
       if (!response.canceled && response?.formValues?.[0] !== undefined) {
         config[key].set(response.formValues[0] as boolean);
@@ -214,6 +216,7 @@ export class ConfigForm {
       })
       .submitButton('提交');
 
+    // @ts-ignore
     form.show(player).then((response) => {
       if (!response.canceled && response?.formValues?.[0] !== undefined) {
         let value = parseInt(response.formValues[0] as string);
@@ -234,6 +237,7 @@ export class ConfigForm {
       .body('无效的数据')
       .button1('重新输入')
       .button2('退出')
+    // @ts-ignore
     form.show(player).then((response) => {
       if (!response.canceled) {
         if (response.selection === 0) {
