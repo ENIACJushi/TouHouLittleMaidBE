@@ -54,5 +54,8 @@
       "module_name": "@minecraft/server-ui",
       "version": "2.1.0-beta"
     }
-  ]
+  ],
+  "metadata": {
+    "product_type": "addon"
+  }
 }
