@@ -113,7 +113,6 @@ entity.touhou_little_maid:debug_fairy.name=弹幕测试妖精女仆
 entity.touhou_little_maid:tombstone.name=墓碑
 
 ##### 方块 #####
-tile.touhou_little_maid:fairy_skull_0_block.name=妖精女仆头颅
 tile.touhou_little_maid:fairy_skull_1_block.name=妖精女仆头颅
 tile.touhou_little_maid:fairy_skull_2_block.name=妖精女仆头颅
 
