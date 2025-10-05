@@ -1,6 +1,11 @@
 # TouHouLittleMaidBE
 A bedrock-edition Add-On transplanted by Java mod: TouHou Little Maid. (https://github.com/TartaricAcid/TouhouLittleMaid)
 
+## Tutorial
+
+- [Introduction](Docs/intruduce/EN.md)
+- [Guidebook generation](MemorizableGensokyo/README.md)
+
 ## Authors
 - Programmer: `ENIACJushi`, `Tanya7z`
 
