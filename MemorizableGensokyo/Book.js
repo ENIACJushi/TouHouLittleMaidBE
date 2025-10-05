@@ -2,8 +2,8 @@ import { resolveRecipe } from './RecipeResolver.js';
 import { getItemFont } from './ItemList.js'
 import * as fs from 'fs';
 
-const GLYPH_IMG = 0xE500;
-const GLYPH_ITEM = 0xE600;
+const GLYPH_IMG = 0xE500; // 大号图片，对应 `TouHouLittleMaid_RP/font/glyph_E5.png`
+const GLYPH_ITEM = 0xE600; // 物品图片，对应 `TouHouLittleMaid_RP/font/glyph_E6.png`
 const RECIPE_PATH = "../TouHouLittleMaid_BP/recipes/"
 const TEMPLATE_CRAFT =  `
    0 1 2
