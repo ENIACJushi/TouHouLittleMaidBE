@@ -6,7 +6,7 @@ import { AltarBlock } from "../blocks/AltarBlock";
 import { GarageKit } from "../blocks/GarageKit";
 import { GoldMicrowaver } from "../blocks/GoldMicrowaver";
 import { GoheiCherry } from "../items/GoheiCherry";
-import { hakureiGohei } from "../items/hakurei_gohei/index";
+import { HakureiGoheiManager } from "../items/hakurei_gohei/HakureiGoheiManager";
 import { CustomSpellCardManger } from "../danmaku/CustomSpellCardManger";
 import PowerPoint from "../altar/PowerPoint";
 import { ConfigHelper } from "../controller/Config";
@@ -36,7 +36,7 @@ export class WorldEvents {
     GoldMicrowaver.registerCC(e);
     // 注册物品自定义组件
     GoheiCherry.registerCC(e);
-    hakureiGohei.registerCC(e);
+    HakureiGoheiManager.getInstance().registerCC(e);
     CustomSpellCardManger.registerCC(e);
     PowerPoint.registerCC(e);
     // 初始化模块

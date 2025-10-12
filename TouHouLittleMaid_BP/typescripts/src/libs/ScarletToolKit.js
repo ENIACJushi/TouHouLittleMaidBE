@@ -109,20 +109,29 @@ export function pointInArea_3D(x,y,z,areaStart_x,areaStart_y,areaStart_z,areaEnd
 ////////// Tool//////////
 export class ItemTool {
     /**
+     * 设置玩家指定格位的物品
+     * @param {Player} player
+     * @param {?ItemStack} item
+     * @param {number} slot
+     */
+    static setPlayerSlot(player, slot, item = undefined) {
+        let container = player.getComponent("inventory").container;
+        if (item === undefined) {
+            container.setItem(slot);
+        } else {
+            container.setItem(slot, item);
+        }
+    }
+
+    /**
      * 设置玩家主手物品
      * @param {Player} player
      * @param {?ItemStack} item
      */
-    static setPlayerMainHand(player, item=undefined){
-        let container = player.getComponent("inventory").container;
-        let slot = player.selectedSlotIndex;
-        if(item===undefined){
-            container.setItem(slot);
-        }
-        else{
-            container.setItem(slot, item);
-        }
+    static setPlayerMainHand(player, item = undefined) {
+        ItemTool.setPlayerSlot(player, player.selectedSlotIndex, item);
     }
+
     /**
      * 获取玩家主手物品
      * @param {Player} player
@@ -178,9 +187,28 @@ export class ItemTool {
     /**
      * 损耗物品 带耐久判定
      * @param {ItemStack} item
+     * @param {number} amount
      * @returns {ItemStack | undefined}
      */
-    static damageItem (item) {
+    static damageItem (item, amount=1) {
+        if (ItemTool.damageJudge(item)) {
+            let damage = item.getComponent("durability").damage + amount;
+            if(damage >= item.getComponent("durability").maxDurability) {
+                // 耐久耗尽，返回空
+                return undefined;
+            }
+            item.getComponent("durability").damage = damage;
+        }
+        return item;
+    }
+
+    /**
+     * 耐久判定
+     * @param {ItemStack} item
+     * @returns {boolean}
+     */
+    static damageJudge(item) {
+        // 获取耐久附魔等级
         let unbreaking = 0;
         let enchantable = item.getComponent("enchantable");
         if(enchantable !== undefined){
@@ -189,15 +217,8 @@ export class ItemTool {
                 unbreaking = temp.level;
             }
         }
-        if(unbreaking === 0 || getRandomInteger(0, unbreaking.level) === 0){
-            // 磨损概率 1/(1+level)
-            let damage = item.getComponent("durability").damage + 1;
-            if(damage >= item.getComponent("durability").maxDurability){
-                return undefined;
-            }
-            item.getComponent("durability").damage = damage;
-        }
-        return item;
+        // 磨损概率 1/(1+level)
+        return unbreaking === 0 || getRandomInteger(0, unbreaking.level) === 0;
     }
 }
 

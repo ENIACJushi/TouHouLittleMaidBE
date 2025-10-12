@@ -6,7 +6,7 @@ import {
   system,
   world,
 } from "@minecraft/server";
-import { hakureiGohei } from "../items/hakurei_gohei/index";
+import { HakureiGoheiManager } from "../items/hakurei_gohei/HakureiGoheiManager";
 import { altarStructure } from "../altar/AltarStructureHelper";
 import { MaidManager } from "../maid/MaidManager";
 import { GarageKit } from "../blocks/GarageKit";
@@ -83,7 +83,7 @@ export class ItemEvents {
   // 蓄力开始
   private itemStartUseAfter(event: ItemStartUseAfterEvent) {
     if (event.itemStack.typeId === 'touhou_little_maid:hakurei_gohei_v2') {
-      hakureiGohei.startUseEvent(event);
+      HakureiGoheiManager.getInstance().handleStartUseEvent(event);
     }
   }
 
@@ -93,7 +93,7 @@ export class ItemEvents {
       return;
     }
     if (event.itemStack.typeId === 'touhou_little_maid:hakurei_gohei_v2') {
-      hakureiGohei.stopUseEvent(event);
+      HakureiGoheiManager.getInstance().handleStopUseEvent(event);
     }
   }
 
