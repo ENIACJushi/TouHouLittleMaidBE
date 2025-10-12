@@ -6,10 +6,12 @@
  */
 import { Dimension, Entity, system } from "@minecraft/server";
 import { Vector } from "../../../libs/VectorMC";
+import {DanmakuInterface} from "../../DanmakuInterface";
 
 export abstract class BulletBase {
   protected damage: number = 6; // 伤害
   protected lifeTime: number = 0; // 已存在的刻数，用来定时销毁
+  protected piercing: number = 0; // 穿透力，代表能穿透的实体数量
   
   //////// 构建函数 ////////
   /**
@@ -17,32 +19,16 @@ export abstract class BulletBase {
    */
   public createBulletEntity (world: Dimension, location: Vector): Entity {
     let bullet = world.spawnEntity(this.getBulletEntityName() as any, location);
-    this.applyDamage(bullet); // 应用伤害
-    this.applyLifeTime(bullet); // 应用留存时间
+    DanmakuInterface.setDamage(bullet, this.damage); // 应用伤害
+    DanmakuInterface.setLifeTime(bullet, this.lifeTime); // 应用留存时间
+    DanmakuInterface.setPiercing(bullet, this.piercing); // 应用穿透力
     return bullet;
   }
+
   /**
    * 获取子弹实体名称
    */
   protected abstract getBulletEntityName (): string;
-  /**
-   * 为 弹幕实体 应用伤害
-   */
-  protected applyDamage (bulletEntity: Entity) {
-    bulletEntity.setDynamicProperty("damage", this.damage);
-  }
-  /**
-   * 为 弹幕实体 应用留存时间
-   */
-  protected applyLifeTime (bulletEntity: Entity) {
-    if (this.lifeTime > 0) {
-      system.runTimeout(() => {
-        try {
-          bulletEntity.triggerEvent("despawn");
-        } catch { }
-      }, this.lifeTime);
-    }
-  }
 
   //////// 设置函数 ////////
   /**
@@ -59,6 +45,15 @@ export abstract class BulletBase {
     this.lifeTime = tick;
     return this;
   }
+
+  /**
+   * 设置穿透力
+   */
+  public setPiercing(piercing: number): this {
+    this.piercing = piercing;
+    return this;
+  }
+
   //////// 实体操作函数 ////////
   /**
    * 弹种类是弹幕实体的接口层，所有的实体操作尽量靠弹种类来执行

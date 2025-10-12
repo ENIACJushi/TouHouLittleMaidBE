@@ -14,7 +14,7 @@ export interface AmuletGoheiPatternParams {
   velocity?: number; // 动量大小 默认 1
   inaccuracy?: number; // 散步，默认 0.05
   damage?: number; // 伤害，默认 3
-  piercing?: number; // 穿透力（未实现）
+  piercing?: number; // 穿透力，默认为 0
   offsetY?: number; // 发射位置相对头部位置在Y方向的偏移]
 }
 
@@ -25,12 +25,13 @@ export class AmuletGoheiPattern {
   static shoot(params: AmuletGoheiPatternParams) {
     let entity = params.entity;
     let direction = params.direction;
-    let damage = params.damage ?? 3;
+    let damage = params.damage ?? 5;
     let velocity = params.velocity ?? 1;
     let inaccuracy = params.inaccuracy ?? 0.05;
     let amount = params.amount ?? 1;
     let spacing = params.spacing ?? 3;
     let offsetY = params.offsetY ?? -0.4;
+    let piercing = params.piercing ?? 0;
 
     // 创建新符札弹种
     let bulletShoot0 = new BulletShoot({
@@ -38,7 +39,9 @@ export class AmuletGoheiPattern {
         .setOffset(new Vector(0, offsetY, 0)), // 比相机略低
       shape: new Amulet()
         .setDamage(damage)
-    })
+        .setPiercing(piercing)
+        .setXRotation(90)
+    });
     /**
      * 多重射击
      *  如果是单数，在零偏移处射一发，然后按双数处理

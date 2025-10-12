@@ -55,11 +55,14 @@ export class GoheiAmuletMode extends GoheiBaseMode {
       }
       ///// 发射弹幕 /////
       let multiShot = ItemTool.getEnchantmentLevel(item, 'multishot'); // 多重射击
+      let piercing = ItemTool.getEnchantmentLevel(item, 'piercing'); // 穿透
       // 发射一次符札
       AmuletGoheiPattern.shoot({
         entity: player,
         direction: player.getViewDirection(),
         amount: multiShot > 0 ? 3 : 1,
+        piercing: piercing,
+        damage: 5,
       });
       // 损耗判定
       this.damage(item, player, slot);

@@ -7,12 +7,22 @@ const PI_ANGLE = Math.PI / 180;
 
 
 export class Amulet extends BulletBase {
-  getBulletEntityName (): string {
+  private xRotation = 0;
+  private direction?: Vector;
+  public getBulletEntityName (): string {
     return 'thlmd:bullet_amulet';
   }
+
   public createBulletEntity (world: Dimension, location: Vector): Entity {
     let bullet = super.createBulletEntity(world, location);
-
+    // 设置自转角
+    bullet.setProperty("thlm:r_x", this.xRotation);
+    // 设置初始速度信息，动画坐标系的xz和世界坐标系相反
+    if (this.direction) {
+      bullet.setProperty("thlm:v_x", -this.direction.x);
+      bullet.setProperty("thlm:v_y", this.direction.y);
+      bullet.setProperty("thlm:v_z", -this.direction.z);
+    }
     return bullet;
   }
 
@@ -20,20 +30,22 @@ export class Amulet extends BulletBase {
    * 设置弹幕的运动方向 通常只在且必须在生成时设置
    * 角度：Z - Y 决定朝向， X 决定自转角
    */
-  static setDirectionProperty(entity: Entity, direction: Vector) {
-    let input = VO.normalized(direction);
-    // 速度信息，动画坐标系的xz和世界坐标系相反
-    entity.setProperty("thlm:v_x", -input.x);
-    entity.setProperty("thlm:v_y", input.y);
-    entity.setProperty("thlm:v_z", -input.z);
+  public setDirection(direction?: Vector) {
+    if (!direction) {
+      this.direction = undefined;
+      return this;
+    }
+    this.direction = VO.normalized(direction);
+    return this;
   }
   
   /**
-   * 设置弹幕的自转角
+   * 设置弹幕的自转角（角度制）
    * Z - Y 决定朝向， X 决定自转角
    */
-  static setXRotationProperty(entity: Entity, r: number) {
-    entity.setProperty("thlm:r_x", r);
+  public setXRotation(r: number) {
+    this.xRotation = r;
+    return this;
   }
 }
 

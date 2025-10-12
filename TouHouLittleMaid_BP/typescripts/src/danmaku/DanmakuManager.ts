@@ -48,11 +48,11 @@ export function danmakuHitEntityEvent(ev: ProjectileHitEntityAfterEvent) {
     }
 
     // 计算穿透次数
-    let piercing = danmaku.getDynamicProperty("piercing") as number | undefined;
+    let piercing = DanmakuInterface.getPiercing(danmaku);
     if (piercing === undefined || piercing <= 1) {
       // 销毁弹幕
       danmaku.triggerEvent("despawn");
-      var id = danmaku.id;
+      let id = danmaku.id;
       despawningDanmaku.set(id, true);
       system.runTimeout(() => {
         despawningDanmaku.delete(id);
@@ -73,10 +73,9 @@ export function danmakuHitEntityEvent(ev: ProjectileHitEntityAfterEvent) {
         }
         DanmakuInterface.clearForks(danmaku.id);
       }
-    }
-    else {
+    } else {
       piercing--;
-      danmaku.setDynamicProperty("piercing", piercing);
+      DanmakuInterface.setPiercing(danmaku, piercing);
     }
   }, 1);
 

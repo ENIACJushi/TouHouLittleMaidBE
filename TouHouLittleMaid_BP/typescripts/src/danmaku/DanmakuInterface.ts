@@ -1,4 +1,4 @@
-import { Entity, EntityApplyDamageOptions, EntityDamageCause, world } from "@minecraft/server";
+import {Entity, EntityApplyDamageOptions, EntityDamageCause, system, world} from "@minecraft/server";
 import { EntityMaid } from "../maid/EntityMaid";
 import { config } from "../controller/Config";
 
@@ -7,47 +7,14 @@ import { config } from "../controller/Config";
  *  可用于默认弹幕和自定义弹幕
  */
 export class DanmakuInterface {
-  /**
-   * 弹幕编组
-   * {"mainId":["forkId"...]}
-   */
-  static group: Map<string, Array<string>> = new Map();
-
-  /**
-   * 设置伤害
-   * @param danmaku 
-   * @param damage 
-   */
-  static setDamage(danmaku: Entity, damage: number) {
-    danmaku.setDynamicProperty("damage", damage);
-  }
-  /**
-   * 设置投掷者
-   * @param danmaku 
-   * @param id 生物id
-   */
-  static setTrower(danmaku: Entity, id: string) {
-    danmaku.setDynamicProperty("source", id);
-  }
-
-  /**
-   * 设置穿透力
-   * @param danmaku 
-   * @param count 
-   */
-  static setPiercing(danmaku: Entity, count: number) {
-    danmaku.setDynamicProperty("piercing", count);
-  }
-  /**
-   * 设置主人id（女仆专用）
-   */
-  static setOwner(danmaku: Entity, ownerID: string) {
-    danmaku.setDynamicProperty("owner", ownerID)
-  }
+  static readonly PROPERTY_KEY_DAMAGE = 'damage';
+  static readonly PROPERTY_KEY_PIERCING = 'piercing';
+  static readonly PROPERTY_KEY_OWNER = 'owner';
+  static readonly PROPERTY_KEY_SOURCE = 'source';
 
   /**
    * 施加伤害，成功则返回 true
-   * @param source 发射者(可为空)
+   * @param _source 发射者(可为空)
    * @param danmaku 弹幕
    * @param target 受击者
    */
@@ -55,19 +22,19 @@ export class DanmakuInterface {
     try {
       // Get source entity by event or property
       // const damageOptions = {"damagingProjectile": projectile}; // 弹射物伤害
-      var damageOptions: EntityApplyDamageOptions = {
-        "cause": EntityDamageCause.magic
-      } // 魔法伤害
+      let damageOptions: EntityApplyDamageOptions = {
+        "cause": EntityDamageCause.magic, // 魔法伤害
+      };
       //// 设置伤害施加者 ////
       let source = _source;
       if (source === undefined) {
         // 没有原版框架下的攻击实体，则通过动态属性寻找
-        let id = danmaku.getDynamicProperty("source");
+        let id = danmaku.getDynamicProperty("source") as undefined | string;
 
         if (id !== undefined && id !== "0") {
           if (target.id == id) {
             return false;
-          };
+          }
           source = world.getEntity(id as string);
         }
       }
@@ -79,7 +46,7 @@ export class DanmakuInterface {
       // 不伤害自己
       if (target.id === source?.id) {
         return false;
-      };
+      }
       // 玩家受击
       if (target.typeId === "minecraft:player") {
         // 女仆不伤害玩家
@@ -138,6 +105,71 @@ export class DanmakuInterface {
     catch { }
     return false;
   }
+
+  //// 获取子弹实体的属性 ////
+  /**
+   * 获取子弹伤害
+   */
+  static getDamage(bulletEntity: Entity): number | undefined {
+    return bulletEntity.getDynamicProperty(DanmakuInterface.PROPERTY_KEY_DAMAGE) as number;
+  }
+
+  /**
+   * 获取子弹穿透力
+   */
+  static getPiercing(bulletEntity: Entity): number | undefined {
+    return bulletEntity.getDynamicProperty(DanmakuInterface.PROPERTY_KEY_PIERCING) as number;
+  }
+
+  //// 为子弹实体应用属性 ////
+
+  /**
+   * 为弹幕实体设置伤害
+   */
+  static setDamage(danmaku: Entity, damage: number) {
+    danmaku.setDynamicProperty(DanmakuInterface.PROPERTY_KEY_DAMAGE, damage);
+  }
+
+  /**
+   * 为弹幕实体设置留存时间
+   */
+  static setLifeTime (bulletEntity: Entity, lifeTime: number) {
+    if (lifeTime > 0) {
+      system.runTimeout(() => {
+        try {
+          bulletEntity.triggerEvent("despawn");
+        } catch { }
+      }, lifeTime);
+    }
+  }
+
+  /**
+   * 为弹幕实体设置穿透力
+   */
+  static setPiercing(danmaku: Entity, count: number) {
+    danmaku.setDynamicProperty(DanmakuInterface.PROPERTY_KEY_PIERCING, count);
+  }
+
+  /**
+   * 为弹幕实体设置投掷者
+   */
+  static setTrower(danmaku: Entity, id: string) {
+    danmaku.setDynamicProperty(DanmakuInterface.PROPERTY_KEY_SOURCE, id);
+  }
+
+  /**
+   * 为弹幕实体设置主人id（女仆专用）
+   */
+  static setOwner(danmaku: Entity, ownerID: string) {
+    danmaku.setDynamicProperty(DanmakuInterface.PROPERTY_KEY_OWNER, ownerID)
+  }
+
+  ///// 编组 /////
+  /**
+   * 弹幕编组
+   * {"mainId":["forkId"...]}
+   */
+  static group: Map<string, Array<string>> = new Map();
 
   /**
    * 为一个弹幕设置子弹幕
