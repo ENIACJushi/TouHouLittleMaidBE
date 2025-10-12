@@ -6,14 +6,14 @@
    *  Date        :  2023.02.17                   *
   \* -------------------------------------------- */
 
-import { 
-    world, 
-    Entity, 
+import {
+    world,
+    Entity,
     Dimension,
-    Player, 
-    ItemStack, 
-    EquipmentSlot, 
-    Block,
+    Player,
+    ItemStack,
+    EquipmentSlot,
+    Block, EnchantmentType,
 } from "@minecraft/server";
 import { Vector } from "./VectorMC";
 import { config } from "../controller/Config";
@@ -209,16 +209,38 @@ export class ItemTool {
      */
     static damageJudge(item) {
         // 获取耐久附魔等级
-        let unbreaking = 0;
-        let enchantable = item.getComponent("enchantable");
-        if(enchantable !== undefined){
-            let temp = enchantable.getEnchantment("unbreaking");
-            if(temp !== undefined){
-                unbreaking = temp.level;
-            }
-        }
+        let unbreaking = ItemTool.getEnchantmentLevel(item, 'unbreaking');
         // 磨损概率 1/(1+level)
         return unbreaking === 0 || getRandomInteger(0, unbreaking.level) === 0;
+    }
+
+    /**
+     * 获取物品某个附魔的等级
+     * @param {ItemStack} item
+     * @param {EnchantmentType | string} type
+     * @returns {number}
+     */
+    static getEnchantmentLevel(item, type) {
+        let enchantable = item.getComponent("enchantable");
+        if (enchantable !== undefined){
+            let temp = enchantable.getEnchantment(type);
+            if (temp !== undefined){
+                return temp.level;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 打印物品的所有附魔
+     * @param {ItemStack} item
+     */
+    static printAllEnchantments(item) {
+        console.log(item.getComponent("enchantable")
+          ?.getEnchantments()
+          ?.map((val) => { return `${val.type.id}:${val.type.maxLevel}` })
+          .join(',')
+        );
     }
 }
 

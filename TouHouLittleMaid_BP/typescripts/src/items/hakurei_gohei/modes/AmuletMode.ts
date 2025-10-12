@@ -30,6 +30,9 @@ export class GoheiAmuletMode extends GoheiBaseMode {
   public startUseEvent (event: ItemStartUseAfterEvent) {
     let playerId = event.source.id;
     let slot = event.source.selectedSlotIndex;
+    // 根据快速装填等级确定发射间隔
+    let timeout = Math.max(1, 10 - 2 * ItemTool.getEnchantmentLevel(event.itemStack, 'quick_charge'));
+
     // 创建一个定时循环的任务，在玩家保持蓄力状态时执行，蓄力结束或满足其他结束条件时停止
     let intervalId = system.runInterval(() => {
       ///// 停止判断 /////
@@ -51,16 +54,21 @@ export class GoheiAmuletMode extends GoheiBaseMode {
         return;
       }
       ///// 发射弹幕 /////
+      let multiShot = ItemTool.getEnchantmentLevel(item, 'multishot'); // 多重射击
       // 发射一次符札
-      AmuletGoheiPattern.shoot(player, player.getHeadLocation(), player.getViewDirection());
+      AmuletGoheiPattern.shoot({
+        entity: player,
+        direction: player.getViewDirection(),
+        amount: multiShot > 0 ? 3 : 1,
+      });
       // 损耗判定
       this.damage(item, player, slot);
       // 播放音效
       player.dimension.playSound('random.bow', player.location, {
         pitch: getRandom(0.330, 0.50),
-        volume : 0.50 
+        volume : 0.30
       });
-    }, 4);
+    }, timeout);
     this.registerPlayerInterval(playerId, intervalId)
   }
 
