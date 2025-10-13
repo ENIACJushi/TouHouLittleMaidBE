@@ -1,6 +1,7 @@
 import {Entity, EntityApplyDamageOptions, EntityDamageCause, system, world} from "@minecraft/server";
 import { EntityMaid } from "../maid/EntityMaid";
 import { config } from "../controller/Config";
+import { DanmakuDamageDispatcher } from "./DanmakuDamageDispatcher";
 
 /**
  * 对弹幕实体的通用操作接口
@@ -11,6 +12,7 @@ export class DanmakuInterface {
   static readonly PROPERTY_KEY_PIERCING = 'piercing';
   static readonly PROPERTY_KEY_OWNER = 'owner';
   static readonly PROPERTY_KEY_SOURCE = 'source';
+  static damageDispatcher: DanmakuDamageDispatcher = new DanmakuDamageDispatcher();
 
   /**
    * 施加伤害，成功则返回 true
@@ -97,9 +99,18 @@ export class DanmakuInterface {
           case "touhou_little_maid:fairy": damage = damage * (config.fairy_damage.value / 100); break;
           default: break;
         }
-        if (target.applyDamage(damage, damageOptions)) {
-          return true;
+        let finalDamage = this.damageDispatcher.damageJudge(target.id, damage, danmaku.id, source?.id);
+        // 处于伤害冷却，则返回伤害失败
+        if (finalDamage === undefined) {
+          return false;
         }
+        // 伤害成功或累积伤害成功，则记录本次攻击和弹幕攻击
+        this.damageDispatcher.recordHit(target.id);
+        this.damageDispatcher.recordDanmakuHit(target.id, danmaku.id);
+        if (finalDamage > 0) {
+          target.applyDamage(finalDamage, damageOptions);
+        }
+        return true;
       }
     }
     catch { }
