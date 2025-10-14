@@ -32,16 +32,15 @@ let despawningDanmaku: Map<string, boolean> = new Map();
  * @param ev 
  */
 export function danmakuHitEntityEvent(ev: ProjectileHitEntityAfterEvent) {
-  // TODO: 为什么这里要延迟？能不能删？
-  system.runTimeout(() => {
+  system.run(() => {
     // 收集信息
-    var danmaku = ev.projectile;
+    let danmaku = ev.projectile;
     if (danmaku === undefined || despawningDanmaku.get(danmaku.id)) return;
-    var hit_info = ev.getEntityHit()
+    let hit_info = ev.getEntityHit()
     if (hit_info === undefined) {
       return;
     }
-    
+
     // 施加伤害
     if (!hit_info.entity || !DanmakuInterface.applyDamage(ev.source, danmaku, hit_info.entity)) {
       return;
@@ -66,7 +65,7 @@ export function danmakuHitEntityEvent(ev: ProjectileHitEntityAfterEvent) {
           if (forkDanmaku !== undefined) {
             forkDanmaku.triggerEvent("despawn");
             despawningDanmaku.set(id, true);
-            system.runTimeout(() => { 
+            system.runTimeout(() => {
               despawningDanmaku.delete(id);
             }, 4);
           }
@@ -77,7 +76,7 @@ export function danmakuHitEntityEvent(ev: ProjectileHitEntityAfterEvent) {
       piercing--;
       DanmakuInterface.setPiercing(danmaku, piercing);
     }
-  }, 1);
+  });
 
 }
 

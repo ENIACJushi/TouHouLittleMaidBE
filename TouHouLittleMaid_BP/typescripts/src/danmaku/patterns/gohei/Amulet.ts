@@ -5,17 +5,26 @@ import { BulletShoot } from "../../shoots/BulletShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 import { AmuletController } from "../../shapes/bullets/Amulet";
 import { getRandom } from "../../../libs/ScarletToolKit";
+import {FanShapedPattern} from "../Fan";
 
 export interface AmuletGoheiPatternParams {
   entity: Entity; // 发射弹幕的实体
   direction: Vector; // 发射方向
   amount?: number; // 一次发射的数量，默认1
-  spacing?: number; // 发射大于一个的弹幕时，弹幕之间的间距，默认为4
   velocity?: number; // 动量大小 默认 1
   inaccuracy?: number; // 散步，默认 0.05
   damage?: number; // 伤害，默认 3
   piercing?: number; // 穿透力，默认为 0
-  offsetY?: number; // 发射位置相对头部位置在Y方向的偏移]
+  offsetY?: number; // 发射位置相对头部位置在Y方向的偏移
+
+  type?: AmuletGoheiPatternType; // 发射类型
+  spacing?: number; // 平行模式专用：发射大于一个的弹幕时，弹幕之间的间距，默认为 4
+  yawTotal?: number; // 扇形模式专用：扇形角度，弧度制
+}
+
+export enum AmuletGoheiPatternType {
+  parallel = 0,
+  fan = 1,
 }
 
 export class AmuletGoheiPattern {
@@ -29,9 +38,12 @@ export class AmuletGoheiPattern {
     let velocity = params.velocity ?? 1;
     let inaccuracy = params.inaccuracy ?? 0.05;
     let amount = params.amount ?? 1;
-    let spacing = params.spacing ?? 3;
     let offsetY = params.offsetY ?? -0.4;
     let piercing = params.piercing ?? 0;
+
+    let type = params.type ?? AmuletGoheiPatternType.fan;
+    let spacing = params.spacing ?? 2;
+    let yawTotal = params.yawTotal ?? Math.PI / 8;
 
     // 创建新符札弹种
     let bulletShoot0 = new BulletShoot({
@@ -42,33 +54,47 @@ export class AmuletGoheiPattern {
         .setPiercing(piercing)
         .setXRotation(90)
     });
-    /**
-     * 多重射击
-     *  如果是单数，在零偏移处射一发，然后按双数处理
-     *  如果是双数，则在左右平均分布，和 STG 的排列方式相同
-     */
-    let viewVector = entity.getViewDirection();
-    let viewVector2D = VO.normalized(new Vector(viewVector.x, 0, viewVector.z));
-    // 单数
-    if (amount % 2 === 1) {
-      bulletShoot0.shootByDirection(direction, velocity, inaccuracy);
-    }
-    // 双数
-    for (let i = 0; i + 1<= amount/2; i++) {
-      bulletShoot0.thrower.setOffset(new Vector(
-        -viewVector2D.z * spacing * (i + 0.5),
-        offsetY,
-        viewVector2D.x * spacing * (i + 0.5),
-      ));
-      bulletShoot0.shootByDirection(direction, velocity, inaccuracy);
+    switch (type) {
+      case AmuletGoheiPatternType.parallel: {
+        /**
+         * 平行多重射击
+         *  如果是单数，在零偏移处射一发，然后按双数处理
+         *  如果是双数，则在左右平均分布，和 STG 的排列方式相同
+         */
+        let viewVector = entity.getViewDirection();
+        let viewVector2D = VO.normalized(new Vector(viewVector.x, 0, viewVector.z));
+        // 单数
+        if (amount % 2 === 1) {
+          bulletShoot0.shootByDirection(direction, velocity, inaccuracy);
+        }
+        // 双数
+        for (let i = 0; i + 1<= amount/2; i++) {
+          bulletShoot0.thrower.setOffset(new Vector(
+            -viewVector2D.z * spacing * (i + 0.5),
+            offsetY,
+            viewVector2D.x * spacing * (i + 0.5),
+          ));
+          bulletShoot0.shootByDirection(direction, velocity, inaccuracy);
 
-      bulletShoot0.thrower.setOffset(new Vector(
-        viewVector2D.z * spacing * (i + 0.5),
-        offsetY,
-        -viewVector2D.x * spacing * (i + 0.5),
-      ));
-      bulletShoot0.shootByDirection(direction, velocity, inaccuracy);
+          bulletShoot0.thrower.setOffset(new Vector(
+            viewVector2D.z * spacing * (i + 0.5),
+            offsetY,
+            -viewVector2D.x * spacing * (i + 0.5),
+          ));
+          bulletShoot0.shootByDirection(direction, velocity, inaccuracy);
+        }
+      } break;
+      case AmuletGoheiPatternType.fan: {
+        // 扇形多重射击
+        new FanShapedPattern(bulletShoot0).shootByVelocity({
+          fanNum: amount,
+          yawTotal: yawTotal,
+          axisRotation: 0,
+          directionRotation: 0,
+        }, direction, inaccuracy);
+      }
     }
+
   }
 
   /**

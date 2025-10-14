@@ -1,15 +1,8 @@
-import {
-  ItemReleaseUseAfterEvent,
-  ItemStack,
-  ItemStartUseAfterEvent,
-  Player,
-  system,
-  world,
-} from "@minecraft/server";
-import { AmuletGoheiPattern } from "../../../danmaku/patterns/gohei/Amulet";
-import { GoheiItemInterface } from "../GoheiItemInterface";
-import { GoheiBaseMode } from "./GoheiBaseMode";
-import { getRandom, ItemTool } from "../../../libs/ScarletToolKit";
+import {ItemReleaseUseAfterEvent, ItemStack, ItemStartUseAfterEvent, Player, system, world,} from "@minecraft/server";
+import {AmuletGoheiPattern, AmuletGoheiPatternType} from "../../../danmaku/patterns/gohei/Amulet";
+import {GoheiItemInterface} from "../GoheiItemInterface";
+import {GoheiBaseMode} from "./GoheiBaseMode";
+import {getRandom, ItemTool} from "../../../libs/ScarletToolKit";
 
 const DAMAGE_PROPERTY_KEY = 'tlm_gh:ad'; // gh=gohei
 const DAMAGE_ACCUMULATE_KEY = 'tlm_gh:da';
@@ -63,6 +56,7 @@ export class GoheiAmuletMode extends GoheiBaseMode {
         amount: multiShot > 0 ? 3 : 1,
         piercing: piercing,
         damage: 5,
+        type: player.isSneaking ? AmuletGoheiPatternType.parallel : AmuletGoheiPatternType.fan,
       });
       // 损耗判定
       this.damage(item, player, slot);
