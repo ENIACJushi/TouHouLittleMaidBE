@@ -55,7 +55,7 @@ export class GoheiAmuletMode extends GoheiBaseMode {
         direction: player.getViewDirection(),
         amount: multiShot > 0 ? 3 : 1,
         piercing: piercing,
-        damage: 5,
+        damage: 4,
         type: player.isSneaking ? AmuletGoheiPatternType.parallel : AmuletGoheiPatternType.fan,
       });
       // 损耗判定

@@ -14,8 +14,9 @@
         "default": "geometry.danmaku_bullet_amulet"
       },
       "animations": {
-        "rotate": "animation.touhou_little_maid.danmaku.rot_by_param",
-        "life":"animation.touhou_little_maid.danmaku.life"
+        "rotate": "animation.touhou_little_maid.danmaku.rot_by_param_amulet",
+        "life": "animation.touhou_little_maid.danmaku.life",
+        "scale": "animation.touhou_little_maid.danmaku.amulet_scale"
       },
       "scripts": {
         "pre_animation": [
@@ -33,7 +34,8 @@
         ],
         "animate": [
           "rotate",
-          "life"
+          "life",
+          "scale"
         ],
         "initialize": [
           "v.pos_x = q.position(0);",

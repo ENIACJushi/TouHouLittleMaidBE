@@ -1,14 +1,23 @@
 import { Dimension, Entity, system } from "@minecraft/server";
 import { BulletBase } from "./BulletBase";
 import { Vector, VO } from "../../../libs/VectorMC";
+import { GeneralBulletColor } from "./general_bullet/GeneralBulletColor";
 
 const ANGLE_PI = 180 / Math.PI;
 const PI_ANGLE = Math.PI / 180;
 
 
 export class Amulet extends BulletBase {
-  private xRotation = 0;
-  private direction?: Vector;
+  // 颜色，与通用弹种相通
+  color = GeneralBulletColor.RED;
+  // 旋转角
+  private xRotation?: number = undefined;
+  private yRotation?: number = undefined;
+  private zRotation?: number = undefined;
+  private yaw: number = 0;
+  // 主运动方向
+  private direction: Vector = new Vector(0, 0, 1);
+
   public getBulletEntityName (): string {
     return 'thlmd:bullet_amulet';
   }
@@ -16,29 +25,43 @@ export class Amulet extends BulletBase {
   public createBulletEntity (world: Dimension, location: Vector): Entity {
     let bullet = super.createBulletEntity(world, location);
     // 设置自转角
-    bullet.setProperty("thlm:r_x", this.xRotation);
-    // 设置初始速度信息，动画坐标系的xz和世界坐标系相反
-    if (this.direction) {
-      bullet.setProperty("thlm:v_x", -this.direction.x);
-      bullet.setProperty("thlm:v_y", this.direction.y);
-      bullet.setProperty("thlm:v_z", -this.direction.z);
+    this.applyColor(bullet);
+    // 设置旋转角信息，动画坐标系的xz和世界坐标系相反，旋转顺序被特殊处理为 Y-Z-X
+    let xRotation = this.xRotation ?? 0;
+    let yRotation = this.yRotation;
+    let zRotation = this.zRotation;
+    if (zRotation === undefined || yRotation === undefined) {
+      let dirRotation = Amulet.getRotationByDirection(this.direction);
+      zRotation = zRotation ?? -VO.radian2radius(dirRotation.z);
+      yRotation = yRotation ?? VO.radian2radius(dirRotation.y);
     }
+    let yaw = this.yaw;
+    if (-90 <= yRotation && yRotation <= 90) {
+      yaw = -yaw;
+    }
+    if (zRotation < 0) {
+      yaw = -yaw;
+    }
+    bullet.setProperty("thlm:r_x", xRotation);
+    bullet.setProperty("thlm:r_y", yRotation);
+    bullet.setProperty("thlm:r_z", zRotation);
+    bullet.setProperty("thlm:yaw", yaw);
     return bullet;
   }
 
   /**
-   * 设置弹幕的运动方向 通常只在且必须在生成时设置
+   * 设置弹幕的运动方向 在生成时会自动根据朝向设置旋转角，若有指定旋转角，则以旋转角为准
    * 角度：Z - Y 决定朝向， X 决定自转角
    */
   public setDirection(direction?: Vector) {
     if (!direction) {
-      this.direction = undefined;
+      this.direction = new Vector(0, 0, 1);
       return this;
     }
     this.direction = VO.normalized(direction);
     return this;
   }
-  
+
   /**
    * 设置弹幕的自转角（角度制）
    * Z - Y 决定朝向， X 决定自转角
@@ -46,6 +69,41 @@ export class Amulet extends BulletBase {
   public setXRotation(r: number) {
     this.xRotation = r;
     return this;
+  }
+
+  /**
+   * 设置扇形弹幕的偏转角
+   *  弹幕会调整旋转角，保证与0偏转角的弹幕共面
+   */
+  public setYaw(yaw: number) {
+    this.yaw = yaw;
+    return this;
+  }
+
+  /**
+   * 设置颜色
+   */
+  public setColor (color: number): this {
+    this.color = color;
+    return this;
+  }
+
+  /**
+   * 应用颜色到实体
+   */
+  protected applyColor (danmaku: Entity) {
+    danmaku.triggerEvent(GeneralBulletColor.getTriggerEvent(this.color));
+  }
+
+  /**
+   * 由方向获得旋转角（x轴无旋转信息）
+   */
+  static getRotationByDirection(dir: Vector): Vector {
+    return {
+      x: 0,
+      y: (dir.x === 0 && dir.z === 0) ? 0 : Math.atan2(dir.z, dir.x), // 竖直向下，没有y轴旋转信息
+      z: Math.atan2(dir.y, Math.sqrt(dir.x*dir.x + dir.z*dir.z)),
+    };
   }
 }
 

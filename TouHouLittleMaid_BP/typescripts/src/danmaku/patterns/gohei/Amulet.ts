@@ -34,15 +34,15 @@ export class AmuletGoheiPattern {
   static shoot(params: AmuletGoheiPatternParams) {
     let entity = params.entity;
     let direction = params.direction;
-    let damage = params.damage ?? 5;
-    let velocity = params.velocity ?? 1;
+    let damage = params.damage ?? 4;
+    let velocity = params.velocity ?? 0.7;
     let inaccuracy = params.inaccuracy ?? 0.05;
     let amount = params.amount ?? 1;
     let offsetY = params.offsetY ?? -0.4;
     let piercing = params.piercing ?? 0;
 
     let type = params.type ?? AmuletGoheiPatternType.fan;
-    let spacing = params.spacing ?? 2;
+    let spacing = params.spacing ?? 1.2;
     let yawTotal = params.yawTotal ?? Math.PI / 8;
 
     // 创建新符札弹种
@@ -50,6 +50,8 @@ export class AmuletGoheiPattern {
       thrower: new EntityDanmakuActor(entity, true)
         .setOffset(new Vector(0, offsetY, 0)), // 比相机略低
       shape: new Amulet()
+        .setDirection(direction)
+        .setXRotation(entity.getRotation().y)
         .setDamage(damage)
         .setPiercing(piercing)
         .setXRotation(90)
@@ -85,13 +87,17 @@ export class AmuletGoheiPattern {
         }
       } break;
       case AmuletGoheiPatternType.fan: {
+        if (amount === 1) {
+          bulletShoot0.shootByDirection(direction, velocity, inaccuracy);
+          break;
+        }
         // 扇形多重射击
         new FanShapedPattern(bulletShoot0).shootByVelocity({
           fanNum: amount,
           yawTotal: yawTotal,
           axisRotation: 0,
           directionRotation: 0,
-        }, direction, inaccuracy);
+        }, VO.multiply(VO.normalized(direction), velocity), inaccuracy);
       }
     }
 

@@ -2,6 +2,7 @@ import { Vector, VO } from "../../libs/VectorMC";
 import { 
   BulletPatternBase,
 } from "./BulletPatternBase";
+import {Amulet} from "../shapes/bullets/Amulet";
 
 const MIN_FAN_NUM = 2;
 const MAX_YAW = 2 * Math.PI;
@@ -56,8 +57,13 @@ export class FanShapedPattern extends BulletPatternBase<FanShapedPatternData> {
     // 计算每个弹幕的向量并发射
     for (let i = 1; i <= fanNum; i++) {
       let v1 = VO.Secondary.rotate_axis(velocity, yawAxis, yaw);
-      yaw = yaw + addYaw;
+      // 对于符札，尝试设置旋转角
+      try {
+        let temp = this.bulletShoot.shape as Amulet;
+        temp?.setYaw(VO.radian2radius(yaw));
+      } catch { }
       this.bulletShoot.shootByVelocity(v1, inaccuracy);
+      yaw = yaw + addYaw;
     }
     return true;
   }

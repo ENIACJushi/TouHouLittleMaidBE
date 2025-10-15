@@ -38,9 +38,6 @@
 					1.0
 				]
 			},
-      "part_visibility": [
-        {"*": "q.property('thlm:v_x') > -700"}
-      ],
 			"overlay_color": {
 				"r": 0.0,
 				"g": 0.0,

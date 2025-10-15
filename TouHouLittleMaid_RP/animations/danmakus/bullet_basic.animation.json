@@ -28,13 +28,13 @@
 				}
 			}
 		},
-		"animation.touhou_little_maid.danmaku.rot_by_param": {
+		"animation.touhou_little_maid.danmaku.rot_by_param_amulet_auto": {
 			"loop": true,
 			"bones": {
 				"rot_y": {
 					"rotation": [
 						0,
-						"90-query.target_y_rotation",
+						"90 - query.target_y_rotation",
 						0
 					]
 				},
@@ -43,6 +43,25 @@
 						"q.property('thlm:r_x')",
 						0,
 						"-query.target_x_rotation"
+					]
+				}
+			}
+		},
+		"animation.touhou_little_maid.danmaku.rot_by_param_amulet": {
+			"loop": true,
+			"bones": {
+				"rot_y": {
+					"rotation": [
+						0,
+						"query.property('thlm:r_y')",
+						0
+					]
+				},
+				"rot_zx": {
+					"rotation": [
+						"q.property('thlm:r_x')",
+						"q.property('thlm:yaw')",
+						"q.property('thlm:r_z')"
 					]
 				}
 			}

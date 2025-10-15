@@ -31,6 +31,20 @@ export class Axis {
  */
 export namespace VO {
   /**
+   * 角度制转弧度制
+   */
+  export function radius2Radian(radius: number) {
+    return (radius / 180) * Math.PI;
+  }
+
+  /**
+   * 弧度制转角度制
+   */
+  export function radian2radius(radian: number) {
+    return (radian / Math.PI) * 180;
+  }
+
+  /**
    * 取模
    */
   export function length(v: Vector): number {
