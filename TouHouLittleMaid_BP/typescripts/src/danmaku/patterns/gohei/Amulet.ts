@@ -35,15 +35,15 @@ export class AmuletGoheiPattern {
     let entity = params.entity;
     let direction = params.direction;
     let damage = params.damage ?? 4;
-    let velocity = params.velocity ?? 0.7;
+    let velocity = params.velocity ?? 2; // 参考：箭初始速度5
     let inaccuracy = params.inaccuracy ?? 0.05;
     let amount = params.amount ?? 1;
-    let offsetY = params.offsetY ?? -0.4;
+    let offsetY = params.offsetY ?? -0.2
     let piercing = params.piercing ?? 0;
 
     let type = params.type ?? AmuletGoheiPatternType.fan;
     let spacing = params.spacing ?? 1.2;
-    let yawTotal = params.yawTotal ?? Math.PI / 8;
+    let yawTotal = params.yawTotal ?? Math.PI / 12;
 
     // 创建新符札弹种
     let bulletShoot0 = new BulletShoot({
