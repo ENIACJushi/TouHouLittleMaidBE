@@ -3,6 +3,7 @@ import {AmuletGoheiPattern, AmuletGoheiPatternType} from "../../../danmaku/patte
 import {GoheiItemInterface} from "../GoheiItemInterface";
 import {GoheiBaseMode} from "./GoheiBaseMode";
 import {getRandom, ItemTool} from "../../../libs/ScarletToolKit";
+import { EffectHelper } from "../../../libs/ScarletToolKit/EffectHelper";
 
 const DAMAGE_PROPERTY_KEY = 'tlm_gh:ad'; // gh=gohei
 const DAMAGE_ACCUMULATE_KEY = 'tlm_gh:da';
@@ -55,7 +56,7 @@ export class GoheiAmuletMode extends GoheiBaseMode {
         direction: player.getViewDirection(),
         amount: multiShot > 0 ? 3 : 1,
         piercing: piercing,
-        damage: 4,
+        damage: EffectHelper.getDamageByEntity(player, 4),
         type: player.isSneaking ? AmuletGoheiPatternType.parallel : AmuletGoheiPatternType.fan,
       });
       // 损耗判定

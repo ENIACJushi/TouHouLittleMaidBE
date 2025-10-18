@@ -46,7 +46,7 @@
 				// "a": "-math.mod(math.floor(query.life_time * 15),14) / 7"
 			},
 			"part_visibility": [
-				{ "*": "v.is_init > 40" }
+				{ "*": "v.is_init > 20" }
 			],
 			"ignore_lighting": true
 		}
