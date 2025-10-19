@@ -6,19 +6,10 @@ export const tagDefines = {
         {"item": "minecraft:stick"}
     ],
     "thlm:gohei_lv1":[
-        {"item": "touhou_little_maid:hakurei_gohei_pellet"},
-        {"item": "touhou_little_maid:hakurei_gohei_orbs"},
-        {"item": "touhou_little_maid:hakurei_gohei_ball"},
-        {"item": "touhou_little_maid:hakurei_gohei_big_ball"},
-        {"item": "touhou_little_maid:hakurei_gohei_bubble"},
-        {"item": "touhou_little_maid:hakurei_gohei_heart"},
-        {"item": "touhou_little_maid:hakurei_gohei_amulet"},
-        {"item": "touhou_little_maid:hakurei_gohei_star"},
-        {"item": "touhou_little_maid:hakurei_gohei_big_star"},
-        {"item": "touhou_little_maid:hakurei_gohei_glowey_ball"}
+        {"item": "tlmsi:hakurei_gohei"},
     ],
     "thlm:gohei":[
         {"tag": "thlm:gohei_lv1"},
-        {"item": "touhou_little_maid:hakurei_gohei_cherry"}
+        {"item": "tlmsi:sakura_gohei"}
     ]
 }

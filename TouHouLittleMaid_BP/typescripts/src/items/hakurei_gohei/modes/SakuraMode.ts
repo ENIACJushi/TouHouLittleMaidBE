@@ -11,7 +11,7 @@ import {ItemStack} from "@minecraft/server";
  * 发射符札的御币
  */
 export class GoheiSakuraMode extends GoheiAutomaticMode {
-  private readonly ITEM_TYPE_ID = 'tlmsi:hakurei_gohei'; // 物品id
+  private readonly ITEM_TYPE_ID = 'tlmsi:sakura_gohei'; // 物品id
 
   // 射击函数
   shoot(params: GoheiAutomaticModeShotParams): boolean {

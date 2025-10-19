@@ -6,11 +6,7 @@ import { Vector } from "../../../libs/VectorMC";
 import { BulletShoot } from "../../shoots/BulletShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "../../shapes/main";
-import { FanShapedPattern } from "../Fan";
-import { getRandom } from "../../../libs/ScarletToolKit";
 import { Entity, system } from "@minecraft/server";
-import { GoheiCherry } from "../../../items/GoheiCherry";
-import { DanmakuActor } from "../../actors/DanmakuActor";
 
 export class FairyPatternTest6 {
   shoot(thrower: Entity, target: Entity): boolean {

@@ -5,7 +5,6 @@ import { StatuesBlock } from "../blocks/StatuesBlock";
 import { AltarBlock } from "../blocks/AltarBlock";
 import { GarageKit } from "../blocks/GarageKit";
 import { GoldMicrowaver } from "../blocks/GoldMicrowaver";
-import { GoheiCherry } from "../items/GoheiCherry";
 import { HakureiGoheiManager } from "../items/hakurei_gohei/HakureiGoheiManager";
 import { CustomSpellCardManger } from "../danmaku/CustomSpellCardManger";
 import PowerPoint from "../altar/PowerPoint";
@@ -13,6 +12,7 @@ import { ConfigHelper } from "../controller/Config";
 import { MaidManager } from "../maid/MaidManager";
 import { MaidSkin } from "../maid/MaidSkin";
 import { Logger } from "../controller/Logger";
+import { DeprecatedItemHelper } from "../items/deprecated_helper/DeprecatedHelper";
 
 export class WorldEvents {
   public registerAllEvents () {
@@ -35,9 +35,9 @@ export class WorldEvents {
     GarageKit.registerCC(e);
     GoldMicrowaver.registerCC(e);
     // 注册物品自定义组件
-    GoheiCherry.registerCC(e);
     CustomSpellCardManger.registerCC(e);
     PowerPoint.registerCC(e);
+    DeprecatedItemHelper.registerCC(e);
     // 初始化模块
     system.run(() => {
       // 初始化

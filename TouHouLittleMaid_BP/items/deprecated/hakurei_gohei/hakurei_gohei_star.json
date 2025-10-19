@@ -6,6 +6,7 @@
       "menu_category": { "category": "none" }
     },
     "components": {
+      "minecraft:custom_components": [ "tlm:deprecated" ],
       "minecraft:icon": { "textures": { "default": "touhou_little_maid:hakurei_gohei" } },
       "minecraft:display_name": { "value": "item.touhou_little_maid:hakurei_gohei" },
       "minecraft:max_stack_size": 1,

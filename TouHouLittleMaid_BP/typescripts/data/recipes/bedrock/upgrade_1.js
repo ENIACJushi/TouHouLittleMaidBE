@@ -9,7 +9,7 @@ export const recipe = {
     "power": 0.5,
     "ingredients": [
       {
-        "item": "touhou_little_maid:hakurei_gohei_cherry"
+        "item": "tlmsi:sakura_gohei"
       },
       {
         "item": "touhou_little_maid:magic_powder"

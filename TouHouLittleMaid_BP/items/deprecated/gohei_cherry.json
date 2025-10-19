@@ -6,7 +6,7 @@
       "menu_category": {"category": "equipment"}
     },
     "components": {
-      "minecraft:custom_components": ["tlm:gohei_cherry"],
+      "minecraft:custom_components": [ "tlm:deprecated" ],
       "minecraft:icon": { "textures": { "default": "touhou_little_maid:hakurei_gohei" } },
       "minecraft:hand_equipped": true,
       "minecraft:enchantable":{ "slot": "elytra", "value": 15 },

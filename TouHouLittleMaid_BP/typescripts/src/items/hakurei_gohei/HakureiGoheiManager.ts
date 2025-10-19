@@ -4,6 +4,7 @@ import {
 } from "@minecraft/server";
 import { GoheiAmuletMode } from "./modes/AmuletMode";
 import {GoheiBaseMode} from "./modes/template/GoheiBaseMode";
+import {GoheiSakuraMode} from "./modes/SakuraMode";
 
 const TAG = 'HakureiGoheiManager';
 
@@ -25,7 +26,7 @@ export class HakureiGoheiManager {
    */
   private modeList: Record<string, GoheiBaseMode> = {
     'tlmsi:hakurei_gohei': new GoheiAmuletMode(), // 基础符札模式
-    'tlmsi:sakura_gohei': new GoheiAmuletMode(), // 樱之御币模式
+    'tlmsi:sakura_gohei': new GoheiSakuraMode(), // 樱之御币模式
   };
 
   /**
