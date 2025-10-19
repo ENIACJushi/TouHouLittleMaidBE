@@ -8,12 +8,12 @@ import {
   world
 } from "@minecraft/server";
 import { ItemTool } from "../../../../libs/ScarletToolKit";
-import { GoheiBaseMode } from "./GoheiBaseMode";
+import { ShootItemBase } from "./ShootItemBase";
 
 /**
  * 自动射击模板
  */
-export abstract class GoheiAutomaticMode extends GoheiBaseMode {
+export abstract class ShootItemAutomatic extends ShootItemBase {
   private intervalMap = new Map();
 
   //// 子类实现 ////

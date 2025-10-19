@@ -7,9 +7,9 @@ import {
   AmuletGoheiPatternType,
 } from "../../../danmaku/patterns/gohei/Amulet";
 import {
-  GoheiAutomaticMode,
+  ShootItemAutomatic,
   GoheiAutomaticModeShotParams,
-} from "./template/GoheiAutomaticMode";
+} from "./template/ShootItemAutomatic";
 import { ItemTool } from "../../../libs/ScarletToolKit";
 import { EffectHelper } from "../../../libs/ScarletToolKit/EffectHelper";
 
@@ -19,7 +19,7 @@ const DAMAGE_STEP_FULL = 4; // 要发射几次才会消耗一点耐久
 /**
  * 发射符札的御币
  */
-export class GoheiAmuletMode extends GoheiAutomaticMode {
+export class HakureiGohei extends ShootItemAutomatic {
   private readonly ITEM_TYPE_ID = 'tlmsi:hakurei_gohei'; // 物品id
   private readonly DAMAGE_AMOUNT = 4; // 单个符札的基础伤害
 

@@ -5,7 +5,7 @@ import { StatuesBlock } from "../blocks/StatuesBlock";
 import { AltarBlock } from "../blocks/AltarBlock";
 import { GarageKit } from "../blocks/GarageKit";
 import { GoldMicrowaver } from "../blocks/GoldMicrowaver";
-import { HakureiGoheiManager } from "../items/hakurei_gohei/HakureiGoheiManager";
+import { ShootItemManager } from "../items/shoot_item/ShootItemManager";
 import { CustomSpellCardManger } from "../danmaku/CustomSpellCardManger";
 import PowerPoint from "../altar/PowerPoint";
 import { ConfigHelper } from "../controller/Config";

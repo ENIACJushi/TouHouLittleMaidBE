@@ -7,7 +7,7 @@ import {
 } from "@minecraft/server";
 import { getRandom, ItemTool } from "../../../../libs/ScarletToolKit";
 
-export class GoheiBaseMode {
+export class ShootItemBase {
   /**
    * 处理开始蓄力事件
    */

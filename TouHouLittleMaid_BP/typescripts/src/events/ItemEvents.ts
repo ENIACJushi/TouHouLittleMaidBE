@@ -6,7 +6,7 @@ import {
   system,
   world,
 } from "@minecraft/server";
-import { HakureiGoheiManager } from "../items/hakurei_gohei/HakureiGoheiManager";
+import { ShootItemManager } from "../items/shoot_item/ShootItemManager";
 import { altarStructure } from "../altar/AltarStructureHelper";
 import { MaidManager } from "../maid/MaidManager";
 import { GarageKit } from "../blocks/GarageKit";
@@ -84,8 +84,8 @@ export class ItemEvents {
   
   // 蓄力开始
   private itemStartUseAfter(event: ItemStartUseAfterEvent) {
-    if (event.itemStack.typeId.startsWith(HakureiGoheiManager.ITEM_PREFIX)) {
-      HakureiGoheiManager.getInstance().handleStartUseEvent(event);
+    if (event.itemStack.typeId.startsWith(ShootItemManager.ITEM_PREFIX)) {
+      ShootItemManager.getInstance().handleStartUseEvent(event);
     }
   }
 
@@ -94,8 +94,8 @@ export class ItemEvents {
     if (!event.itemStack) {
       return;
     }
-    if (event.itemStack.typeId.startsWith(HakureiGoheiManager.ITEM_PREFIX)) {
-      HakureiGoheiManager.getInstance().handleStopUseEvent(event);
+    if (event.itemStack.typeId.startsWith(ShootItemManager.ITEM_PREFIX)) {
+      ShootItemManager.getInstance().handleStopUseEvent(event);
     }
   }
 

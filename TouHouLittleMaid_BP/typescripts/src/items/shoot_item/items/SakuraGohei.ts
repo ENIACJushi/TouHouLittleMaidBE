@@ -1,7 +1,7 @@
 import {
-  GoheiAutomaticMode,
+  ShootItemAutomatic,
   GoheiAutomaticModeShotParams,
-} from "./template/GoheiAutomaticMode";
+} from "./template/ShootItemAutomatic";
 import { ItemTool } from "../../../libs/ScarletToolKit";
 import { EffectHelper } from "../../../libs/ScarletToolKit/EffectHelper";
 import { SakuraLaser } from "../../../danmaku/patterns/SakuraLaser";
@@ -10,7 +10,7 @@ import {ItemStack} from "@minecraft/server";
 /**
  * 发射符札的御币
  */
-export class GoheiSakuraMode extends GoheiAutomaticMode {
+export class SakuraGohei extends ShootItemAutomatic {
   private readonly ITEM_TYPE_ID = 'tlmsi:sakura_gohei'; // 物品id
 
   // 射击函数

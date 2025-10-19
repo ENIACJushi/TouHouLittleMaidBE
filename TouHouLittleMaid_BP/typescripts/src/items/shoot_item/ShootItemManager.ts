@@ -2,31 +2,31 @@ import {
   ItemStartUseAfterEvent,
   ItemReleaseUseAfterEvent,
 } from "@minecraft/server";
-import { GoheiAmuletMode } from "./modes/AmuletMode";
-import {GoheiBaseMode} from "./modes/template/GoheiBaseMode";
-import {GoheiSakuraMode} from "./modes/SakuraMode";
+import { HakureiGohei } from "./items/HakureiGohei";
+import { ShootItemBase } from "./items/template/ShootItemBase";
+import { SakuraGohei } from "./items/SakuraGohei";
 
 const TAG = 'HakureiGoheiManager';
 
 /**
- * 御币管理类
+ * 射击物品管理类
  */
-export class HakureiGoheiManager {
+export class ShootItemManager {
   static ITEM_PREFIX = 'tlmsi'; // 发射物品前缀 (tlm shoot item)
-  private static instance: HakureiGoheiManager;
+  private static instance: ShootItemManager;
   static getInstance() {
-    if (!HakureiGoheiManager.instance) {
-      HakureiGoheiManager.instance = new HakureiGoheiManager();
+    if (!ShootItemManager.instance) {
+      ShootItemManager.instance = new ShootItemManager();
     }
-    return HakureiGoheiManager.instance;
+    return ShootItemManager.instance;
   }
 
   /**
    * 模式列表
    */
-  private modeList: Record<string, GoheiBaseMode> = {
-    'tlmsi:hakurei_gohei': new GoheiAmuletMode(), // 基础符札模式
-    'tlmsi:sakura_gohei': new GoheiSakuraMode(), // 樱之御币模式
+  private modeList: Record<string, ShootItemBase> = {
+    'tlmsi:hakurei_gohei': new HakureiGohei(), // 基础符札模式
+    'tlmsi:sakura_gohei': new SakuraGohei(), // 樱之御币模式
   };
 
   /**
