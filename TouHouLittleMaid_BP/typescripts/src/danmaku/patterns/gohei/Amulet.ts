@@ -43,7 +43,7 @@ export class AmuletGoheiPattern {
 
     let type = params.type ?? AmuletGoheiPatternType.fan;
     let spacing = params.spacing ?? 1.2;
-    let yawTotal = params.yawTotal ?? Math.PI / 15;
+    let yawTotal = params.yawTotal ?? Math.PI / 12;
 
     // 创建新符札弹种
     let bulletShoot0 = new BulletShoot({
