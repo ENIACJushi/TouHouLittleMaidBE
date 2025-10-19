@@ -3,10 +3,11 @@
   "minecraft:item": {
     "description": {
       "identifier": "touhou_little_maid:hakurei_gohei_crafting_table",
-      "menu_category": { "category": "equipment" }
+      "menu_category": { "category": "none" }
     },
-    "components": {"minecraft:icon": {
+    "components": {
       "minecraft:custom_components": [ "tlm:deprecated" ],
+      "minecraft:icon": {
         "textures": { "default": "touhou_little_maid:hakurei_gohei" }
       },
       "minecraft:hand_equipped": true,

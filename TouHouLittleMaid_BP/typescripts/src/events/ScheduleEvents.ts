@@ -15,15 +15,8 @@ export class ScheduleEvents {
       for (let pl of world.getAllPlayers()) {
         let item = pl.getComponent("equippable")?.getEquipment(EquipmentSlot.Mainhand);
         if (item !== undefined) {
-          if (item.typeId.substring(0, 18) === "touhou_little_maid") {
-            let name = item.typeId.substring(19);
-            switch (name) {
-              default: {
-                if (name.substring(0, 13) == "hakurei_gohei") {
-                  PowerPoint.show(pl);
-                }
-              }; break;
-            }
+          if (item.typeId.startsWith("tlmsi")) {
+            PowerPoint.show(pl);
           }
         }
       }

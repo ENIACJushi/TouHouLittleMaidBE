@@ -10,7 +10,6 @@ import { HakureiGoheiManager } from "../items/hakurei_gohei/HakureiGoheiManager"
 import { altarStructure } from "../altar/AltarStructureHelper";
 import { MaidManager } from "../maid/MaidManager";
 import { GarageKit } from "../blocks/GarageKit";
-import { Gohei } from "../items/Gohei";
 import { MemorizableGensokyo } from "../book/MemorizableGensokyoUI";
 
 export class ItemEvents {
@@ -23,7 +22,6 @@ export class ItemEvents {
 
     if (item.typeId.substring(0, 18) === "touhou_little_maid") {
       switch (item.typeId.substring(19)) {
-        case "hakurei_gohei_crafting_table": Gohei.activate(event.source); break;
         case "memorizable_gensokyo": MemorizableGensokyo.onUseEvent(event); break;
         default: break;
       }
@@ -58,23 +56,27 @@ export class ItemEvents {
       };
 
       //// 物品筛选 ////
-      if (itemStack && itemStack.typeId.substring(0, 18) === "touhou_little_maid") {
-        let itemName = itemStack.typeId.substring(19);
-        switch (itemName) {
-          // case "gold_microwaver_item": GoldMicrowaver.placeEvent(event); break;
-          case "photo": MaidManager.Interact.photoOnUseEvent(event); event.cancel = true; break;
-          case "smart_slab_has_maid": MaidManager.Interact.smartSlabOnUseEvent(event); event.cancel = true; break;
-          case "chisel": GarageKit.activate(event); event.cancel = true; break;
-          case "garage_kit": GarageKit.placeEvent(event); event.cancel = true; break;
-          default: {
-            //// 御币使用事件 ////
-            if (itemName.substring(0, 13) === "hakurei_gohei") {
-              if (player.isSneaking) Gohei.transform(event, itemName.substring(14)); // 切换弹种
-              else if (block.typeId == "minecraft:red_wool")         // 祭坛激活
-                altarStructure.activate(player.dimension, event.block.location, event.blockFace);
-            }
-            event.cancel = true;
-          }; break;
+      if (itemStack) {
+        if (itemStack.typeId.substring(0, 18) === "touhou_little_maid") {
+          let itemName = itemStack.typeId.substring(19);
+          switch (itemName) {
+            // case "gold_microwaver_item": GoldMicrowaver.placeEvent(event); break;
+            case "photo": MaidManager.Interact.photoOnUseEvent(event); event.cancel = true; break;
+            case "smart_slab_has_maid": MaidManager.Interact.smartSlabOnUseEvent(event); event.cancel = true; break;
+            case "chisel": GarageKit.activate(event); event.cancel = true; break;
+            case "garage_kit": GarageKit.placeEvent(event); event.cancel = true; break;
+            default: {
+            }; break;
+          }
+        } else if (itemStack.typeId.startsWith("tlmsi")) {
+          //// 御币使用事件 ////
+          if (player.isSneaking) {
+            // 切换弹种
+          } else if (block.typeId == "minecraft:red_wool") {
+            // 祭坛激活
+            altarStructure.activate(player.dimension, event.block.location, event.blockFace);
+          }
+          event.cancel = true;
         }
       }
     }

@@ -3,7 +3,7 @@
   "minecraft:item": {
     "description": {
       "identifier": "touhou_little_maid:hakurei_gohei_cherry",
-      "menu_category": {"category": "equipment"}
+      "menu_category": { "category": "none" }
     },
     "components": {
       "minecraft:custom_components": [ "tlm:deprecated" ],

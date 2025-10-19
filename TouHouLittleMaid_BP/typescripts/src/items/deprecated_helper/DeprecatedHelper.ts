@@ -29,7 +29,6 @@ export namespace DeprecatedItemHelper {
   export function registerCC(event: StartupEvent) {
     event.itemComponentRegistry.registerCustomComponent('tlm:deprecated', {
       onUse(ev) {
-        console.log('huh', ev.itemStack?.typeId)
         changeItem(ev.source, ev.itemStack);
       },
       onUseOn(ev) {
