@@ -82,7 +82,7 @@ export class ItemEvents {
   
   // 蓄力开始
   private itemStartUseAfter(event: ItemStartUseAfterEvent) {
-    if (event.itemStack.typeId === 'touhou_little_maid:hakurei_gohei_v2') {
+    if (event.itemStack.typeId.startsWith(HakureiGoheiManager.ITEM_PREFIX)) {
       HakureiGoheiManager.getInstance().handleStartUseEvent(event);
     }
   }
@@ -92,7 +92,7 @@ export class ItemEvents {
     if (!event.itemStack) {
       return;
     }
-    if (event.itemStack.typeId === 'touhou_little_maid:hakurei_gohei_v2') {
+    if (event.itemStack.typeId.startsWith(HakureiGoheiManager.ITEM_PREFIX)) {
       HakureiGoheiManager.getInstance().handleStopUseEvent(event);
     }
   }

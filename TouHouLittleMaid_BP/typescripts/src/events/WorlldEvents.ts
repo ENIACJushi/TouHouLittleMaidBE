@@ -36,7 +36,6 @@ export class WorldEvents {
     GoldMicrowaver.registerCC(e);
     // 注册物品自定义组件
     GoheiCherry.registerCC(e);
-    HakureiGoheiManager.getInstance().registerCC(e);
     CustomSpellCardManger.registerCC(e);
     PowerPoint.registerCC(e);
     // 初始化模块

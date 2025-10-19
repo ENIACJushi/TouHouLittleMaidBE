@@ -2,7 +2,7 @@
   "format_version": "1.21.10",
   "minecraft:item": {
     "description": {
-      "identifier": "touhou_little_maid:hakurei_gohei_v2",
+      "identifier": "tlmsi:hakurei_gohei",
       "menu_category": { "category": "equipment" }
     },
     "components": {
@@ -21,7 +21,7 @@
       "minecraft:shooter": {
         "ammunition": [
           {
-            "item": "touhou_little_maid:hakurei_gohei_v2",
+            "item": "tlmsi:hakurei_gohei",
             "use_offhand": true,
             "search_inventory": true,
             "use_in_creative": true

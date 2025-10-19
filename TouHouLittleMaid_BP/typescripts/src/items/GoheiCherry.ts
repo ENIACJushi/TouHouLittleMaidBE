@@ -1,5 +1,5 @@
 import { Entity, ItemReleaseUseAfterEvent, ItemStack, ItemStartUseAfterEvent, StartupEvent } from "@minecraft/server";
-import { shoot } from "../danmaku/patterns/Cherry";
+import { SakuraLaser } from "../danmaku/patterns/SakuraLaser";
 import { ItemTool } from "../libs/ScarletToolKit";
 
 export class GoheiCherry {
@@ -20,6 +20,6 @@ export class GoheiCherry {
     let direction = entity.getViewDirection();
     let location = entity.getHeadLocation();
 
-    shoot(entity, location, direction, 9, 3, 3);
+    SakuraLaser.shoot(entity, location, direction, 9, 3, 3);
   }
 }

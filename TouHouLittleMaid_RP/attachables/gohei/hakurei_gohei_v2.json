@@ -2,7 +2,7 @@
   "format_version": "1.10.0",
   "minecraft:attachable": {
     "description": {
-      "identifier": "touhou_little_maid:hakurei_gohei_v2",
+      "identifier": "tlmsi:hakurei_gohei",
       "materials": {
         "default": "entity_alphatest",
         "enchanted": "entity_alphatest_glint",

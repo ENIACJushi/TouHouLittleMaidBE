@@ -3,7 +3,7 @@ import {
 } from "@minecraft/server";
 import {EntityMaid} from "../EntityMaid";
 import {Vector, VO} from "../../libs/VectorMC";
-import {shoot as cherryShoot} from "../../danmaku/patterns/Cherry";
+import { SakuraLaser } from "../../danmaku/patterns/SakuraLaser";
 import * as Tool from "../../libs/ScarletToolKit";
 import {BulletShoot} from "../../danmaku/shoots/BulletShoot";
 import {EntityDanmakuActor} from "../../danmaku/actors/EntityDanmakuActor";
@@ -44,7 +44,7 @@ export class MaidScheduleEvents {
         target.location.y - location.y,
         target.location.z - location.z
       );
-      cherryShoot(maid, location, direction, basicDamage, basicDamage / 3, 1);
+      SakuraLaser.shoot(maid, location, direction, basicDamage, basicDamage / 3, 1);
       return;
     }
 

@@ -16,7 +16,6 @@ import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
 import { StrMaid } from "./StrMaid";
 import { BulletShoot } from "../danmaku/shoots/BulletShoot";
-import { shoot as cherryShoot } from "../danmaku/patterns/Cherry";
 import { Cocoa, Farm, MaidTarget, Melon } from "./MaidTarget";
 import { isBadContainerBlock } from "../../data/BadContainerBlocks";
 import { DP } from '../libs/DynamicPropertyInterface';

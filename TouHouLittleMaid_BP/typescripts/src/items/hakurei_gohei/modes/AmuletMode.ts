@@ -20,7 +20,9 @@ const DAMAGE_STEP_FULL = 4; // 要发射几次才会消耗一点耐久
  * 发射符札的御币
  */
 export class GoheiAmuletMode extends GoheiAutomaticMode {
+  private readonly ITEM_TYPE_ID = 'tlmsi:hakurei_gohei'; // 物品id
   private readonly DAMAGE_AMOUNT = 4; // 单个符札的基础伤害
+
   // 射击函数
   shoot(params: GoheiAutomaticModeShotParams): boolean {
     let multiShot = ItemTool.getEnchantmentLevel(params.item, 'multishot'); // 多重射击
@@ -48,5 +50,10 @@ export class GoheiAmuletMode extends GoheiAutomaticMode {
       super.damageItem(item, player, slot);
     }
     player.setDynamicProperty(DAMAGE_PROPERTY_KEY, damageStep);
+  }
+
+  // 物品是否是符札御币
+  isShootItem(item: ItemStack): boolean {
+    return item.typeId === this.ITEM_TYPE_ID;
   }
 }

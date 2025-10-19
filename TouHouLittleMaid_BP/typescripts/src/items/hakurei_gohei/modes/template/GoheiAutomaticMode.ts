@@ -1,6 +1,5 @@
 import {
   Entity,
-  GameMode,
   ItemReleaseUseAfterEvent,
   ItemStack,
   ItemStartUseAfterEvent,
@@ -9,14 +8,13 @@ import {
   world
 } from "@minecraft/server";
 import { ItemTool } from "../../../../libs/ScarletToolKit";
-import { GoheiItemInterface } from "../../GoheiItemInterface";
 import { GoheiBaseMode } from "./GoheiBaseMode";
 
 /**
  * 自动射击模板
  */
 export abstract class GoheiAutomaticMode extends GoheiBaseMode {
-  intervalMap = new Map();
+  private intervalMap = new Map();
 
   //// 子类实现 ////
   /**
@@ -25,6 +23,19 @@ export abstract class GoheiAutomaticMode extends GoheiBaseMode {
    */
   abstract shoot(params: GoheiAutomaticModeShotParams): boolean;
 
+  /**
+   * 判断一个物品是否是用来射击的物品
+   */
+  abstract isShootItem(item: ItemStack): boolean;
+
+  /**
+   * 发射间隔
+   */
+  protected getCooldown(player: Player, item: ItemStack): number {
+    // 根据快速装填等级确定发射间隔
+    return Math.max(1, 10 - 2 * ItemTool.getEnchantmentLevel(item, 'quick_charge'));
+  }
+
   //// 事件处理 ////
   /**
    * 开始蓄力事件
@@ -32,8 +43,8 @@ export abstract class GoheiAutomaticMode extends GoheiBaseMode {
   public startUseEvent (event: ItemStartUseAfterEvent) {
     let playerId = event.source.id;
     let slot = event.source.selectedSlotIndex;
-    // 根据快速装填等级确定发射间隔
-    let timeout = Math.max(1, 10 - 2 * ItemTool.getEnchantmentLevel(event.itemStack, 'quick_charge'));
+    // 确定发射间隔
+    let timeout = this.getCooldown(event.source, event.itemStack);
     // 创建一个定时循环的任务，在玩家保持蓄力状态时执行，蓄力结束或满足其他结束条件时停止
     let intervalId = system.runInterval(() => {
       ///// 停止判断 /////
@@ -50,7 +61,7 @@ export abstract class GoheiAutomaticMode extends GoheiBaseMode {
       }
       // 物品消失 || 物品不是御币
       let item = ItemTool.getPlayerMainHand(player);
-      if (!item || !GoheiItemInterface.isGohei(item)) {
+      if (!item || !this.isShootItem(item)) {
         this.clearPlayerInterval(playerId);
         return;
       }
