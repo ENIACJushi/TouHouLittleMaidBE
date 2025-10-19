@@ -7,7 +7,7 @@
     },
     "components": {
       "minecraft:icon": { "textures": { "default": "touhou_little_maid:hakurei_gohei" } },
-      "minecraft:display_name": { "value": "item.touhou_little_maid:hakurei_gohei" },
+      "minecraft:display_name": { "value": "item.touhou_little_maid:hakurei_gohei_cherry" },
       "minecraft:max_stack_size": 1,
       "minecraft:hand_equipped": true,
       "minecraft:allow_off_hand": true,
