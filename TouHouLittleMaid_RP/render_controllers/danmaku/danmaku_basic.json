@@ -38,15 +38,8 @@
 					1.0
 				]
 			},
-			"overlay_color": {
-				"r": 0.0,
-				"g": 0.0,
-				"b": 0.0,
-				"a": 0.0
-				// "a": "-math.mod(math.floor(query.life_time * 15),14) / 7"
-			},
 			"part_visibility": [
-				{ "*": "v.is_init > 20" }
+				{ "*": "v.is_init > 15" }
 			],
 			"ignore_lighting": true
 		}

@@ -27,13 +27,9 @@
 			"minecraft:particle_lifetime_expression": {
 				"max_lifetime": "math.random(1,2)"
 			},
-			"minecraft:particle_initial_spin": {
-				"rotation_rate": "v.rot_speed"
-			},
 			"minecraft:particle_initial_speed": "math.random(2, 4)",
 			"minecraft:particle_motion_dynamic": {
-				"linear_drag_coefficient": 0.9,
-				"rotation_acceleration": "(math.random(0,1)>0.5)?-5:5"
+				"linear_drag_coefficient": 0.9
 			},
 			"minecraft:particle_appearance_billboard": {
 				"size": ["(0.1 + variable.particle_random_1*0.1) - (0.1 * variable.particle_age)", "(0.1 + variable.particle_random_1*0.1) - (0.1 * variable.particle_age)"],
