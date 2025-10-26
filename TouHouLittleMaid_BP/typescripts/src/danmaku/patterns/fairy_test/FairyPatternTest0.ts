@@ -2,16 +2,16 @@
  * 米字弹幕
  */
 import { Vector } from "../../../libs/VectorMC";
-import { BulletShoot } from "../../shoots/BulletShoot";
+import { LineShoot } from "../../shoots/LineShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 import { GeneralBullet, GeneralBulletType } from "../../shapes/main";
-import { FanShapedPattern } from "../Fan";
+import { FanShapedPattern } from "../line/FanShapedPattern";
 import { Entity } from "@minecraft/server";
 
 export class FairyPatternTest0 {
   shoot(thrower: Entity, target: Entity): boolean {
 
-    let bulletShoot = new BulletShoot({
+    let bulletShoot = new LineShoot({
       thrower: new EntityDanmakuActor(thrower)
         .setOffset(new Vector(0, 1, 0)),
       target: new EntityDanmakuActor(target)

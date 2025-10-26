@@ -1,4 +1,4 @@
-export { BulletBase } from './bullets/BulletBase';
+export { BulletShapeBase } from './bullets/BulletShapeBase';
 
 export { GeneralBullet } from './bullets/general_bullet/GeneralBullet';
 export { GeneralBulletColor } from './bullets/general_bullet/GeneralBulletColor';

@@ -1,12 +1,13 @@
 import { Vector, VO } from "../../libs/VectorMC";
-import { BulletBase } from "../shapes/main";
+import { BulletShapeBase } from "../shapes/main";
 import { Entity, EntityProjectileComponent } from "@minecraft/server";
 import { getRandom } from "../../libs/ScarletToolKit";
 import { DanmakuActor } from "../actors/DanmakuActor";
 import { EntityDanmakuActor } from "../actors/EntityDanmakuActor";
+import {LineShapeBase, LineShapeShootParams} from "../shapes/LineShapeBase";
 
 export interface BulletShootData {
-  shape: BulletBase;
+  shape: LineShapeBase;
   thrower: DanmakuActor ;
   ownerId?: string;
   target?: DanmakuActor;
@@ -14,9 +15,13 @@ export interface BulletShootData {
   preJudgeVerticle?: boolean;
 }
 
-export class BulletShoot {
+/**
+ * 直线型弹幕发射器
+ *  适用于子弹型弹幕和激光型弹幕
+ */
+export class LineShoot {
   // 发射的弹幕类型
-  public shape: BulletBase;
+  public shape: LineShapeBase;
   // 发射者信息
   public thrower: DanmakuActor;
   public ownerId?: string; // 主人 ID (女仆专用)
@@ -46,28 +51,32 @@ export class BulletShoot {
    * @param inaccuracy 西格玛
    * @returns 成功时返回弹幕实体
    */
-  public shootByVelocity (velocity: Vector, inaccuracy: number): Entity | undefined {
-    // 生成弹幕实体
-    let danmaku = this.createBulletEntity();
-    if (!danmaku) {
-      return undefined;
+  public shootByVelocity (velocity: Vector, inaccuracy?: number): undefined {
+    // 确定发射信息
+    let location = this.thrower.getLocation();
+    let params: LineShapeShootParams = {
+      location: {
+        dimension: location[0],
+        pos: location[1],
+      },
+      velocity: velocity,
+      inaccuracy: inaccuracy,
+    };
+    // 发射者信息
+    if (this.thrower instanceof EntityDanmakuActor) {
+      params.throwerId = this.thrower.entity.id;
     }
-    // 应用动量
-    const projectileComp = danmaku.getComponent("minecraft:projectile") as EntityProjectileComponent;
-    if (!projectileComp) {
-      danmaku.triggerEvent('despawn');
-      return undefined;
+    if (this.ownerId) {
+      params.ownerId = this.ownerId;
     }
-    projectileComp.shoot(velocity, {
-      uncertainty: inaccuracy
-    });
-    return danmaku;
+    // 执行发射
+    return this.shape.shootShape(params);
   }
 
   //////// 进阶射击函数 ////////
   /**
    * 指定方向和动量大小，发射一个弹幕
-   * 若要一个静止的弹幕，则把velocity设为0。xyz任何时候都不能同时为0
+   *  若要一个静止的弹幕，则把velocity设为0。xyz任何时候都不能同时为0
    * @param direction
    * @param velocity
    * @param inaccuracy In Radius(0~PI)
@@ -83,6 +92,7 @@ export class BulletShoot {
     }
     return this.shootByVelocity(bedrockVelocity, inaccuracy);
   }
+
   /**
    * 向目标射击 (aimedShot)
    * @param velocity 速率
@@ -100,7 +110,7 @@ export class BulletShoot {
     }
 
     // 计算向量
-    let v = BulletShoot.getVelocity2Target(this.thrower, target, velocity, 
+    let v = LineShoot.getVelocity2Target(this.thrower, target, velocity,
       this.preJudge, this.preJudgeVerticle);
     if (!v) {
       return undefined;
@@ -109,42 +119,15 @@ export class BulletShoot {
     return this.shootByVelocity(v, inaccuracy);
   }
 
-  //////// 构建函数 ////////
-  /**
-   * 创建弹幕实体
-   * 基于弹种类型的创建，还包含了关于射手的一些信息
-   */
-  private createBulletEntity(): Entity | undefined {
-    let danmaku = this.shape.createBulletEntity(...this.thrower.getLocation());
-    this.applyThrower(danmaku);
-    this.applyOwnerId(danmaku);
-    return danmaku;
-  }
-  /**
-   * 应用发射者，仅在发射者是实体时生效
-   */
-  private applyThrower(bulletEntity: Entity) {
-    if (this.thrower instanceof EntityDanmakuActor) {
-      bulletEntity.setDynamicProperty("source", this.thrower.entity.id);
-    }
-  }
-  /**
-   * 应用发射者主人，仅在 OwnerID 被设置时生效
-   */
-  private applyOwnerId(bulletEntity: Entity) {
-    if (this.ownerId) {
-      bulletEntity.setDynamicProperty("owner", this.ownerId);
-    }
-  }
-  
   //////// 设置函数 ////////
   /**
-  * 指定发射位置
+  * 指定发射者
   */
   public setThrower(thrower: DanmakuActor): this {
     this.thrower = thrower;
     return this;
   }
+
   /**
    * 设置主人id(女仆专用)
    */
@@ -152,8 +135,9 @@ export class BulletShoot {
     this.ownerId = id;
     return this;
   }
+
   /**
-   * 设置目标
+   * 指定目标
    */
   public setTarget(thrower: DanmakuActor): this {
     this.thrower = thrower;
@@ -164,7 +148,7 @@ export class BulletShoot {
    * 启用预瞄 仅对于实体目标有效
    * @param verticle 启用竖直方向的预瞄 默认关闭
    */
-  enablePreJudge(verticle: boolean = false): BulletShoot {
+  enablePreJudge(verticle: boolean = false): LineShoot {
     this.preJudgeVerticle = verticle;
     this.preJudge = true;
     return this;

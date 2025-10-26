@@ -3,14 +3,14 @@
  * 激光（伪）
  */
 import { Vector } from "../../../libs/VectorMC";
-import { BulletShoot } from "../../shoots/BulletShoot";
+import { LineShoot } from "../../shoots/LineShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "../../shapes/main";
 import { Entity, system } from "@minecraft/server";
 
 export class FairyPatternTest6 {
   shoot(thrower: Entity, target: Entity): boolean {
-    let bulletShoot = new BulletShoot({
+    let bulletShoot = new LineShoot({
       thrower: new EntityDanmakuActor(thrower)
         .setOffset(new Vector(0, 1, 0)),
       target: new EntityDanmakuActor(target)

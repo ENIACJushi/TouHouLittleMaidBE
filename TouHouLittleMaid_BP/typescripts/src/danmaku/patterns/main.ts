@@ -1,1 +1,1 @@
-export { FanShapedPattern, FanShapedPatternData } from './Fan';
+export { FanShapedPattern, FanShapedPatternData } from './line/FanShapedPattern';

@@ -1,11 +1,11 @@
 import { Entity, system } from "@minecraft/server";
 import {Vector, VO} from "../../../libs/VectorMC";
 import { Amulet, GeneralBullet, GeneralBulletType } from "../../shapes/main";
-import { BulletShoot } from "../../shoots/BulletShoot";
+import { LineShoot } from "../../shoots/LineShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 import { AmuletController } from "../../shapes/bullets/Amulet";
 import { getRandom } from "../../../libs/ScarletToolKit";
-import {FanShapedPattern} from "../Fan";
+import {FanShapedPattern} from "../line/FanShapedPattern";
 
 export interface AmuletGoheiPatternParams {
   entity: Entity; // 发射弹幕的实体
@@ -46,7 +46,7 @@ export class AmuletGoheiPattern {
     let yawTotal = params.yawTotal ?? Math.PI / 12;
 
     // 创建新符札弹种
-    let bulletShoot0 = new BulletShoot({
+    let bulletShoot0 = new LineShoot({
       thrower: new EntityDanmakuActor(entity, true)
         .setOffset(new Vector(0, offsetY, 0)), // 比相机略低
       shape: new Amulet()
@@ -108,7 +108,7 @@ export class AmuletGoheiPattern {
    */
   static shootOld(entity: Entity, direction: Vector, damage: number = 3, piercing: number = 0) {
     // 创建旧符札弹种
-    let bulletShoot = new BulletShoot({
+    let bulletShoot = new LineShoot({
       thrower: new EntityDanmakuActor(entity, true),
       shape: new GeneralBullet()
         .setGeneralBulletType(GeneralBulletType.AMULET)
@@ -122,7 +122,7 @@ export class AmuletGoheiPattern {
    */
   static shootDebug(entity: Entity, direction: Vector, damage: number = 3, piercing: number = 0) {
     // 创建符札弹种
-    let bulletShoot0 = new BulletShoot({
+    let bulletShoot0 = new LineShoot({
       thrower: new EntityDanmakuActor(entity, true).setOffset(new Vector(0, -0.3, 0)),
       shape: new Amulet()
         .setDamage(damage)

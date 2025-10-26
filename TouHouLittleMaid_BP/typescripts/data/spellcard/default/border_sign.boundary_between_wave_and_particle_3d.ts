@@ -6,7 +6,7 @@ import {
   GeneralBulletType as Type,
   GeneralBullet,
 } from "../../../src/danmaku/shapes/main";
-import { BulletShoot } from "../../../src/danmaku/shoots/BulletShoot";
+import { LineShoot } from "../../../src/danmaku/shoots/LineShoot";
 import { EntityDanmakuActor } from "../../../src/danmaku/actors/EntityDanmakuActor";
 
 function fibonacciSphere(radius: number, samples: number, rotation: number) {
@@ -25,13 +25,13 @@ function fibonacciSphere(radius: number, samples: number, rotation: number) {
   return points;
 }
 
-function shoot($d: number, shooter: BulletShoot) {
+function shoot($d: number, shooter: LineShoot) {
   return function () {
     shoot_basic($d, shooter);
   }
 }
 
-function shoot_basic($d: number, shooter: BulletShoot) {
+function shoot_basic($d: number, shooter: LineShoot) {
   fibonacciSphere(0.2, 50, $d / 100).forEach(function (v) {
     shooter.shootByVelocity(v, 0);
   });
@@ -49,7 +49,7 @@ export const SpellCard = {
    */
   spellCard: function (world: Dimension, shooter: Entity) {
     var d = 0.0;
-    let bulletShoot = new BulletShoot({
+    let bulletShoot = new LineShoot({
       thrower: new EntityDanmakuActor(shooter)
         .setOffset(new Vector(0, 1, 0)),
       shape: new GeneralBullet()

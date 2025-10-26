@@ -3,16 +3,15 @@
  * 带sigma的自机狙（星型）
  */
 import { Vector } from "../../../libs/VectorMC";
-import { BulletShoot } from "../../shoots/BulletShoot";
+import { LineShoot } from "../../shoots/LineShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "../../shapes/main";
-import { FanShapedPattern } from "../Fan";
 import { getRandom } from "../../../libs/ScarletToolKit";
 import { Entity, system } from "@minecraft/server";
 
 export class FairyPatternTest3{
   shoot(thrower: Entity, target: Entity): boolean {
-    let bulletShootSmall = new BulletShoot({
+    let bulletShootSmall = new LineShoot({
       thrower: new EntityDanmakuActor(thrower)
         .setOffset(new Vector(0, 1, 0)),
       target: new EntityDanmakuActor(target)
@@ -23,7 +22,7 @@ export class FairyPatternTest3{
         .setDamage(6)
     });
 
-    let bulletShootBig = new BulletShoot({
+    let bulletShootBig = new LineShoot({
       thrower: new EntityDanmakuActor(thrower)
         .setOffset(new Vector(0, 1, 0)),
       target: new EntityDanmakuActor(target)

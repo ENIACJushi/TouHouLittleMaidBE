@@ -17,7 +17,15 @@ export class EntityDanmakuActor extends DanmakuActor {
       this.getPosition()
     ];
   }
-  
+
+  /**
+   * 设置是否取头部坐标，不取头部则取脚下坐标
+   */
+  public setHead(isHead: boolean) {
+    this.isHead = isHead;
+    return this;
+  }
+
   /**
    * 锁定发射位置
    */

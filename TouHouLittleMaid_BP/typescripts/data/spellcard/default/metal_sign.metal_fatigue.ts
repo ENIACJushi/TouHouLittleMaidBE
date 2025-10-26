@@ -10,7 +10,7 @@ import {
   GeneralBulletType as Type,
   GeneralBullet,
 } from "../../../src/danmaku/shapes/main";
-import { BulletShoot } from "../../../src/danmaku/shoots/BulletShoot";
+import { LineShoot } from "../../../src/danmaku/shoots/LineShoot";
 import { EntityDanmakuActor } from "../../../src/danmaku/actors/EntityDanmakuActor";
 
 
@@ -39,7 +39,7 @@ export const SpellCard = {
   spellCard: function (world: Dimension, entity: Entity) {
     // 第一波角度和后面不一致
     for (var j = 0; j < 8; j++) {
-      let bulletShoot = new BulletShoot({
+      let bulletShoot = new LineShoot({
         thrower: new EntityDanmakuActor(entity)
           .setOffset(new Vector(0, 0.8, 0)),
         shape: new GeneralBullet()
@@ -61,7 +61,7 @@ export const SpellCard = {
       for (var i = 0; i < 8; i++) {
         for (var j = 0; j < 8; j++) {
           var pos = getRotationVector(new Vector(0, 0, 5.6), 15 + 45 * i, -0.1, entity);
-          let bulletShoot = new BulletShoot({
+          let bulletShoot = new LineShoot({
             thrower: new EntityDanmakuActor(entity)
               .setOffset(new Vector(0, 0.8, 0))
               .lockLocation(entity.dimension, pos),
@@ -86,7 +86,7 @@ export const SpellCard = {
     for (var k = 0; k < 5; k++) {
       system.runTimeout(() => {
         for (var j = 0; j < 8; j++) {
-          let bulletShoot = new BulletShoot({
+          let bulletShoot = new LineShoot({
             thrower: new EntityDanmakuActor(entity)
               .setOffset(new Vector(0, 0.8, 0)),
             shape: new GeneralBullet()
@@ -108,7 +108,7 @@ export const SpellCard = {
         for (var i = 0; i < 8; i++) {
           for (var j = 0; j < 8; j++) {
             var pos = getRotationVector(new Vector(0, 0, 5.6), 30 + 45 * i, -0.1, entity);
-            let bulletShoot = new BulletShoot({
+            let bulletShoot = new LineShoot({
               thrower: new EntityDanmakuActor(entity)
                 .setOffset(new Vector(0, 0.8, 0))
                 .lockLocation(entity.dimension, pos),

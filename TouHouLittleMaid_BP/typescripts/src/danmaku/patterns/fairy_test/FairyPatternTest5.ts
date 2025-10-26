@@ -3,11 +3,9 @@
  * 预判测试
  */
 import { Vector, VO } from "../../../libs/VectorMC";
-import { BulletShoot } from "../../shoots/BulletShoot";
+import { LineShoot } from "../../shoots/LineShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "../../shapes/main";
-import { FanShapedPattern } from "../Fan";
-import { getRandom } from "../../../libs/ScarletToolKit";
 import { Entity, system } from "@minecraft/server";
 
 export class FairyPatternTest5{
@@ -18,7 +16,7 @@ export class FairyPatternTest5{
       // "name": "Voyage1976" 
     })[0];
 
-    let bulletShoot = new BulletShoot({
+    let bulletShoot = new LineShoot({
       thrower: new EntityDanmakuActor(thrower)
         .setOffset(new Vector(0, 1, 0)),
       target: new EntityDanmakuActor(target)

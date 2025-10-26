@@ -7,7 +7,7 @@ import {
   GeneralBulletType as Type,
   GeneralBullet,
 } from "../../../src/danmaku/shapes/main";
-import { BulletShoot } from "../../../src/danmaku/shoots/BulletShoot";
+import { LineShoot } from "../../../src/danmaku/shoots/LineShoot";
 import { EntityDanmakuActor } from "../../../src/danmaku/actors/EntityDanmakuActor";
 
 // Java.asJSONCompatible 改为 export const SpellCard = 
@@ -30,7 +30,7 @@ export const SpellCard = {
       let shoot_basic = function ($times: number) {
         for (let j = 0; j < 9; j++) {
           // 原初始化参数：世界 实体, damage, gravity, type, color，除了前两个均要另外设置
-          let bulletShoot = new BulletShoot({
+          let bulletShoot = new LineShoot({
             thrower: new EntityDanmakuActor(shooter)
               .setOffset(new Vector(0, 1, 0)),
             shape: new GeneralBullet()

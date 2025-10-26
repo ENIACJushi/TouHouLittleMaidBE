@@ -2,7 +2,7 @@
  * 光追弹幕测试：小玉
  */
 import { Vector, VO } from "../../../libs/VectorMC";
-import { BulletShoot } from "../../shoots/BulletShoot";
+import { LineShoot } from "../../shoots/LineShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "../../shapes/main";
 import { Entity, system } from "@minecraft/server";
@@ -13,7 +13,7 @@ const RADIUS_TOTAL = 360 - 360/13; // 扇形总角度
 export class FairyPatternTest8 {
     laserIsShooting: boolean = false;
     shoot(thrower: Entity, target: Entity): boolean {
-        let bulletShoot = new BulletShoot({
+        let bulletShoot = new LineShoot({
             thrower: new EntityDanmakuActor(thrower)
                 .setOffset(new Vector(0, 1, 0)),
             target: new EntityDanmakuActor(target)

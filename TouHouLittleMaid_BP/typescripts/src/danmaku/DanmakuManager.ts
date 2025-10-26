@@ -8,12 +8,12 @@ import {
   ProjectileHitEntityAfterEvent,
   ProjectileHitBlockAfterEvent,
 } from "@minecraft/server";
-import { BulletShoot } from "./shoots/BulletShoot";
+import { LineShoot } from "./shoots/LineShoot";
 import { DanmakuInterface } from "./DanmakuInterface";
 import { Vector, VO } from "../libs/VectorMC"
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "./shapes/main";
 import { EntityDanmakuActor } from "./actors/EntityDanmakuActor";
-import { FanShapedPattern } from "./patterns/Fan";
+import { FanShapedPattern } from "./patterns/line/FanShapedPattern";
 import { FairyPatternTest0 } from "./patterns/fairy_test/FairyPatternTest0";
 import { FairyPatternTest5 } from "./patterns/fairy_test/FairyPatternTest5";
 import { FairyPatternTest1 } from "./patterns/fairy_test/FairyPatternTest1";
@@ -136,14 +136,14 @@ export function fairy_shoot(fairy: Entity) {
     let speed = 0.3 * (distanceFactor + 1);
     // 我们在 MC 加入了预瞄桂
     if (Math.random() <= AIMED_SHOT_PROBABILITY) {
-      new BulletShoot({
+      new LineShoot({
         shape: new GeneralBullet().setRandomColor().setRandomType().setDamage(distanceFactor + 1),
         thrower: new EntityDanmakuActor(fairy, true),
         target: new EntityDanmakuActor(target, true).setOffset(new Vector(0, -0.4, 0)),
         preJudge: true,
       }).shootByTarget(speed, 2.9);
     } else {
-      let shoot = new BulletShoot({
+      let shoot = new LineShoot({
         shape: new GeneralBullet().setRandomColor().setRandomType().setDamage(distanceFactor + 1.5),
         thrower: new EntityDanmakuActor(fairy, true),
         target: new EntityDanmakuActor(target, true).setOffset(new Vector(0, -0.4, 0)),

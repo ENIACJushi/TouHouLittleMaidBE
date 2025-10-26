@@ -1,8 +1,8 @@
-import { Vector, VO } from "../../libs/VectorMC";
+import { Vector, VO } from "../../../libs/VectorMC";
 import { 
   BulletPatternBase,
-} from "./BulletPatternBase";
-import {Amulet} from "../shapes/bullets/Amulet";
+} from "../BulletPatternBase";
+import { Amulet } from "../../shapes/bullets/Amulet";
 
 const MIN_FAN_NUM = 2;
 const MAX_YAW = 2 * Math.PI;

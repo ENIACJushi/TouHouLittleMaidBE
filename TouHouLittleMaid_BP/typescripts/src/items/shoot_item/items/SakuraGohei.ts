@@ -4,8 +4,11 @@ import {
 } from "./template/ShootItemAutomatic";
 import { ItemTool } from "../../../libs/ScarletToolKit";
 import { EffectHelper } from "../../../libs/ScarletToolKit/EffectHelper";
-import { SakuraLaser } from "../../../danmaku/patterns/SakuraLaser";
+import { SakuraLaser } from "../../../danmaku/shapes/laser/SakuraLaser";
 import {ItemStack} from "@minecraft/server";
+import {LineShoot} from "../../../danmaku/shoots/LineShoot";
+import {EntityDanmakuActor} from "../../../danmaku/actors/EntityDanmakuActor";
+import {Vector} from "../../../libs/VectorMC";
 
 /**
  * 发射符札的御币
@@ -18,14 +21,15 @@ export class SakuraGohei extends ShootItemAutomatic {
     let multiShot = ItemTool.getEnchantmentLevel(params.item, 'multishot'); // 多重射击
     let piercing = ItemTool.getEnchantmentLevel(params.item, 'piercing'); // 穿透
     // 进行一次发射
-    SakuraLaser.shoot(
-      params.entity,
-      params.entity.getHeadLocation(),
-      params.entity.getViewDirection(),
-      9, // 中心伤害
-      3, // 边缘伤害
-      3, // 穿透力
-    );
+    let shoot = new LineShoot({
+      shape: new SakuraLaser()
+        .setDamageArea(3)
+        .setDamageCenter(9)
+        .setPiercing(3),
+      thrower: new EntityDanmakuActor(params.entity)
+        .setHead(true),
+    });
+    shoot.shootByVelocity(params.entity.getViewDirection());
     return true;
   }
 

@@ -4,15 +4,38 @@
  * 这里的一些方法只是为了保持接口一致而提供的，只是帮助定义和发射弹幕的工具类而不是弹幕本身
  * (Override方法是用于定义实体的，全部不提供)
  */
-import { Dimension, Entity, system } from "@minecraft/server";
+import {Dimension, Entity, EntityProjectileComponent, system} from "@minecraft/server";
 import { Vector } from "../../../libs/VectorMC";
 import {DanmakuInterface} from "../../DanmakuInterface";
+import {LineShapeBase, LineShapeShootParams} from "../LineShapeBase";
 
-export abstract class BulletBase {
+export abstract class BulletShapeBase extends LineShapeBase {
   protected damage: number = 6; // 伤害
   protected lifeTime: number = 0; // 已存在的刻数，用来定时销毁
   protected piercing: number = 0; // 穿透力，代表能穿透的实体数量
-  
+
+  shootShape(params: LineShapeShootParams) {
+    // 生成弹幕实体
+    let danmaku = this.createBulletEntity(params.location.dimension, params.location.pos);
+    if (!danmaku) {
+      return undefined;
+    }
+    // 应用发射者信息
+    danmaku.setDynamicProperty("source", params.throwerId);
+    danmaku.setDynamicProperty("owner", params.ownerId);
+    // 应用动量
+    const projectileComp = danmaku.getComponent("minecraft:projectile") as EntityProjectileComponent;
+    if (!projectileComp) {
+      // 没有弹射物组件，取消发射
+      danmaku.triggerEvent('despawn');
+      return undefined;
+    }
+    // 发射弹射物
+    projectileComp.shoot(params.velocity, {
+      uncertainty: params.inaccuracy,
+    });
+  }
+
   //////// 构建函数 ////////
   /**
    * 创建子弹实体 实现类也可以自行实现

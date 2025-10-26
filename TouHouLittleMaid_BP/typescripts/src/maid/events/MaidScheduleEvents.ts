@@ -3,12 +3,12 @@ import {
 } from "@minecraft/server";
 import {EntityMaid} from "../EntityMaid";
 import {Vector, VO} from "../../libs/VectorMC";
-import { SakuraLaser } from "../../danmaku/patterns/SakuraLaser";
+import { SakuraLaser } from "../../danmaku/shapes/laser/SakuraLaser";
 import * as Tool from "../../libs/ScarletToolKit";
-import {BulletShoot} from "../../danmaku/shoots/BulletShoot";
+import {LineShoot} from "../../danmaku/shoots/LineShoot";
 import {EntityDanmakuActor} from "../../danmaku/actors/EntityDanmakuActor";
 import {GeneralBullet} from "../../danmaku/shapes/bullets/general_bullet/GeneralBullet";
-import {FanShapedPattern} from "../../danmaku/patterns/Fan";
+import {FanShapedPattern} from "../../danmaku/patterns/line/FanShapedPattern";
 import {GeneralBulletColor} from "../../danmaku/shapes/bullets/general_bullet/GeneralBulletColor";
 import {GeneralBulletType} from "../../danmaku/shapes/bullets/general_bullet/GeneralBulletType";
 
@@ -38,13 +38,22 @@ export class MaidScheduleEvents {
 
     // 目标为幻翼时，使用樱花束攻击
     if (target.typeId === 'minecraft:phantom') {// 无效：target.getComponent("minecraft:can_fly") !== undefined
-      let location = maid.getHeadLocation()
-      let direction = new Vector(
+
+      let shoot = new LineShoot({
+        shape: new SakuraLaser()
+          .setDamageArea(basicDamage / 3)
+          .setDamageCenter(basicDamage)
+          .setPiercing(1),
+        thrower: new EntityDanmakuActor(maid)
+          .setHead(true)
+          .setOffset(new Vector(0, 1, 0)),
+      });
+      let location = maid.getHeadLocation();
+      shoot.shootByVelocity(new Vector(
         target.location.x - location.x,
         target.location.y - location.y,
         target.location.z - location.z
-      );
-      SakuraLaser.shoot(maid, location, direction, basicDamage, basicDamage / 3, 1);
+      ));
       return;
     }
 
@@ -71,7 +80,7 @@ export class MaidScheduleEvents {
       switch (random) {
         case 0: {
           // 扇形弹幕
-          let bulletShoot = new BulletShoot({
+          let bulletShoot = new LineShoot({
             thrower: new EntityDanmakuActor(maid)
               .setOffset(new Vector(0, 1, 0)),
             target: new EntityDanmakuActor(target)
@@ -96,7 +105,7 @@ export class MaidScheduleEvents {
         }; break;
         case 1: {
           // 散射星弹
-          let bulletShootSmall = new BulletShoot({
+          let bulletShootSmall = new LineShoot({
             thrower: new EntityDanmakuActor(maid)
               .setOffset(new Vector(0, 1, 0)),
             target: new EntityDanmakuActor(target)
@@ -109,7 +118,7 @@ export class MaidScheduleEvents {
           })
             .setOwnerID(EntityMaid.Owner.getID(maid));
 
-          let bulletShootBig = new BulletShoot({
+          let bulletShootBig = new LineShoot({
             thrower: new EntityDanmakuActor(maid)
               .setOffset(new Vector(0, 1, 0)),
             target: new EntityDanmakuActor(target)
@@ -145,7 +154,7 @@ export class MaidScheduleEvents {
     } else {
       // 单体点射 连发四次
       const amount = 4;
-      let bulletShootBig = new BulletShoot({
+      let bulletShootBig = new LineShoot({
         thrower: new EntityDanmakuActor(maid)
           .setOffset(new Vector(0, 1, 0)),
         target: new EntityDanmakuActor(target)
@@ -161,7 +170,7 @@ export class MaidScheduleEvents {
 
       for (let i = 0; i < amount; i++) {
         system.runTimeout(() => {
-          bulletShootBig.shootByTarget(0.5 * (distanceFactor + 1), 3);
+          bulletShootBig.shootByTarget(0.5 * (distanceFactor + 1), 0.5);
         }, i * 12);
       }
     }

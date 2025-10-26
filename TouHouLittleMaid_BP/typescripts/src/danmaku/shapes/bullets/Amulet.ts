@@ -1,5 +1,5 @@
 import { Dimension, Entity, system } from "@minecraft/server";
-import { BulletBase } from "./BulletBase";
+import { BulletShapeBase } from "./BulletShapeBase";
 import { Vector, VO } from "../../../libs/VectorMC";
 import { GeneralBulletColor } from "./general_bullet/GeneralBulletColor";
 
@@ -7,7 +7,7 @@ const ANGLE_PI = 180 / Math.PI;
 const PI_ANGLE = Math.PI / 180;
 
 
-export class Amulet extends BulletBase {
+export class Amulet extends BulletShapeBase {
   // 颜色，与通用弹种相通
   color = GeneralBulletColor.RED;
   // 旋转角

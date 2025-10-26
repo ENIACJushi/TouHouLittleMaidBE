@@ -1,14 +1,14 @@
 import { Vector, VO } from "../../libs/VectorMC";
-import { BulletShoot } from "../shoots/BulletShoot";
+import { LineShoot } from "../shoots/LineShoot";
 import { DanmakuActor } from "../actors/DanmakuActor";
 
 /**
  * 图案需要给定 Shoot 才能发射
  */
 export abstract class BulletPatternBase<T> {
-  bulletShoot: BulletShoot;
+  bulletShoot: LineShoot;
 
-  constructor (bulletShoot: BulletShoot) {
+  constructor (bulletShoot: LineShoot) {
     this.bulletShoot = bulletShoot;
   }
   /**
@@ -39,7 +39,7 @@ export abstract class BulletPatternBase<T> {
       target = this.bulletShoot.target;
     }
     // 计算向量
-    let v = BulletShoot.getVelocity2Target(this.bulletShoot.thrower, target, velocity, 
+    let v = LineShoot.getVelocity2Target(this.bulletShoot.thrower, target, velocity,
       this.bulletShoot.preJudge, this.bulletShoot.preJudgeVerticle);
     if (!v) {
       return false;

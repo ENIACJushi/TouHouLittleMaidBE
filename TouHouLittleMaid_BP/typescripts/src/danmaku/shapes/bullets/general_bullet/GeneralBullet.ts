@@ -3,11 +3,11 @@
  */
 import { Dimension, Entity } from "@minecraft/server";
 import { Vector } from "../../../../libs/VectorMC";
-import { BulletBase } from "../BulletBase";
+import { BulletShapeBase } from "../BulletShapeBase";
 import { GeneralBulletColor } from "./GeneralBulletColor";
 import { GeneralBulletType } from "./GeneralBulletType";
 
-export class GeneralBullet extends BulletBase {
+export class GeneralBullet extends BulletShapeBase {
   color = GeneralBulletColor.RANDOM; // 颜色，仅通用弹种
   type = GeneralBulletType.RANDOM; // 类型，仅通用弹种
 

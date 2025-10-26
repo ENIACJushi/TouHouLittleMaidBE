@@ -15,13 +15,10 @@ import * as Tool from "../libs/ScarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
 import { StrMaid } from "./StrMaid";
-import { BulletShoot } from "../danmaku/shoots/BulletShoot";
+import { LineShoot } from "../danmaku/shoots/LineShoot";
 import { Cocoa, Farm, MaidTarget, Melon } from "./MaidTarget";
 import { isBadContainerBlock } from "../../data/BadContainerBlocks";
 import { DP } from '../libs/DynamicPropertyInterface';
-import { EntityDanmakuActor } from "../danmaku/actors/EntityDanmakuActor";
-import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "../danmaku/shapes/main";
-import { FanShapedPattern } from "../danmaku/patterns/Fan";
 
 
 export class MaidManager {

@@ -8,7 +8,7 @@ import {
   GeneralBulletType as Type,
   GeneralBullet,
 } from "../../../src/danmaku/shapes/main";
-import { BulletShoot } from "../../../src/danmaku/shoots/BulletShoot";
+import { LineShoot } from "../../../src/danmaku/shoots/LineShoot";
 import { EntityDanmakuActor } from "../../../src/danmaku/actors/EntityDanmakuActor";
 
 const INACCURACY = 12;
@@ -20,7 +20,7 @@ export const SpellCard = {
    * 执行的符卡逻辑，函数签名固定，会直接调用
    */
   spellCard: function (world: Dimension, entity: Entity) {
-    let smallStarShoot = new BulletShoot({
+    let smallStarShoot = new LineShoot({
       thrower: new EntityDanmakuActor(entity)
         .setOffset(new Vector(0, 0.8, 0)),
       shape: new GeneralBullet()
@@ -29,7 +29,7 @@ export const SpellCard = {
         .setColor(Color.RANDOM)
     });
 
-    let bigStarShoot = new BulletShoot({
+    let bigStarShoot = new LineShoot({
       thrower: new EntityDanmakuActor(entity)
         .setOffset(new Vector(0, 0.8, 0)),
       shape: new GeneralBullet()
