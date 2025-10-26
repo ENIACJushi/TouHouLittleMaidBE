@@ -14,7 +14,7 @@
       "minecraft:use_modifiers": { "use_duration": 99999, "movement_modifier": 1 },
       "minecraft:durability": { "max_durability": 400, "damage_chance": { "min": 10, "max": 50 }},
       "minecraft:enchantable":{
-        "slot": "crossbow",
+        "slot": "bow",
         "value": 10
       },
       "minecraft:custom_components": ["tlm:hakurei_gohei"],

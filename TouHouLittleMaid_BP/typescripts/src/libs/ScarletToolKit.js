@@ -242,6 +242,18 @@ export class ItemTool {
           .join(',')
         );
     }
+
+    /**
+     * 获取应用力量附魔的伤害乘数
+     * @param {number} level
+     */
+    static getPoweredDamageMultiplier(level) {
+        if (level === 0) {
+            return 1;
+        }
+        // 每一级附魔，使箭的伤害增加25%×(等级+1)，向上取整至最近的半心
+        return 1 + 0.25 * (level + 1);
+    }
 }
 
 export class BlockTool {

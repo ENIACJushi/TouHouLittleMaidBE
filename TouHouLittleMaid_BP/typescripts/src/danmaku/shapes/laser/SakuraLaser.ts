@@ -10,9 +10,13 @@ const ANGLE_PI = 180 / Math.PI;
  * 樱花束
  */
 export class SakuraLaser extends LaserBase {
+  private readonly AREA_FLAME_MULTIPLIER: number = 0.5; // 外层起火时间与中心层时间的比例
+  private readonly AREA_PUNCH_MULTIPLIER: number = 0.5; // 外层击退力度与中心层力度的比例
   damageCenter: number = 9; // 中心伤害
   damageArea: number = 3; // 外层伤害
   piercing: number = 3; // 穿透力
+  flame: number = 0; // 起火时间（秒），为0时不起火
+  punch: number = 0; // 额外冲击力
 
   shootShape(params: LineShapeShootParams): undefined {
     const dimension = params.location.dimension;
@@ -43,6 +47,18 @@ export class SakuraLaser extends LaserBase {
       attackList.set(victim.entity.id, true);
       if (DanmakuInterface.applyDamage(entity, danmaku, victim.entity)) {
         piercing--;
+        // 应用火焰
+        if (this.flame) {
+          victim.entity.setOnFire(this.flame);
+        }
+        // 应用击退力度
+        if (this.punch) {
+          victim.entity.applyKnockback(
+            {x: params.velocity.x * this.punch, z: params.velocity.z * this.punch},
+            0.5,
+          );
+        }
+        // 消耗穿透力
         if (piercing <= 0) {
           distance = victim.distance;
           break;
@@ -62,7 +78,7 @@ export class SakuraLaser extends LaserBase {
       }
     }
 
-    /// 范围伤害 ///
+    /// 等待一刻后，执行范围伤害 ///
     system.runTimeout(() => {
       let areaAttackList = [];
       DanmakuInterface.setDamage(danmaku, this.damageArea);
@@ -87,7 +103,22 @@ export class SakuraLaser extends LaserBase {
         }
       }
       for (let victim of areaAttackList) {
-        DanmakuInterface.applyDamage(entity, danmaku, victim)
+        if (DanmakuInterface.applyDamage(entity, danmaku, victim)) {
+          // 应用火焰
+          if (this.flame) {
+            victim.setOnFire(this.flame * this.AREA_FLAME_MULTIPLIER);
+          }
+          // 应用击退力度
+          if (this.punch) {
+            victim.applyKnockback(
+              {
+                x: params.velocity.x * this.punch * this.AREA_PUNCH_MULTIPLIER,
+                z: params.velocity.z * this.punch * this.AREA_PUNCH_MULTIPLIER
+              },
+              0.5,
+            );
+          }
+        }
       }
     }, 1);
 
@@ -120,6 +151,22 @@ export class SakuraLaser extends LaserBase {
    */
   setPiercing(piercing: number) {
     this.piercing = piercing;
+    return this;
+  }
+
+  /**
+   * 设置起火时间（秒），为0时不起火
+   */
+  setFlame(flame: number) {
+    this.flame = flame;
+    return this;
+  }
+
+  /**
+   * 设置额外冲击力（动量大小）
+   */
+  setExtraPunch(punch: number) {
+    this.punch = punch;
     return this;
   }
 }
