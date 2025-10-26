@@ -12,7 +12,8 @@
           "thlm:r_y":{"type": "float", "default": 0.01  , "range":[-400.1, 400.1]   , "client_sync": true},
           "thlm:r_z":{"type": "float", "default": 0.01  , "range":[-400.1, 400.1]   , "client_sync": true},
           "thlm:distance":{"type": "float", "default": 0.01, "range":[-0.1, 99999.1] , "client_sync": true},
-          "thlm:enable":{"type": "bool", "default": false, "client_sync": true}
+          "thlm:enable":{"type": "bool", "default": false, "client_sync": true},
+          "thlm:particle_type":{"type": "int", "default": 0, "range":[0, 10], "client_sync": true}
         }
       },
       "component_groups": {

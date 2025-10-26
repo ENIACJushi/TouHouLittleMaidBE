@@ -8,13 +8,34 @@
 					"animations" : [ "cherry" ],
 					"transitions" : [
 						{
-							"particle" : "query.property('thlm:enable')"
+							"cherry_particle" : "query.property('thlm:enable') && query.property('thlm:particle_type') == 0"
+						},
+						{
+							"flame_particle" : "query.property('thlm:enable') && query.property('thlm:particle_type') == 1"
+						},
+						{
+							"flame_nether_particle" : "query.property('thlm:enable') && query.property('thlm:particle_type') == 2"
+						},
+						{
+							"flame_end_particle" : "query.property('thlm:enable') && query.property('thlm:particle_type') == 3"
 						}
 					],
 					"blend_transition": 0
 				},
-				"particle" : {
+				"cherry_particle" : {
 					"animations" : [ "cherry_particle" ],
+					"blend_transition": 0
+				},
+				"flame_particle" : {
+					"animations" : [ "flame_particle" ],
+					"blend_transition": 0
+				},
+				"flame_nether_particle" : {
+					"animations" : [ "flame_nether_particle" ],
+					"blend_transition": 0
+				},
+				"flame_end_particle" : {
+					"animations" : [ "flame_end_particle" ],
 					"blend_transition": 0
 				}
 			}

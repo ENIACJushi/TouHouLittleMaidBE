@@ -5,7 +5,7 @@ import {
 import { ItemTool } from "../../../libs/ScarletToolKit";
 import { EffectHelper } from "../../../libs/ScarletToolKit/EffectHelper";
 import { SakuraLaser } from "../../../danmaku/shapes/laser/SakuraLaser";
-import {ItemStack} from "@minecraft/server";
+import {ItemStack, Player} from "@minecraft/server";
 import {LineShoot} from "../../../danmaku/shoots/LineShoot";
 import {EntityDanmakuActor} from "../../../danmaku/actors/EntityDanmakuActor";
 import {Vector} from "../../../libs/VectorMC";
@@ -23,8 +23,9 @@ export class SakuraGohei extends ShootItemAutomatic {
   private readonly CENTER_DAMAGE = 10; // 中心伤害
   private readonly AREA_DAMAGE = 6; // 外围伤害
   // 固定冷却时间
-  getCooldown() {
-    return 10;
+  getCooldown(player: Player, item: ItemStack) {
+    // 根据快速装填等级确定发射间隔
+    return Math.max(1, 10 - 2 * ItemTool.getEnchantmentLevel(item, 'quick_charge'));
   }
 
   // 射击函数

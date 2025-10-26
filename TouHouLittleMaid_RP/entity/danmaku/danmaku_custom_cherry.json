@@ -14,10 +14,16 @@
         "default": "geometry.danmaku_custom_cherry"
       },
       "particle_effects": {
-        "cherry_particle": "touhou_little_maid:cherry_leaves_particle"
+        "cherry_particle": "touhou_little_maid:cherry_leaves_particle",
+        "flame_particle": "touhou_little_maid:flame_laser_particle",
+        "flame_nether_particle": "touhou_little_maid:flame_laser_nether_particle",
+        "flame_end_particle": "touhou_little_maid:flame_laser_end_particle"
       },
       "animations": {
         "cherry_particle": "animation.touhou_little_maid.danmaku.cherry_particle",
+        "flame_particle": "animation.touhou_little_maid.danmaku.flame_particle",
+        "flame_nether_particle": "animation.touhou_little_maid.danmaku.flame_nether_particle",
+        "flame_end_particle": "animation.touhou_little_maid.danmaku.flame_end_particle",
         "cherry": "animation.touhou_little_maid.danmaku.cherry",
         "life":"animation.touhou_little_maid.danmaku.life",
         "cherry_controller":"controller.animation.touhou_little_maid.danmaku_cherry"

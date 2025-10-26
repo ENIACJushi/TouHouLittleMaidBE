@@ -3,6 +3,7 @@ import { LineShapeShootParams } from "../LineShapeBase";
 import { DanmakuInterface } from "../../DanmakuInterface";
 import { VO } from "../../../libs/VectorMC";
 import { system, world } from "@minecraft/server";
+import {dim_string2int} from "../../../libs/ScarletToolKit";
 
 const ANGLE_PI = 180 / Math.PI;
 
@@ -123,6 +124,8 @@ export class SakuraLaser extends LaserBase {
     }, 1);
 
     /// 展示粒子 ///
+    danmaku.setProperty('thlm:particle_type',
+      this.flame > 0 ? (dim_string2int(params.location.dimension.id) ?? 1) + 1 : 0);
     danmaku.setProperty("thlm:distance", distance / 2);
     danmaku.setProperty("thlm:enable", true);
     // if(danmaku !== undefined)

@@ -18,13 +18,27 @@
 				}
 			}
 		},
+		"animation.touhou_little_maid.danmaku.flame_particle": {
+			"loop": true,
+			"animation_length": 1000,
+			"bones": { "cherry_locator": { "rotation": { "0.0": ["q.property('thlm:r_x')", "q.property('thlm:r_y')", "q.property('thlm:r_z')"] } } },
+			"particle_effects": { "0.0": { "effect": "flame_particle", "locator": "cherry_particle" } }
+		},
+		"animation.touhou_little_maid.danmaku.flame_nether_particle": {
+			"loop": true,
+			"animation_length": 1000,
+			"bones": { "cherry_locator": { "rotation": { "0.0": ["q.property('thlm:r_x')", "q.property('thlm:r_y')", "q.property('thlm:r_z')"] } } },
+			"particle_effects": { "0.0": { "effect": "flame_nether_particle", "locator": "cherry_particle" } }
+		},
+		"animation.touhou_little_maid.danmaku.flame_end_particle": {
+			"loop": true,
+			"animation_length": 1000,
+			"bones": { "cherry_locator": { "rotation": { "0.0": ["q.property('thlm:r_x')", "q.property('thlm:r_y')", "q.property('thlm:r_z')"] } } },
+			"particle_effects": { "0.0": { "effect": "flame_end_particle", "locator": "cherry_particle" } }
+		},
 		"animation.touhou_little_maid.danmaku.cherry": {
 			"loop": true,
-			"bones": {
-				"cherry_locator": {
-					"rotation": ["q.property('thlm:r_x')", "q.property('thlm:r_y')", "q.property('thlm:r_z')"]
-				}
-			}
+			"bones": { "cherry_locator": { "rotation": ["q.property('thlm:r_x')", "q.property('thlm:r_y')", "q.property('thlm:r_z')"] } }
 		}
 	}
 }
