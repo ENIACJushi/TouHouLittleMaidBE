@@ -15,6 +15,7 @@ import { ShootItemBase } from "./ShootItemBase";
  */
 export abstract class ShootItemAutomatic extends ShootItemBase {
   private intervalMap = new Map();
+  private lastShootingTick = new Map<string, number>(); // 记录玩家上次射击的时间
 
   //// 子类实现 ////
   /**
@@ -43,14 +44,25 @@ export abstract class ShootItemAutomatic extends ShootItemBase {
   public startUseEvent (event: ItemStartUseAfterEvent) {
     let playerId = event.source.id;
     let slot = event.source.selectedSlotIndex;
+    // 射击函数
+    let shoot = (player: Player, item: ItemStack) => {
+      // 发射弹幕
+      this.shoot({ entity: player, item: item });
+      this.lastShootingTick.set(playerId, system.currentTick);
+      // 损耗物品
+      this.damageItem(item, player, slot);
+      // 播放音效
+      this.playShotSound(player);
+    }
     // 确定发射间隔
     let timeout = this.getCooldown(event.source, event.itemStack);
-    // 创建一个定时循环的任务，在玩家保持蓄力状态时执行，蓄力结束或满足其他结束条件时停止
-    let intervalId = system.runInterval(() => {
+    // 根据上次射击的时间，确定第一次发射的延迟，若此前足够长的时间没有发射过，则立即发射
+    let firstTimeout = Math.max(0, timeout - system.currentTick + (this.lastShootingTick.get(playerId) ?? 0));
+    let intervalId = system.runTimeout(() => {
       ///// 停止判断 /////
       // 事件取消
       if (intervalId !== this.getPlayerInterval(playerId)) {
-        this.clearPlayerInterval(playerId);
+        system.clearRun(intervalId);
         return;
       }
       // 玩家消失 || 物品栏切换
@@ -65,14 +77,35 @@ export abstract class ShootItemAutomatic extends ShootItemBase {
         this.clearPlayerInterval(playerId);
         return;
       }
-      // 发射弹幕
-      this.shoot({ entity: player, item: item });
-      // 损耗物品
-      this.damageItem(item, player, slot);
-      // 播放音效
-      this.playShotSound(player);
-    }, timeout);
-    this.registerPlayerInterval(playerId, intervalId)
+      // 射击
+      shoot(player, item);
+      // 开始后续的自动射击
+      // 创建一个定时循环的任务，在玩家保持蓄力状态时执行，蓄力结束或满足其他结束条件时停止
+      intervalId = system.runInterval(() => {
+        ///// 停止判断 /////
+        // 事件取消
+        if (intervalId !== this.getPlayerInterval(playerId)) {
+          system.clearRun(intervalId);
+          return;
+        }
+        // 玩家消失 || 物品栏切换
+        let player = world.getEntity(playerId) as Player | undefined;
+        if (!player || slot !== player.selectedSlotIndex) {
+          this.clearPlayerInterval(playerId);
+          return;
+        }
+        // 物品消失 || 物品不是御币
+        let item = ItemTool.getPlayerMainHand(player);
+        if (!item || !this.isShootItem(item)) {
+          this.clearPlayerInterval(playerId);
+          return;
+        }
+        // 射击
+        shoot(player, item);
+      }, timeout);
+      this.registerPlayerInterval(playerId, intervalId);
+    }, firstTimeout);
+    this.registerPlayerInterval(playerId, intervalId);
   }
 
   /**
