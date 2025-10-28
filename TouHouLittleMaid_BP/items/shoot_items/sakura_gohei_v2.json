@@ -10,7 +10,7 @@
       "minecraft:display_name": { "value": "item.touhou_little_maid:hakurei_gohei_cherry" },
       "minecraft:max_stack_size": 1,
       "minecraft:hand_equipped": true,
-      "minecraft:allow_off_hand": true,
+      "minecraft:allow_off_hand": false,
       "minecraft:use_modifiers": { "use_duration": 99999, "movement_modifier": 1 },
       "minecraft:durability": { "max_durability": 400, "damage_chance": { "min": 10, "max": 50 }},
       "minecraft:enchantable":{
