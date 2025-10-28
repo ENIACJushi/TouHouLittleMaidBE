@@ -11,7 +11,7 @@
       "part_visibility": [
         {
 					"item": true,
-					"cross": true
+					"cross": "v.is_first_person && query.is_using_item"
 				}
       ]
     },

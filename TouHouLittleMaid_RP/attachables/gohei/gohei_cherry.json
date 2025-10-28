@@ -17,16 +17,14 @@
       },
       "animations": {
         "wield": "animation.hakurei_gohei.wield",
-        "wield_first_person_pull": "animation.hakurei_gohei.wield_first_person_pull",
-        "hide_cross": "animation.hakurei_gohei.hide_cross"
+        "wield_first_person_pull": "animation.hakurei_gohei.wield_first_person_pull"
       },
       "enable_attachables": true,
       "scripts": {
+        "initialize": [ "v.is_first_person=c.is_first_person;" ],
+        "pre_animation": [ "v.is_first_person=c.is_first_person;" ],
         "animate": [
           "wield",
-          {
-            "hide_cross": "!c.is_first_person || !query.is_using_item"
-          },
           {
             "wield_first_person_pull": "query.is_using_item && c.is_first_person"
           }
