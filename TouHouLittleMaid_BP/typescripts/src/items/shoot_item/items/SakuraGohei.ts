@@ -10,6 +10,9 @@ import {LineShoot} from "../../../danmaku/shoots/LineShoot";
 import {EntityDanmakuActor} from "../../../danmaku/actors/EntityDanmakuActor";
 import {Vector} from "../../../libs/VectorMC";
 
+const DAMAGE_PROPERTY_KEY = 'tlm_gh:sakura_d'; // gh=gohei 记录从上次损耗开始，已发射多少次
+const DAMAGE_STEP_FULL = 2; // 要发射几次才会消耗一点耐久
+
 /**
  * 樱之御币，使用弓类附魔
  *
@@ -20,12 +23,12 @@ import {Vector} from "../../../libs/VectorMC";
  */
 export class SakuraGohei extends ShootItemAutomatic {
   private readonly ITEM_TYPE_ID = 'tlmsi:sakura_gohei'; // 物品id
-  private readonly CENTER_DAMAGE = 10; // 中心伤害
-  private readonly AREA_DAMAGE = 6; // 外围伤害
-  // 固定冷却时间
+  private readonly CENTER_DAMAGE = 8.5; // 中心伤害
+  private readonly AREA_DAMAGE = 5; // 外围伤害
+  // 冷却时间
   getCooldown(player: Player, item: ItemStack) {
     // 根据快速装填等级确定发射间隔
-    return Math.max(1, 10 - 2 * ItemTool.getEnchantmentLevel(item, 'quick_charge'));
+    return Math.max(1, 13 - 2 * ItemTool.getEnchantmentLevel(item, 'quick_charge'));
   }
 
   // 射击函数
@@ -57,6 +60,19 @@ export class SakuraGohei extends ShootItemAutomatic {
 
   // 自行实现射击音效
   protected playShotSound(player: Player) { }
+
+  // 损耗函数
+  protected damageItem(item: ItemStack, player: Player, slot: number) {
+    // 计算损耗步数
+    let damageStep = (player.getDynamicProperty(DAMAGE_PROPERTY_KEY) ?? 0) as number;
+    damageStep ++;
+    if (damageStep >= DAMAGE_STEP_FULL) {
+      // 步数满时，归零步数，并进行损耗
+      damageStep = 0;
+      super.damageItem(item, player, slot);
+    }
+    player.setDynamicProperty(DAMAGE_PROPERTY_KEY, damageStep);
+  }
 
   private playCustomShotSound(player: Entity, isFlame: boolean) {
     if (isFlame) {

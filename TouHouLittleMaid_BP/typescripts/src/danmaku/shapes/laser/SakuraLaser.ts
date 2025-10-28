@@ -54,10 +54,13 @@ export class SakuraLaser extends LaserBase {
         }
         // 应用击退力度
         if (this.punch) {
-          victim.entity.applyKnockback(
-            {x: params.velocity.x * this.punch, z: params.velocity.z * this.punch},
-            0.5,
-          );
+          // 有些实体不可被施加此函数，会报错（如末影水晶），所以用 try catch 圈起来
+          try {
+            victim.entity.applyKnockback(
+              {x: params.velocity.x * this.punch, z: params.velocity.z * this.punch},
+              0.5,
+            );
+          } catch {}
         }
         // 消耗穿透力
         if (piercing <= 0) {
@@ -111,13 +114,15 @@ export class SakuraLaser extends LaserBase {
           }
           // 应用击退力度
           if (this.punch) {
-            victim.applyKnockback(
-              {
-                x: params.velocity.x * this.punch * this.AREA_PUNCH_MULTIPLIER,
-                z: params.velocity.z * this.punch * this.AREA_PUNCH_MULTIPLIER
-              },
-              0.5,
-            );
+            try {
+              victim.applyKnockback(
+                {
+                  x: params.velocity.x * this.punch * this.AREA_PUNCH_MULTIPLIER,
+                  z: params.velocity.z * this.punch * this.AREA_PUNCH_MULTIPLIER
+                },
+                0.5,
+              );
+            } catch {}
           }
         }
       }
