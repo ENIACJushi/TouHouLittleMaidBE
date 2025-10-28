@@ -2,10 +2,10 @@ import {
   ShootItemAutomatic,
   GoheiAutomaticModeShotParams,
 } from "./template/ShootItemAutomatic";
-import { ItemTool } from "../../../libs/ScarletToolKit";
+import {getRandom, ItemTool} from "../../../libs/ScarletToolKit";
 import { EffectHelper } from "../../../libs/ScarletToolKit/EffectHelper";
 import { SakuraLaser } from "../../../danmaku/shapes/laser/SakuraLaser";
-import {ItemStack, Player} from "@minecraft/server";
+import {Entity, ItemStack, Player} from "@minecraft/server";
 import {LineShoot} from "../../../danmaku/shoots/LineShoot";
 import {EntityDanmakuActor} from "../../../danmaku/actors/EntityDanmakuActor";
 import {Vector} from "../../../libs/VectorMC";
@@ -41,16 +41,36 @@ export class SakuraGohei extends ShootItemAutomatic {
         .setDamageCenter(EffectHelper.getDamageByEntity(params.entity, Math.ceil(this.CENTER_DAMAGE * powerMultiplier)))
         .setPiercing(3 + power)
         .setFlame(5 * flame)
-        .setExtraPunch(punch * 1.5),
+        .setExtraPunch(punch * 2),
       thrower: new EntityDanmakuActor(params.entity)
         .setHead(true),
     });
     shoot.shootByVelocity(params.entity.getViewDirection());
+    this.playCustomShotSound(params.entity, flame > 0);
     return true;
   }
 
   // 物品是否是樱之御币
   isShootItem(item: ItemStack): boolean {
     return item.typeId === this.ITEM_TYPE_ID;
+  }
+
+  // 自行实现射击音效
+  protected playShotSound(player: Player) { }
+
+  private playCustomShotSound(player: Entity, isFlame: boolean) {
+    if (isFlame) {
+      // 火声
+      player.dimension.playSound('mob.ghast.fireball', player.location, {
+        pitch: getRandom(1.4, 1.8),
+        volume : 0.4
+      });
+    } else {
+      // 风声
+      player.dimension.playSound('breeze_wind_charge.burst', player.location, {
+        pitch: getRandom(1.7, 2.2),
+        volume : 0.25
+      });
+    }
   }
 }
