@@ -48,10 +48,10 @@ export class AmuletGoheiPattern {
     // 创建新符札弹种
     let bulletShoot0 = new LineShoot({
       thrower: new EntityDanmakuActor(entity, true)
+        .setHead(true)
         .setOffset(new Vector(0, offsetY, 0)), // 比相机略低
       shape: new Amulet()
         .setDirection(direction)
-        .setXRotation(entity.getRotation().y)
         .setDamage(damage)
         .setPiercing(piercing)
         .setXRotation(90)
