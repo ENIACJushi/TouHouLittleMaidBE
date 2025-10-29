@@ -212,7 +212,7 @@ export class LineShoot {
     }
 
     // 预瞄，给定目标必须是实体
-    if (preJudge && target instanceof EntityDanmakuActor) {
+    if (preJudge && target instanceof EntityDanmakuActor && target.entity.isValid) {
       let targetV = target.entity.getVelocity();
       // 受重力和落地影响，竖直方向容易误判，竖直方向默认关闭
       if (!preJudgeVerticle) {

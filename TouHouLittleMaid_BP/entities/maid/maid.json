@@ -132,7 +132,7 @@
           "can_walk": false
         },
         "minecraft:behavior.random_stroll": {
-          "priority": 8,
+          "priority": 0,
           "speed_multiplier": 0.0
         },
         "minecraft:movement.basic": { },
