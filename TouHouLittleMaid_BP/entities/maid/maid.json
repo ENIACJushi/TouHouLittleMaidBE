@@ -515,10 +515,11 @@
         "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 4, "must_see": true, "must_reach": false,
-          "reselect_targets": true, "within_radius": 32, "scan_interval": 10,
-          "entity_types": [ { "filters": { "any_of": [ 
-            {"test": "is_family","subject": "other","value": "monster"}
-          ] }, "max_dist": 32, "must_see": true } ]
+          "reselect_targets": true, "within_radius": 64, "scan_interval": 10,
+          "entity_types": [ {
+            "filters": { "test": "is_family","subject": "other","value": "monster" },
+            "max_dist": 64
+          } ]
         },
         "minecraft:behavior.hurt_by_target": {
           "priority": 3,
@@ -580,10 +581,11 @@
         },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 4, "must_see": true, "must_reach": false,
-          "reselect_targets": true, "within_radius": 16, "scan_interval": 10,
-          "entity_types": [ { "filters": { "any_of": [ 
-            {"test": "is_family","subject": "other","value": "monster"}
-          ] }, "max_dist": 16, "must_see": true } ]
+          "reselect_targets": true, "within_radius": 64, "scan_interval": 10,
+          "entity_types": [ {
+            "filters": { "test": "is_family","subject": "other","value": "monster" },
+            "max_dist": 64
+          } ]
         },
         "minecraft:behavior.hurt_by_target": {
           "priority": 3,
