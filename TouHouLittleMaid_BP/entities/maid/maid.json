@@ -461,12 +461,14 @@
       // 战斗索敌
       "mode:searching_melee_attack":{
         "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
+        "minecraft:follow_range": { "max": 48, "value": 48 },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 6, "must_see": true,
-          "reselect_targets": true, "within_radius": 16, "scan_interval": 10,
-          "entity_types": [{ "filters": { "all_of": [ 
-            {"test": "is_family","subject": "other","value": "monster"}
-          ] }, "max_dist": 16 } ]
+          "reselect_targets": true, "within_radius": 48, "scan_interval": 10,
+          "entity_types": [{
+            "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "monster" } ] },
+            "max_dist": 48
+          } ]
         },
         "minecraft:behavior.hurt_by_target": {
           "priority": 3,
@@ -513,12 +515,13 @@
       },
       "mode:searching_danmaku_attack":{
         "minecraft:type_family"  : { "family": [ "maid", "mob", "player" ] },
+        "minecraft:follow_range": { "max": 48, "value": 48 },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 4, "must_see": true, "must_reach": false,
-          "reselect_targets": true, "within_radius": 64, "scan_interval": 10,
+          "reselect_targets": true, "within_radius": 48, "scan_interval": 10,
           "entity_types": [ {
             "filters": { "test": "is_family","subject": "other","value": "monster" },
-            "max_dist": 64
+            "max_dist": 48
           } ]
         },
         "minecraft:behavior.hurt_by_target": {
@@ -579,12 +582,13 @@
             {"position": [ -0.4, 0.2, 0.1 ], "lock_rider_rotation": 0, "rotate_rider_by": 0}
           ]
         },
+        "minecraft:follow_range": { "max": 48, "value": 48 },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 4, "must_see": true, "must_reach": false,
-          "reselect_targets": true, "within_radius": 64, "scan_interval": 10,
+          "reselect_targets": true, "within_radius": 48, "scan_interval": 10,
           "entity_types": [ {
             "filters": { "test": "is_family","subject": "other","value": "monster" },
-            "max_dist": 64
+            "max_dist": 48
           } ]
         },
         "minecraft:behavior.hurt_by_target": {
@@ -663,19 +667,30 @@
       // 弹幕攻击
       "mode:danmaku_attack":{
         "minecraft:behavior.ranged_attack": {
-          "priority": 5, "attack_interval_min": 0.3, "attack_interval_max": 0.3, "attack_radius": 32.0,"attack_radius_min": 10
+          "priority": 5,
+          "attack_interval_min": 0.3,
+          "attack_interval_max": 0.3,
+          "attack_radius": 48,
+          "attack_radius_min": 16,
+          "speed_multiplier": 1.25,
+          "x_max_rotation": 30
         },
         "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 1.25 }
       },
       "mode:danmaku_attack_sit":{
         "minecraft:behavior.ranged_attack": {
-          "priority": 5, "attack_interval_min": 0.3, "attack_interval_max": 0.3, "attack_radius": 32.0,"attack_radius_min": 10,
+          "priority": 5,
+          "attack_interval_min": 0.3,
+          "attack_interval_max": 0.3,
+          "attack_radius": 48.0,
+          "attack_radius_min": 16,
           "speed_multiplier": 0
         },
         "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 0 }
       },
       // 农耕
       "mode:farm":{
+        "minecraft:follow_range": { "max": 32, "value": 32 },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 7, "must_reach": true, "must_see": false, "persist_time": 5.0, 
           "reselect_targets": false, "within_radius": 32, "scan_interval": 20, "target_search_height": 2,
@@ -699,6 +714,7 @@
       },
       // 甘蔗
       "mode:sugar_cane":{
+        "minecraft:follow_range": { "max": 32, "value": 32 },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 7, "must_reach": true, "must_see": false,
           "reselect_targets": true, "within_radius": 32, "scan_interval": 10,
@@ -708,12 +724,15 @@
       },
       // 瓜类
       "mode:melon":{
+        "minecraft:follow_range": { "max": 32, "value": 32 },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 7, "must_reach": true, "must_see": false, "persist_time": 5.0, 
           "reselect_targets": false, "within_radius": 32, "scan_interval": 20,
-          "entity_types": [ 
-            { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:melon"} ] }, "max_dist": 32, "must_see": false }
-          ]
+          "entity_types": [ {
+            "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:melon"} ] },
+            "max_dist": 32,
+            "must_see": false
+          } ]
         },
         "minecraft:behavior.ranged_attack": {
           "priority": 6,
@@ -724,13 +743,16 @@
         }
       },
       // 可可豆
-      "mode:cocoa":{
+      "mode:cocoa": {
+        "minecraft:follow_range": { "max": 32, "value": 32 },
         "minecraft:behavior.nearest_attackable_target": {
           "priority": 7, "must_reach": true, "must_see": false, "persist_time": 3.0, 
           "reselect_targets": false, "within_radius": 32, "scan_interval": 20, "target_search_height": 4,
-          "entity_types": [ 
-            { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:cocoa"} ] }, "max_dist": 32, "must_see": false }
-          ]
+          "entity_types": [ {
+            "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:cocoa"} ] },
+            "max_dist": 32,
+            "must_see": false
+          } ]
         },
         "minecraft:behavior.ranged_attack": {
           "priority": 6,
