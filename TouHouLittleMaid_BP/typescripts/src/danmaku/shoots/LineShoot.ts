@@ -218,11 +218,9 @@ export class LineShoot {
       if (!preJudgeVerticle) {
         targetV.y = 0;
       }
-      // 因为弹幕创建存在延迟，这里要加一个时间差
-      let targetLocationOnShot = VO.add(t_location, VO.multiply(targetV, 5));
       // 发射点和计算时间差后的目标点不能重合
-      if (!VO.equals(s_location, targetLocationOnShot)) {
-        return VO.Advanced.preJudge(s_location, targetLocationOnShot, velocity, targetV);
+      if (!VO.equals(s_location, t_location)) {
+        return VO.Advanced.preJudge(s_location, t_location, velocity, targetV);
       }
     }
     
