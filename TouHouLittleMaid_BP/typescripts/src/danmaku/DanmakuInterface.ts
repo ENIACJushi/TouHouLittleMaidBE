@@ -86,6 +86,7 @@ export class DanmakuInterface {
           }
         }
       }
+
       // 免伤失败，施加伤害
       let damage: number = danmaku.getDynamicProperty("damage") as number;
       if (damage === undefined) {
@@ -105,10 +106,16 @@ export class DanmakuInterface {
           return false;
         }
         // 伤害成功或累积伤害成功，则记录本次攻击和弹幕攻击
-        this.damageDispatcher.recordHit(target.id);
-        this.damageDispatcher.recordDanmakuHit(target.id, danmaku.id);
         if (finalDamage > 0) {
-          target.applyDamage(finalDamage, damageOptions);
+          // 此次攻击即刻结算伤害，则开始施加伤害
+          let damageRes = target.applyDamage(finalDamage, damageOptions);
+          if (damageRes) {
+            this.damageDispatcher.recordHit(target.id);
+            this.damageDispatcher.recordDanmakuHit(target.id, danmaku.id);
+            return true;
+          } else {
+            return false;
+          }
         }
         return true;
       }
