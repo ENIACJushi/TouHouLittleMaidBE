@@ -11,7 +11,7 @@
       "minecraft:max_stack_size": 1,
       "minecraft:hand_equipped": true,
       "minecraft:allow_off_hand": false,
-      "minecraft:use_modifiers": { "use_duration": 99999, "movement_modifier": 1 },
+      "minecraft:use_modifiers": { "use_duration": 9999999999, "movement_modifier": 1 },
       "minecraft:durability": { "max_durability": 400, "damage_chance": { "min": 10, "max": 50 }},
       "minecraft:enchantable":{
         "slot": "bow",
@@ -21,13 +21,13 @@
       "minecraft:shooter": {
         "ammunition": [
           {
-            "item": "tlmsi:hakurei_gohei",
+            "item": "tlmsi:sakura_gohei",
             "use_offhand": true,
             "search_inventory": true,
             "use_in_creative": true
           }
         ],
-        "max_draw_duration": 99999,
+        "max_draw_duration": 9999999999,
         "scale_power_by_draw_duration": true,
         "charge_on_draw": true
       },

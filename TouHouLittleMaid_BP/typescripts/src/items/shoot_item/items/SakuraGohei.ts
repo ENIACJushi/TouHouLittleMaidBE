@@ -28,7 +28,7 @@ export class SakuraGohei extends ShootItemAutomatic {
   // 冷却时间
   getCooldown(player: Player, item: ItemStack) {
     // 根据快速装填等级确定发射间隔
-    return Math.max(1, 13 - 2 * ItemTool.getEnchantmentLevel(item, 'quick_charge'));
+    return Math.max(1, 16 - 2 * ItemTool.getEnchantmentLevel(item, 'quick_charge'));
   }
 
   // 射击函数
@@ -42,7 +42,7 @@ export class SakuraGohei extends ShootItemAutomatic {
       shape: new SakuraLaser()
         .setDamageArea(EffectHelper.getDamageByEntity(params.entity, Math.ceil(this.AREA_DAMAGE * powerMultiplier)))
         .setDamageCenter(EffectHelper.getDamageByEntity(params.entity, Math.ceil(this.CENTER_DAMAGE * powerMultiplier)))
-        .setPiercing(3 + power)
+        .setPiercing(Math.ceil(3 + power/2))
         .setFlame(5 * flame)
         .setExtraPunch(punch * 2),
       thrower: new EntityDanmakuActor(params.entity)

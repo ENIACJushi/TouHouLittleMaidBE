@@ -50,7 +50,9 @@ export class SakuraLaser extends LaserBase {
         piercing--;
         // 应用火焰
         if (this.flame) {
-          victim.entity.setOnFire(this.flame);
+          try {
+            victim.entity.setOnFire(this.flame);
+          } catch {}
         }
         // 应用击退力度
         if (this.punch) {
@@ -110,7 +112,9 @@ export class SakuraLaser extends LaserBase {
         if (DanmakuInterface.applyDamage(entity, danmaku, victim)) {
           // 应用火焰
           if (this.flame) {
-            victim.setOnFire(this.flame * this.AREA_FLAME_MULTIPLIER);
+            try {
+              victim.setOnFire(this.flame * this.AREA_FLAME_MULTIPLIER);
+            } catch {}
           }
           // 应用击退力度
           if (this.punch) {
