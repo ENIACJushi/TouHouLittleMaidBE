@@ -141,7 +141,6 @@ export class DanmakuDamageDispatcher {
         let afterHealth = entity.getComponent('health')?.currentValue;
         if (afterHealth !== beforeHealth && i !== 0) {
           // 伤害施加成功
-          console.log(`InvincibleTime=${i}`);
           this.isTestingInvincibleTime = false;
           system.clearRun(id);
         }

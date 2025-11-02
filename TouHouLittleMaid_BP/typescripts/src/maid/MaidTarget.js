@@ -140,7 +140,6 @@ export class Farm{
      * @returns {Entity}
      */
     static placeCorp(dimension, location){
-        console.log('search farm job placeCorp')
         // 若该位置已经有目标，则不放置
         let entities = dimension.getEntitiesAtBlockLocation(location);
         for(let entity of entities){
@@ -161,7 +160,6 @@ export class Farm{
      * @returns {Entity}
      */
     static placeSeed(dimension, location){
-        console.log('search farm job placeSeed')
         // 若该位置已经有目标，则不放置
         let entities = dimension.getEntitiesAtBlockLocation(location);
         for(let entity of entities){
@@ -377,8 +375,7 @@ export class Farm{
         let xStart = Math.floor(location.x);
         let zStart = Math.floor(location.z);
         let count = targets.length;
-        
-        console.log('search farm 3')
+
         function* searchJob(){
             for(let ix = 0; ix < range; ix = ix > 0 ? -ix : 1-ix){
                 for(let iz = 0; iz < range; iz = iz > 0 ? -iz : 1-iz){
@@ -483,7 +480,6 @@ export class Farm{
             SpeedController.afterSearch(maid, count, Farm.maxLack, Farm.minCount);
         }
         function* newSearchJob(){
-            console.log('search farm job targets.length', targets.length)
             let areaLength = range*2+2;
             let searchMatrix = new Array(areaLength);
             for(let i = 0; i < areaLength; i++){

@@ -659,10 +659,20 @@
       },
       // 近战
       "mode:attack_lv1":{
-        "minecraft:behavior.melee_attack": { "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25, "cooldown_time": 0.9 }
+        "minecraft:behavior.melee_attack": {
+          "priority": 5,
+          "reach_multiplier": 7,
+          "speed_multiplier": 1.25,
+          "cooldown_time": 0.9
+        }
       },
       "mode:attack_lv2":{
-        "minecraft:behavior.melee_attack": { "priority": 5, "reach_multiplier": 5, "speed_multiplier": 1.25, "cooldown_time": 0.8 }
+        "minecraft:behavior.melee_attack": {
+          "priority": 5,
+          "reach_multiplier": 9,
+          "speed_multiplier": 1.25,
+          "cooldown_time": 0.8
+        }
       },
       // 弹幕攻击
       "mode:danmaku_attack":{
