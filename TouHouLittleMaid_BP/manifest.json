@@ -6,13 +6,13 @@
     "version": [
       1,
       12,
-      0
+      1
     ],
     "description": "pack.description",
     "min_engine_version": [
       1,
       21,
-      0
+      30
     ]
   },
   "modules": [
@@ -24,7 +24,7 @@
       "version": [
         1,
         12,
-        0
+        1
       ]
     },
     {
@@ -33,7 +33,7 @@
       "version": [
         1,
         12,
-        0
+        1
       ]
     }
   ],
@@ -43,7 +43,7 @@
       "version": [
         1,
         12,
-        0
+        1
       ]
     },
     {
