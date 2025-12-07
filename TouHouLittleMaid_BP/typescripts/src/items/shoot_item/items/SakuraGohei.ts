@@ -9,6 +9,7 @@ import {Entity, ItemStack, Player} from "@minecraft/server";
 import {LineShoot} from "../../../danmaku/shoots/LineShoot";
 import {EntityDanmakuActor} from "../../../danmaku/actors/EntityDanmakuActor";
 import {Vector} from "../../../libs/VectorMC";
+import {ShootItemBase} from "./template/ShootItemBase";
 
 const DAMAGE_PROPERTY_KEY = 'tlm_gh:sakura_d'; // gh=gohei 记录从上次损耗开始，已发射多少次
 const DAMAGE_STEP_FULL = 2; // 要发射几次才会消耗一点耐久

@@ -94,22 +94,9 @@
         "must_see": true,
         "reselect_targets": true,
         "entity_types": [
-          {
-            "filters": {
-              "test": "is_family",
-              "subject": "other",
-              "value": "player"
-            },
-            "max_dist": 16
-          },
-          {
-            "filters": {
-              "test": "is_family",
-              "subject": "other",
-              "value": "debug_target"
-            },
-            "max_dist": 32
-          }
+          { "filters": { "test": "is_family", "subject": "other", "value": "player" }, "max_dist": 16 },
+          { "filters": { "test": "is_family", "subject": "other", "value": "debug_target" }, "max_dist": 32 },
+          { "filters": { "test": "int_property", "domain": "thlmt:value", "subject": "other", "value": 9 }, "max_dist": 16 }
         ]
       },
       "minecraft:behavior.equip_item": {

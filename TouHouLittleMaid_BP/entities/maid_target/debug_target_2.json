@@ -1,0 +1,75 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "touhou_little_maid:debug_target_2",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "properties": {
+        "thlmt:value" : { "type": "int", "default": 9, "range": [-20, 20], "client_sync": true}
+      }
+    },
+    "component_groups": {
+      "despawn": { "minecraft:instant_despawn":{ "remove_child_entities": false } }
+    },
+    "components": {
+      "minecraft:tameable": {
+        "probability": 1.0,
+        "tame_items": "cake",
+        "tame_event": {
+          "event": "thlmm:f",
+          "target": "self"
+        }
+      },
+      "minecraft:type_family": {
+        "family": [ "debug_target_2" ]
+      },
+      "minecraft:damage_sensor": { 
+        "triggers": [
+          {
+            "on_damage": {
+              "filters": {
+                "all_of": [
+                  {
+                    "test": "is_family",
+                    "subject": "other",
+                    "value": "player"
+                  }
+                ]
+              }
+            },
+            "deals_damage": true
+          },
+          {
+            "cause": "fall",
+            "deals_damage": false
+          },
+          {
+            "on_damage": {
+              "filters": {
+                "none_of": [
+                  {
+                    "test": "is_family",
+                    "subject": "other",
+                    "value": "player"
+                  }
+                ]
+              }
+            },
+            "deals_damage": false
+          }
+        ]
+      },
+      "minecraft:collision_box": { "width": 0, "height": 0 },
+      "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+      "minecraft:persistent": {},
+      "minecraft:knockback_resistance": { "value": 1.0 },
+      "minecraft:physics": {
+        "has_gravity": false
+      }
+    },
+    "events": {
+      "despawn":{ "add": { "component_groups": [ "despawn" ] } }
+    }
+  }
+}
