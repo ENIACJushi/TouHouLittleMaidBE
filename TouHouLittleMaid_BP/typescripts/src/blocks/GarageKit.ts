@@ -15,7 +15,6 @@ import { Vector } from "../libs/VectorMC";
 import { StrMaid } from "../maid/StrMaid";
 import { ActionbarMessage, ItemTool, lore2Str} from "../libs/ScarletToolKit";
 import { EntityMaid } from "../maid/EntityMaid";
-import { isBadContainerBlock } from "../../data/BadContainerBlocks";
 import { Logger } from "../controller/Logger";
 
 const TAG = 'GarageKit';
@@ -312,10 +311,6 @@ export class GarageKit {
    * @param {PlayerInteractWithBlockBeforeEvent} event 
    */
   static placeEvent(event: PlayerInteractWithBlockBeforeEvent) {
-    // 检测被交互的方块是否会复制物品
-    if (isBadContainerBlock(event.block.typeId)) {
-      return;
-    }
     // 手上必须有物品
     const item = event.itemStack;
     if (!item) {

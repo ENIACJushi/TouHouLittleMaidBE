@@ -11,6 +11,7 @@ import { altarStructure } from "../altar/AltarStructureHelper";
 import { MaidManager } from "../maid/MaidManager";
 import { GarageKit } from "../blocks/GarageKit";
 import { MemorizableGensokyo } from "../book/MemorizableGensokyoUI";
+import {isInteractContainerBlock} from "../../data/BadContainerBlocks";
 
 export class ItemEvents {
   playerOnUse = new Map(); // 使用冷却
@@ -46,7 +47,7 @@ export class ItemEvents {
           //// 祭坛平台交互 ////
           case "altar_platform_block": {
             if (!player.isSneaking) {
-              altarStructure.placeItemEvent(event.block.location, player);
+              system.run(() => { altarStructure.placeItemEvent(event.block.location, player); });
               event.cancel = true;
               return;
             }
@@ -61,12 +62,39 @@ export class ItemEvents {
           let itemName = itemStack.typeId.substring(19);
           switch (itemName) {
             // case "gold_microwaver_item": GoldMicrowaver.placeEvent(event); break;
-            case "photo": MaidManager.Interact.photoOnUseEvent(event); event.cancel = true; break;
-            case "smart_slab_has_maid": MaidManager.Interact.smartSlabOnUseEvent(event); event.cancel = true; break;
-            case "chisel": GarageKit.activate(event); event.cancel = true; break;
-            case "garage_kit": GarageKit.placeEvent(event); event.cancel = true; break;
-            default: {
-            }; break;
+            // 照片释放女仆
+            case "photo": {
+              MaidManager.Interact.photoOnUseEvent(event);
+              break;
+            }
+            // 魂符释放女仆
+            case "smart_slab_has_maid": {
+              MaidManager.Interact.smartSlabOnUseEvent(event);
+              break;
+            }
+            // 激活雕塑/手办
+            case "chisel": {
+              if (isInteractContainerBlock(event.block.typeId) && !event.player.isSneaking) {
+                // 若对着容器方块使用且没有潜行，则放进去
+                event.cancel = false;
+              } else {
+                system.run(() => { GarageKit.activate(event); });
+                event.cancel = true;
+              }
+              break;
+            }
+            // 放置手办
+            case "garage_kit": {
+              if (isInteractContainerBlock(event.block.typeId) && !event.player.isSneaking) {
+                // 若对着容器方块使用且没有潜行，则放进去
+                event.cancel = false;
+              } else {
+                system.run(() => { GarageKit.placeEvent(event); });
+                event.cancel = true;
+              }
+              break;
+            }
+            default: break;
           }
         } else if (itemStack.typeId.startsWith("tlmsi")) {
           //// 御币使用事件 ////
@@ -74,7 +102,9 @@ export class ItemEvents {
             // 切换弹种
           } else if (block.typeId == "minecraft:red_wool") {
             // 祭坛激活
-            altarStructure.activate(player.dimension, event.block.location, event.blockFace);
+            system.run(() => {
+              altarStructure.activate(player.dimension, event.block.location, event.blockFace);
+            });
           }
           event.cancel = true;
         }
@@ -108,7 +138,7 @@ export class ItemEvents {
       this.itemStopUseAfter(event);
     });
     world.beforeEvents.playerInteractWithBlock.subscribe(event => {
-      system.run(() => { this.PlayerInteractWithBlockBeforeEvent(event); });
+      this.PlayerInteractWithBlockBeforeEvent(event);
     });
     world.beforeEvents.itemUse.subscribe(event => {
       system.run(() => { this.itemUseBefore(event); });

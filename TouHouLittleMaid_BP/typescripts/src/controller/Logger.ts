@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { config } from "../controller/Config";
+import { config } from "./Config";
 
 const ADDON_TAG = '§e[TLM]';
 

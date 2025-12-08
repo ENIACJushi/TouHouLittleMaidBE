@@ -17,7 +17,7 @@ import { EntityMaid } from './EntityMaid';
 import { StrMaid } from "./StrMaid";
 import { LineShoot } from "../danmaku/shoots/LineShoot";
 import { Cocoa, Farm, MaidTarget, Melon } from "./MaidTarget";
-import { isBadContainerBlock } from "../../data/BadContainerBlocks";
+import { isInteractContainerBlock } from "../../data/BadContainerBlocks";
 import { DP } from '../libs/DynamicPropertyInterface';
 
 
@@ -225,94 +225,115 @@ export class MaidManager {
      * @param {PlayerInteractWithBlockBeforeEvent} event 
      */
     static photoOnUseEvent(event) {
+      // 默认取消方块交互
+      event.cancel = true;
+
+      // 无lore，不释放女仆
       let lore = event.itemStack.getLore();
-      if (lore.length === 0) return; // 无lore
-
-      //// 检测被交互的方块是否会复制物品 ////
-      if (isBadContainerBlock(event.block.typeId)) return;
-
-      //// 检测放置位置是否有两格空间 ////
-      const player = event.player;
-      const dimension = player.dimension;
-      let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
-      if (location === undefined) {
-        Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
+      if (lore.length === 0) {
+        event.cancel = false;
         return;
       }
-      location.x += 0.5;
-      location.z += 0.5;
 
-      // 转换lore
-      let strPure = Tool.lore2Str(lore);
+      // 被交互的方块可摆放物品，且玩家不在潜行，则将物品放上去，不释放女仆
+      if (isInteractContainerBlock(event.block.typeId) && !event.player.isSneaking) {
+        event.cancel = false;
+        return;
+      }
 
-      // 使用者不是主人
-      if (StrMaid.Owner.getId(strPure) !== player.id) return;
+      // 执行释放女仆逻辑
+      system.run(() => {
+        //// 检测放置位置是否有两格空间 ////
+        const player = event.player;
+        const dimension = player.dimension;
+        let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
+        if (location === undefined) {
+          Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
+          return;
+        }
+        location.x += 0.5;
+        location.z += 0.5;
 
-      // 放置
-      let maid = EntityMaid.fromStr(strPure, dimension, location, true);
+        // 转换lore
+        let strPure = Tool.lore2Str(lore);
 
-      // 消耗照片
-      Tool.ItemTool.setPlayerMainHand(player);
+        // 使用者不是主人
+        if (StrMaid.Owner.getId(strPure) !== player.id) return;
+
+        // 放置
+        let maid = EntityMaid.fromStr(strPure, dimension, location, true);
+
+        // 消耗照片
+        Tool.ItemTool.setPlayerMainHand(player);
+      })
     }
     /**
      * 魂符使用事件
      * @param {PlayerInteractWithBlockBeforeEvent} event 
      */
     static smartSlabOnUseEvent(event) {
-      let itemStack = event.itemStack;
-      let lore = itemStack.getLore();
+      // 默认取消方块交互
+      event.cancel = true;
 
-      //// 检测被交互的方块是否会复制物品 ////
-      if (isBadContainerBlock(event.block.typeId)) return;
-
-      //// 检测放置位置是否有两格空间 ////
-      const player = event.player;
-      const dimension = player.dimension;
-      let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
-      if (location === undefined) {
-        Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
+      // 被交互的方块可摆放物品，且玩家不在潜行，则将物品放上去，不释放女仆
+      if (isInteractContainerBlock(event.block.typeId) && !event.player.isSneaking) {
+        event.cancel = false;
         return;
       }
-      location.x += 0.5;
-      location.z += 0.5;
 
-      // 生成女仆
-      let maid = undefined;
-      let itemName = itemStack.nameTag;
-      if (lore.length === 0) {
-        // 首次使用
-        maid = EntityMaid.spawnRandomMaid(dimension, location);
-        try {
-          EntityMaid.Skin.setRandom(maid);
-          system.runTimeout(() => {
-            EntityMaid.Owner.set(maid, player);
-          }, 1)
+      system.run(() => {
+        let itemStack = event.itemStack;
+        let lore = itemStack.getLore();
+
+        //// 检测放置位置是否有两格空间 ////
+        const player = event.player;
+        const dimension = player.dimension;
+        let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
+        if (location === undefined) {
+          Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
+          return;
         }
-        catch { }
-      }
-      else {
-        try {
-          // 转换lore
-          let str = Tool.lore2Str(lore);
+        location.x += 0.5;
+        location.z += 0.5;
 
-          // 使用者不是主人
-          if (StrMaid.Owner.getId(str) !== player.id) return;
-
-          // 放置
-          maid = EntityMaid.fromStr(str, dimension, location, true);
+        // 生成女仆
+        let maid = undefined;
+        let itemName = itemStack.nameTag;
+        if (lore.length === 0) {
+          // 首次使用
+          maid = EntityMaid.spawnRandomMaid(dimension, location);
+          try {
+            EntityMaid.Skin.setRandom(maid);
+            system.runTimeout(() => {
+              EntityMaid.Owner.set(maid, player);
+            }, 1)
+          }
+          catch { }
         }
-        catch { }
-      }
-      // 没有成功召唤 直接退出
-      if (maid === undefined) { return; }
+        else {
+          try {
+            // 转换lore
+            let str = Tool.lore2Str(lore);
 
-      // 转换物品
-      let emptyItem = new ItemStack("touhou_little_maid:smart_slab_empty", 1);
-      if (itemName !== undefined && itemName.substring(0, 2) !== "§z") {
-        emptyItem.nameTag = itemName;
-      }
+            // 使用者不是主人
+            if (StrMaid.Owner.getId(str) !== player.id) return;
 
-      Tool.ItemTool.setPlayerMainHand(player, emptyItem);
+            // 放置
+            maid = EntityMaid.fromStr(str, dimension, location, true);
+          }
+          catch { }
+        }
+        // 没有成功召唤 直接退出
+        if (maid === undefined) { return; }
+
+        // 转换物品
+        let emptyItem = new ItemStack("touhou_little_maid:smart_slab_empty", 1);
+        if (itemName !== undefined && itemName.substring(0, 2) !== "§z") {
+          emptyItem.nameTag = itemName;
+        }
+
+        Tool.ItemTool.setPlayerMainHand(player, emptyItem);
+      })
     }
     /**
      * 女仆被魂符收回事件
