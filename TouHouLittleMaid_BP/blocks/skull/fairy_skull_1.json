@@ -43,8 +43,8 @@
 				"condition": "query.block_state('minecraft:block_face')=='down'",
 				"components": {
 					"minecraft:geometry": "geometry.touhou_little_maid.fairy_skull_block_up",
-					"minecraft:collision_box": { "origin": [ -4, 8, -4 ], "size": [ 10, 10, 10 ] },
-					"minecraft:selection_box": { "origin": [ -4, 8, -4 ], "size": [ 10, 10, 10 ] }
+					"minecraft:collision_box": { "origin": [ -4, 8, -4 ], "size": [ 8, 8, 8 ] },
+					"minecraft:selection_box": { "origin": [ -4, 8, -4 ], "size": [ 8, 8, 8 ] }
 				}
 			},
 			{
