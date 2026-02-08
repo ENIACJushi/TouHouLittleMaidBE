@@ -7,7 +7,8 @@ A bedrock-edition Add-On transplanted by Java mod: TouHou Little Maid. (https://
 - [Guidebook generation](MemorizableGensokyo/README.md)
 
 ## Authors
-- Programmer: `ENIACJushi`, `Tanya7z`
+
+`ENIACJushi`, `Tanya7z`, `EndersTister`
 
 ## Credits
 - `TartaricAcid`, `Snownee`, `Succinum`, `Pajinyi`, `ZeniCrow`, `Tian_mi`, `Paulzzh`, `YurisCat`: Made the [TouHou Little Maid](https://github.com/TartaricAcid/TouhouLittleMaid) (Java Mod)

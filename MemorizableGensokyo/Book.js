@@ -36,7 +36,7 @@ export class Book {
      * @param {boolean} trim 
      */
     setLang(page, value, trim=true){
-        let key = `tlm.${Book.getSeqStr(this.bookId)}.${Book.getSeqStr(page)}`;
+        let key = `tlm.${this.getSeqStr(this.bookId)}.${this.getSeqStr(page)}`;
         // 去除末尾的换行和空格
         let res = value;
         if(trim){
@@ -120,7 +120,7 @@ export class Book {
     addImg(text, img){
         let lines = text.replace(new RegExp('\n', 'g'), "%1");
         
-        let imgStr = Book.resolveImage(img);
+        let imgStr = this.resolveImage(img);
 
         lines = lines.replace("$image$", imgStr);
         
@@ -134,7 +134,7 @@ export class Book {
      */
     addCraft(text, recipePath){
         let data = fs.readFileSync(RECIPE_PATH + recipePath, 'utf8');
-        let recipeStr = Book.resolveCraft(data);
+        let recipeStr = this.resolveCraft(data);
         
         /// 拼接字符串
         let res = text.replace('$recipe$', recipeStr);
@@ -150,7 +150,7 @@ export class Book {
      * @param {{output:{type:String}; power:Number; ingredients: {tag:String; item:String}[]}} recipe 
      */
     addAltar(text, recipe){
-        let recipeStr = Book.resolveAltar(recipe);
+        let recipeStr = this.resolveAltar(recipe);
 
         /// 拼接字符串
         let res = text.replace('$recipe$', recipeStr);
@@ -166,8 +166,8 @@ export class Book {
      * @param {{type: String}} module2
      */
     addDoubleModule(text, module1, module2){
-        let res = text.replace('$module1$', Book.resolveModule(module1));
-        res = res.replace('$module2$', Book.resolveModule(module2));
+        let res = text.replace('$module1$', this.resolveModule(module1));
+        res = res.replace('$module2$', this.resolveModule(module2));
         
         /// 拼接字符串
         res = res.replace(new RegExp('\n', 'g'), "%1");
@@ -185,15 +185,15 @@ export class Book {
     }
     
     //// Tools ////
-    static resolveModule(module){
+    resolveModule(module){
         switch(module.type){
-            case "altar": return Book.resolveAltar(module.recipe);
-            case "craft": return Book.resolveCraft(module.recipe);
-            case "img"  : return Book.resolveImage(module.img);
+            case "altar": return this.resolveAltar(module.recipe);
+            case "craft": return this.resolveCraft(module.recipe);
+            case "img"  : return this.resolveImage(module.img);
             default: return '';
         }
     }
-    static resolveAltar(recipe){
+    resolveAltar(recipe){
         let recipeStr = TEMPLATE_ALTAR;
 
         // 材料
@@ -231,7 +231,7 @@ export class Book {
         recipeStr = recipeStr.replace("power", recipe.power.toFixed(2));
         return recipeStr;
     }
-    static resolveCraft(data){
+    resolveCraft(data){
         /// 解析合成表
         let recipe = resolveRecipe(JSON.parse(data));
 
@@ -263,14 +263,14 @@ export class Book {
 
         return recipeStr;
     }
-    static resolveImage(img){
+    resolveImage(img){
         return `%1%1%1       ${String.fromCharCode(GLYPH_IMG + img)}%1%1%1`;
     }
     /**
      * 获取页码字符
      * @param {Number} seq 
      */
-    static getSeqStr(seq){
+    getSeqStr(seq){
         return seq.toString();
     }
 }

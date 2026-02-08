@@ -10,6 +10,8 @@
 {"rawtext":[{"translate":"tlm.0.9","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.0.10","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.0.11","with":["\n"]}]}
+{"rawtext":[{"translate":"tlm.0.12","with":["\n"]}]}
+{"rawtext":[{"translate":"tlm.0.13","with":["\n"]}]}
 
 {"rawtext":[{"translate":"tlm.1.0","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.1.1","with":["\n"]}]}
