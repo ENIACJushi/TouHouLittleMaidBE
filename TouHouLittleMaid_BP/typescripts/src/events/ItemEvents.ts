@@ -1,7 +1,7 @@
-import { 
+import {
   ItemStartUseAfterEvent,
   ItemStopUseAfterEvent,
-  ItemUseBeforeEvent,
+  ItemUseAfterEvent,
   PlayerInteractWithBlockBeforeEvent,
   system,
   world,
@@ -17,7 +17,7 @@ export class ItemEvents {
   playerOnUse = new Map(); // 使用冷却
 
   // 使用
-  private itemUseBefore(event: ItemUseBeforeEvent) {
+  private itemUseBefore(event: ItemUseAfterEvent) {
     let item = event.itemStack;
     if (item === undefined) return;
 
@@ -140,7 +140,8 @@ export class ItemEvents {
     world.beforeEvents.playerInteractWithBlock.subscribe(event => {
       this.PlayerInteractWithBlockBeforeEvent(event);
     });
-    world.beforeEvents.itemUse.subscribe(event => {
+    // 在 1.21.132 版本，只要注册 ItemUseBeforeEvent，就会导致收纳袋无法右键扔出物品。所以这里注册 AfterEvent
+    world.afterEvents.itemUse.subscribe(event => {
       system.run(() => { this.itemUseBefore(event); });
     });
   }

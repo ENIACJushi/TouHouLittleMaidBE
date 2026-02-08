@@ -9,6 +9,7 @@ export class Skull {
     event.blockComponentRegistry.registerCustomComponent("tlm:skull", {
       beforeOnPlayerPlace(e) {
         if (e.face === Direction.Down) {
+          // @ts-ignore
           e.permutationToPlace = e.permutationToPlace.withState('thlm:is_down', true);
         }
       }

@@ -1,4 +1,4 @@
-import { ItemStack, ItemUseBeforeEvent, Player } from "@minecraft/server";
+import { ItemStack, ItemUseAfterEvent, Player } from "@minecraft/server";
 import { ItemTool, lore2Str, str2Lore } from "../libs/ScarletToolKit";
 import * as mcui from '@minecraft/server-ui';
 
@@ -13,7 +13,7 @@ const chapterButtonDelta = BOOK.length + BOOK.length % 2;
 export class MemorizableGensokyo {
     /**
      * 接收物品使用事件
-     * @param {ItemUseBeforeEvent} event 
+     * @param {ItemUseAfterEvent} event
      */
     static onUseEvent(event) {
         let book = ItemTool.getPlayerMainHand(event.source);
