@@ -27,9 +27,16 @@ const GLYPH_ITEM = 0xE600; // 物品图片，对应 `TouHouLittleMaid_RP/font/gl
 然后同步修改资源包中对应 png 文件的名称即可。如：
 
 ```
-const GLYPH_IMG = 0xD500; // 大号图片，对应 `TouHouLittleMaid_RP/font/glyph_D5.png`
+const GLYPH_IMG = 0xEE00; // 大号图片，对应 `TouHouLittleMaid_RP/font/glyph_EE.png`
                     ^^                                                   ^^
-                 E5 -> D5                                      同步修改资源包的文件名
+                 E5 -> EE                                      同步修改资源包的文件名
+```
+
+需要注意的是，前缀（如 "E5"）只能取以下字符串，否则会显示异常：
+
+```
+E0 E1 E2 E3 E4 E5 E6 E7 E8 E9 EA EB EC ED EE EF
+F1 F2 F3 F4 F5 F6 F7 F8
 ```
 
 #### 翻译文字
