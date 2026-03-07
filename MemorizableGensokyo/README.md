@@ -36,10 +36,11 @@ const GLYPH_IMG = 0xEE00; // 大号图片，对应 `TouHouLittleMaid_RP/font/gly
 
 ```
 E0 E1 E2 E3 E4 E5 E6 E7 E8 E9 EA EB EC ED EE EF
-F1 F2 F3 F4 F5 F6 F7 F8
+F0 F1 F2 F3 F4 F5 F6 F7 F8
 ```
 
 #### 翻译文字
 
 在 `./books/` 提供原始书籍文字即可，运行 `main.js` 时会自动识别该目录下的文件。
 若要添加新语言，文件名需要和目标的 lang 文件同名。如 `zh_CN.js` 对应 `zh_CN.lang`。
+
