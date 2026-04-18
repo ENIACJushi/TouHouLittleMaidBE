@@ -1,5 +1,5 @@
 {
-	"format_version": "1.16.0",
+	"format_version": "1.21.20",
 	"minecraft:geometry": [
 		{
 			"description": {
@@ -26,7 +26,59 @@
 						{"origin": [4, 4.5, 0], "size": [5, 5, 0], "uv": [29, 3]}
 					]
 				}
-			]
+			],
+			"item_display_transforms": {
+				"thirdperson_righthand": {
+					"rotation": [35.19, 46.74, -26.09],
+					"translation": [1.25, 5.5, 2.25],
+					"scale": [1, 1, 1],
+					"rotation_pivot": [0, 0, 0],
+					"scale_pivot": [0, 0, 0]
+				},
+				"firstperson_righthand": {
+					"rotation": [152.35, 2.69, 174.9],
+					"translation": [17, 0, -26.25],
+					"scale": [2, 2, 2],
+					"rotation_pivot": [0, 0, 0],
+					"scale_pivot": [0, 0, 0]
+				},
+				"firstperson_lefthand": {
+					"rotation": [-180, -8.75, 180],
+					"translation": [0, 6.5, -2.75],
+					"scale": [1, 1, 1],
+					"rotation_pivot": [0, 0, 0],
+					"scale_pivot": [0, 0, 0]
+				},
+				"ground": {
+					"rotation": [0, 0, 0],
+					"translation": [0, 10.5, 0],
+					"scale": [1.5, 1.5, 1.5],
+					"rotation_pivot": [0, 0, 0],
+					"scale_pivot": [0, 0, 0]
+				},
+				"gui": {
+					"rotation": [-157.33, -18.54, -177.54],
+					"translation": [0, 4.75, 0],
+					"scale": [1.3, 1.3, 1.3],
+					"rotation_pivot": [0, 0, 0],
+					"scale_pivot": [0, 0, 0],
+					"fit_to_frame": false
+				},
+				"head": {
+					"rotation": [0, 0, 0],
+					"translation": [0, 9.5, 0.25],
+					"scale": [2, 2, 2.77734],
+					"rotation_pivot": [0, 0, 0],
+					"scale_pivot": [0, 0, 0]
+				},
+				"fixed": {
+					"rotation": [0, 0, 0],
+					"translation": [0, 7.75, -2.5],
+					"scale": [2, 2, 2],
+					"rotation_pivot": [0, 0, 0],
+					"scale_pivot": [0, 0, 0]
+				}
+			}
 		}
 	]
 }

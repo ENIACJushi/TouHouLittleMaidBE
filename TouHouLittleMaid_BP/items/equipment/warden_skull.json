@@ -1,20 +1,19 @@
 {
-  "format_version": "1.20.80",
+  "format_version": "1.21.80",
   "minecraft:item": {
     "description": {
       "identifier": "touhou_little_maid:warden_skull",
       "menu_category": {
-        "category": "equipment",
-        "group": "itemGroup.name.helmet"
+        "category": "equipment"
       }
     },
     "components": {
-      "minecraft:icon": {
-        "textures": { "default": "touhou_little_maid:warden_skull" }
+      "minecraft:display_name": {
+        "value": "item.touhou_little_maid:warden_skull"
       },
-      "minecraft:display_name": { "value": "item.touhou_little_maid:warden_skull" },
       "minecraft:block_placer": {
-        "block": "touhou_little_maid:warden_skull_block",
+        "replace_block_item": true,
+        "block": "touhou_little_maid:warden_skull",
         "use_on": []
       },
       "minecraft:glint": false,

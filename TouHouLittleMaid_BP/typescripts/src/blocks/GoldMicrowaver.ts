@@ -34,16 +34,16 @@ export class GoldMicrowaver {
     event.blockComponentRegistry.registerCustomComponent("tlm:microwaver", {
       beforeOnPlayerPlace(e) {
         system.run(() => {
-
+          // @ts-ignore
           if (!e.permutationToPlace.getState("thlm:first_place")) {
             return;
           }
 
           // 设置方块状态
-          e.permutationToPlace = e.permutationToPlace
-            .withState("thlm:door", false)
-            .withState("thlm:item", 0)
-            .withState("thlm:status", false)
+          e.permutationToPlace = e.permutationToPlace  // @ts-ignore
+            .withState("thlm:door", false) // @ts-ignore
+            .withState("thlm:item", 0) // @ts-ignore
+            .withState("thlm:status", false) // @ts-ignore
             .withState("thlm:first_place", false);
 
           // 生成方块实体
@@ -274,12 +274,14 @@ export class GoldMicrowaver {
      * 设置工作状态
      */
     setStatus(block: Block, status: boolean) {
+      // @ts-ignore
       block.setPermutation(block.permutation.withState("thlm:status", status));
     },
     /**
      * 设置门状态
      */
     setDoor(block: Block, status: boolean) {
+      // @ts-ignore
       block.setPermutation(block.permutation.withState("thlm:door", status));
     }
   }

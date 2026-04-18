@@ -5,17 +5,26 @@ export const book1 = [
 { type: "text", content: 
 `         §lOverview§r
            §7(1/3)§r
-  A mod about the maid and the touhou project. Thanks 7z for making the UI. Thanks to people like Tartrate and Snownee for making TLM java mod. Thanks to the artists for producing excellent models. Thanks to Verclene, the author of LMM mod.`
-// 目录
+  A mod about the maid and the touhou project. 
+  Thanks 7z for making the UI. 
+  Thanks EndersTister for fixing the bug.`
 },
+{ type: "text", content:
+`
+
+  Thanks to people like Tartrate and Snownee for making TLM java mod. 
+  Thanks to the artists for producing excellent models. 
+  Thanks to Verclene, the author of LMM mod.`
+},
+// 目录
 { type: "text", content:
 `        §lCatalogue§r
 
-Touhou Project..............3
-Fairy Maid.............................4
-Power Point.........................5
-Gohei & Danmaku..............7
-Altar..........................................9`
+Touhou Project..............1
+Fairy Maid.............................2
+Power Point.........................3
+Gohei & Danmaku..............5
+Altar..........................................7`
 },
 {type: "text", content:
 `§lTouhou Project§r
@@ -90,13 +99,13 @@ export const book2 = [
 `
         §lCatalogue§r
 
-Spawn Maid.............................3
+Spawn Maid.............................1
 Reborn Maid..........................4
 Upgrade Maid.......................5
-Camera & Photo.................7
-Chisel & Statues...............9
-Backpack.................................9
-Princess Hug....................10`
+Camera & Photo.................6
+Chisel & Statues...............8
+Backpack...............................11
+Princess Hug....................14`
 },
 // patchouli.touhou_little_maid:book.entries.maid.spawn_maid.name.name
 { type: "altar", recipe: recipeList.spawn_box, content:
