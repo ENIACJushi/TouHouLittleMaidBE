@@ -5,6 +5,7 @@
       "identifier": "thlmm:maid",
       "materials": {
         "default": "warden",
+        "wing": "wing_default", // 旧的附加模型包会使用这个
         "wing_default": "wing_default",
         "wind_solid": "warden",
         "blending": "danmaku_blending",
