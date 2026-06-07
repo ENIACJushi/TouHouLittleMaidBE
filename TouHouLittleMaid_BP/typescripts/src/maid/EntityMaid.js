@@ -3,7 +3,7 @@ import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit";
 import { StrMaid } from "./StrMaid";
 import { emote } from "../../data/emote";
-import { MaidSkin } from "./MaidSkin";
+import { MaidSkin } from "./skin/MaidSkin";
 import { TagDataHelper } from '../libs/TagDataInterface'
 import { DP } from '../libs/DynamicPropertyInterface';
 import { MaidTarget } from "./MaidTarget";

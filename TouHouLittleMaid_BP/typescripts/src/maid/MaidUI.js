@@ -1,7 +1,7 @@
 import * as mcui from '@minecraft/server-ui';
 import { system, world, Entity, Player } from "@minecraft/server"
 import { EntityMaid } from './EntityMaid';
-import { MaidSkin } from './MaidSkin';
+import { MaidSkin } from './skin/MaidSkin';
 import { config } from '../controller/Config';
 
 /**
@@ -151,7 +151,7 @@ class MaidMenuSimple {
         for(; i < MaidSkin.DEFAULTAMOUNT ; i++){
             form.button(MaidSkin.getPackDisplayName(i), MaidSkin.getPackIcon(i));
         }
-        for(; i < MaidSkin.length(); i++){
+        for(; i < MaidSkin.size(); i++){
             form.button(MaidSkin.getPackDisplayName(i+100), MaidSkin.getPackIcon(i+100));
         }
         
@@ -274,7 +274,7 @@ class MaidMenuUI {
         for(; i < MaidSkin.DEFAULTAMOUNT ; i++){
             form.button(MaidSkin.getPackDisplayName(i), MaidSkin.getPackIcon(i));
         }
-        for(; i < MaidSkin.length(); i++){
+        for(; i < MaidSkin.size(); i++){
             form.button(MaidSkin.getPackDisplayName(i+100), MaidSkin.getPackIcon(i+100));
         }
         
