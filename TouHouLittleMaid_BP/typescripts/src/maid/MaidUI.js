@@ -28,11 +28,11 @@ export function MainMenu(player, maid){
 export function SkinMenu(player, maid, selectSkin=true){
     if(config.ui_enable.value){
         let form = new MaidMenuUI(player, maid);
-        form.skinpackSelection(selectSkin);
+        form.skinPackSelection(selectSkin);
     }
     else{
         let form = new MaidMenuSimple(player, maid);
-        form.skinpackSelection(selectSkin);
+        form.skinPackSelection(selectSkin);
     }
 }
 
@@ -119,7 +119,7 @@ class MaidMenuSimple {
                     system.runTimeout(()=>{this.main()},1);
                     break;
                 case 5:
-                    this.skinpackSelection();
+                    this.skinPackSelection();
                     break;
                 default:
                     break;
@@ -142,43 +142,52 @@ class MaidMenuSimple {
             }
         });
     }
-    skinpackSelection(selectSkin=true){
+
+    /**
+     * 皮肤包选择弹窗
+     * @param selectSkin 点击后是否继续打开皮肤选择弹窗
+     */
+    skinPackSelection(selectSkin=true){
         const form = new mcui.ActionFormData()
-        .title(this.maid_name) // 女仆名，为空则使用默认标题
-        .body({rawtext:[{translate: "gui.touhou_little_maid:button.skin.name"}]});
-        let skinList = MaidSkin.SkinList;
-        let i = 0;
-        for(; i < MaidSkin.DEFAULTAMOUNT ; i++){
-            form.button(MaidSkin.getPackDisplayName(i), MaidSkin.getPackIcon(i));
+            .title(this.maid_name) // 女仆名，为空则使用默认标题
+            .body({rawtext:[{translate: "gui.touhou_little_maid:button.skin.name"}]}); // 切换模型文案
+        let skinInfos = MaidSkin.getAllPackInfos();
+        for (let info of skinInfos) {
+            form.button(info.name, info.icon);
         }
-        for(; i < MaidSkin.size(); i++){
-            form.button(MaidSkin.getPackDisplayName(i+100), MaidSkin.getPackIcon(i+100));
-        }
-        
+        // 展示弹窗
         form.show(this.player).then((response) => {
-            if(response.selection !== undefined){
-                let skin_pack = response.selection<MaidSkin.DEFAULTAMOUNT?response.selection:response.selection+100;
-                if(selectSkin){
-                    this.skinindexSelection(skin_pack);
-                }
-                else{
-                    EntityMaid.Skin.setPack(this.maid, skin_pack);
+            if (response.selection !== undefined) {
+                let selectedInfo = skinInfos[response.selection];
+                if (selectSkin) {
+                    this.skinSelection(selectedInfo.id);
+                } else {
+                    EntityMaid.Skin.setPack(this.maid, selectedInfo.id);
                 }
             }
         });
     }
-    skinindexSelection(pack_index){
-        const form = new mcui.ActionFormData()
-        .title(MaidSkin.getPackDisplayName(pack_index)) // 女仆名，为空则使用默认标题
-        .body({"rawtext":[{"translate":"gui.touhou_little_maid.author.name"}, MaidSkin.getAuthors(pack_index)]});
 
-        for(let i = 0; i < MaidSkin.getSkinAmount(pack_index); i++){
-            form.button(MaidSkin.getSkinDisplayName(pack_index, i));
+    /**
+     * 皮肤选择弹窗
+     * @param packId 皮肤包 id
+     */
+    skinSelection(packId){
+        const form = new mcui.ActionFormData()
+            .title(MaidSkin.getPackDisplayName(packId)) // 皮肤包名称
+            .body({"rawtext":[
+                {"translate":"gui.touhou_little_maid.author.name"},
+                MaidSkin.getAuthors(packId),
+            ]}); // 描述文案（目前只有作者）
+
+        const amount = MaidSkin.getSkinAmount(packId);
+        for (let i = 0; i < amount; i++) {
+            form.button(MaidSkin.getSkinDisplayName(packId, i));
         }
         
         form.show(this.player).then((response) => {
             if(response.selection !== undefined){
-                EntityMaid.Skin.setPack(this.maid, pack_index);
+                EntityMaid.Skin.setPack(this.maid, packId);
                 EntityMaid.Skin.setIndex(this.maid, response.selection);
             }
         });
@@ -253,7 +262,7 @@ class MaidMenuUI {
                     case 3: EntityMaid.Ride.switchMode(this.maid); system.runTimeout(()=>{this.main()},1); break; // 骑乘模式
                     case 4: EntityMaid.Backpack.setInvisible(this.maid, !backpack_invisible); system.runTimeout(()=>{this.main()},1); break; // 隐藏背包
                     case 5: EntityMaid.Mute.set(this.maid, !mute_mode); system.runTimeout(()=>{this.main()},1); break; // 静音模式
-                    case 6: this.skinpackSelection(); break; // 模型选择
+                    case 6: this.skinPackSelection(); break; // 模型选择
                     default:// 工作模式选择
                         EntityMaid.Work.set(this.maid, response.selection - 7);
                         system.runTimeout(()=>{this.main()},2);
@@ -263,46 +272,49 @@ class MaidMenuUI {
         });
     }
     // 相对普通UI多了一个字符拼接的过程
-    skinpackSelection(selectSkin=true){
+    skinPackSelection(selectSkin=true){
         let maid_name = this.maid_name===""?{rawtext:[{ translate: "entity.touhou_little_maid:maid.name"}]}:this.maid_name;
 
         const form = new mcui.ActionFormData()
-        .title(maid_name) // 女仆名，为空则使用默认标题
-        .body({rawtext:[{translate: "gui.touhou_little_maid:button.skin.name"}]});
-        let skinList = MaidSkin.SkinList;
-        let i = 0;
-        for(; i < MaidSkin.DEFAULTAMOUNT ; i++){
-            form.button(MaidSkin.getPackDisplayName(i), MaidSkin.getPackIcon(i));
+            .title(maid_name) // 女仆名，为空则使用默认标题
+            .body({rawtext:[{translate: "gui.touhou_little_maid:button.skin.name"}]}); // 切换模型文案
+        let skinInfos = MaidSkin.getAllPackInfos();
+        for (let info of skinInfos) {
+            form.button(info.name, info.icon);
         }
-        for(; i < MaidSkin.size(); i++){
-            form.button(MaidSkin.getPackDisplayName(i+100), MaidSkin.getPackIcon(i+100));
-        }
-        
+
         form.show(this.player).then((response) => {
-            if(response.selection !== undefined){
-                let skin_pack = response.selection<MaidSkin.DEFAULTAMOUNT?response.selection:response.selection+100;
-                if(selectSkin){
-                    this.skinindexSelection(skin_pack);
-                }
-                else{
-                    EntityMaid.Skin.setPack(this.maid, skin_pack);
+            if (response.selection !== undefined) {
+                let selectedInfo = skinInfos[response.selection];
+                if (selectSkin) {
+                    this.skinSelection(selectedInfo.id);
+                } else {
+                    EntityMaid.Skin.setPack(this.maid, selectedInfo.id);
                 }
             }
         });
     }
-    // 与普通UI完全一致
-    skinindexSelection(pack_index){
-        const form = new mcui.ActionFormData()
-        .title(MaidSkin.getPackDisplayName(pack_index)) // 女仆名，为空则使用默认标题
-        .body({"rawtext":[{"translate":"gui.touhou_little_maid.author.name"}, MaidSkin.getAuthors(pack_index)]});
 
-        for(let i = 0; i < MaidSkin.getSkinAmount(pack_index); i++){
-            form.button(MaidSkin.getSkinDisplayName(pack_index, i));
+    /**
+     * 皮肤选择弹窗 与普通UI完全一致
+     * @param packId 皮肤包 id
+     */
+    skinSelection(packId){
+        const form = new mcui.ActionFormData()
+          .title(MaidSkin.getPackDisplayName(packId)) // 皮肤包名称
+          .body({"rawtext":[
+                  {"translate":"gui.touhou_little_maid.author.name"},
+                  MaidSkin.getAuthors(packId),
+              ]}); // 描述文案（目前只有作者）
+
+        const amount = MaidSkin.getSkinAmount(packId);
+        for (let i = 0; i < amount; i++) {
+            form.button(MaidSkin.getSkinDisplayName(packId, i));
         }
-        
+
         form.show(this.player).then((response) => {
             if(response.selection !== undefined){
-                EntityMaid.Skin.setPack(this.maid, pack_index);
+                EntityMaid.Skin.setPack(this.maid, packId);
                 EntityMaid.Skin.setIndex(this.maid, response.selection);
             }
         });

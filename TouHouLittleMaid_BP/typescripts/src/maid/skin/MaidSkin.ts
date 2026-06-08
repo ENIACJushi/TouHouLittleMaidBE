@@ -1,38 +1,67 @@
-import { world, system } from "@minecraft/server";
+import { world } from "@minecraft/server";
 import { getRandomInteger } from "../../libs/ScarletToolKit";
+import { SkinPackDisplayInfo } from './MaidSkinTypes';
 
 export class MaidSkin {
-  static DEFAULTAMOUNT: number = 1; // 默认模型包数量
-  static PLACEHOLDER: number = 100; // 最大默认模型包预留序号
-  static SkinList: any[] = [
-    120
+  /* 预置模型包参数 */
+  static readonly PLACEHOLDER: number = 1000; // 最大预置模型包预留序号（不可更改此常量，否则皮肤包会出问题）
+  static readonly DEFAULT_PACKS: [number, number][] = [
+    [0, 120]
   ];
+  /* 通用参数 */
+  static readonly SCOREBOARD_NAME_OLD = 'thlmskin'; // 旧计分板 id，因为在默认模型包的记录上有缺陷，不再使用
+  static readonly SCOREBOARD_NAME = 'thlm_skin'; // 计分板 id
+  static skinPacks: Map<number, number> = new Map(MaidSkin.DEFAULT_PACKS); // 皮肤包列表，记录 id - 皮肤包拥有的皮肤数量
+
+  ///// 配置 /////
+  /**
+   * 初始化，世界初始化时调用
+   */
+  static init(): void {
+    let scoreboard = world.scoreboard.getObjective(MaidSkin.SCOREBOARD_NAME);
+    if (!scoreboard) {
+      // 计分板未初始化时，创建计分板
+      world.scoreboard.addObjective(MaidSkin.SCOREBOARD_NAME, 'THLMSkin');
+      // 删除旧的计分板
+      let oldScoreboard = world.scoreboard.getObjective(MaidSkin.SCOREBOARD_NAME_OLD);
+      if (oldScoreboard) {
+        world.scoreboard.removeObjective(MaidSkin.SCOREBOARD_NAME_OLD);
+      }
+      return;
+    }
+    // 计分板已初始化，则读取已加载的皮肤包
+    scoreboard.getScores().forEach(info => {
+      this.skinPacks.set(Number(info.participant.id), info.score);
+    });
+  }
 
   /**
-   * 初始化模型包计分板
+   * 获取皮肤包计分板
    */
-  static initScoreboard(): void {
-    let scoreboard = world.scoreboard.getObjective("thlmskin");
-    if (scoreboard == null) {
-      world.getDimension("overworld").runCommand("scoreboard objectives add thlmskin dummy THLMSkin");
-      system.runTimeout(() => {
-        scoreboard = world.scoreboard.getObjective("thlmskin");
-        for (let i = 0; i < this.SkinList.length; i++) {
-          scoreboard!.setScore(`${i}`, this.SkinList[i]);
-        }
-      }, 1);
-    } else {
-      let i = 0;
-      while (true) {
-        try {
-          let score = scoreboard!.getScore(`${i}`);
-          if (score === undefined) break;
-          this.SkinList[i] = score;
-          i++;
-        } catch {
-          break;
-        }
-      }
+  static getSkinScoreboard() {
+    let res = world.scoreboard.getObjective(MaidSkin.SCOREBOARD_NAME);
+    if (!res) {
+      res = world.scoreboard.addObjective(MaidSkin.SCOREBOARD_NAME, 'THLMSkin');
+    }
+    return res;
+  }
+
+  /**
+   * 设置附加皮肤列表
+   */
+  static setSkin(list: number[]): void {
+    // 清空计分板
+    let scoreboard = MaidSkin.getSkinScoreboard();
+    scoreboard.getParticipants().forEach(value => {
+      scoreboard.removeParticipant(value);
+    });
+
+    // 重置内存表
+    MaidSkin.skinPacks = new Map(MaidSkin.DEFAULT_PACKS);
+
+    // 更新缓存和计分板
+    for (let i = 0; i < list.length; i++) {
+      MaidSkin.skinPacks.set(MaidSkin.PLACEHOLDER + 1 + i, list[i]);
     }
   }
 
@@ -40,67 +69,51 @@ export class MaidSkin {
    * 获取一个随机皮肤 {pack, seq}
    */
   static getRandom(): { pack: number; seq: number } {
-    // 计算总数
+    // 计算皮肤总数
     let total = 0;
-    for (let amount of this.SkinList) {
+    MaidSkin.skinPacks.forEach(amount => {
       total += amount;
-    }
-    let seqAll = getRandomInteger(0, total - 1);
+    });
 
-    // 获取一个
-    let pack = 0;
-    let seq = seqAll;
-    for (let amount of this.SkinList) {
-      seqAll -= amount;
-      if (seqAll < 1) {
+    // 选中一个
+    let seqAll = getRandomInteger(0, total - 1);
+    // 找到对应包 id 和皮肤 id
+    let packId = 0;
+    let seq = 0;
+    for (const [pack, amount] of MaidSkin.skinPacks.entries()) {
+      if (seqAll < amount) {
+        packId = pack;
+        seq = seqAll;
         break;
       }
-      seq = seqAll;
-      pack++;
+      seqAll -= amount;
     }
-    if (pack > this.DEFAULTAMOUNT) pack += 100;
+    return { pack: packId, seq: seq };
+  }
 
-    return { pack: pack, seq: seq };
+  ///// 信息获取 /////
+  /**
+   * 获取当前加载的皮肤包数量（包含预置）
+   */
+  static size(): number {
+    return MaidSkin.skinPacks.size;
   }
 
   /**
-   * 设置皮肤列表，使用重置-追加模式，从1开始
+   * 获取默认皮肤包数量
    */
-  static setSkin(list: number[]): void {
-    // 更新缓存
-    this.SkinList = [this.SkinList[0]].concat(list);
-
-    // 更新计分板
-    world.getDimension("overworld").runCommand("scoreboard objectives remove thlmskin");
-    system.runTimeout(() => {
-      this.initScoreboard();
-    }, 2);
+  static getDefaultPackAmount() {
+    return MaidSkin.DEFAULT_PACKS.length;
   }
 
   /**
-   * 注册皮肤包
-   * @param name 皮肤包命名空间
-   * @param index 皮肤包编号
-   * @param length 数量
-   * @returns 已存在同名或同序号皮肤包时返回false
+   * 获取指定皮肤包的皮肤数量
    */
-  static register(name: string, index: number, length: number): boolean {
-    for (let pack of this.SkinList) {
-      if (typeof pack === 'object' && pack !== null) {
-        if (pack.name === name || pack.index === index) {
-          return false;
-        }
-      }
-    }
-    this.SkinList.push({
-      name: name,
-      index: index,
-      length: length
-    });
-    //TODO: 计分板存储
-    return true;
+  static getSkinAmount(packId: number): number {
+    return MaidSkin.skinPacks.get(packId) ?? 0;
   }
 
+  ///// 展示文本获取 /////
   /**
    * 获取皮肤包的显示名称（translate）
    */
@@ -124,24 +137,10 @@ export class MaidSkin {
   }
 
   /**
-   * 由展示顺序获取皮肤包的所有数据
-   * @param index 展示顺序
+   * 获取皮肤包的作者（translate）
    */
-  static getPack(index: number): any {
-    return this.SkinList[index];
-  }
-
-  /**
-   * 由ID获取皮肤包的所有数据
-   */
-  static getPack_ID(index: number): any | undefined {
-    for (let pack of this.SkinList) {
-      // @ts-ignore
-      if (pack["index"] === index) {
-        return pack;
-      }
-    }
-    return undefined;
+  static getAuthors(id: number): { translate: string } {
+    return { translate: `maid_pack.${id}.authors` };
   }
 
   /**
@@ -154,35 +153,16 @@ export class MaidSkin {
   }
 
   /**
-   * 输入 translate文本（`model.${id}.${index}.name`）， 获取皮肤信息
+   * 获取所有皮肤包展示信息，用于皮肤包选择弹窗（按 id 大小排序）
    */
-  static decodeName(translate: string): { pack: number; index: number } {
-    let str = translate.split('.');
-    return {
-      pack: Number(str[1]),
-      index: Number(str[2])
-    };
-  }
-
-  /**
-   * 获取作者
-   */
-  static getAuthors(id: number): { translate: string } {
-    return { translate: `maid_pack.${id}.authors` };
-  }
-
-  static size(): number {
-    return this.SkinList.length;
-  }
-
-  /**
-   * 获取模型包的模型数量
-   */
-  static getSkinAmount(packId: number): number {
-    if (packId > this.DEFAULTAMOUNT) {
-      return this.SkinList[packId - 100];
-    } else {
-      return this.SkinList[packId];
-    }
+  static getAllPackInfos(): SkinPackDisplayInfo[] {
+    const ids = Array.from(MaidSkin.skinPacks.keys());
+    ids.sort((a, b) => a - b);
+    return ids.map(id => ({
+      id: id,
+      name: MaidSkin.getPackDisplayName(id),
+      icon: MaidSkin.getPackIcon(id),
+      count: MaidSkin.getSkinAmount(id),
+    }));
   }
 }
