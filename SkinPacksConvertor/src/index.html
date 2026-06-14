@@ -663,6 +663,40 @@
     setTheme(savedTheme || (preferDark ? 'dark' : 'light'));
   }
 
+  async function fetchUuidFromWebsite() {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(function() {
+        controller.abort();
+      }, 4000);
+
+      const response = await fetch('https://www.uuidgenerator.net/api/version4', {
+        method: 'GET',
+        cache: 'no-store',
+        signal: controller.signal
+      });
+
+      clearTimeout(timeout);
+
+      if (!response.ok) return '';
+      const text = (await response.text()).trim();
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(text)) return '';
+      return text;
+    } catch (error) {
+      return '';
+    }
+  }
+
+  async function initDefaultUuid() {
+    const uuidInput = document.getElementById('uuid');
+    if (!uuidInput || uuidInput.value.trim()) return;
+
+    const websiteUuid = await fetchUuidFromWebsite();
+    if (websiteUuid) {
+      uuidInput.value = websiteUuid;
+    }
+  }
+
   if (languageSelect) {
     languageSelect.addEventListener('change', (event) => {
       setLanguage(event.target.value);
@@ -678,6 +712,7 @@
 
   initLanguage();
   initTheme();
+  initDefaultUuid();
 
 
   // 上传相关
