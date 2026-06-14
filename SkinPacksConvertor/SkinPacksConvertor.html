@@ -1,55 +1,447 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>车万女仆模型包转换器</title>
 </head>
 <body>
-<h1>车万女仆模型包转换器</h1>
-<p>一个将Java版女仆模型包转换为基岩版的工具。</p>
+<div class="page">
+  <header class="hero card">
+    <div class="hero-top">
+      <h1>车万女仆模型包转换器</h1>
+      <button id="theme_toggle" type="button" class="theme-toggle" aria-label="切换主题">🌙 深色模式</button>
+    </div>
+    <p>一个将 Java 版女仆模型包转换为基岩版的工具。</p>
+  </header>
 
-<hr>
+  <main class="content-grid">
+    <section class="card">
+      <h2>UUID</h2>
+      <p>UUID 是模型包的唯一标识符，你可以在 <a href="https://www.uuidgenerator.net" target="_blank" rel="noopener noreferrer" title="UUID生成">UUID 生成网站</a> 获取它。</p>
+      <div class="field-row">
+        <label for="uuid">输入 UUID：</label>
+        <input id="uuid" type="text" placeholder="例如：xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+      </div>
+    </section>
 
-<p> <b>UUID</b>  </p>
-<div style="text-indent: 10px;">
-  <p>UUID是模型包的唯一标识符，你可以在 <a href="https://www.uuidgenerator.net" target="_blank" title="UUID生成">网站</a> 获取它。</p>
-  <div><label for="uuid">输入UUID：</label> <input id="uuid" type="text"></div>
+    <section class="card">
+      <h2>Java 版模型包</h2>
+      <p>
+        在 <a href="https://page.cfpa.team/MaidCustomPack/zh" target="_blank" rel="noopener noreferrer" title="模型下载">模型下载页面</a>
+        下载 Java 版女仆模型包，然后点击下方按钮上传 zip 文件。
+      </p>
+      <p class="hint">模型包前方的序号决定游戏内的先后顺序，一个世界只能同时加载一个模型包。</p>
+
+      <div class="upload-area">
+        <table id="result_block" class="result-table">
+          <tr><th>序号</th><th colspan="2">信息</th></tr>
+          <tr><td class="center-col">*</td><td colspan="2" class="placeholder">待上传</td></tr>
+        </table>
+        <div id="drop_zone" class="drop-zone" tabindex="0" role="button" aria-label="拖拽或点击上传模型包">
+          <p class="drop-title">拖拽 zip 文件到这里</p>
+          <p class="drop-subtitle">或点击下方按钮选择多个文件</p>
+          <label for="file" class="file-label">添加模型包</label>
+        </div>
+        <input type="file" id="file" name="file" multiple>
+      </div>
+    </section>
+
+    <section class="card action-card">
+      <button type="button" onclick="startConvert()" id="b_convert">开始转换</button>
+      <div class="tips">
+        <p>转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包优先级：</p>
+        <ul>
+          <li>若是单机游戏，则令附加模型包在主包上方；</li>
+          <li>若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。</li>
+        </ul>
+        <p>执行如下指令，完成模型包加载：</p>
+        <p id="command">待生成...</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="error_log" class="error-log"></div>
 </div>
 
-<p><b>Java版模型包</b></p>
-<div style="text-indent: 10px;">
-  <p>
-    在 <a href="http://page.cfpa.team/MaidCustomPack/zh" target="_blank" title="模型下载">模型下载</a>
-    页面下载Java版女仆模型包，然后点击「添加」按钮上传zip文件。
-  </p><p>
-  模型包前方的序号决定在游戏内的先后顺序，一个世界只能同时加载一个模型包。
-</p>
-
-  <div>
-    <table border="1" style="margin-inline:10px;" id="result_block">
-      <tr><th>序号</th><th colspan="2">信息</th></tr>
-      <tr><td align="center">*</td><td colspan="1">待上传</td></tr>
-    </table>
-    <input type="file" id="file" name="file" style="padding:10px;" multiple/>
-  </div>
-</div>
-
-<hr>
-<div style="text-indent: 10px;">
-  <button onclick="startConvert()" id="b_convert">开始转换</button>
-  <div>
-    转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包的优先级：<br>
-    <div style="text-indent: 20px;">- 若是单机游戏，则令附加模型包在主包上方；</div>
-    <div style="text-indent: 20px;">- 若是服务器，则修改世界文件夹下的 “world_resource_packs.json”，令附加模型包在主包上方。</div>
-    <div>执行如下指令，完成模型包加载：</div>
-    <p style="background-color: yellow;" id="command">待生成...</p>
-  </div>
-</div>
-<div id="error_log"></div>
 <!-- 样式 -->
 <style type="text/css">
-    table td{padding:5px;}
+  :root {
+    color-scheme: light;
+    --bg: #f3f6ff;
+    --bg-spot-1: #edf2ff;
+    --bg-spot-2: #f7f9ff;
+    --card: #ffffff;
+    --line: #dce4f4;
+    --text: #1f2940;
+    --heading: #22336a;
+    --hero-title: #1d2b53;
+    --muted: #60708f;
+    --primary: #516dff;
+    --primary-hover: #3f5af0;
+    --danger: #df2e52;
+    --input-bg: #fbfcff;
+    --table-bg: #ffffff;
+    --table-head-bg: #f7f9ff;
+    --table-head-text: #2a3f7f;
+    --file-btn-bg: #e9eeff;
+    --file-btn-text: #3249a7;
+    --file-btn-hover-bg: #dde6ff;
+    --control-btn-bg: #eef2ff;
+    --control-btn-text: #31489d;
+    --tips-text: #3a4968;
+    --command-border: #ffe5a0;
+    --command-bg: #fff6cf;
+    --command-text: #5a4b1e;
+    --drop-bg: #f8faff;
+    --drop-border: #cfd9f7;
+    --drop-active-bg: #eef3ff;
+    --drop-active-border: #8da0ff;
+    --shadow: 0 10px 30px rgba(48, 75, 153, 0.12);
+  }
+
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0f1526;
+    --bg-spot-1: #1b2440;
+    --bg-spot-2: #101a31;
+    --card: #16213c;
+    --line: #2a3a63;
+    --text: #e8eeff;
+    --heading: #d9e2ff;
+    --hero-title: #edf2ff;
+    --muted: #97a7cc;
+    --primary: #90a4ff;
+    --primary-hover: #7c93ff;
+    --danger: #ff7b98;
+    --input-bg: #111a31;
+    --table-bg: #111a31;
+    --table-head-bg: #1d2a4d;
+    --table-head-text: #d7e1ff;
+    --file-btn-bg: #253866;
+    --file-btn-text: #d6e0ff;
+    --file-btn-hover-bg: #2d447c;
+    --control-btn-bg: #24375f;
+    --control-btn-text: #dde5ff;
+    --tips-text: #c4d2fa;
+    --command-border: #5f4f25;
+    --command-bg: #2b2517;
+    --command-text: #f3dd9e;
+    --drop-bg: #131f39;
+    --drop-border: #344b80;
+    --drop-active-bg: #1d2e56;
+    --drop-active-border: #8fa5ff;
+    --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: radial-gradient(circle at 15% 15%, var(--bg-spot-1) 0%, var(--bg-spot-2) 36%, var(--bg) 100%);
+    color: var(--text);
+    line-height: 1.65;
+    transition: background-color .2s ease, color .2s ease;
+  }
+
+  .page {
+    width: min(980px, calc(100% - 32px));
+    margin: 28px auto;
+    display: grid;
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+  }
+
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero h1 {
+    margin: 0;
+    font-size: clamp(1.4rem, 2.2vw, 2rem);
+    color: var(--hero-title);
+  }
+
+  .theme-toggle {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--text);
+    padding: 7px 11px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform .12s ease, background-color .12s ease, border-color .12s ease;
+  }
+
+  .theme-toggle:hover {
+    transform: translateY(-1px);
+    border-color: var(--primary);
+  }
+
+  .hero p {
+    margin: 8px 0 0;
+    color: var(--muted);
+  }
+
+  .content-grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+    color: var(--heading);
+  }
+
+  p {
+    margin: 8px 0;
+  }
+
+  a {
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+  }
+
+  a:hover {
+    border-bottom-color: var(--primary);
+  }
+
+  .field-row {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .field-row label {
+    font-weight: 600;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--input-bg);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+
+  input[type="text"]:focus {
+    border-color: #8da0ff;
+    box-shadow: 0 0 0 3px rgba(81, 109, 255, 0.15);
+  }
+
+  .hint {
+    color: var(--muted);
+    font-size: .95rem;
+  }
+
+  .upload-area {
+    margin-top: 10px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .drop-zone {
+    border: 2px dashed var(--drop-border);
+    border-radius: 12px;
+    background: var(--drop-bg);
+    padding: 14px;
+    text-align: center;
+    transition: background-color .15s ease, border-color .15s ease, transform .15s ease;
+  }
+
+  .drop-zone.is-dragging,
+  .drop-zone:focus-visible {
+    background: var(--drop-active-bg);
+    border-color: var(--drop-active-border);
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  .drop-zone.is-disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+
+
+  .drop-title {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .drop-subtitle {
+    margin: 4px 0 10px;
+    color: var(--muted);
+    font-size: .9rem;
+  }
+
+  .result-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--table-bg);
+  }
+
+  .result-table th,
+  .result-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+
+  .center-col {
+    text-align: center;
+  }
+
+  .result-table th {
+    background: var(--table-head-bg);
+    text-align: left;
+    color: var(--table-head-text);
+  }
+
+  .result-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .placeholder {
+    color: var(--muted);
+  }
+
+  #file {
+    display: none;
+  }
+
+  .file-label,
+  #b_convert,
+  .result-table button {
+    border: none;
+    border-radius: 9px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, opacity .12s ease;
+  }
+
+  .file-label {
+    display: inline-block;
+    width: fit-content;
+    padding: 8px 12px;
+    background: var(--file-btn-bg);
+    color: var(--file-btn-text);
+    font-weight: 600;
+  }
+
+  .file-label:hover {
+    background: var(--file-btn-hover-bg);
+  }
+
+  #b_convert {
+    padding: 10px 16px;
+    background: linear-gradient(135deg, var(--primary), #6882ff);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 6px 14px rgba(81, 109, 255, 0.3);
+  }
+
+  #b_convert:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--primary-hover), #5774ff);
+    transform: translateY(-1px);
+  }
+
+  #b_convert:disabled,
+  .result-table button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+
+  .result-table button {
+    background: var(--control-btn-bg);
+    color: var(--control-btn-text);
+    margin-right: 6px;
+    padding: 4px 8px;
+    font-weight: 600;
+  }
+
+  .result-table button:last-child {
+    margin-right: 0;
+    background: rgba(223, 46, 82, 0.12);
+    color: var(--danger);
+  }
+
+
+  .action-card {
+    display: grid;
+    gap: 12px;
+  }
+
+  .tips {
+    color: var(--tips-text);
+  }
+
+  .tips ul {
+    margin: 6px 0 10px;
+    padding-left: 20px;
+  }
+
+  #command {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--command-border);
+    background: var(--command-bg);
+    color: var(--command-text);
+    font-family: "Consolas", "Courier New", monospace;
+    word-break: break-all;
+  }
+
+  .error-log {
+    white-space: pre-wrap;
+    color: var(--danger);
+  }
+
+  @media (max-width: 700px) {
+    .page {
+      width: calc(100% - 20px);
+      margin: 16px auto;
+      gap: 12px;
+    }
+
+    .card {
+      padding: 14px;
+    }
+
+    .hero-top {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .result-table th,
+    .result-table td {
+      padding: 8px;
+    }
+  }
 </style>
 
 <!-- 主要处理 -->
@@ -65,43 +457,118 @@
   var fileList = []; // [ {"name":"xxx.xx"} ]
   var processing = false; // 正在处理
 
-  // 添加文件事件
-  const fileUploader = document.getElementById('file');
-  fileUploader.addEventListener('change', (event) => {
-    const files = event.target.files;
-    for(let i = 0; i < files.length; i++){
-      fileList.push(files[i]);
+  // 主题切换
+  const themeToggle = document.getElementById('theme_toggle');
+  function setTheme(theme) {
+    const mode = theme === 'dark' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', mode);
+    if (themeToggle) {
+      themeToggle.textContent = mode === 'dark' ? '☀️ 浅色模式' : '🌙 深色模式';
+      themeToggle.setAttribute('aria-label', mode === 'dark' ? '切换到浅色模式' : '切换到深色模式');
     }
+    localStorage.setItem('tlm_theme', mode);
+  }
 
-    // console.log('files', files);
-    // console.log('fileList', fileList);
+  function initTheme() {
+    const savedTheme = localStorage.getItem('tlm_theme');
+    const preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(savedTheme || (preferDark ? 'dark' : 'light'));
+  }
 
-    // 更新列表
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    });
+  }
+  initTheme();
+
+  // 上传相关
+  const fileUploader = document.getElementById('file');
+  const dropZone = document.getElementById('drop_zone');
+
+  function addFiles(files) {
+    if (!files || processing) return;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const existed = fileList.some((item) => (
+        item.name === file.name && item.size === file.size && item.lastModified === file.lastModified
+      ));
+      if (!existed) {
+        fileList.push(file);
+      }
+    }
     refreshList();
+  }
+
+  // 添加文件事件
+  fileUploader.addEventListener('change', (event) => {
+    addFiles(event.target.files);
+    event.target.value = '';
   });
+
+  if (dropZone) {
+    ['dragenter', 'dragover'].forEach((eventName) => {
+      dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (processing) return;
+        dropZone.classList.add('is-dragging');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach((eventName) => {
+      dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dropZone.classList.remove('is-dragging');
+      });
+    });
+
+    dropZone.addEventListener('drop', (event) => {
+      addFiles(event.dataTransfer.files);
+    });
+
+    dropZone.addEventListener('click', (event) => {
+      if (processing || event.target.classList.contains('file-label')) return;
+      fileUploader.click();
+    });
+
+    dropZone.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        fileUploader.click();
+      }
+    });
+  }
   function refreshList() {
     if (processing) return;
     const res = document.getElementById('result_block');
     let msg = `<tr><th>序号</th><th colspan="2">信息</th></tr>`;
+
+    if (fileList.length === 0) {
+      msg += `<tr><td class="center-col">*</td><td colspan="2" class="placeholder">待上传</td></tr>`;
+    }
+
     for (let i = 0; i < fileList.length; i++) {
-      msg += `<tr><td align="center">${i+1}</td>`; // 序号 0为默认包预留
+      msg += `<tr><td class="center-col">${i + 1}</td>`; // 序号 0为默认包预留
       msg += `<td>${fileList[i].name}</td>`; // 文件名
-      msg += `<td><button onclick='file_up(${i})'>↑</button> <button onclick='file_down(${i})'>↓</button> <button onclick='file_del(${i})'>x</button></td></tr>`
+      msg += `<td><button title="上移" onclick='file_up(${i})'>↑</button> <button title="下移" onclick='file_down(${i})'>↓</button> <button title="删除" onclick='file_del(${i})'>x</button></td></tr>`;
     }
     res.innerHTML = msg;
   }
 
   // 改变文件位置
   function file_up(num) {
-    if (num == 0 || processing) return;
-    var temp = fileList[num-1];
+    if (num === 0 || processing) return;
+    const temp = fileList[num-1];
     fileList[num-1] = fileList[num]
     fileList[num] = temp;
     refreshList();
   }
   function file_down(num) {
     if(num >= fileList.length - 1 || processing) return;
-    var temp = fileList[num+1];
+    const temp = fileList[num+1];
     fileList[num+1] = fileList[num]
     fileList[num] = temp;
     refreshList();
@@ -116,11 +583,11 @@
   async function startConvert() {
     console.log("Start converting..");
     /// 信息完整性判断 ///
-    if (fileList.length <= 0) {
+    if (fileList.length === 0) {
       alert("请上传Java版模型包");
       return;
     }
-    let uuid = document.getElementById("uuid").value;
+    const uuid = document.getElementById("uuid").value;
     if (!uuid) {
       alert("请输入uuid")
       return;
@@ -131,13 +598,17 @@
     processing = true;
     document.getElementById("b_convert").disabled = true;
     document.getElementById("file").disabled = true;
+    if (dropZone) {
+      dropZone.classList.add('is-disabled');
+      dropZone.setAttribute('aria-disabled', 'true');
+    }
 
     /// 开始转换 ///
     let convertor = new SkinConvertor(fileList);
     let res = await convertor.startConvert(uuid);
     if (res) {
       // 更新命令
-      document.getElementById("command").innerHTML = res.commandStr;
+      document.getElementById("command").textContent = res.commandStr;
       // 导出文件
       res.resultFile.generateAsync({type:"blob"})
         .then(function(content) {
@@ -149,6 +620,10 @@
     processing = false;
     document.getElementById("b_convert").disabled = false;
     document.getElementById("file").disabled = false;
+    if (dropZone) {
+      dropZone.classList.remove('is-disabled');
+      dropZone.removeAttribute('aria-disabled');
+    }
   }
 
 </script>
@@ -886,8 +1361,6 @@ window.PackFile = PackFile;
 </script>
 
 <!-- JSZIP https://github.com/Stuk/jszip?tab=readme-ov-file -->
-<script>
-  </script>
 <script>
   var saveAs = saveAs
     // IE 10+ (native saveAs)
