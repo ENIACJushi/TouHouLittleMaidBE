@@ -1,5 +1,15 @@
 {
+  "name": "skin-packs-convertor",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "webpack",
+    "build:single": "npm run build && node ./scripts/build-single-html.js"
+  },
   "dependencies": {
     "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
   }
 }
