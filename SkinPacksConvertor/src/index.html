@@ -9,29 +9,36 @@
 <div class="page">
   <header class="hero card">
     <div class="hero-top">
-      <h1>车万女仆模型包转换器</h1>
-      <button id="theme_toggle" type="button" class="theme-toggle" aria-label="切换主题">🌙 深色模式</button>
+      <h1 id="page_title">车万女仆模型包转换器</h1>
+      <div class="hero-controls">
+        <label for="language_select" id="language_label" class="sr-only">语言</label>
+        <select id="language_select" class="lang-select" aria-label="语言选择">
+          <option value="zh-CN">中文</option>
+          <option value="en-US">English</option>
+        </select>
+        <button id="theme_toggle" type="button" class="theme-toggle" aria-label="切换主题">🌙 深色模式</button>
+      </div>
     </div>
-    <p>一个将 Java 版女仆模型包转换为基岩版的工具。</p>
+    <p id="hero_desc">一个将 Java 版女仆模型包转换为基岩版的工具。</p>
   </header>
 
   <main class="content-grid">
     <section class="card">
-      <h2>UUID</h2>
-      <p>UUID 是模型包的唯一标识符，你可以在 <a href="https://www.uuidgenerator.net" target="_blank" rel="noopener noreferrer" title="UUID生成">UUID 生成网站</a> 获取它。</p>
+      <h2 id="uuid_title">UUID</h2>
+      <p id="uuid_desc">UUID 是模型包的唯一标识符，你可以在 <a href="https://www.uuidgenerator.net" target="_blank" rel="noopener noreferrer" title="UUID生成">UUID 生成网站</a> 获取它。</p>
       <div class="field-row">
-        <label for="uuid">输入 UUID：</label>
+        <label id="uuid_label" for="uuid">输入 UUID：</label>
         <input id="uuid" type="text" placeholder="例如：xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
       </div>
     </section>
 
     <section class="card">
-      <h2>Java 版模型包</h2>
-      <p>
+      <h2 id="pack_title">Java 版模型包</h2>
+      <p id="pack_desc">
         在 <a href="https://page.cfpa.team/MaidCustomPack/zh" target="_blank" rel="noopener noreferrer" title="模型下载">模型下载页面</a>
         下载 Java 版女仆模型包，然后点击下方按钮上传 zip 文件。
       </p>
-      <p class="hint">模型包前方的序号决定游戏内的先后顺序，一个世界只能同时加载一个模型包。</p>
+      <p id="pack_hint" class="hint">模型包前方的序号决定游戏内的先后顺序，一个世界只能同时加载一个模型包。</p>
 
       <div class="upload-area">
         <table id="result_block" class="result-table">
@@ -39,9 +46,9 @@
           <tr><td class="center-col">*</td><td colspan="2" class="placeholder">待上传</td></tr>
         </table>
         <div id="drop_zone" class="drop-zone" tabindex="0" role="button" aria-label="拖拽或点击上传模型包">
-          <p class="drop-title">拖拽 zip 文件到这里</p>
-          <p class="drop-subtitle">或点击下方按钮选择多个文件</p>
-          <label for="file" class="file-label">添加模型包</label>
+          <p id="drop_title" class="drop-title">拖拽 zip 文件到这里</p>
+          <p id="drop_subtitle" class="drop-subtitle">或点击下方按钮选择多个文件</p>
+          <label id="file_label" for="file" class="file-label">添加模型包</label>
         </div>
         <input type="file" id="file" name="file" multiple>
       </div>
@@ -50,12 +57,12 @@
     <section class="card action-card">
       <button type="button" onclick="startConvert()" id="b_convert">开始转换</button>
       <div class="tips">
-        <p>转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包优先级：</p>
+        <p id="tips_intro">转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包优先级：</p>
         <ul>
-          <li>若是单机游戏，则令附加模型包在主包上方；</li>
-          <li>若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。</li>
+          <li id="tips_single">若是单机游戏，则令附加模型包在主包上方；</li>
+          <li id="tips_server">若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。</li>
         </ul>
-        <p>执行如下指令，完成模型包加载：</p>
+        <p id="tips_command">执行如下指令，完成模型包加载：</p>
         <p id="command">待生成...</p>
       </div>
     </section>
@@ -170,6 +177,35 @@
     gap: 12px;
   }
 
+  .hero-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .lang-select {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--text);
+    padding: 7px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
   .hero h1 {
     margin: 0;
     font-size: clamp(1.4rem, 2.2vw, 2rem);
@@ -188,6 +224,7 @@
     white-space: nowrap;
     transition: transform .12s ease, background-color .12s ease, border-color .12s ease;
   }
+
 
   .theme-toggle:hover {
     transform: translateY(-1px);
@@ -437,10 +474,16 @@
       align-items: flex-start;
     }
 
+    .hero-controls {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
     .result-table th,
     .result-table td {
       padding: 8px;
     }
+
   }
 </style>
 
@@ -457,15 +500,160 @@
   var fileList = []; // [ {"name":"xxx.xx"} ]
   var processing = false; // 正在处理
 
-  // 主题切换
+  const I18N = {
+    'zh-CN': {
+      pageTitle: '车万女仆模型包转换器',
+      heroDesc: '一个将 Java 版女仆模型包转换为基岩版的工具。',
+      languageLabel: '语言',
+      languageAria: '语言选择',
+      uuidTitle: 'UUID',
+      uuidDesc: 'UUID 是模型包的唯一标识符，你可以在 <a href="https://www.uuidgenerator.net" target="_blank" rel="noopener noreferrer" title="UUID生成">UUID 生成网站</a> 获取它。',
+      uuidLabel: '输入 UUID：',
+      uuidPlaceholder: '例如：xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+      packTitle: 'Java 版模型包',
+      packDesc: '在 <a href="https://page.cfpa.team/MaidCustomPack/zh" target="_blank" rel="noopener noreferrer" title="模型下载">模型下载页面</a> 下载 Java 版女仆模型包，然后点击下方按钮上传 zip 文件。',
+      packHint: '模型包前方的序号决定游戏内的先后顺序，一个世界只能同时加载一个模型包。',
+      tableIndex: '序号',
+      tableInfo: '信息',
+      tablePending: '待上传',
+      dropZoneAria: '拖拽或点击上传模型包',
+      dropTitle: '拖拽 zip 文件到这里',
+      dropSubtitle: '或点击下方按钮选择多个文件',
+      fileLabel: '添加模型包',
+      convert: '开始转换',
+      tipsIntro: '转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包优先级：',
+      tipsSingle: '若是单机游戏，则令附加模型包在主包上方；',
+      tipsServer: '若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。',
+      tipsCommand: '执行如下指令，完成模型包加载：',
+      commandPending: '待生成...',
+      moveUp: '上移',
+      moveDown: '下移',
+      remove: '删除',
+      alertUpload: '请上传Java版模型包',
+      alertUuid: '请输入 UUID',
+      themeToLight: '☀️ 浅色模式',
+      themeToDark: '🌙 深色模式',
+      themeAriaToLight: '切换到浅色模式',
+      themeAriaToDark: '切换到深色模式',
+      exportFileName: 'TLM_MaidSkinPack.mcpack'
+    },
+    'en-US': {
+      pageTitle: 'TouHou Little Maid Skin Pack Converter',
+      heroDesc: 'Convert Java Edition maid skin packs into Bedrock Edition format.',
+      languageLabel: 'Language',
+      languageAria: 'Language selector',
+      uuidTitle: 'UUID',
+      uuidDesc: 'UUID is the unique identifier for your skin pack. You can generate one at <a href="https://www.uuidgenerator.net" target="_blank" rel="noopener noreferrer" title="Generate UUID">UUID Generator</a>.',
+      uuidLabel: 'UUID:',
+      uuidPlaceholder: 'e.g. xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+      packTitle: 'Java Edition Skin Packs',
+      packDesc: 'Download Java Edition maid skin packs from the <a href="https://page.cfpa.team/MaidCustomPack/en" target="_blank" rel="noopener noreferrer" title="Download skins">download page</a>, then upload zip files below.',
+      packHint: 'The order number controls in-game priority. Only one skin pack can be active at a time in a world.',
+      tableIndex: 'Index',
+      tableInfo: 'Info',
+      tablePending: 'Waiting for upload',
+      dropZoneAria: 'Drag files here or click to upload skin packs',
+      dropTitle: 'Drag zip files here',
+      dropSubtitle: 'Or click the button below to select multiple files',
+      fileLabel: 'Add skin packs',
+      convert: 'Start Convert',
+      tipsIntro: 'After conversion, import the generated resource pack and activate it in your world. Then set resource pack priority first:',
+      tipsSingle: 'For single-player, place the add-on skin pack above the main pack.',
+      tipsServer: 'For servers, edit <code>world_resource_packs.json</code> in the world folder and place the add-on skin pack above the main pack.',
+      tipsCommand: 'Run the following command to finish loading:',
+      commandPending: 'Pending...',
+      moveUp: 'Move up',
+      moveDown: 'Move down',
+      remove: 'Remove',
+      alertUpload: 'Please upload Java Edition skin packs.',
+      alertUuid: 'Please enter UUID.',
+      themeToLight: '☀️ Light Mode',
+      themeToDark: '🌙 Dark Mode',
+      themeAriaToLight: 'Switch to light mode',
+      themeAriaToDark: 'Switch to dark mode',
+      exportFileName: 'TLM_MaidSkinPack.mcpack'
+    }
+  };
+
+  const languageSelect = document.getElementById('language_select');
   const themeToggle = document.getElementById('theme_toggle');
+  let currentLang = 'zh-CN';
+
+  function t(key) {
+    const dict = I18N[currentLang] || I18N['zh-CN'];
+    return dict[key] || I18N['zh-CN'][key] || key;
+  }
+
+  function applyLanguage() {
+    document.documentElement.setAttribute('lang', currentLang);
+    document.title = t('pageTitle');
+
+    document.getElementById('page_title').textContent = t('pageTitle');
+    document.getElementById('hero_desc').textContent = t('heroDesc');
+    document.getElementById('language_label').textContent = t('languageLabel');
+    if (languageSelect) {
+      languageSelect.setAttribute('aria-label', t('languageAria'));
+    }
+
+    document.getElementById('uuid_title').textContent = t('uuidTitle');
+    document.getElementById('uuid_desc').innerHTML = t('uuidDesc');
+    document.getElementById('uuid_label').textContent = t('uuidLabel');
+    document.getElementById('uuid').setAttribute('placeholder', t('uuidPlaceholder'));
+
+    document.getElementById('pack_title').textContent = t('packTitle');
+    document.getElementById('pack_desc').innerHTML = t('packDesc');
+    document.getElementById('pack_hint').textContent = t('packHint');
+
+    document.getElementById('drop_title').textContent = t('dropTitle');
+    document.getElementById('drop_subtitle').textContent = t('dropSubtitle');
+    document.getElementById('file_label').textContent = t('fileLabel');
+    document.getElementById('drop_zone').setAttribute('aria-label', t('dropZoneAria'));
+
+    document.getElementById('b_convert').textContent = t('convert');
+    document.getElementById('tips_intro').textContent = t('tipsIntro');
+    document.getElementById('tips_single').textContent = t('tipsSingle');
+    document.getElementById('tips_server').innerHTML = t('tipsServer');
+    document.getElementById('tips_command').textContent = t('tipsCommand');
+
+    const commandBlock = document.getElementById('command');
+    if (!commandBlock.dataset.generated || commandBlock.textContent === '' || commandBlock.textContent === I18N['zh-CN'].commandPending || commandBlock.textContent === I18N['en-US'].commandPending) {
+      commandBlock.textContent = t('commandPending');
+    }
+
+    const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    updateThemeToggleText(currentTheme);
+
+    if (!processing) {
+      refreshList();
+    }
+  }
+
+  function setLanguage(lang) {
+    currentLang = I18N[lang] ? lang : 'zh-CN';
+    if (languageSelect) {
+      languageSelect.value = currentLang;
+    }
+    localStorage.setItem('tlm_lang', currentLang);
+    applyLanguage();
+  }
+
+  function initLanguage() {
+    const savedLang = localStorage.getItem('tlm_lang');
+    const browserLang = (navigator.language || '').toLowerCase().startsWith('zh') ? 'zh-CN' : 'en-US';
+    setLanguage(savedLang || browserLang);
+  }
+
+  function updateThemeToggleText(mode) {
+    if (!themeToggle) return;
+    themeToggle.textContent = mode === 'dark' ? t('themeToLight') : t('themeToDark');
+    themeToggle.setAttribute('aria-label', mode === 'dark' ? t('themeAriaToLight') : t('themeAriaToDark'));
+  }
+
+  // 主题切换
   function setTheme(theme) {
     const mode = theme === 'dark' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', mode);
-    if (themeToggle) {
-      themeToggle.textContent = mode === 'dark' ? '☀️ 浅色模式' : '🌙 深色模式';
-      themeToggle.setAttribute('aria-label', mode === 'dark' ? '切换到浅色模式' : '切换到深色模式');
-    }
+    updateThemeToggleText(mode);
     localStorage.setItem('tlm_theme', mode);
   }
 
@@ -475,13 +663,22 @@
     setTheme(savedTheme || (preferDark ? 'dark' : 'light'));
   }
 
+  if (languageSelect) {
+    languageSelect.addEventListener('change', (event) => {
+      setLanguage(event.target.value);
+    });
+  }
+
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
       const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
       setTheme(current === 'dark' ? 'light' : 'dark');
     });
   }
+
+  initLanguage();
   initTheme();
+
 
   // 上传相关
   const fileUploader = document.getElementById('file');
@@ -544,19 +741,20 @@
   function refreshList() {
     if (processing) return;
     const res = document.getElementById('result_block');
-    let msg = `<tr><th>序号</th><th colspan="2">信息</th></tr>`;
+    let msg = `<tr><th>${t('tableIndex')}</th><th colspan="2">${t('tableInfo')}</th></tr>`;
 
     if (fileList.length === 0) {
-      msg += `<tr><td class="center-col">*</td><td colspan="2" class="placeholder">待上传</td></tr>`;
+      msg += `<tr><td class="center-col">*</td><td colspan="2" class="placeholder">${t('tablePending')}</td></tr>`;
     }
 
     for (let i = 0; i < fileList.length; i++) {
       msg += `<tr><td class="center-col">${i + 1}</td>`; // 序号 0为默认包预留
       msg += `<td>${fileList[i].name}</td>`; // 文件名
-      msg += `<td><button title="上移" onclick='file_up(${i})'>↑</button> <button title="下移" onclick='file_down(${i})'>↓</button> <button title="删除" onclick='file_del(${i})'>x</button></td></tr>`;
+      msg += `<td><button title="${t('moveUp')}" onclick='file_up(${i})'>↑</button> <button title="${t('moveDown')}" onclick='file_down(${i})'>↓</button> <button title="${t('remove')}" onclick='file_del(${i})'>x</button></td></tr>`;
     }
     res.innerHTML = msg;
   }
+
 
   // 改变文件位置
   function file_up(num) {
@@ -584,14 +782,15 @@
     console.log("Start converting..");
     /// 信息完整性判断 ///
     if (fileList.length === 0) {
-      alert("请上传Java版模型包");
+      alert(t('alertUpload'));
       return;
     }
     const uuid = document.getElementById("uuid").value;
     if (!uuid) {
-      alert("请输入uuid")
+      alert(t('alertUuid'));
       return;
     }
+
     if (processing) return;
 
     /// 停止页面交互 ///
@@ -608,13 +807,16 @@
     let res = await convertor.startConvert(uuid);
     if (res) {
       // 更新命令
-      document.getElementById("command").textContent = res.commandStr;
+      const commandBlock = document.getElementById("command");
+      commandBlock.textContent = res.commandStr;
+      commandBlock.dataset.generated = 'true';
       // 导出文件
       res.resultFile.generateAsync({type:"blob"})
         .then(function(content) {
-          saveAs(content, "TLM_MaidSkinPack.mcpack");
+          saveAs(content, t('exportFileName'));
         });
     }
+
 
     /// 恢复页面交互 ///
     processing = false;
