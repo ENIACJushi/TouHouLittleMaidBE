@@ -716,7 +716,6 @@
 
 
   // 上传相关
-
   const fileUploader = document.getElementById('file');
   const dropZone = document.getElementById('drop_zone');
 
@@ -963,9 +962,18 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 // This entry needs to be wrapped in an IIFE because it needs to be in strict mode.
 (() => {
 "use strict";
-/* unused harmony exports SkinConvertor, SkinPackConvertor, PackFile */
-/* harmony import */ var jszip__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(710);
-/* harmony import */ var jszip__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(jszip__WEBPACK_IMPORTED_MODULE_0__);
+
+// UNUSED EXPORTS: PackFile, SkinConvertor, SkinPackConvertor
+
+// EXTERNAL MODULE: ./node_modules/jszip/dist/jszip.min.js
+var jszip_min = __webpack_require__(710);
+var jszip_min_default = /*#__PURE__*/__webpack_require__.n(jszip_min);
+;// ./src/huh.ts
+function writeErrorLog(msg) {
+    document.getElementById("error_log").innerHTML += msg + '\n';
+}
+
+;// ./src/SkinConvertor.js
 
 
 // 命令头
@@ -1098,7 +1106,7 @@ class SkinConvertor {
     // 对每一个模型包，执行操作（fileList 是模型包的压缩文件）
     for (let i = 0; i < fileList.length; i++) {
       try {
-        let packZip = await jszip__WEBPACK_IMPORTED_MODULE_0___default().loadAsync(fileList[i]);
+        let packZip = await jszip_min_default().loadAsync(fileList[i]);
         let packConvertor = new SkinPackConvertor(packZip, i + 1, this.result);
         await packConvertor.handlePack();
       } catch(e) {
@@ -1145,6 +1153,10 @@ class SkinPackConvertor {
     await this.moveTextures();
     // 修改格式并移动模型
     await this.convertModels();
+    // todo 处理动画
+
+    // todo 处理语音包
+
     // 解析模型包信息
     await this.convertMaidModelCfg();
   }
@@ -1319,6 +1331,9 @@ class SkinPackConvertor {
   ///// 解析 maid_model.json /////
   async convertMaidModelCfg() {
     let content = await this.input.files[`assets/${this.packName}/maid_model.json`].async("string");
+    /**
+     * @type
+     */
     let inputJson = JSON.parse(content);
 
     // 解析作者字符串 author
@@ -1499,7 +1514,7 @@ class PackFile {
     /**
      * 转换结果 zip
      */
-    this.resultFile = new (jszip__WEBPACK_IMPORTED_MODULE_0___default())();
+    this.resultFile = new (jszip_min_default())();
     /**
      * 模型包注册命令
      */
@@ -1583,10 +1598,6 @@ class PackFile {
     this.resultFile.file("command.txt", this.commandStr);
     return this;
   }
-}
-
-function writeErrorLog(msg) {
-  document.getElementById("error_log").innerHTML += msg + '\n';
 }
 
 window.SkinConvertor = SkinConvertor;

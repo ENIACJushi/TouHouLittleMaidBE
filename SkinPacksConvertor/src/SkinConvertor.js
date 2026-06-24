@@ -1,5 +1,5 @@
 import JSZip from 'jszip';
-
+import { writeErrorLog } from './huh'
 // 命令头
 const TEMPLATE_COMMAND = '/scriptevent thlm:skin_set ';
 
@@ -177,6 +177,10 @@ export class SkinPackConvertor {
     await this.moveTextures();
     // 修改格式并移动模型
     await this.convertModels();
+    // todo 处理动画
+
+    // todo 处理语音包
+
     // 解析模型包信息
     await this.convertMaidModelCfg();
   }
@@ -351,6 +355,9 @@ export class SkinPackConvertor {
   ///// 解析 maid_model.json /////
   async convertMaidModelCfg() {
     let content = await this.input.files[`assets/${this.packName}/maid_model.json`].async("string");
+    /**
+     * @type
+     */
     let inputJson = JSON.parse(content);
 
     // 解析作者字符串 author
@@ -615,10 +622,6 @@ export class PackFile {
     this.resultFile.file("command.txt", this.commandStr);
     return this;
   }
-}
-
-function writeErrorLog(msg) {
-  document.getElementById("error_log").innerHTML += msg + '\n';
 }
 
 window.SkinConvertor = SkinConvertor;
