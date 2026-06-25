@@ -48,7 +48,7 @@ export type TLMI18nText = string;
  * `assets/<namespace>/maid_model.json`。
  * 加载器会分别从文件夹型资源包与 zip 型资源包读取该文件。
  */
-export interface TLMMaidModelPack {
+export interface MaidModelJava {
   /**
    * 包显示名。必填。缺失会导致解析失败并抛出 `Expected "pack_name" in pack`。
    * 可以是普通文本，也可以是 `{...}` 本地化键。
@@ -209,6 +209,3 @@ interface TLMEasterEgg {
   /** 是否使用加密匹配。`false` 使用明文 `tag` 匹配女仆名称；`true` 使用 `sha1(女仆名称)` 匹配 `tag`。 */
   encrypt?: boolean;
 }
-
-/** 便于在编辑器中标注整个 `maid_model.json` 文件的别名。 */
-type TLMMaidModelJson = TLMMaidModelPack;

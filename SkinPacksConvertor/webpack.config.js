@@ -2,7 +2,7 @@ const path = require('path');
 
 module.exports = {
   mode: 'production',
-  entry: './src/SkinConvertor.js',
+  entry: './src/SkinConvertor.ts',
   output: {
     filename: 'SkinConvertor.bundle.js',
     path: path.resolve(__dirname, 'dist')
