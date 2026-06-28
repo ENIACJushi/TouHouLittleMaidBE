@@ -49,23 +49,18 @@ export type TLMI18nText = string;
  * 加载器会分别从文件夹型资源包与 zip 型资源包读取该文件。
  */
 export interface MaidModelJava {
-  /**
-   * 包显示名。必填。缺失会导致解析失败并抛出 `Expected "pack_name" in pack`。
-   * 可以是普通文本，也可以是 `{...}` 本地化键。
-   */
+  /** 【已解析】作者列表。缺失时变为空数组。GUI 中会按作者列表显示，通常每两名作者一组换行。 */
+  author?: string | string[];
+  /** 【已解析】包显示名。必填 */
   pack_name: TLMI18nText;
+  /** 【已解析】模型包描述。缺失时变为空数组。GUI 中按行显示，可使用本地化键。 */
+  description?: TLMI18nText[];
 
   /**
    * 模型列表。必填且不能为空；缺失或空数组会导致解析失败并抛出 `Expected "model_list" in pack`。
    * 每个元素描述一个基础模型；如果元素包含 `extra_textures`，加载后会额外派生出多个同模型不同贴图的条目。
    */
   model_list: TLMMaidModelInfo[];
-
-  /** 作者列表。缺失时变为空数组。GUI 中会按作者列表显示，通常每两名作者一组换行。 */
-  author?: string[];
-
-  /** 模型包描述。缺失时变为空数组。GUI 中按行显示，可使用本地化键。 */
-  description?: TLMI18nText[];
 
   /** 模型包版本号。源码未对格式做校验，仅在 GUI 详情中显示。 */
   version?: string | null;
@@ -80,6 +75,7 @@ export interface MaidModelJava {
   icon?: TLMResourceLocation;
 
   /**
+   * （基岩版不支持动态图标）
    * 动态图标帧切换延迟，单位约为游戏 GUI tick。缺失默认 `2`；小于或等于 `0` 时会被修正为 `1`。
    * 1.0.0 样例中未出现该字段，但 1.20 源码支持。
    */
@@ -93,18 +89,15 @@ interface TLMMaidModelInfo {
    * 该 ID 也是模型注册、选择、缓存图标与默认资源路径推导的基础。
    */
   model_id: TLMResourceLocation;
-
   /**
-   * 模型显示名。缺失时自动生成 `{model.<namespace>.<path>.name}`，其中 `<namespace>` 和 `<path>` 来自 `model_id`。
+   * 【已解析】模型显示名。缺失时自动生成 `{model.<namespace>.<path>.name}`，其中 `<namespace>` 和 `<path>` 来自 `model_id`。
    * 如果设置了 `easter_egg`，源码会覆盖该名称：加密彩蛋显示为 `{gui.touhou_little_maid.model_gui.easter_egg.encrypt}`，普通彩蛋显示为 `{gui.touhou_little_maid.model_gui.easter_egg.normal}`。
    */
   name?: TLMI18nText;
-
-  /** 模型描述。缺失时为空数组。GUI 中按行显示，可使用本地化键。 */
+  /** 【已解析】模型描述。缺失时为空数组。GUI 中按行显示，可使用本地化键。 */
   description?: TLMI18nText[];
-
   /**
-   * 模型文件路径。缺失时由 `model_id` 推导：`<namespace>:models/entity/<path>.json`。
+   * 【已解析】模型文件路径。缺失时由 `model_id` 推导：`<namespace>:models/entity/<path>.json`。
    * `is_gecko: false` 时按 Bedrock 模型 JSON 加载；`is_gecko: true` 时按 GeckoLib geo 模型 JSON 加载。
    */
   model?: TLMResourceLocation;

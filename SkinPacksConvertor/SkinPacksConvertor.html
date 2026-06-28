@@ -1052,7 +1052,130 @@ var TemplatesBE;
     };
 })(TemplatesBE || (TemplatesBE = {}));
 
+;// ./src/convertor/model/LangFile.ts
+/**
+ * 语言类型
+ */
+var LangType;
+(function (LangType) {
+    LangType["de_DE"] = "de_DE";
+    LangType["en_US"] = "en_US";
+    LangType["es_ES"] = "es_ES";
+    LangType["fr_FR"] = "fr_FR";
+    LangType["it_IT"] = "it_IT";
+    LangType["ja_JP"] = "ja_JP";
+    LangType["ko_KR"] = "ko_KR";
+    LangType["pt_BR"] = "pt_BR";
+    LangType["pt_PT"] = "pt_PT";
+    LangType["ru_RU"] = "ru_RU";
+    LangType["tr_TR"] = "tr_TR";
+    LangType["zh_CN"] = "zh_CN";
+})(LangType || (LangType = {}));
+/**
+ * 多语言 语言文件（基岩版和Java版格式通用）
+ * 主要使用场景是修改 key，利用两函数：导出某个 key 的全部语言数据 `getLang`，设置某个 key 的全部语言数据 `setLang`
+ */
+class LangFile {
+    constructor() {
+        /**
+         * 语言数据
+         */
+        this.data = new Map();
+    }
+    /**
+     * 解析语言文件字符串 需要外部逐个读取然后传入解析
+     */
+    parse(type, fileStr) {
+        var _a;
+        // 获取该语言对应的映射
+        let record = (_a = this.data.get(type)) !== null && _a !== void 0 ? _a : new Map();
+        // 逐行解析：key=value
+        for (const rawLine of fileStr.split(/\r?\n/)) {
+            const line = rawLine.trim();
+            // 跳过空行和注释行
+            if (!line || line.startsWith('#')) {
+                continue;
+            }
+            // 用 "=" 分隔，得到 key-value
+            const splitIndex = line.indexOf('=');
+            if (splitIndex === -1) {
+                continue; // 没有等于号，格式不对直接跳过
+            }
+            const key = line.substring(0, splitIndex).trim();
+            const value = line.substring(splitIndex + 1);
+            if (!key) {
+                continue;
+            }
+            // 写入数据
+            record.set(key, value);
+        }
+        // 更新 data
+        this.data.set(type, record);
+    }
+    /**
+     * 输出语言文件字符串
+     */
+    stringify() {
+        let result = new Map();
+        this.data.forEach((record, langType) => {
+            let str = '';
+            record.forEach((value, key) => {
+                str += `${key}=${value}\n`;
+            });
+            result.set(langType, str);
+        });
+        return result;
+    }
+    /**
+     * 获取翻译信息
+     * @returns 语言名称-翻译文本 映射
+     */
+    getLang(key) {
+        let result = new Map();
+        this.data.forEach((record, langType) => {
+            let value = record.get(key);
+            if (value) {
+                result.set(langType, value);
+            }
+        });
+        return result;
+    }
+    /**
+     * 设置翻译信息
+     * @param key 语言名称
+     * @param value 字符串 或 语言名称-翻译文本 Record
+     */
+    setLang(key, value) {
+        if (value === undefined) {
+            return;
+        }
+        // 使用唯一字符设置，则只设置默认语言 en_US 即可
+        if (typeof value === 'string') {
+            let en_US = this.getLangRecord(LangType.en_US);
+            en_US.set(key, value);
+            return;
+        }
+        // 设置给定的语言
+        value.forEach((value, langType) => {
+            this.getLangRecord(langType).set(key, value);
+        });
+    }
+    /**
+     * 获取指定语言的数据，未创建则新建
+     */
+    getLangRecord(type) {
+        // 获取该语言对应的映射
+        let record = this.data.get(type);
+        if (!record) {
+            record = new Map();
+            this.data.set(type, record);
+        }
+        return record;
+    }
+}
+
 ;// ./src/convertor/SkinPackConvertor.ts
+
 
 const BASE_INDEX = 1000;
 /**
@@ -1068,6 +1191,7 @@ class SkinPackConvertor {
     constructor(input, packId, res) {
         this.packName = 'tlm_model_pack';
         this.packNameSafe = 'tlm_model_pack'; // 模型包安全名称，用于渲染定义
+        this.langJava = new LangFile(); // java 语言文件
         this.rootBone = {
             "name": "root",
             "pivot": [0, 0, 0]
@@ -1082,15 +1206,17 @@ class SkinPackConvertor {
      * 执行处理
      */
     async handlePack() {
-        this.getPackName(); // 获取模型包名称
-        await this.moveIcon(); // 移动图标
+        // 获取模型包名称
+        this.getPackName();
+        // 移动图标
+        await this.moveIcon();
         // 移动女仆贴图
         await this.moveTextures();
         // 修改格式并移动模型
         await this.convertModels();
-        // todo 处理动画
-        // todo 处理语音包
-        // 解析模型包信息
+        // 解析全部语言文件
+        await this.parseAllLang();
+        // 解析模型包信息 maid_model.json
         await this.convertMaidModelCfg();
     }
     /**
@@ -1244,52 +1370,39 @@ class SkinPackConvertor {
         }
         return true;
     }
+    /** 解析全部语言文件 */
+    async parseAllLang() {
+        for (let langType in LangType) {
+            // 寻找输入包的语言文件
+            let lang_file = this.input.files[`assets/${this.packName}/lang/${langType.toLowerCase()}.lang`];
+            if (lang_file === undefined) {
+                continue;
+            }
+            let content = await lang_file.async("string");
+            this.langJava.parse(langType, content);
+        }
+    }
     ///// 解析 maid_model.json /////
+    /**
+     * maid_model.json 解析入口
+     */
     async convertMaidModelCfg() {
+        // 读取 maid_model.json 文件
         let content = await this.input.files[`assets/${this.packName}/maid_model.json`].async("string");
         let inputJson = JSON.parse(content);
         // 解析作者字符串 author
-        let authorStr = `maid_pack.${this.packId + BASE_INDEX}.authors=`;
-        switch (typeof (inputJson["author"])) {
-            case "undefined":
-                authorStr += ' ';
-                break; // 无作者信息
-            case "string":
-                authorStr += inputJson["author"];
-                break; // 单个作者
-            default: // 多个作者
-                for (let authorName of inputJson["author"]) {
-                    authorStr += authorName + " ";
-                }
-                break;
-        }
-        authorStr += '\n';
-        this.res.langList["en_US"] += authorStr;
-        // 确定模型数量
-        this.res.modelAmount[this.packId - 1] = inputJson["model_list"].length;
-        // 注册贴图和模型
-        for (let model_info of inputJson["model_list"]) {
-            let model_name = model_info["model_id"].split(':')[1];
-            // 在实体定义添加贴图
-            this.res.entity_description["textures"][`${this.packNameSafe}_${model_name}`] = `textures/${this.packName}/entity/${model_name}`;
-            // 在渲染控制器添加贴图
-            this.pack_controller["arrays"]["textures"]["Array.skins"].push(`Texture.${this.packNameSafe}_${model_name}`);
-            // 在实体定义添加模型
-            if (!model_info["model"]) {
-                // 未指定使用的模型，则使用默认的
-                this.res.entity_description["geometry"][`${this.packNameSafe}_${model_name}`]
-                    = `geometry.${this.packNameSafe}.${model_name}`;
-            }
-            else {
-                // 指定了使用的模型
-                let model = model_info["model"].split('/');
-                model = model[model.length - 1];
-                model = model.replace(".json", "");
-                this.res.entity_description["geometry"][`${this.packNameSafe}_${model_name}`]
-                    = `geometry.${this.packNameSafe}.${model}`;
-            }
-            // 在渲染控制器添加模型
-            this.pack_controller["arrays"]["geometries"]["Array.geos"].push(`Geometry.${this.packNameSafe}_${model_name}`);
+        this.parseI18n(`maid_pack.${this.packId + BASE_INDEX}.authors`, inputJson.author);
+        // this.parseMMAuthor(inputJson);
+        // 解析包名 pack_name，使用通用 I18n 文本解析方案
+        this.parseI18nText(`maid_pack.${this.packId + BASE_INDEX}.name`, inputJson.pack_name);
+        // 解析包描述 description，使用通用 I18n 文本数组解析方案
+        this.parseI18nTextArray(`maid_pack.${this.packId + BASE_INDEX}.desc`, inputJson.description);
+        // todo 处理动画
+        // todo 处理语音包
+        // 解析模型列表 model_list
+        this.res.modelAmount[this.packId - 1] = inputJson.model_list.length; // 确定模型数量
+        for (let i = 0; i < inputJson.model_list.length; i++) {
+            this.parseMMModelInfo(inputJson.model_list[i], i);
         }
         // 在包渲染控制器定义 variant 对应的皮肤和模型
         this.pack_controller["geometry"] = this.pack_controller["geometry"]
@@ -1302,120 +1415,160 @@ class SkinPackConvertor {
         // 将包渲染控制器添加到总实体定义
         this.res.entity_description["render_controllers"]
             .push(`controller.render.touhou_little_maid.pack_${this.packNameSafe}`);
-        // 修改语言文件
-        await this.convertMaidLang(inputJson);
+    }
+    /** 解析作者 author */
+    // private parseMMAuthor(inputJson: MaidModelJava) {
+    //   // 作者无本地化键，只在英文语言文件定义 "maid_pack.<packId>.authors=xxx"
+    //   let authorStr = `maid_pack.${this.packId + BASE_INDEX}.authors=`;
+    //   switch (typeof(inputJson.author)) {
+    //     case "undefined": authorStr += ' '; break; // 无作者信息
+    //     case "string": authorStr += inputJson["author"]; break; // 单个作者
+    //     default: // 多个作者
+    //       for (let authorName of inputJson["author"]) {
+    //         authorStr += authorName + " ";
+    //       }
+    //       break;
+    //   }
+    //   authorStr += '\n';
+    //   this.res.langList["en_US"] += authorStr;
+    // }
+    /**
+     * 通用 I18n 文本处理
+     */
+    parseI18n(key, text) {
+        // 判空
+        if (!text) {
+            this.res.lang.setLang(key, '');
+            return;
+        }
+        if (typeof text === 'string') {
+            // 单键解析
+            this.parseI18nText(key, text);
+        }
+        else if (Array.isArray(text)) {
+            // 数组型
+            this.parseI18nTextArray(key, text);
+        }
+        else {
+            // 兜底
+            this.res.lang.setLang(key, '');
+        }
     }
     /**
-     * 解析 maid_model.json 的翻译信息
+     * 通用 I18n 文本处理
+     * @param key 转化后的基岩版 lang key
+     * @param text `{I18n key}`，或固定字符串
      */
-    async convertMaidLang(inputJson) {
-        let getText = function (language_text, key) {
-            // 获取key值对应的内容
-            let index = language_text.search(key);
-            if (index === -1)
-                return undefined;
-            let temp = language_text.substring(index);
-            return temp.substring(temp.search('=') + 1, temp.search('\n'));
-        };
-        for (let lang_name in this.res.langList) {
-            // 寻找输入包的语言文件
-            let lang_file = this.input.files[`assets/${this.packName}/lang/${lang_name.toLowerCase()}.lang`];
-            if (lang_file === undefined) {
-                continue;
-            }
-            let content = await lang_file.async("string");
-            // 修改或添加名称
-            let target = "";
-            if (inputJson["pack_name"].substring(0, 1) === '{') {
-                // 名称在语言文件
-                target = content.replace(inputJson["pack_name"].substring(1, inputJson["pack_name"].length - 1), `maid_pack.${this.packId + BASE_INDEX}.name`);
-            }
-            else {
-                // 名称直接定义
-                target = content += `\nmaid_pack.${this.packId + BASE_INDEX}.name=${inputJson["pack_name"]}\n`;
-            }
-            // 修改或添加 模型包描述
-            if (inputJson["description"] === undefined) {
-                // 默认键值
-                target = target.replace(`maid_pack.${this.packName}.desc`, `maid_pack.${this.packId + BASE_INDEX}.desc`);
-            }
-            else {
-                // 指定键值/字符
-                let descStr = "";
-                for (let key of inputJson["description"]) {
-                    if (key.substring(0, 1) === "{") {
-                        // 指定语言文件，正则匹配
-                        descStr += getText(content, key.substring(1, key.length - 1)) + ' ';
-                    }
-                    else {
-                        // 直接指定
-                        descStr += key + " ";
-                    }
-                }
-                target += `\nmaid_pack.${this.packId + BASE_INDEX}.desc=${descStr}\n`;
-            }
-            // 修改或添加 模型名称及描述
-            let c = 0;
-            for (let model_info of inputJson["model_list"]) {
-                let model_name = model_info["model_id"].split(':')[1];
-                // 女仆各自的描述和名称可能会共用，需要检查是否已经被替换
-                // 名称
-                let keyAfter = `model.${this.packId + BASE_INDEX}.${c}.name`;
-                let infoName = model_info["name"];
-                if (infoName === undefined) {
-                    // 默认键值
-                    target = target.replace(`model.${this.packName}.${model_name}.name`, keyAfter);
-                }
-                else {
-                    // 指定键值
-                    if (infoName.substring(0, 1) === "{") {
-                        let keyBefore = infoName.substring(1, infoName.length - 1);
-                        if (target.search(`model.${this.packName}.${model_name}.name`) === -1) {
-                            // 键已经被使用，另加
-                            let value = getText(content, keyBefore);
-                            target += `\n${keyAfter}=${value}\n`;
-                        }
-                        else {
-                            // 键未被使用，直接修改
-                            target = target.replace(keyBefore, keyAfter);
-                        }
-                    }
-                    else {
-                        // 指定字符
-                        target += `\n${keyAfter}=${infoName}\n`;
-                    }
-                }
-                // 描述
-                keyAfter = `model.${this.packId + BASE_INDEX}.${c}.desc`;
-                if (model_info["description"] === undefined) {
-                    // 默认键值
-                    target = target.replace(`model.${this.packName}.${model_name}.desc`, keyAfter);
-                }
-                else {
-                    let descText = "";
-                    for (let infoDesc of model_info["description"]) {
-                        // 指定键值
-                        if (infoDesc.substring(0, 1) === "{") {
-                            // 无论键是否已经被使用，都需要拼接
-                            let keyBefore = infoDesc.substring(1, infoDesc.length - 1);
-                            descText += getText(content, keyBefore);
-                        }
-                        else {
-                            // 指定字符
-                            descText += infoDesc;
-                        }
-                    }
-                    target += `\n${keyAfter}=${descText}\n`;
-                }
-                c++;
-            }
-            // 在公共语言文件追加
-            this.res.langList[lang_name] += "\n" + target + "\n";
+    parseI18nText(key, text) {
+        // 判空
+        if (!text) {
+            this.res.lang.setLang(key, '');
+            return;
         }
+        if (text.startsWith('{') && text.endsWith('}')) {
+            // 文本使用语言文件
+            let langKey = text.substring(1, text.length - 1);
+            this.res.lang.setLang(key, this.langJava.getLang(langKey));
+        }
+        else {
+            // 文本直接定义
+            this.res.lang.setLang(key, text);
+        }
+    }
+    /**
+     * 通用 I18n 文本数组处理
+     * 换行使用 `%1` 表示
+     */
+    parseI18nTextArray(key, textList) {
+        // 判空
+        if (!textList) {
+            this.res.lang.setLang(key, '');
+            return;
+        }
+        // 语言类型 - 值数组，解析完成后使用 %1 join
+        let result = new Map();
+        result.set(LangType.en_US, []); // 保底设置 en_US 语言
+        // 逐行解析并拼接
+        for (let text of textList) {
+            if (text.startsWith('{') && text.endsWith('}')) {
+                // 文本使用语言文件，分别从各语言文件获取并接在各自的数组后面
+                let langKey = text.substring(1, text.length - 1);
+                let langRecord = this.langJava.getLang(langKey);
+                langRecord.forEach((value, langType) => {
+                    let langArr = result.get(langType);
+                    if (!langArr) {
+                        langArr = [];
+                        result.set(langType, langArr);
+                    }
+                    langArr.push(value);
+                });
+            }
+            else {
+                // 文本直接定义
+                result.forEach((arr) => {
+                    arr.push(text);
+                });
+            }
+        }
+        // 拼接并设置
+        let resultStr = new Map();
+        result.forEach((value, langType) => {
+            resultStr.set(langType, value.join('%1'));
+        });
+        this.res.lang.setLang(key, resultStr);
+    }
+    /**
+     * 解析 model_list 中的模型信息
+     */
+    parseMMModelInfo(modelInfo, seq) {
+        let model_name = modelInfo.model_id.split(':')[1];
+        // 女仆各自的描述和名称可能会共用，需要检查是否已经被替换
+        // name 名称
+        const nameKey = `model.${this.packId + BASE_INDEX}.${seq}.name`;
+        const infoName = modelInfo.name;
+        if (infoName === undefined) {
+            // 默认键名
+            this.res.lang.setLang(nameKey, this.langJava.getLang(`model.${this.packName}.${model_name}.name`));
+        }
+        else {
+            this.parseI18nText(nameKey, infoName);
+        }
+        // description 描述
+        const descKey = `model.${this.packId + BASE_INDEX}.${seq}.desc`;
+        if (modelInfo.description === undefined) {
+            // 默认键名
+            this.res.lang.setLang(descKey, this.langJava.getLang(`model.${this.packName}.${model_name}.desc`));
+        }
+        else {
+            this.parseI18nTextArray(descKey, modelInfo.description);
+        }
+        // 在实体定义添加贴图
+        this.res.entity_description["textures"][`${this.packNameSafe}_${model_name}`] =
+            `textures/${this.packName}/entity/${model_name}`;
+        // 在渲染控制器添加贴图
+        this.pack_controller["arrays"]["textures"]["Array.skins"]
+            .push(`Texture.${this.packNameSafe}_${model_name}`);
+        // 在实体定义添加模型
+        if (!modelInfo.model) {
+            // 未指定使用的模型，则使用默认的
+            this.res.entity_description["geometry"][`${this.packNameSafe}_${model_name}`] =
+                `geometry.${this.packNameSafe}.${model_name}`;
+        }
+        else {
+            // 指定了使用的模型（如 geckolib:models/entity/winefox.json）
+            let modelPath = modelInfo.model.split('/');
+            let model = modelPath[modelPath.length - 1];
+            model = model.replace(".json", "");
+            this.res.entity_description["geometry"][`${this.packNameSafe}_${model_name}`]
+                = `geometry.${this.packNameSafe}.${model}`;
+        }
+        // 在渲染控制器添加模型
+        this.pack_controller["arrays"]["geometries"]["Array.geos"].push(`Geometry.${this.packNameSafe}_${model_name}`);
     }
 }
 
 ;// ./src/convertor/model/PackFile.ts
+
 
 
 /**
@@ -1424,10 +1577,6 @@ class SkinPackConvertor {
 class PackFile {
     constructor(uuid) {
         this.uuid = '';
-        /**
-         * 翻译文本列表
-         */
-        this.langList = PackFile.createLang();
         /**
          * 模型包注册命令
          */
@@ -1448,6 +1597,14 @@ class PackFile {
          * 各模型包定义的模型数量，用于生成指令字符串
          */
         this.modelAmount = [];
+        /**
+         * 翻译数据
+         */
+        this.lang = new LangFile();
+        /**
+         * 翻译文本列表 todo 删了
+         */
+        // langList = PackFile.createLang();
         ///// 输出文件 /////
         /**
          * 转换结果 zip
@@ -1476,12 +1633,10 @@ class PackFile {
         // 写入语言文件
         let lang_folder = this.resultFile.folder("texts");
         let lang_list = [];
-        for (let lang_name in this.langList) {
-            if (this.langList[lang_name] !== '') {
-                lang_list.push(lang_name);
-                lang_folder.file(`${lang_name}.lang`, this.langList[lang_name]);
-            }
-        }
+        this.lang.stringify().forEach((str, langType) => {
+            lang_list.push(langType);
+            lang_folder.file(`${langType}.lang`, str);
+        });
         lang_folder.file("languages.json", JSON.stringify(lang_list));
         // 将信息写入文件
         this.resultFile.folder("entity")

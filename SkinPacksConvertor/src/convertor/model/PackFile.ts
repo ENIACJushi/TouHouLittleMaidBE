@@ -1,15 +1,12 @@
 import JSZip from 'jszip';
 import { TemplatesBE } from "./Templates";
+import {LangFile} from "./LangFile";
 
 /**
  * 基岩版模型包输出文件
  */
 export class PackFile {
   uuid: string = '';
-  /**
-   * 翻译文本列表
-   */
-  langList = PackFile.createLang();
   /**
    * 模型包注册命令
    */
@@ -30,6 +27,11 @@ export class PackFile {
    * 各模型包定义的模型数量，用于生成指令字符串
    */
   modelAmount = [];
+  /**
+   * 翻译数据
+   */
+  lang: LangFile = new LangFile();
+
   ///// 输出文件 /////
   /**
    * 转换结果 zip
@@ -61,12 +63,10 @@ export class PackFile {
     // 写入语言文件
     let lang_folder = this.resultFile.folder("texts");
     let lang_list = [];
-    for (let lang_name in this.langList) {
-      if (this.langList[lang_name] !== '') {
-        lang_list.push(lang_name);
-        lang_folder.file(`${lang_name}.lang`, this.langList[lang_name]);
-      }
-    }
+    this.lang.stringify().forEach((str, langType) => {
+      lang_list.push(langType);
+      lang_folder.file(`${langType}.lang`, str);
+    });
     lang_folder.file("languages.json", JSON.stringify(lang_list));
 
     // 将信息写入文件
