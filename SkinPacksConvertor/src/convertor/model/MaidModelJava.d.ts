@@ -103,6 +103,20 @@ interface TLMMaidModelInfo {
   model?: TLMResourceLocation;
 
   /**
+   * 是否按 GeckoLib 模型加载。`false` 表示普通 Bedrock 模型与 JS 动画；`true` 表示 Gecko geo 模型与 JSON 动画。
+   * 开启后 `animation` 默认值、动画文件类型过滤、模型注册流程均不同。
+   */
+  is_gecko?: boolean;
+
+  /**
+   * 动画资源列表。
+   * - 普通 Bedrock 模型（`is_gecko` 为 `false`）使用 JS 动画；缺失或空数组时会自动填充默认女仆 JS 动画列表，包括头部、眨眼、乞求、音乐摇头、腿、手臂、坐下、盔甲、翅膀、尾巴、浮动等默认动画。
+   * - Gecko 模型（`is_gecko` 为 `true`）使用 `.json` 动画；缺失或空数组时默认使用 `touhou_little_maid:animation/maid.animation.json`。如果显式提供列表，源码会过滤掉路径不以 `.json` 结尾的项。
+   * - Gecko 加载阶段遇到默认 `touhou_little_maid:animation/maid.animation.json` 会停止继续读取后续自定义动画文件；随后默认动画会作为缺省动画合并注册。
+   */
+  animation?: TLMResourceLocation[];
+
+  /**
    * 主贴图路径。缺失时由 `model_id` 推导：`<namespace>:textures/entity/<path>.png`。
    * 1.0.0 样例中基本依赖默认推导，但 1.20 源码支持显式指定。
    */
@@ -113,14 +127,6 @@ interface TLMMaidModelInfo {
    * 派生模型的 ID 规则为：`<原模型 path>_<md5(额外贴图 path)>`，namespace 仍使用原 `model_id` 的 namespace。
    */
   extra_textures?: TLMResourceLocation[];
-
-  /**
-   * 动画资源列表。
-   * - 普通 Bedrock 模型（`is_gecko` 为 `false`）使用 JS 动画；缺失或空数组时会自动填充默认女仆 JS 动画列表，包括头部、眨眼、乞求、音乐摇头、腿、手臂、坐下、盔甲、翅膀、尾巴、浮动等默认动画。
-   * - Gecko 模型（`is_gecko` 为 `true`）使用 `.json` 动画；缺失或空数组时默认使用 `touhou_little_maid:animation/maid.animation.json`。如果显式提供列表，源码会过滤掉路径不以 `.json` 结尾的项。
-   * - Gecko 加载阶段遇到默认 `touhou_little_maid:animation/maid.animation.json` 会停止继续读取后续自定义动画文件；随后默认动画会作为缺省动画合并注册。
-   */
-  animation?: TLMResourceLocation[];
 
   /**
    * 切换到该模型时自动使用的音效包 ID。缺失或空白时不改变音效包。
@@ -174,12 +180,6 @@ interface TLMMaidModelInfo {
    * @deprecated 1.20 源码中 getter 标记为 deprecated，未发现实际调用点。
    */
   can_riding_broom?: boolean;
-
-  /**
-   * 是否按 GeckoLib 模型加载。`false` 表示普通 Bedrock 模型与 JS 动画；`true` 表示 Gecko geo 模型与 JSON 动画。
-   * 开启后 `animation` 默认值、动画文件类型过滤、模型注册流程均不同。
-   */
-  is_gecko?: boolean;
 
   /**
    * 彩蛋模型触发配置。存在该对象时，模型不会作为普通可切换模型注册到服务端；客户端会按女仆自定义名称匹配并临时替换渲染模型。

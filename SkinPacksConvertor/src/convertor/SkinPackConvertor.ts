@@ -23,7 +23,7 @@ export class SkinPackConvertor {
   /* 此模型包的渲染控制器 */
   pack_controller: TemplatesBE.RenderControllerPack;
 
-    /**
+  /**
    * 处理单个模型包
    * @param input 单个 java 模型包的 zip 文件
    * @param packId
@@ -188,7 +188,7 @@ export class SkinPackConvertor {
   }
 
   rootBone = {
-    "name": "root",
+    "name": "Root",
     "pivot": [0, 0, 0]
   }
   /**
@@ -199,21 +199,15 @@ export class SkinPackConvertor {
       console.error('processBones >> Failed, bones is undefined,');
       return false;
     }
-    // 添加根骨骼 root
-    let hasRoot = false;
-    for (let bone of bones) {
-      if (bone["name"] === "root") {
-        hasRoot = true;
-        continue;
-      }
-      // 对于没有父骨骼的骨骼，将父骨骼设为"root"
-      if (bone["parent"] === undefined) {
-        bone["parent"] = "root";
-      }
-    }
-    // 如果没有root骨骼，则创建root骨骼
-    if (!hasRoot) {
+    // 如果没有 Root 骨骼，则创建 Root 骨骼
+    if (!bones.some(bone => bone['name'] === 'Root')) {
       bones.unshift(this.rootBone);
+      // 对于没有父骨骼的非 Root 骨骼，将其父骨骼设为 Root（如果已经有 Root 骨骼，就不需要再设了）
+      for (let bone of bones) {
+        if (bone['name'] !== 'Root' && bone['parent'] === undefined) {
+          bone['parent'] = 'Root';
+        }
+      }
     }
     return true;
   }
@@ -233,9 +227,6 @@ export class SkinPackConvertor {
     this.parseI18nText(`maid_pack.${this.packId + BASE_INDEX}.name`, inputJson.pack_name);
     // 解析包描述 description，使用通用 I18n 文本数组解析方案
     this.parseI18nTextArray(`maid_pack.${this.packId + BASE_INDEX}.desc`, inputJson.description);
-
-    // todo 处理动画
-    // todo 处理语音包
 
     // 解析模型列表 model_list
     this.res.modelAmount[this.packId - 1] = inputJson.model_list.length; // 确定模型数量
@@ -301,6 +292,26 @@ export class SkinPackConvertor {
     }
     // 在渲染控制器添加模型
     this.pack_controller["arrays"]["geometries"]["Array.geos"].push(`Geometry.${this.packNameSafe}_${model_name}`);
+
+    // 处理动画
+    this.parseAnimation(modelInfo, seq);
+
+    // todo 处理语音包
+  }
+
+  /**
+   * 处理动画
+   */
+  private parseAnimation(modelInfo: TLMMaidModelInfo, seq: number) {
+    // 读取使用到的文件
+    if (!modelInfo.animation) {
+      return;
+    }
+    for (let file of modelInfo.animation) {
+      // 读取 file，如 touhou_little_maid:animation/maid.animation.json
+
+    }
+
   }
 
   ///// 翻译文本解析 /////
