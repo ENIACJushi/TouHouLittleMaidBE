@@ -29,29 +29,42 @@ export class LangFile {
   /**
    * 解析语言文件字符串 需要外部逐个读取然后传入解析
    */
-  parse(type: LangType, fileStr: string) {
+  parse(type: LangType, fileStr: string, fileType: LangFileType) {
     // 获取该语言对应的映射
     let record = this.data.get(type) ?? new Map();
 
-    // 逐行解析：key=value
-    for (const rawLine of fileStr.split(/\r?\n/)) {
-      const line = rawLine.trim();
-      // 跳过空行和注释行
-      if (!line || line.startsWith('#')) {
-        continue;
+    if (fileType === LangFileType.LANG_FILE) {
+      // 逐行解析：key=value
+      for (const rawLine of fileStr.split(/\r?\n/)) {
+        const line = rawLine.trim();
+        // 跳过空行和注释行
+        if (!line || line.startsWith('#')) {
+          continue;
+        }
+        // 用 "=" 分隔，得到 key-value
+        const splitIndex = line.indexOf('=');
+        if (splitIndex === -1) {
+          continue; // 没有等于号，格式不对直接跳过
+        }
+        const key = line.substring(0, splitIndex).trim();
+        const value = line.substring(splitIndex + 1);
+        if (!key) {
+          continue;
+        }
+        // 写入数据
+        record.set(key, value);
       }
-      // 用 "=" 分隔，得到 key-value
-      const splitIndex = line.indexOf('=');
-      if (splitIndex === -1) {
-        continue; // 没有等于号，格式不对直接跳过
+    } else {
+      // 解析 json
+      let jsonData = JSON.parse(fileStr) as Record<string, string>;
+      for (let key in jsonData) {
+        const value = jsonData[key];
+        if (!key) {
+          continue;
+        }
+        // 写入数据
+        record.set(key, value);
       }
-      const key = line.substring(0, splitIndex).trim();
-      const value = line.substring(splitIndex + 1);
-      if (!key) {
-        continue;
-      }
-      // 写入数据
-      record.set(key, value);
     }
 
     // 更新 data
@@ -122,4 +135,9 @@ export class LangFile {
     }
     return record;
   }
+}
+
+export enum LangFileType {
+  LANG_FILE = 0, // XXX=XXX 格式
+  JSON_FILE = 1, // JSON 格式
 }

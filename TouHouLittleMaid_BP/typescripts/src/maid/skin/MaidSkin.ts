@@ -32,8 +32,8 @@ export class MaidSkin {
     }
     // 计分板已初始化，则读取已加载的皮肤包
     scoreboard.getScores().forEach(info => {
-      console.log(`MaidSkin init >> Add pack: id=${info.participant.id}, amount=${info.score}`);
-      this.skinPacks.set(Number(info.participant.id), info.score);
+      console.log(`MaidSkin init >> Add pack: id=${info.participant.displayName}, amount=${info.score}`);
+      this.skinPacks.set(Number(info.participant.displayName), info.score);
     });
   }
 

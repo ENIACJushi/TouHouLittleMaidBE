@@ -2,7 +2,7 @@ import JSZip from 'jszip';
 import {PackFile} from './model/PackFile';
 import {TemplatesBE} from "./model/Templates";
 import {MaidModelJava, TLMMaidModelInfo} from "./model/MaidModelJava";
-import {LangFile, LangType} from "./model/LangFile";
+import {LangFile, LangFileType, LangType} from "./model/LangFile";
 
 const BASE_INDEX = 1000;
 
@@ -321,10 +321,16 @@ export class SkinPackConvertor {
       // 寻找输入包的语言文件
       let lang_file = this.input.files[`assets/${this.packName}/lang/${langType.toLowerCase()}.lang`];
       if (lang_file === undefined) {
+        lang_file = this.input.files[`assets/${this.packName}/lang/${langType.toLowerCase()}.json`];
+        if (lang_file === undefined) {
+          continue;
+        }
+        let content = await lang_file.async("string");
+        this.langJava.parse(langType as LangType, content, LangFileType.JSON_FILE);
         continue;
       }
       let content = await lang_file.async("string");
-      this.langJava.parse(langType as LangType, content);
+      this.langJava.parse(langType as LangType, content, LangFileType.LANG_FILE);
     }
   }
 
