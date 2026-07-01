@@ -20,6 +20,7 @@ export class MaidSkin {
   static init(): void {
     let scoreboard = world.scoreboard.getObjective(MaidSkin.SCOREBOARD_NAME);
     if (!scoreboard) {
+      console.log(`MaidSkin init >> Create scoreboard.`);
       // 计分板未初始化时，创建计分板
       world.scoreboard.addObjective(MaidSkin.SCOREBOARD_NAME, 'THLMSkin');
       // 删除旧的计分板
@@ -31,6 +32,7 @@ export class MaidSkin {
     }
     // 计分板已初始化，则读取已加载的皮肤包
     scoreboard.getScores().forEach(info => {
+      console.log(`MaidSkin init >> Add pack: id=${info.participant.id}, amount=${info.score}`);
       this.skinPacks.set(Number(info.participant.id), info.score);
     });
   }
@@ -61,7 +63,9 @@ export class MaidSkin {
 
     // 更新缓存和计分板
     for (let i = 0; i < list.length; i++) {
-      MaidSkin.skinPacks.set(MaidSkin.PLACEHOLDER + 1 + i, list[i]);
+      let id = MaidSkin.PLACEHOLDER + 1 + i;
+      MaidSkin.skinPacks.set(id, list[i]);
+      scoreboard.setScore(id.toString(), list[i]);
     }
   }
 
