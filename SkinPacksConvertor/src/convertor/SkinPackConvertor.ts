@@ -83,10 +83,43 @@ export class SkinPackConvertor {
     let icon = this.resourceManager.getResource(key);
     console.log(TAG, `parseIcon, key=${key}, icon=${icon}`);
     if (icon) {
-      let temp = icon.async('blob');
-      // todo 对于多帧图标，取第一帧
-      this.res.textures_icon.file(`pack_pack_${this.packId + BASE_INDEX}.png`, temp);
+      let blob = await icon.async('blob');
+      blob = await this.cropIconFirstFrame(blob);
+      this.res.textures_icon.file(`pack_pack_${this.packId + BASE_INDEX}.png`, blob);
     }
+  }
+
+  /**
+   * 若图标高大于宽，则视为纵向多帧图标，取顶部第一帧（正方形）裁剪
+   */
+  private async cropIconFirstFrame(blob: Blob): Promise<Blob> {
+    const bitmap = await createImageBitmap(blob);
+    const { width, height } = bitmap;
+    if (height <= width) {
+      bitmap.close();
+      return blob;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = width;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      bitmap.close();
+      throw new Error('无法创建 canvas 上下文以裁剪图标');
+    }
+    ctx.drawImage(bitmap, 0, 0, width, width, 0, 0, width, width);
+    bitmap.close();
+
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((result) => {
+        if (result) {
+          resolve(result);
+        } else {
+          reject(new Error('图标裁剪后转换为 PNG 失败'));
+        }
+      }, 'image/png');
+    });
   }
 
   ///// 贴图操作/////
