@@ -5,6 +5,31 @@
 
 ```npm run build:single```
 
+尽量不使用额外实体属性实现模型动画和语音包等功能，因为实体属性只能设32个。
+
+#### 计划
+
+- 考虑取消sit等动画的动画控制器，实现动画转换的统一，并且过渡动画对一些动画来说是多余的，
+  比如汉服酒狐的坐下动画，长裙是通过缩小动画隐藏的
+- 彩蛋。对于酒狐来说比较重要，因为有狐形态
+- 如果要用脚本调用动画，可能得靠指令来注册
+
+低优先级：
+- 目前仅支持一压缩包解析一个模型包，实际上可以包含多个
+- 补充模型包图标，使用排在第一的包图标
+- 目前不实现覆盖默认女仆动画的逻辑，非is_gecko模型均使用默认动画
+
+
+#### 转换流程
+
+读取全部输入的 java 模型包，初始化动画和翻译文本资源管理器。
+
+参考 Java 版 TouhouLittleMaid 1.20 资源加载流程：
+- `CustomPackLoader.loadMaidModelPack()`：读取 maid_model.json 并 decorate
+- `CustomPackLoader.loadGeckoMaidModelElement()`：解析 model/texture/animation 路径并加载文件
+- `GeckoModelLoader.mergeAnimationFile()`：按顺序合并动画 JSON
+  参考位置：`TouhouLittleMaid-1.20/.../CustomPackLoader.java`、`GeckoModelLoader.java`
+
 #### 目录对应
 
 `<name>`：命名空间，由文件夹 `assets/<name>` 指定

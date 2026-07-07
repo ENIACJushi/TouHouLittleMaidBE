@@ -1085,29 +1085,43 @@ class LangFile {
     /**
      * 解析语言文件字符串 需要外部逐个读取然后传入解析
      */
-    parse(type, fileStr) {
+    parse(type, fileStr, fileType) {
         var _a;
         // 获取该语言对应的映射
         let record = (_a = this.data.get(type)) !== null && _a !== void 0 ? _a : new Map();
-        // 逐行解析：key=value
-        for (const rawLine of fileStr.split(/\r?\n/)) {
-            const line = rawLine.trim();
-            // 跳过空行和注释行
-            if (!line || line.startsWith('#')) {
-                continue;
+        if (fileType === LangFileType.LANG_FILE) {
+            // 逐行解析：key=value
+            for (const rawLine of fileStr.split(/\r?\n/)) {
+                const line = rawLine.trim();
+                // 跳过空行和注释行
+                if (!line || line.startsWith('#')) {
+                    continue;
+                }
+                // 用 "=" 分隔，得到 key-value
+                const splitIndex = line.indexOf('=');
+                if (splitIndex === -1) {
+                    continue; // 没有等于号，格式不对直接跳过
+                }
+                const key = line.substring(0, splitIndex).trim();
+                const value = line.substring(splitIndex + 1);
+                if (!key) {
+                    continue;
+                }
+                // 写入数据
+                record.set(key, value);
             }
-            // 用 "=" 分隔，得到 key-value
-            const splitIndex = line.indexOf('=');
-            if (splitIndex === -1) {
-                continue; // 没有等于号，格式不对直接跳过
+        }
+        else {
+            // 解析 json
+            let jsonData = JSON.parse(fileStr);
+            for (let key in jsonData) {
+                const value = jsonData[key];
+                if (!key) {
+                    continue;
+                }
+                // 写入数据
+                record.set(key, value);
             }
-            const key = line.substring(0, splitIndex).trim();
-            const value = line.substring(splitIndex + 1);
-            if (!key) {
-                continue;
-            }
-            // 写入数据
-            record.set(key, value);
         }
         // 更新 data
         this.data.set(type, record);
@@ -1173,31 +1187,44 @@ class LangFile {
         return record;
     }
 }
+var LangFileType;
+(function (LangFileType) {
+    LangFileType[LangFileType["LANG_FILE"] = 0] = "LANG_FILE";
+    LangFileType[LangFileType["JSON_FILE"] = 1] = "JSON_FILE";
+})(LangFileType || (LangFileType = {}));
 
 ;// ./src/convertor/SkinPackConvertor.ts
 
 
+const TAG = 'SkinPackConvertor';
 const BASE_INDEX = 1000;
 /**
- * 单个模型包转换器
+ * 子模型包转换器
  */
 class SkinPackConvertor {
     /**
-   * 处理单个模型包
-   * @param input 单个 java 模型包的 zip 文件
-   * @param packId
-   * @param res
-   */
-    constructor(input, packId, res) {
+     * 处理单个子模型包
+     * @param packId 转换后的基岩版模型包 id
+     * @param domain 子模型包名称，即 `assets/xxx` 的 `xxx`
+     * @param input 该子模型包的 zip 文件夹，如 `assets/xxx`
+     * @param resourceManager 该子模型包所属的模型包的资源管理器
+     * @param res 输出结果
+     */
+    constructor(packId, domain, input, resourceManager, res) {
+        /** 子模型包名称 */
         this.packName = 'tlm_model_pack';
-        this.packNameSafe = 'tlm_model_pack'; // 模型包安全名称，用于渲染定义
-        this.langJava = new LangFile(); // java 语言文件
+        /** 模型包安全名称，用于渲染定义 */
+        this.packNameSafe = 'tlm_model_pack';
+        /** java 语言文件 */
+        this.langJava = new LangFile();
         this.rootBone = {
-            "name": "root",
+            "name": "Root",
             "pivot": [0, 0, 0]
         };
-        this.input = input;
         this.packId = packId;
+        this.packName = domain;
+        this.input = input;
+        this.resourceManager = resourceManager;
         this.res = res;
         this.pack_models = this.res.models.folder(this.packName);
         this.pack_controller = JSON.parse(JSON.stringify(TemplatesBE.RENDER_CONTROLLER_PACK));
@@ -1206,10 +1233,9 @@ class SkinPackConvertor {
      * 执行处理
      */
     async handlePack() {
-        // 获取模型包名称
+        console.log(`Process pack: ${this.packName}`);
+        // 确定模型包安全名称
         this.getPackName();
-        // 移动图标
-        await this.moveIcon();
         // 移动女仆贴图
         await this.moveTextures();
         // 修改格式并移动模型
@@ -1220,45 +1246,29 @@ class SkinPackConvertor {
         await this.convertMaidModelCfg();
     }
     /**
-     * 确定模型包名称
+     * 确定模型包名称，用于渲染定义
      */
     getPackName() {
-        // 确定模型包名称
-        for (let file in this.input.files) {
-            let folder_list = file.split('/');
-            if (folder_list.length === 3 && folder_list[2] === '') {
-                this.packName = folder_list[1];
-                break;
-            }
-        }
-        // 确定模型包安全名称，用于渲染定义
         let firstChar = this.packName.substring(0, 1);
         this.packNameSafe = (firstChar >= '0' && firstChar <= '9') ? 'a' + this.packName : this.packName;
-        console.log(`Process pack: ${this.packName}`);
     }
     /**
-     * 移动模型包图标和女仆图标（可能没有）
+     * 解析模型包图标
      */
-    async moveIcon() {
-        // 移动模型包图标
-        try {
-            let packIcon = this.input.files["pack.png"].async('blob');
-            this.res.textures_icon.file(`pack_pack_${this.packId + BASE_INDEX}.png`, packIcon);
-        }
-        catch (e) {
-            console.error(`handlePack >> Move icon ERROR`, e);
-        }
-        // 移动女仆图标（可能没有）
-        if (this.input.files[`assets/${this.packName}/textures/maid_icon.png`]) {
-            let content = await this.input.files[`assets/${this.packName}/textures/maid_icon.png`].async('blob');
-            this.res.textures_icon.file(`pack_maid_${this.packId + BASE_INDEX}.png`, content);
+    async parseIcon(resourceKey) {
+        let key = resourceKey !== null && resourceKey !== void 0 ? resourceKey : `${this.packName}:textures/maid_icon.png`;
+        let icon = this.resourceManager.getResource(key);
+        console.log(TAG, `parseIcon, key=${key}, icon=${icon}`);
+        if (icon) {
+            let temp = icon.async('blob');
+            this.res.textures_icon.file(`pack_pack_${this.packId + BASE_INDEX}.png`, temp);
         }
     }
     ///// 贴图操作/////
     async moveTextures() {
         let pack_textures = this.res.textures.folder(this.packName);
         let tasks = [];
-        this.input.folder(`assets/${this.packName}/textures/`).forEach((path, file) => {
+        this.input.folder(`textures/`).forEach((path, file) => {
             if (path !== "maid_icon.png") {
                 tasks.push(async () => {
                     let content = await file.async("blob");
@@ -1276,7 +1286,7 @@ class SkinPackConvertor {
      */
     async convertModels() {
         let tasks = [];
-        this.input.folder(`assets/${this.packName}/models/`).forEach((path, file) => {
+        this.input.folder(`models/`).forEach((path, file) => {
             tasks.push(this.convertModel(path, file));
         });
         for (let task of tasks) {
@@ -1352,35 +1362,17 @@ class SkinPackConvertor {
             console.error('processBones >> Failed, bones is undefined,');
             return false;
         }
-        // 添加根骨骼 root
-        let hasRoot = false;
-        for (let bone of bones) {
-            if (bone["name"] === "root") {
-                hasRoot = true;
-                continue;
-            }
-            // 对于没有父骨骼的骨骼，将父骨骼设为"root"
-            if (bone["parent"] === undefined) {
-                bone["parent"] = "root";
-            }
-        }
-        // 如果没有root骨骼，则创建root骨骼
-        if (!hasRoot) {
+        // 如果没有 Root 骨骼，则创建 Root 骨骼
+        if (!bones.some(bone => bone['name'] === 'Root')) {
             bones.unshift(this.rootBone);
+            // 对于没有父骨骼的非 Root 骨骼，将其父骨骼设为 Root（如果已经有 Root 骨骼，就不需要再设了）
+            for (let bone of bones) {
+                if (bone['name'] !== 'Root' && bone['parent'] === undefined) {
+                    bone['parent'] = 'Root';
+                }
+            }
         }
         return true;
-    }
-    /** 解析全部语言文件 */
-    async parseAllLang() {
-        for (let langType in LangType) {
-            // 寻找输入包的语言文件
-            let lang_file = this.input.files[`assets/${this.packName}/lang/${langType.toLowerCase()}.lang`];
-            if (lang_file === undefined) {
-                continue;
-            }
-            let content = await lang_file.async("string");
-            this.langJava.parse(langType, content);
-        }
     }
     ///// 解析 maid_model.json /////
     /**
@@ -1388,17 +1380,16 @@ class SkinPackConvertor {
      */
     async convertMaidModelCfg() {
         // 读取 maid_model.json 文件
-        let content = await this.input.files[`assets/${this.packName}/maid_model.json`].async("string");
+        let content = await this.input.file('maid_model.json').async('string');
         let inputJson = JSON.parse(content);
-        // 解析作者字符串 author
+        // 解析图标 icon
+        await this.parseIcon(inputJson.icon);
+        // 解析作者字符串 author，使用通用 I18n 文本/数组解析方案
         this.parseI18n(`maid_pack.${this.packId + BASE_INDEX}.authors`, inputJson.author);
-        // this.parseMMAuthor(inputJson);
         // 解析包名 pack_name，使用通用 I18n 文本解析方案
         this.parseI18nText(`maid_pack.${this.packId + BASE_INDEX}.name`, inputJson.pack_name);
         // 解析包描述 description，使用通用 I18n 文本数组解析方案
         this.parseI18nTextArray(`maid_pack.${this.packId + BASE_INDEX}.desc`, inputJson.description);
-        // todo 处理动画
-        // todo 处理语音包
         // 解析模型列表 model_list
         this.res.modelAmount[this.packId - 1] = inputJson.model_list.length; // 确定模型数量
         for (let i = 0; i < inputJson.model_list.length; i++) {
@@ -1416,110 +1407,7 @@ class SkinPackConvertor {
         this.res.entity_description["render_controllers"]
             .push(`controller.render.touhou_little_maid.pack_${this.packNameSafe}`);
     }
-    /** 解析作者 author */
-    // private parseMMAuthor(inputJson: MaidModelJava) {
-    //   // 作者无本地化键，只在英文语言文件定义 "maid_pack.<packId>.authors=xxx"
-    //   let authorStr = `maid_pack.${this.packId + BASE_INDEX}.authors=`;
-    //   switch (typeof(inputJson.author)) {
-    //     case "undefined": authorStr += ' '; break; // 无作者信息
-    //     case "string": authorStr += inputJson["author"]; break; // 单个作者
-    //     default: // 多个作者
-    //       for (let authorName of inputJson["author"]) {
-    //         authorStr += authorName + " ";
-    //       }
-    //       break;
-    //   }
-    //   authorStr += '\n';
-    //   this.res.langList["en_US"] += authorStr;
-    // }
-    /**
-     * 通用 I18n 文本处理
-     */
-    parseI18n(key, text) {
-        // 判空
-        if (!text) {
-            this.res.lang.setLang(key, '');
-            return;
-        }
-        if (typeof text === 'string') {
-            // 单键解析
-            this.parseI18nText(key, text);
-        }
-        else if (Array.isArray(text)) {
-            // 数组型
-            this.parseI18nTextArray(key, text);
-        }
-        else {
-            // 兜底
-            this.res.lang.setLang(key, '');
-        }
-    }
-    /**
-     * 通用 I18n 文本处理
-     * @param key 转化后的基岩版 lang key
-     * @param text `{I18n key}`，或固定字符串
-     */
-    parseI18nText(key, text) {
-        // 判空
-        if (!text) {
-            this.res.lang.setLang(key, '');
-            return;
-        }
-        if (text.startsWith('{') && text.endsWith('}')) {
-            // 文本使用语言文件
-            let langKey = text.substring(1, text.length - 1);
-            this.res.lang.setLang(key, this.langJava.getLang(langKey));
-        }
-        else {
-            // 文本直接定义
-            this.res.lang.setLang(key, text);
-        }
-    }
-    /**
-     * 通用 I18n 文本数组处理
-     * 换行使用 `%1` 表示
-     */
-    parseI18nTextArray(key, textList) {
-        // 判空
-        if (!textList) {
-            this.res.lang.setLang(key, '');
-            return;
-        }
-        // 语言类型 - 值数组，解析完成后使用 %1 join
-        let result = new Map();
-        result.set(LangType.en_US, []); // 保底设置 en_US 语言
-        // 逐行解析并拼接
-        for (let text of textList) {
-            if (text.startsWith('{') && text.endsWith('}')) {
-                // 文本使用语言文件，分别从各语言文件获取并接在各自的数组后面
-                let langKey = text.substring(1, text.length - 1);
-                let langRecord = this.langJava.getLang(langKey);
-                langRecord.forEach((value, langType) => {
-                    let langArr = result.get(langType);
-                    if (!langArr) {
-                        langArr = [];
-                        result.set(langType, langArr);
-                    }
-                    langArr.push(value);
-                });
-            }
-            else {
-                // 文本直接定义
-                result.forEach((arr) => {
-                    arr.push(text);
-                });
-            }
-        }
-        // 拼接并设置
-        let resultStr = new Map();
-        result.forEach((value, langType) => {
-            resultStr.set(langType, value.join('%1'));
-        });
-        this.res.lang.setLang(key, resultStr);
-    }
-    /**
-     * 解析 model_list 中的模型信息
-     */
+    /** 解析 model_list 中的模型信息 */
     parseMMModelInfo(modelInfo, seq) {
         let model_name = modelInfo.model_id.split(':')[1];
         // 女仆各自的描述和名称可能会共用，需要检查是否已经被替换
@@ -1564,6 +1452,121 @@ class SkinPackConvertor {
         }
         // 在渲染控制器添加模型
         this.pack_controller["arrays"]["geometries"]["Array.geos"].push(`Geometry.${this.packNameSafe}_${model_name}`);
+        // 处理动画
+        this.parseAnimation(modelInfo, seq);
+        // todo 处理语音包
+    }
+    /**
+     * 处理动画
+     */
+    parseAnimation(modelInfo, seq) {
+        // 读取使用到的文件
+        if (!modelInfo.animation) {
+            return;
+        }
+        for (let file of modelInfo.animation) {
+            // 读取 file，如 touhou_little_maid:animation/maid.animation.json
+        }
+    }
+    ///// 翻译文本解析 /////
+    /** 解析全部语言文件 */
+    async parseAllLang() {
+        for (let langType in LangType) {
+            // 寻找输入包的语言文件
+            let lang_file = this.input.file(`lang/${langType.toLowerCase()}.lang`);
+            if (!lang_file) {
+                lang_file = this.input.file(`lang/${langType.toLowerCase()}.json`);
+                if (!lang_file) {
+                    continue;
+                }
+                let content = await lang_file.async("string");
+                this.langJava.parse(langType, content, LangFileType.JSON_FILE);
+                continue;
+            }
+            // todo 这里怎么空了
+            let content = await lang_file.async("string");
+            this.langJava.parse(langType, content, LangFileType.LANG_FILE);
+        }
+    }
+    /**
+     * 通用 I18n 文本处理
+     * @param key 转化后的基岩版 lang key
+     * @param text `{I18n key}`，或固定字符串
+     */
+    parseI18nText(key, text) {
+        // 判空
+        if (!text) {
+            this.res.lang.setLang(key, '');
+            return;
+        }
+        if (text.startsWith('{') && text.endsWith('}')) {
+            // 文本使用语言文件
+            let langKey = text.substring(1, text.length - 1);
+            this.res.lang.setLang(key, this.langJava.getLang(langKey));
+        }
+        else {
+            // 文本直接定义
+            this.res.lang.setLang(key, text);
+        }
+    }
+    /** 通用 I18n 文本数组处理 换行使用 `%1` 表示 */
+    parseI18nTextArray(key, textList) {
+        // 判空
+        if (!textList) {
+            this.res.lang.setLang(key, '');
+            return;
+        }
+        // 语言类型 - 值数组，解析完成后使用 %1 join
+        let result = new Map();
+        result.set(LangType.en_US, []); // 保底设置 en_US 语言
+        // 逐行解析并拼接
+        for (let text of textList) {
+            if (text.startsWith('{') && text.endsWith('}')) {
+                // 文本使用语言文件，分别从各语言文件获取并接在各自的数组后面
+                let langKey = text.substring(1, text.length - 1);
+                let langRecord = this.langJava.getLang(langKey);
+                langRecord.forEach((value, langType) => {
+                    let langArr = result.get(langType);
+                    if (!langArr) {
+                        langArr = [];
+                        result.set(langType, langArr);
+                    }
+                    langArr.push(value);
+                });
+            }
+            else {
+                // 文本直接定义
+                result.forEach((arr) => {
+                    arr.push(text);
+                });
+            }
+        }
+        // 拼接并设置
+        let resultStr = new Map();
+        result.forEach((value, langType) => {
+            resultStr.set(langType, value.join('%1'));
+        });
+        this.res.lang.setLang(key, resultStr);
+    }
+    /** 通用 I18n 文本/数组处理 */
+    parseI18n(key, text) {
+        // 判空
+        if (!text) {
+            this.res.lang.setLang(key, '');
+            return;
+        }
+        if (typeof text === 'string') {
+            // 单键解析
+            this.parseI18nText(key, text);
+        }
+        else if (Array.isArray(text)) {
+            // 数组型
+            this.parseI18nTextArray(key, text);
+        }
+        else {
+            // 兜底
+            this.res.lang.setLang(key, '');
+        }
     }
 }
 
@@ -1601,10 +1604,6 @@ class PackFile {
          * 翻译数据
          */
         this.lang = new LangFile();
-        /**
-         * 翻译文本列表 todo 删了
-         */
-        // langList = PackFile.createLang();
         ///// 输出文件 /////
         /**
          * 转换结果 zip
@@ -1668,7 +1667,71 @@ class PackFile {
     }
 }
 
+;// ./src/convertor/resource_manager/ResourceManager.ts
+const ResourceManager_TAG = 'ResourceManager';
+/**
+ * 模型包资源管理器
+ * 注意：不同压缩包之间的 domain 不通用，这个管理器仅在一个压缩包下使用
+ */
+class ResourceManager {
+    /**
+     * 构造资源管理器
+     * @param input 输入模型包的压缩包，带有 `assets` 目录
+     */
+    constructor(input) {
+        /** 子模型包 [domain（文件夹名）-信息] 映射 */
+        this.subPacks = new Map();
+        // 列出 assets 目录下的一层子目录（domain），如 assets/aaa
+        const domains = new Set();
+        for (const path of Object.keys(input.files)) {
+            const parts = path.split('/');
+            // 仅取 assets 下第一层目录名
+            if (parts[0] === 'assets' && parts[1]) {
+                domains.add(parts[1]);
+            }
+        }
+        // 初始化子模型包资源索引
+        for (const domain of domains) {
+            console.log(ResourceManager_TAG, `Add subpack, name=${domain}`);
+            this.subPacks.set(domain, {
+                zipFolder: input.folder(`assets/${domain}`),
+            });
+        }
+    }
+    /**
+     * 使用路径索引获取资源
+     * @param key xxx:PATH 格式的索引键，PATH 必须是一串路径
+     * @param defaultDomain 当 key 只包含 `:` 之后的索引时，使用此字符串作为 `:` 之前的 domain
+     */
+    getResource(key, defaultDomain) {
+        let info = key.split(':');
+        if (info.length === 2) {
+            // 使用 key 获取资源
+            let pack = this.subPacks.get(info[0]);
+            if (pack) {
+                return pack.zipFolder.file(info[1]);
+            }
+        }
+        else if (defaultDomain) {
+            // key 缺少 domain，使用 defaultDomain 作为 domain
+            let pack = this.subPacks.get(defaultDomain);
+            if (pack) {
+                return pack.zipFolder.file(key);
+            }
+        }
+        // 缺少信息，无法获取
+        return undefined;
+    }
+    /**
+     * 获取全部子模型包信息
+     */
+    getSubPacks() {
+        return this.subPacks;
+    }
+}
+
 ;// ./src/convertor/SkinConvertor.ts
+
 
 
 
@@ -1702,7 +1765,6 @@ class SkinConvertor {
         this.uuid = uuid;
         /// 执行转换 ///
         this.result = new PackFile(uuid);
-        this.result.modelAmount = new Array(this.fileList.length);
         await this.handleAllPacks();
         return this.result.export();
     }
@@ -1710,12 +1772,27 @@ class SkinConvertor {
      * 逐个处理所有输入的模型包
      */
     async handleAllPacks() {
+        let count = 0;
         // 对每一个模型包，执行操作（fileList 是模型包的压缩文件）
         for (let i = 0; i < this.fileList.length; i++) {
             try {
+                // 解析模型包
                 let packZip = await jszip_min_default().loadAsync(this.fileList[i]);
-                let packConvertor = new SkinPackConvertor(packZip, i + 1, this.result);
-                await packConvertor.handlePack();
+                let resource = new ResourceManager(packZip);
+                // 若模型包是第一个，则作为基岩版资源包的图标
+                try {
+                    let packIcon = packZip.file('pack.png').async('blob');
+                    this.result.resultFile.file(`pack_icon.png`, packIcon);
+                }
+                catch (e) {
+                    console.error(`handlePack >> Move icon ERROR`, e);
+                }
+                // 解析子模型包
+                for (let [domain, info] of resource.getSubPacks()) {
+                    count++;
+                    let packConvertor = new SkinPackConvertor(count, domain, info.zipFolder, resource, this.result);
+                    await packConvertor.handlePack();
+                }
             }
             catch (e) {
                 writeErrorLog(`Error reading ${this.fileList[i].name}: ${e.message}\n${e.stack}`);

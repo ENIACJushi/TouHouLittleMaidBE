@@ -55,6 +55,11 @@ export interface MaidModelJava {
   pack_name: TLMI18nText;
   /** 【已解析】模型包描述。缺失时变为空数组。GUI 中按行显示，可使用本地化键。 */
   description?: TLMI18nText[];
+  /**
+   * 【已解析】模型包图标贴图。缺失时使用空图标。
+   * 如果图标图片高大于宽，GUI 会把它视为纵向排列的多帧动态图标：每帧为正方形，帧数约为 `height / width`。
+   */
+  icon?: TLMResourceLocation;
 
   /**
    * 模型列表。必填且不能为空；缺失或空数组会导致解析失败并抛出 `Expected "model_list" in pack`。
@@ -68,11 +73,6 @@ export interface MaidModelJava {
   /** 模型包日期。源码未对格式做校验，仅在 GUI 详情中显示；样例常用 `YYYY-MM-DD`。 */
   date?: string | null;
 
-  /**
-   * 模型包图标贴图。缺失时使用空图标。
-   * 如果图标图片高大于宽，GUI 会把它视为纵向排列的多帧动态图标：每帧为正方形，帧数约为 `height / width`。
-   */
-  icon?: TLMResourceLocation;
 
   /**
    * （基岩版不支持动态图标）
@@ -83,7 +83,7 @@ export interface MaidModelJava {
 }
 
 /** `model_list[]` 中的单个女仆模型定义。 */
-interface TLMMaidModelInfo {
+export interface TLMMaidModelInfo {
   /**
    * 模型唯一 ID。必填。缺失会导致解析失败并抛出 `Expected "model_id" in model`。
    * 该 ID 也是模型注册、选择、缓存图标与默认资源路径推导的基础。
@@ -195,7 +195,7 @@ interface TLMMaidModelInfo {
  * - `encrypt: false`：`tag` 直接等于女仆名称时触发。
  * - `encrypt: true`：对女仆名称做 SHA-1 后，与 `tag` 比较；因此 `tag` 应填写目标名称的 SHA-1 十六进制摘要。
  */
-interface TLMEasterEgg {
+export interface TLMEasterEgg {
   /** 彩蛋触发标签。普通彩蛋填写明文名称；加密彩蛋填写目标名称的 SHA-1 十六进制字符串。空字符串不会被注册为可触发彩蛋。 */
   tag?: string;
 

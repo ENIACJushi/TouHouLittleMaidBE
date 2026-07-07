@@ -3,36 +3,49 @@ import {PackFile} from './model/PackFile';
 import {TemplatesBE} from "./model/Templates";
 import {MaidModelJava, TLMMaidModelInfo} from "./model/MaidModelJava";
 import {LangFile, LangFileType, LangType} from "./model/LangFile";
+import {ResourceManager} from "./resource_manager/ResourceManager";
 
+const TAG = 'SkinPackConvertor';
 const BASE_INDEX = 1000;
 
 /**
- * 单个模型包转换器
+ * 子模型包转换器
  */
 export class SkinPackConvertor {
-  packName = 'tlm_model_pack';
-  packNameSafe = 'tlm_model_pack'; // 模型包安全名称，用于渲染定义
-  input: JSZip; // 单个 java 模型包的 zip 文件
+  /** 转换后的基岩版模型包 id */
   packId: number;
-  langJava = new LangFile(); // java 语言文件
-
-  /* 输出文件 */
+  /** 子模型包名称 */
+  packName = 'tlm_model_pack';
+  /** 该子模型包所属的模型包的资源管理器 */
+  resourceManager: ResourceManager;
+  /** 模型包安全名称，用于渲染定义 */
+  packNameSafe = 'tlm_model_pack';
+  /** 该子模型包的 zip 文件夹，如 `assets/xxx` */
+  input: JSZip; // todo 排查所有引用，改为字模型包文件夹开始
+  /** java 语言文件 */
+  langJava = new LangFile();
+  /** 输出信息 */
   res: PackFile;
-  /* 此模型包的模型文件夹 */
+  /** 此模型包的模型文件夹 */
   pack_models: JSZip;
-  /* 此模型包的渲染控制器 */
+  /** 此模型包的渲染控制器 */
   pack_controller: TemplatesBE.RenderControllerPack;
 
   /**
-   * 处理单个模型包
-   * @param input 单个 java 模型包的 zip 文件
-   * @param packId
-   * @param res
+   * 处理单个子模型包
+   * @param packId 转换后的基岩版模型包 id
+   * @param domain 子模型包名称，即 `assets/xxx` 的 `xxx`
+   * @param input 该子模型包的 zip 文件夹，如 `assets/xxx`
+   * @param resourceManager 该子模型包所属的模型包的资源管理器
+   * @param res 输出结果
    */
-  constructor(input: JSZip, packId: number, res: PackFile) {
-    this.input = input;
+  constructor(packId: number, domain: string, input: JSZip, resourceManager: ResourceManager, res: PackFile) {
     this.packId = packId;
+    this.packName = domain;
+    this.input = input;
+    this.resourceManager = resourceManager
     this.res = res;
+
     this.pack_models = this.res.models.folder(this.packName);
     this.pack_controller = JSON.parse(JSON.stringify(TemplatesBE.RENDER_CONTROLLER_PACK));
   }
@@ -41,10 +54,9 @@ export class SkinPackConvertor {
    * 执行处理
    */
   async handlePack() {
-    // 获取模型包名称
+    console.log(`Process pack: ${this.packName}`);
+    // 确定模型包安全名称
     this.getPackName();
-    // 移动图标
-    await this.moveIcon();
     // 移动女仆贴图
     await this.moveTextures();
     // 修改格式并移动模型
@@ -56,39 +68,24 @@ export class SkinPackConvertor {
   }
 
   /**
-   * 确定模型包名称
+   * 确定模型包名称，用于渲染定义
    */
   getPackName() {
-    // 确定模型包名称
-    for (let file in this.input.files) {
-      let folder_list = file.split('/');
-      if (folder_list.length === 3 && folder_list[2] === '') {
-        this.packName = folder_list[1];
-        break;
-      }
-    }
-    // 确定模型包安全名称，用于渲染定义
     let firstChar = this.packName.substring(0, 1)
     this.packNameSafe = (firstChar >= '0' && firstChar <= '9') ? 'a' + this.packName: this.packName;
-    console.log(`Process pack: ${this.packName}`);
   }
 
   /**
-   * 移动模型包图标和女仆图标（可能没有）
+   * 解析模型包图标
    */
-  async moveIcon() {
-    // 移动模型包图标
-    try {
-      let packIcon = this.input.files["pack.png"].async('blob');
-      this.res.textures_icon.file(`pack_pack_${this.packId + BASE_INDEX}.png`, packIcon);
-    } catch(e) {
-      console.error(`handlePack >> Move icon ERROR`, e);
-    }
-
-    // 移动女仆图标（可能没有）
-    if (this.input.files[`assets/${this.packName}/textures/maid_icon.png`]) {
-      let content = await this.input.files[`assets/${this.packName}/textures/maid_icon.png`].async('blob');
-      this.res.textures_icon.file(`pack_maid_${this.packId + BASE_INDEX}.png`, content);
+  async parseIcon(resourceKey?: string) {
+    let key = resourceKey ?? `${this.packName}:textures/maid_icon.png`;
+    let icon = this.resourceManager.getResource(key);
+    console.log(TAG, `parseIcon, key=${key}, icon=${icon}`);
+    if (icon) {
+      let temp = icon.async('blob');
+      // todo 对于多帧图标，取第一帧
+      this.res.textures_icon.file(`pack_pack_${this.packId + BASE_INDEX}.png`, temp);
     }
   }
 
@@ -96,7 +93,7 @@ export class SkinPackConvertor {
   async moveTextures() {
     let pack_textures = this.res.textures.folder(this.packName);
     let tasks = [];
-    this.input.folder(`assets/${this.packName}/textures/`).forEach((path, file) => {
+    this.input.folder(`textures/`).forEach((path, file) => {
       if (path !== "maid_icon.png") {
         tasks.push(async () => {
           let content = await file.async("blob");
@@ -115,7 +112,7 @@ export class SkinPackConvertor {
    */
   async convertModels() {
     let tasks = [];
-    this.input.folder(`assets/${this.packName}/models/`).forEach((path, file) => {
+    this.input.folder(`models/`).forEach((path, file) => {
       tasks.push(this.convertModel(path, file));
     });
     for (let task of tasks) {
@@ -218,9 +215,11 @@ export class SkinPackConvertor {
    */
   async convertMaidModelCfg(): Promise<void> {
     // 读取 maid_model.json 文件
-    let content = await this.input.files[`assets/${this.packName}/maid_model.json`].async("string");
+    let content = await this.input.file('maid_model.json').async('string');
     let inputJson: MaidModelJava = JSON.parse(content) as MaidModelJava;
 
+    // 解析图标 icon
+    await this.parseIcon(inputJson.icon);
     // 解析作者字符串 author，使用通用 I18n 文本/数组解析方案
     this.parseI18n(`maid_pack.${this.packId + BASE_INDEX}.authors`, inputJson.author);
     // 解析包名 pack_name，使用通用 I18n 文本解析方案
@@ -319,10 +318,10 @@ export class SkinPackConvertor {
   private async parseAllLang() {
     for (let langType in LangType) {
       // 寻找输入包的语言文件
-      let lang_file = this.input.files[`assets/${this.packName}/lang/${langType.toLowerCase()}.lang`];
-      if (lang_file === undefined) {
-        lang_file = this.input.files[`assets/${this.packName}/lang/${langType.toLowerCase()}.json`];
-        if (lang_file === undefined) {
+      let lang_file = this.input.file(`lang/${langType.toLowerCase()}.lang`);
+      if (!lang_file) {
+        lang_file = this.input.file(`lang/${langType.toLowerCase()}.json`);
+        if (!lang_file) {
           continue;
         }
         let content = await lang_file.async("string");
