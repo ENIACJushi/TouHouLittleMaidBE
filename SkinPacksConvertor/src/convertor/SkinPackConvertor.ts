@@ -21,7 +21,7 @@ export class SkinPackConvertor {
   /** 模型包安全名称，用于渲染定义 */
   packNameSafe = 'tlm_model_pack';
   /** 该子模型包的 zip 文件夹，如 `assets/xxx` */
-  input: JSZip; // todo 排查所有引用，改为字模型包文件夹开始
+  input: JSZip;
   /** java 语言文件 */
   langJava = new LangFile();
   /** 输出信息 */
@@ -281,60 +281,78 @@ export class SkinPackConvertor {
 
   /** 解析 model_list 中的模型信息 */
   private parseMMModelInfo(modelInfo: TLMMaidModelInfo, seq: number) {
-    let model_name = modelInfo.model_id.split(':')[1];
-    // 女仆各自的描述和名称可能会共用，需要检查是否已经被替换
-    // name 名称
-    const nameKey = `model.${this.packId + BASE_INDEX}.${seq}.name`;
+    // 解析模型 model_id
+    let idInfo = this.parseModelId(modelInfo); // model_name = idInfo[1]
+    // 解析模型名称 name
+    this.parseModelName(modelInfo, idInfo, seq);
+    // 解析模型描述 desc
+    this.parseModelDesc(modelInfo, idInfo, seq);
+    // 解析模型贴图
+    this.parseModelTextures(modelInfo, idInfo, seq);
+    // 解析模型建模 model
+    this.parseModelModel(modelInfo, idInfo, seq);
+    // 处理动画 animation
+    this.parseModelAnimation(modelInfo, seq);
+
+    // todo 处理语音包
+  }
+  /** 解析模型 - model_id，得到 namespace 和 path */
+  private parseModelId(modelInfo: TLMMaidModelInfo): ModelIdInfo  {
+    let modelIdInfo = modelInfo.model_id.split(':');
+    return {
+      namespace: modelIdInfo[0],
+      path: modelIdInfo[1],
+    };
+  }
+  /** 解析模型 - 名称 name */
+  private parseModelName(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
+    const nameKey = `model.${this.packId + BASE_INDEX}.${seq}.name`; // 基岩版文本键
     const infoName = modelInfo.name;
     if (infoName === undefined) {
-      // 默认键名
-      this.res.lang.setLang(nameKey, this.langJava.getLang(`model.${this.packName}.${model_name}.name`));
+      // 缺省时，使用 `{model.<namespace>.<path>.name}`，其中 `<namespace>` 和 `<path>` 来自 `model_id`
+      this.res.lang.setLang(nameKey, this.langJava.getLang(`model.${idInfo.namespace}.${idInfo.path}.name`));
     } else {
+      // 解析指定的文本标识
       this.parseI18nText(nameKey, infoName);
     }
-
-    // description 描述
-    const descKey = `model.${this.packId + BASE_INDEX}.${seq}.desc`;
+  }
+  /** 解析模型 - 描述 description */
+  private parseModelDesc(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
+    const descKey = `model.${this.packId + BASE_INDEX}.${seq}.desc`; // 基岩版文本键
     if (modelInfo.description === undefined) {
-      // 默认键名
-      this.res.lang.setLang(descKey, this.langJava.getLang(`model.${this.packName}.${model_name}.desc`));
-    } else{
+      this.res.lang.setLang(descKey, this.langJava.getLang(`model.${idInfo.namespace}.${idInfo.path}.desc`));
+    } else {
       this.parseI18nTextArray(descKey, modelInfo.description);
     }
-
+  }
+  /** 解析模型 - 贴图（暂不支持 extra_textures） */
+  private parseModelTextures(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
     // 在实体定义添加贴图
-    this.res.entity_description["textures"][`${this.packNameSafe}_${model_name}`] =
-      `textures/${this.packName}/entity/${model_name}`;
+    this.res.entity_description["textures"][`${this.packNameSafe}_${idInfo.path}`] =
+      `textures/${this.packName}/entity/${idInfo.path}`;
     // 在渲染控制器添加贴图
     this.pack_controller["arrays"]["textures"]["Array.skins"]
-      .push(`Texture.${this.packNameSafe}_${model_name}`);
-
-    // 在实体定义添加模型
+      .push(`Texture.${this.packNameSafe}_${idInfo.path}`);
+  }
+  /** 解析模型 - 模型 model */
+  private parseModelModel(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
     if (!modelInfo.model) {
       // 未指定使用的模型，则使用默认的
-      this.res.entity_description["geometry"][`${this.packNameSafe}_${model_name}`] =
-        `geometry.${this.packNameSafe}.${model_name}`;
+      this.res.entity_description["geometry"][`${this.packNameSafe}_${idInfo.path}`] =
+        `geometry.${this.packNameSafe}.${idInfo.path}`;
     } else {
       // 指定了使用的模型（如 geckolib:models/entity/winefox.json）
       let modelPath = modelInfo.model.split('/');
       let model = modelPath[modelPath.length - 1];
       model = model.replace(".json", "");
-      this.res.entity_description["geometry"][`${this.packNameSafe}_${model_name}`]
+      this.res.entity_description["geometry"][`${this.packNameSafe}_${idInfo.path}`]
         = `geometry.${this.packNameSafe}.${model}`;
     }
     // 在渲染控制器添加模型
-    this.pack_controller["arrays"]["geometries"]["Array.geos"].push(`Geometry.${this.packNameSafe}_${model_name}`);
-
-    // 处理动画
-    this.parseAnimation(modelInfo, seq);
-
-    // todo 处理语音包
+    this.pack_controller["arrays"]["geometries"]["Array.geos"].push(`Geometry.${this.packNameSafe}_${idInfo.path}`);
   }
-
-  /**
-   * 处理动画
-   */
-  private parseAnimation(modelInfo: TLMMaidModelInfo, seq: number) {
+  /** 解析模型 - 动画 animation */
+  private parseModelAnimation(modelInfo: TLMMaidModelInfo, seq: number) {
     // 读取使用到的文件
     if (!modelInfo.animation) {
       return;
@@ -446,4 +464,9 @@ export class SkinPackConvertor {
       this.res.lang.setLang(key, '');
     }
   }
+}
+
+interface ModelIdInfo {
+  namespace: string;
+  path: string;
 }
