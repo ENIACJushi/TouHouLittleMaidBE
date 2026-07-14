@@ -3,6 +3,7 @@ import { writeErrorLog } from "../common/Log";
 import { SkinPackConvertor } from "./SkinPackConvertor";
 import { PackFile } from "./model/PackFile";
 import { ResourceManager } from "./resource_manager/ResourceManager";
+import {AnimationManager} from "./resource_manager/AnimationManager";
 
 /**
  * 转换器
@@ -11,6 +12,7 @@ export class SkinConvertor {
   fileList = []; // java 模型包列表
   uuid = ''; // uuid
   result: PackFile;
+  animationManager = new AnimationManager(); // 全局动画管理器
 
   /**
    * 输入
@@ -51,7 +53,10 @@ export class SkinConvertor {
       try {
         // 解析模型包
         let packZip = await JSZip.loadAsync(this.fileList[i]);
+        // 初始化包资源管理器
         let resource = new ResourceManager(packZip);
+        // 设置动画管理器的包资源管理器
+        this.animationManager.setResourceManager(resource, i);
         // 若模型包是第一个，则作为基岩版资源包的图标
         try {
           let packIcon = packZip.file('pack.png').async('blob');
@@ -59,11 +64,17 @@ export class SkinConvertor {
         } catch(e) {
           console.error(`handlePack >> Move icon ERROR`, e);
         }
-
         // 解析子模型包
         for (let [domain, info] of resource.getSubPacks()) {
           count++;
-          let packConvertor = new SkinPackConvertor(count, domain, info.zipFolder, resource, this.result);
+          let packConvertor = new SkinPackConvertor({
+            packId: count,
+            domain: domain,
+            input: info.zipFolder,
+            resourceManager: resource,
+            animationManager: this.animationManager,
+            res: this.result,
+          });
           await packConvertor.handlePack();
         }
       } catch(e) {

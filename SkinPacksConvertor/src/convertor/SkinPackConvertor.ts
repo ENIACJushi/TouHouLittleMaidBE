@@ -4,6 +4,7 @@ import {TemplatesBE} from "./model/Templates";
 import {MaidModelJava, TLMMaidModelInfo} from "./model/MaidModelJava";
 import {LangFile, LangFileType, LangType} from "./model/LangFile";
 import {ResourceManager} from "./resource_manager/ResourceManager";
+import {AnimationManager} from "./resource_manager/AnimationManager";
 
 const TAG = 'SkinPackConvertor';
 const BASE_INDEX = 1000;
@@ -18,6 +19,8 @@ export class SkinPackConvertor {
   packName = 'tlm_model_pack';
   /** 该子模型包所属的模型包的资源管理器 */
   resourceManager: ResourceManager;
+  /** 全局动画管理器 */
+  animationManager: AnimationManager;
   /** 模型包安全名称，用于渲染定义 */
   packNameSafe = 'tlm_model_pack';
   /** 该子模型包的 zip 文件夹，如 `assets/xxx` */
@@ -33,18 +36,14 @@ export class SkinPackConvertor {
 
   /**
    * 处理单个子模型包
-   * @param packId 转换后的基岩版模型包 id
-   * @param domain 子模型包名称，即 `assets/xxx` 的 `xxx`
-   * @param input 该子模型包的 zip 文件夹，如 `assets/xxx`
-   * @param resourceManager 该子模型包所属的模型包的资源管理器
-   * @param res 输出结果
    */
-  constructor(packId: number, domain: string, input: JSZip, resourceManager: ResourceManager, res: PackFile) {
-    this.packId = packId;
-    this.packName = domain;
-    this.input = input;
-    this.resourceManager = resourceManager
-    this.res = res;
+  constructor(params: SkinPackConvertorInitParams) {
+    this.packId = params.packId;
+    this.packName = params.domain;
+    this.input = params.input;
+    this.resourceManager = params.resourceManager;
+    this.animationManager = params.animationManager;
+    this.res = params.res;
 
     this.pack_models = this.res.models.folder(this.packName);
     this.pack_controller = JSON.parse(JSON.stringify(TemplatesBE.RENDER_CONTROLLER_PACK));
@@ -263,7 +262,7 @@ export class SkinPackConvertor {
     // 解析模型列表 model_list
     this.res.modelAmount[this.packId - 1] = inputJson.model_list.length; // 确定模型数量
     for (let i = 0; i < inputJson.model_list.length; i++) {
-      this.parseMMModelInfo(inputJson.model_list[i], i);
+      await this.parseMMModelInfo(inputJson.model_list[i], i);
     }
 
     // 在包渲染控制器定义 variant 对应的皮肤和模型
@@ -280,7 +279,7 @@ export class SkinPackConvertor {
   }
 
   /** 解析 model_list 中的模型信息 */
-  private parseMMModelInfo(modelInfo: TLMMaidModelInfo, seq: number) {
+  private async parseMMModelInfo(modelInfo: TLMMaidModelInfo, seq: number) {
     // 解析模型 model_id
     let idInfo = this.parseModelId(modelInfo); // model_name = idInfo[1]
     // 解析模型名称 name
@@ -292,7 +291,7 @@ export class SkinPackConvertor {
     // 解析模型建模 model
     this.parseModelModel(modelInfo, idInfo, seq);
     // 处理动画 animation
-    this.parseModelAnimation(modelInfo, seq);
+    await this.parseModelAnimation(modelInfo, idInfo, seq);
 
     // todo 处理语音包
   }
@@ -352,16 +351,16 @@ export class SkinPackConvertor {
     this.pack_controller["arrays"]["geometries"]["Array.geos"].push(`Geometry.${this.packNameSafe}_${idInfo.path}`);
   }
   /** 解析模型 - 动画 animation */
-  private parseModelAnimation(modelInfo: TLMMaidModelInfo, seq: number) {
-    // 读取使用到的文件
-    if (!modelInfo.animation) {
+  private async parseModelAnimation(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
+    // 未指定动画信息，或是不支持的 js 动画（is_gecko === false），则直接退出
+    if (!modelInfo.animation || !modelInfo.is_gecko) {
       return;
     }
+    // 开始解析，读取使用到的文件
     for (let file of modelInfo.animation) {
-      // 读取 file，如 touhou_little_maid:animation/maid.animation.json
-
+      // 绑定动画
+      await this.animationManager.bindModelAnimation(this.packId, seq, file, idInfo.namespace);
     }
-
   }
 
   ///// 翻译文本解析 /////
@@ -469,4 +468,13 @@ export class SkinPackConvertor {
 interface ModelIdInfo {
   namespace: string;
   path: string;
+}
+
+export interface SkinPackConvertorInitParams {
+  packId: number; // 转换后的基岩版模型包 id
+  domain: string; // 子模型包名称，即 `assets/xxx` 的 `xxx`
+  input: JSZip; // 该子模型包的 zip 文件夹，如 `assets/xxx`
+  resourceManager: ResourceManager; // 该子模型包所属的模型包的资源管理器
+  animationManager: AnimationManager; // 全局动画管理器，在解析当前模型包前，会先切换资源管理器
+  res: PackFile; // 输出结果
 }
