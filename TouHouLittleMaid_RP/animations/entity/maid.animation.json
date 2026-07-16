@@ -34,12 +34,12 @@
 			"loop": true,
 			"bones": {
 				"head": {
-					"rotation": [0, 0, "query.is_interested?6:0"],
-					"position": [0, "query.is_interested?-0.1:0", 0]
+					"rotation": [0, 0, 6],
+					"position": [0, -0.1, 0]
 				},
 				"hair": {
-					"rotation": [0, 0, "query.is_interested?-6:0"],
-					"position": [0, "query.is_interested?0.2:0", 0]
+					"rotation": [0, 0, -6],
+					"position": [0, 0.2, 0]
 				}
 			}
 		},

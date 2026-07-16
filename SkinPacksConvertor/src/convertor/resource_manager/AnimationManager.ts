@@ -58,15 +58,16 @@ export class AnimationManager {
    * 获取指定动画文件的动画数据，未解析时自动解析
    */
   async getAnimationData(_animationFile: string, defaultNamespace: string) {
-    // 因为需要保证键的唯一性，在这生成 <packId>:<namespace>:<path>的键
+
     let animationFile = _animationFile;
     if (animationFile.indexOf(':') < 0) {
       // 提供的动画文件名使用缺省的 namespace，则手动拼接到开头
       animationFile = `${defaultNamespace}:${animationFile}`;
     }
-    animationFile = `${this.packId}:${animationFile}`
+    // 因为需要保证键的唯一性，在这生成 <packId>:<namespace>:<path>的键
+    let cacheKey = `${this.packId}:${animationFile}`;
     // 开始获取
-    let animationInfo = this.parsedAnimations.get(animationFile);
+    let animationInfo = this.parsedAnimations.get(cacheKey);
     if (animationInfo) {
       // 已解析直接返回
       return animationInfo;
@@ -91,13 +92,24 @@ export class AnimationManager {
       console.warn(`getAnimationData >> Parse json failed: ${animationFile}, raw: `, rawStr);
       return undefined;
     }
+    // 解析命名空间与文件名（去路径及 .json），供导出唯一动画名使用
+    const fileName = _animationFile.substring(_animationFile.lastIndexOf('/') + 1).replace(/\.json$/i, '');
     // 将原动画直接挂到已解析列表中
-    this.parsedAnimations.set(animationFile, {
-      id: this.parsedAnimations.size,
-      animation: animations,
+    animationInfo = {
       packId: this.packId,
-    });
+      id: this.parsedAnimations.size,
+      fileName,
+      animation: animations,
+    };
+    this.parsedAnimations.set(cacheKey, animationInfo);
     return animationInfo;
+  }
+
+  /**
+   * 获取动画信息，用于导出
+   */
+  getAnimationInfos() {
+    return this.modelAnimation;
   }
 }
 
@@ -109,4 +121,5 @@ export interface AnimationFileInfo {
   animation: AnimationSchema180; // 动画
   id: number; // 动画 id，子动画均取这个id。这里不会考虑主包的动画，是从0开始的，导出时要为主包动画留空
   packId: number; // 模型包id
+  fileName: string; // 文件名（去路径及 .json）
 }

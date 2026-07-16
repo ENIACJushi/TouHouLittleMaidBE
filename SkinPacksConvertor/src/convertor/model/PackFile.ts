@@ -14,7 +14,7 @@ export class PackFile {
   /**
    * 模型信息 entity/maid.entity.json
    */
-  maid_entity = JSON.parse(JSON.stringify(TemplatesBE.ENTITY_DEF));
+  maid_entity: TemplatesBE.EntityDefinition = JSON.parse(JSON.stringify(TemplatesBE.ENTITY_DEF));
   /**
    * 实体 description
    */
@@ -69,9 +69,10 @@ export class PackFile {
     });
     lang_folder.file("languages.json", JSON.stringify(lang_list));
 
-    // 将信息写入文件
+    // 写入实体定义文件
     this.resultFile.folder("entity")
       .file("maid.entity.json", JSON.stringify(this.maid_entity, null, '\t'));
+    // 写入渲染控制器
     this.resultFile.folder("render_controllers")
       .file("maid.json", JSON.stringify(this.render_controller, null, '\t'));
     // 生成指令

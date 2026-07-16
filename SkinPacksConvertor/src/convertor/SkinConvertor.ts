@@ -4,6 +4,7 @@ import { SkinPackConvertor } from "./SkinPackConvertor";
 import { PackFile } from "./model/PackFile";
 import { ResourceManager } from "./resource_manager/ResourceManager";
 import {AnimationManager} from "./resource_manager/AnimationManager";
+import {MaidAnimationConvertor} from "./animation/MaidAnimationConvertor";
 
 /**
  * 转换器
@@ -39,8 +40,26 @@ export class SkinConvertor {
 
     /// 执行转换 ///
     this.result = new PackFile(uuid);
+    // 处理所有模型包
     await this.handleAllPacks();
+    // 将动画定义挂到实体定义上
+    this.exportAnimation();
+    // 导出
     return this.result.export();
+  }
+
+  async exportAnimation() {
+    let convertor = new MaidAnimationConvertor(this.animationManager.getAnimationInfos());
+    let definition = convertor.exportDefinition();
+    let description = this.result.maid_entity['minecraft:client_entity'].description;
+    description.scripts = definition.scripts;
+    description.animations = definition.animations;
+    // 导出动画内容
+    let animationFile = {
+      "format_version": "1.8.0",
+      "animations": definition.animationList,
+    };
+    this.result.resultFile.folder('animations').file('tlm_pack_maid.animation.json', JSON.stringify(animationFile));
   }
 
   /**

@@ -66,7 +66,7 @@ export namespace TemplatesBE {
   export type RenderControllerPack = typeof RENDER_CONTROLLER_PACK;
 
   // 实体定义模板
-  export const ENTITY_DEF = {
+  export const ENTITY_DEF: EntityDefinition = {
     "format_version": "1.10.0",
     "minecraft:client_entity": {
       "description": {
@@ -81,7 +81,25 @@ export namespace TemplatesBE {
           "controller.render.touhou_little_maid.maid_touhou_little_maid",
           "controller.render.touhou_little_maid.maid.statue_base"
           // 在此补充
-        ]
+        ],
+      }
+    }
+  }
+  export type EntityDefinition = {
+    format_version: string,
+    "minecraft:client_entity": {
+      description: {
+        identifier: string,
+        textures: Record<string, string>,
+        geometry: Record<string, string>,
+        render_controllers: string[],
+        scripts?: {
+          scale: string,
+          pre_animation: string[],
+          should_update_bones_and_effects_offscreen: true,
+          animate: (string | Record<string, string>)[],
+        },
+        animations?: Record<string, string>,
       }
     }
   }
