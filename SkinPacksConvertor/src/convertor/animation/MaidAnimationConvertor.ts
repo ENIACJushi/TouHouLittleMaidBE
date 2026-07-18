@@ -22,9 +22,14 @@ const ANIMATE_EXTRA_CONDITION: Record<AnimationTypes, string> = {
  */
 export class MaidAnimationConvertor {
   modelAnimation: Map<number, Map<number, AnimationFileInfo[]>>;
+  modelScale: Map<number, Map<number, number>>;
 
-  constructor(modelAnimation: Map<number, Map<number, AnimationFileInfo[]>>) {
+  constructor(
+    modelAnimation: Map<number, Map<number, AnimationFileInfo[]>>,
+    modelScale: Map<number, Map<number, number>>,
+  ) {
     this.modelAnimation = modelAnimation;
+    this.modelScale = modelScale;
   }
 
   /**
@@ -139,7 +144,7 @@ export class MaidAnimationConvertor {
     }
 
     // 汇总展示条件到 pre_animation
-    const conditionMolang = this.buildShowConditionMolang(showConditions);
+    const conditionMolang = this.buildShowConditionMolang(showConditions, this.modelScale);
     if (conditionMolang) {
       res.scripts.pre_animation.push(conditionMolang);
     }
@@ -161,24 +166,47 @@ export class MaidAnimationConvertor {
    *  形如：temp.pack=...;temp.model=...;(temp.pack == 1001) ? { (temp.model==0) ? { v.animate_sit=1; }; };
    */
   private buildShowConditionMolang(
-    showConditions: Map<number, Map<number, Partial<Record<AnimationTypes, number>>>>
+    showConditions: Map<number, Map<number, Partial<Record<AnimationTypes, number>>>>,
+    modelScale: Map<number, Map<number, number>>,
   ): string {
-    if (showConditions.size === 0) {
+    if (showConditions.size === 0 && modelScale.size === 0) {
       return "";
     }
     let molang = `temp.pack=q.property('thlm:skin_pack');temp.model=q.variant;`;
-    for (const [packId, models] of showConditions) {
+
+    const allPackIds = new Set<number>([
+      ...showConditions.keys(),
+      ...modelScale.keys(),
+    ]);
+
+    for (const packId of allPackIds) {
       const skinPack = packId + BASE_INDEX;
+      const models = showConditions.get(packId);
+      const scales = modelScale.get(packId);
+      const allModelIds = new Set<number>([
+        ...(models?.keys() ?? []),
+        ...(scales?.keys() ?? []),
+      ]);
+
       let modelBlocks = "";
-      for (const [modelId, types] of models) {
-        const assigns = (Object.entries(types) as [AnimationTypes, number][])
-          .map(([type, id]) => `v.animate_${type}=${id};`)
-          .join("");
+      for (const modelId of allModelIds) {
+        const types = models?.get(modelId);
+        const animateAssigns = types
+          ? (Object.entries(types) as [AnimationTypes, number][])
+            .map(([type, id]) => `v.animate_${type}=${id};`)
+            .join("")
+          : "";
+
+        const scale = scales?.get(modelId);
+        const scaleAssign = scale !== undefined ? `v.scale=${scale};` : "";
+        const assigns = `${scaleAssign}${animateAssigns}`;
+
         if (!assigns) {
           continue;
         }
         modelBlocks += `(temp.model==${modelId}) ? { ${assigns} };`;
       }
+
       if (!modelBlocks) {
         continue;
       }

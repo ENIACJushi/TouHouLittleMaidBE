@@ -290,6 +290,8 @@ export class SkinPackConvertor {
     this.parseModelTextures(modelInfo, idInfo, seq);
     // 解析模型建模 model
     this.parseModelModel(modelInfo, idInfo, seq);
+    // 解析模型缩放 scale
+    this.parseModelScale(modelInfo, idInfo, seq);
     // 处理动画 animation
     await this.parseModelAnimation(modelInfo, idInfo, seq);
 
@@ -349,6 +351,13 @@ export class SkinPackConvertor {
     }
     // 在渲染控制器添加模型
     this.pack_controller["arrays"]["geometries"]["Array.geos"].push(`Geometry.${this.packNameSafe}_${idInfo.path}`);
+  }
+  /** 解析模型 - 模型缩放 */
+  private parseModelScale(modelInfo: TLMMaidModelInfo, _idInfo: ModelIdInfo, seq: number) {
+    void _idInfo;
+    const rawScale = modelInfo.render_entity_scale ?? 1;
+    const scale = Math.max(0.2, Math.min(2, rawScale));
+    this.animationManager.bindModelScale(this.packId, seq, scale);
   }
   /** 解析模型 - 动画 animation */
   private async parseModelAnimation(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {

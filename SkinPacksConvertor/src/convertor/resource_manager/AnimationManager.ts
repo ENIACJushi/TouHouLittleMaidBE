@@ -16,6 +16,8 @@ export class AnimationManager {
   private parsedAnimations: Map<string, AnimationFileInfo> = new Map();
   /** 包id - 模型id - 动画列表 映射*/
   private modelAnimation: Map<number, Map<number, AnimationFileInfo[]>> = new Map();
+  /** 包id - 模型id - 缩放 映射 */
+  private modelScale: Map<number, Map<number, number>> = new Map();
 
   constructor(resource?: ResourceManager) {
     this.resource = resource;
@@ -106,10 +108,29 @@ export class AnimationManager {
   }
 
   /**
+   * 绑定模型缩放信息
+   */
+  bindModelScale(packId: number, modelId: number, scale: number) {
+    let pack = this.modelScale.get(packId);
+    if (!pack) {
+      pack = new Map();
+      this.modelScale.set(packId, pack);
+    }
+    pack.set(modelId, scale);
+  }
+
+  /**
    * 获取动画信息，用于导出
    */
   getAnimationInfos() {
     return this.modelAnimation;
+  }
+
+  /**
+   * 获取模型缩放信息，用于导出
+   */
+  getModelScaleInfos() {
+    return this.modelScale;
   }
 }
 
