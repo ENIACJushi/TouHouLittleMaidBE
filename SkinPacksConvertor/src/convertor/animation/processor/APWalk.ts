@@ -1,4 +1,11 @@
-import {AnimationDefinition180, Molang, PositionChannel, Vec3KeyframeValue} from "../types/AnimationSchema180";
+import {
+  AnimationDefinition180,
+  Molang,
+  PositionChannel,
+  RotationChannel,
+  ScaleChannel,
+  Vec3KeyframeValue
+} from "../types/AnimationSchema180";
 import {AnimationTypes} from "../types/AnimationTypes";
 
 /**
@@ -21,23 +28,45 @@ export const data = {
   }
 };
 
-function multiply(data: Molang[] | any) {
-  const processArr = (data: Molang[]) => {
-    data.forEach((value, index) => {
+type AnimationChannel = PositionChannel | RotationChannel | ScaleChannel | undefined;
+
+function multiply(data: AnimationChannel) {
+  if (!data) return;
+
+  const processArr = (arr: Molang[]) => {
+    arr.forEach((value, index) => {
       if (value !== 0) {
         // 不等于 0 才需要乘
-        data[index] = `v.walk_process*(${value})`;
+        arr[index] = `v.walk_process*(${value})`;
       }
     });
   };
 
+  const processKeyframeValue = (value: Vec3KeyframeValue) => {
+    if (Array.isArray(value)) {
+      processArr(value as Molang[]);
+      return;
+    }
+
+    // 只处理 pre，post 为插值结果，不应注入变量
+    if (value.pre && Array.isArray(value.pre)) {
+      processArr(value.pre as Molang[]);
+    }
+  };
+
   if (Array.isArray(data)) {
-    processArr(data);
-  } else if (data && typeof data === "object") {
-    // Record<string, [Molang, Molang, Molang]>
+    if (data.length === 3) {
+      processArr(data as Molang[]);
+    }
+    return;
+  }
+
+  if (typeof data === "object") {
     Object.values(data).forEach((value) => {
       if (Array.isArray(value)) {
         processArr(value as Molang[]);
+      } else if (value && typeof value === "object") {
+        processKeyframeValue(value as Vec3KeyframeValue);
       }
     });
   }
