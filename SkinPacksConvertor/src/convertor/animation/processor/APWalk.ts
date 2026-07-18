@@ -24,7 +24,10 @@ export const data = {
 function multiply(data: Molang[] | any) {
   const processArr = (data: Molang[]) => {
     data.forEach((value, index) => {
-      data[index] = `v.walk_process*(${value})`;
+      if (value !== 0) {
+        // 不等于 0 才需要乘
+        data[index] = `v.walk_process*(${value})`;
+      }
     });
   };
 

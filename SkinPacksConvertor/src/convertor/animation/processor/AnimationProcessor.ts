@@ -2,6 +2,7 @@
 import { AnimationTypes } from "../types/AnimationTypes";
 import { AnimationDefinition180 } from "../types/AnimationSchema180";
 import { data as dataWalk } from "./APWalk";
+import { data as dataMolang } from "./APMolang";
 
 export type APFunc = (animation: AnimationDefinition180) => Promise<void>;
 
@@ -25,7 +26,11 @@ export class AnimationProcessor {
     }
 
     // 注册动画处理器
-    this.registerAP(dataWalk.func, dataWalk.types);
+    const registerFunc = (data: { types: any, func: APFunc }) => {
+      this.registerAP(data.func, data.types);
+    };
+    registerFunc(dataMolang);
+    registerFunc(dataWalk);
   }
 
   /**
