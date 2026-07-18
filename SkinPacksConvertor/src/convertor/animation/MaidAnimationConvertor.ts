@@ -10,7 +10,7 @@ const BASE_INDEX = 1000;
  *  （主条件 `v.animate_xxx == n` 之外）
  */
 const ANIMATE_EXTRA_CONDITION: Record<AnimationTypes, string> = {
-  [AnimationTypes.walk]: " && !query.property('thlm:is_sitting')",
+  [AnimationTypes.walk]: " && !query.property('thlm:is_sitting') && v.walk_process>0",
   [AnimationTypes.beg]: " && query.is_interested",
   [AnimationTypes.sit]: " && !q.is_in_ui && query.property('thlm:is_sitting')",
 };
@@ -40,13 +40,14 @@ export class MaidAnimationConvertor {
         scale: "query.property('thlm:scale') * v.scale",
         pre_animation: [
           // 特殊行走动画属性
-          "variable.walk_process = Math.min(1, query.modified_move_speed / 0.9);",
+          "variable.walk_process = Math.min(1, Math.abs(query.modified_move_speed / 0.9));",
           // 基础动画
           "variable.tcos0 = (Math.cos(query.modified_distance_moved * 38.17) * query.modified_move_speed / variable.gliding_speed_value) * 28.65;",
           "variable.emote_index=Math.mod(query.property('thlm:emote'),1000);",
           "variable.emote_frame=Math.max(1, Math.mod( Math.floor(query.property('thlm:emote')/1000), 1000) );",
           "variable.emote_speed=Math.max(1, Math.floor(query.property('thlm:emote')/1000000) );",
 
+          "v.biaoqing = 0;", // 表情当前未实现，置0
           // 默认使用主包动画（编号 0）
           "v.scale = 1;", // 缩放
           "v.animate_walk = 0;",
