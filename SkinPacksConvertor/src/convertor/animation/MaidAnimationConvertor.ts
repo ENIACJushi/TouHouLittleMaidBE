@@ -13,6 +13,10 @@ const ANIMATE_EXTRA_CONDITION: Record<AnimationTypes, string> = {
   [AnimationTypes.walk]: " && !query.property('thlm:is_sitting') && v.walk_process>0",
   [AnimationTypes.beg]: " && query.is_interested",
   [AnimationTypes.sit]: " && !q.is_in_ui && query.property('thlm:is_sitting')",
+  [AnimationTypes.parallel0]: "",
+  [AnimationTypes.parallel1]: "",
+  [AnimationTypes.parallel2]: "",
+  [AnimationTypes.parallel3]: "",
 };
 
 /**
