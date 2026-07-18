@@ -43,7 +43,7 @@ export class SkinConvertor {
     // 处理所有模型包
     await this.handleAllPacks();
     // 将动画定义挂到实体定义上
-    this.exportAnimation();
+    await this.exportAnimation();
     // 导出
     return this.result.export();
   }

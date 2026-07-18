@@ -1,6 +1,7 @@
 
 import { AnimationTypes } from "../types/AnimationTypes";
 import { AnimationDefinition180 } from "../types/AnimationSchema180";
+import { data as dataWalk } from "./APWalk";
 
 export type APFunc = (animation: AnimationDefinition180) => Promise<void>;
 
@@ -22,6 +23,9 @@ export class AnimationProcessor {
     for (const type in AnimationTypes) {
       this.processFunc.set(type as AnimationTypes, []);
     }
+
+    // 注册动画处理器
+    this.registerAP(dataWalk.func, dataWalk.types);
   }
 
   /**
@@ -43,9 +47,9 @@ export class AnimationProcessor {
       });
     } else {
       // 为每个类型注册
-      this.processFunc.forEach((value, type) => {
+      for (const type of this.processFunc.keys()) {
         add(type, callback);
-      });
+      }
     }
   }
 

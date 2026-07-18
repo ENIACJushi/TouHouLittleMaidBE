@@ -10,7 +10,7 @@ const BASE_INDEX = 1000;
  *  （主条件 `v.animate_xxx == n` 之外）
  */
 const ANIMATE_EXTRA_CONDITION: Record<AnimationTypes, string> = {
-  [AnimationTypes.walk]: " && !query.property('thlm:is_sitting') && v.tcos0 > 0",
+  [AnimationTypes.walk]: " && !query.property('thlm:is_sitting')",
   [AnimationTypes.beg]: " && query.is_interested",
   [AnimationTypes.sit]: " && !q.is_in_ui && query.property('thlm:is_sitting')",
 };
@@ -39,6 +39,8 @@ export class MaidAnimationConvertor {
       scripts: {
         scale: "query.property('thlm:scale') * v.scale",
         pre_animation: [
+          // 特殊行走动画属性
+          "variable.walk_process = Math.min(1, query.modified_move_speed / 0.9);",
           // 基础动画
           "variable.tcos0 = (Math.cos(query.modified_distance_moved * 38.17) * query.modified_move_speed / variable.gliding_speed_value) * 28.65;",
           "variable.emote_index=Math.mod(query.property('thlm:emote'),1000);",
