@@ -21,8 +21,13 @@ export const data = {
   }
 };
 
-let processMolang = (molang: Molang) => {
-  if (typeof molang === 'string') {
+let processMolang = (_molang: Molang) => {
+  if (typeof _molang === 'string') {
+    let molang = _molang;
+    if (molang.includes(';')) {
+      // 删除 ';'
+      molang = molang.replace(/;/g, '');
+    }
     if (molang.includes('=')) {
       // 对于 "=" 只保留右值
       for (let i = 0; i < molang.length; i++) {
@@ -38,6 +43,7 @@ let processMolang = (molang: Molang) => {
         }
       }
     }
+    return molang;
   }
-  return molang;
+  return _molang;
 }
