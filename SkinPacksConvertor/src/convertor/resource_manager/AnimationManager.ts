@@ -1,5 +1,5 @@
 import {ResourceManager} from "./ResourceManager";
-import { AnimationSchema180 } from "../animation/AnimationSchema180";
+import { MaidAnimationFileSchema180 } from "../animation/types/MaidAnimationFileSchema180";
 
 
 /**
@@ -81,9 +81,9 @@ export class AnimationManager {
     }
     // 解析 json
     const rawStr = await file.async('string');
-    let animations: AnimationSchema180;
+    let animations: MaidAnimationFileSchema180;
     try {
-      animations = JSON.parse(rawStr) as AnimationSchema180;
+      animations = JSON.parse(rawStr) as MaidAnimationFileSchema180;
       if (!animations) {
         console.warn(`getAnimationData >> Animation file has no animation. name=${animationFile}, raw=`, rawStr);
         return undefined;
@@ -118,7 +118,7 @@ export class AnimationManager {
  *  因为最终条件生成是 模型id-一组动画，所以它们之间的关系是按 id-动画 记录的，不会在这记录
  */
 export interface AnimationFileInfo {
-  animation: AnimationSchema180; // 动画
+  animation: MaidAnimationFileSchema180; // 动画
   id: number; // 动画 id，子动画均取这个id。这里不会考虑主包的动画，是从0开始的，导出时要为主包动画留空
   packId: number; // 模型包id
   fileName: string; // 文件名（去路径及 .json）

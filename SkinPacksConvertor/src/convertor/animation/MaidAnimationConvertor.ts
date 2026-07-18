@@ -1,5 +1,6 @@
-import {AnimationTypes} from "./AnimationTypes";
+import {AnimationTypes} from "./types/AnimationTypes";
 import {AnimationFileInfo} from "../resource_manager/AnimationManager";
+import {AnimationProcessor} from "./processor/AnimationProcessor";
 
 /** 与 SkinPackConvertor 一致：皮肤包属性 = packId + BASE_INDEX */
 const BASE_INDEX = 1000;
@@ -33,7 +34,7 @@ export class MaidAnimationConvertor {
    *   - 将动画注册到 scripts - animate，使用动画变量 `v.animate_xxx = n` 控制展示;
    *   - 汇总所有的动画展示条件，输出到 scripts - pre_animation
    */
-  exportDefinition(): AnimationDefinition {
+  async exportDefinition(): Promise<AnimationDefinition> {
     let res: AnimationDefinition = {
       scripts: {
         scale: "query.property('thlm:scale') * v.scale",
@@ -111,8 +112,11 @@ export class MaidAnimationConvertor {
               res.scripts.animate.push({
                 [shortKey]: `v.animate_${type}==${exportId}${ANIMATE_EXTRA_CONDITION[type]}`,
               });
-
-              animationList[animationName] = fileInfo.animation.animations[type];
+              if (!animationList[animationName]) {
+                // 若动画还未注册，则执行转换并注册
+                animationList[animationName] = await AnimationProcessor.getInstance()
+                  .process(type, fileInfo.animation.animations[type]);
+              }
             }
             // 记录该模型应播放的动画编号（同类型后文件覆盖）
             let packMap = showConditions.get(packId);

@@ -50,7 +50,7 @@ export class SkinConvertor {
 
   async exportAnimation() {
     let convertor = new MaidAnimationConvertor(this.animationManager.getAnimationInfos());
-    let definition = convertor.exportDefinition();
+    let definition = await convertor.exportDefinition();
     let description = this.result.maid_entity['minecraft:client_entity'].description;
     description.scripts = definition.scripts;
     description.animations = definition.animations;
