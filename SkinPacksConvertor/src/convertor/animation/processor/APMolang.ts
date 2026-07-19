@@ -1,4 +1,5 @@
 import {AnimationDefinition180, Molang} from "../types/AnimationSchema180";
+import {replaceYsmExpressions, parseYsmExpression} from "../../molang/ysm/YsmExpression";
 import {APUtils} from "./APUtils";
 
 
@@ -21,114 +22,7 @@ export const data = {
   }
 };
 
-const isIdentifierChar = (char: string): boolean => /[A-Za-z0-9_]/.test(char);
 
-const consumeIdentifier = (source: string, startIndex: number): number => {
-  let index = startIndex;
-  while (index < source.length && isIdentifierChar(source[index])) {
-    index++;
-  }
-  return index;
-};
-
-const consumeBalancedParentheses = (source: string, startIndex: number): number => {
-  if (source[startIndex] !== '(') {
-    return startIndex;
-  }
-
-  let index = startIndex;
-  let depth = 0;
-  let quote: '' | '"' | "'" = '';
-
-  while (index < source.length) {
-    const char = source[index];
-
-    if (quote) {
-      if (char === '\\') {
-        index += 2;
-        continue;
-      }
-      if (char === quote) {
-        quote = '';
-      }
-      index++;
-      continue;
-    }
-
-    if (char === '"' || char === "'") {
-      quote = char;
-      index++;
-      continue;
-    }
-
-    if (char === '(') {
-      depth++;
-      index++;
-      continue;
-    }
-
-    if (char === ')') {
-      depth--;
-      index++;
-      if (depth === 0) {
-        return index;
-      }
-      continue;
-    }
-
-    index++;
-  }
-
-  // 括号不平衡时，退回 startIndex，让上层逻辑仅匹配到 `ysm.xxx`
-  return startIndex;
-};
-
-function replaceYsmExpressions(source: string, replacer: (ysmExpression: string) => string): string {
-  let result = '';
-  let index = 0;
-
-  while (index < source.length) {
-    const ysmIndex = source.indexOf('ysm.', index);
-    if (ysmIndex < 0) {
-      result += source.slice(index);
-      break;
-    }
-
-    result += source.slice(index, ysmIndex);
-
-    const identifierStart = ysmIndex + 4;
-    let endIndex = consumeIdentifier(source, identifierStart);
-
-    if (endIndex === identifierStart) {
-      // 不是有效的 `ysm.xxx`，按普通文本处理
-      result += 'ysm.';
-      index = identifierStart;
-      continue;
-    }
-
-    if (source[endIndex] === '(') {
-      const callEndIndex = consumeBalancedParentheses(source, endIndex);
-      if (callEndIndex > endIndex) {
-        endIndex = callEndIndex;
-      }
-    }
-
-    while (source[endIndex] === '.') {
-      const propertyStart = endIndex + 1;
-      const propertyEnd = consumeIdentifier(source, propertyStart);
-      if (propertyEnd === propertyStart) {
-        break;
-      }
-      endIndex = propertyEnd;
-    }
-
-    const matched = source.slice(ysmIndex, endIndex);
-    result += replacer(matched);
-    index = endIndex;
-  }
-
-  return result;
-}
 
 let processMolang = (_molang: Molang) => {
   if (typeof _molang === 'string') {
@@ -162,7 +56,16 @@ let processMolang = (_molang: Molang) => {
   return _molang;
 }
 
-let handleYsmExpression = (_ysmExpression: string): string => {
-  // TODO: 根据 ysmExpression 的具体内容返回不同替换值
+let handleYsmExpression = (ysmExpression: string): string => {
+  const parsedSegments = parseYsmExpression(ysmExpression);
+
+  // TODO: 根据 parsedSegments 的具体内容返回不同替换值
+  // 例如：`ysm.func1(param1, param2).var1` =>
+  // [
+  //   { name: 'ysm' },
+  //   { name: 'func1', params: ['param1', 'param2'] },
+  //   { name: 'var1' }
+  // ]
+  void parsedSegments;
   return '1';
 };
