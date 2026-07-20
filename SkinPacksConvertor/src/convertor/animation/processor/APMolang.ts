@@ -1,5 +1,6 @@
 import {AnimationDefinition180, Molang} from "../types/AnimationSchema180";
-import {replaceYsmExpressions, parseYsmExpression} from "../../molang/ysm/YsmExpression";
+import {replaceYsmExpressions} from "../../molang/ysm/YsmExpression";
+import {resolveYsmExpression} from "../../molang/ysm/YsmResolvers";
 import {APUtils} from "./APUtils";
 
 
@@ -57,15 +58,5 @@ let processMolang = (_molang: Molang) => {
 }
 
 let handleYsmExpression = (ysmExpression: string): string => {
-  const parsedSegments = parseYsmExpression(ysmExpression);
-
-  // TODO: 根据 parsedSegments 的具体内容返回不同替换值
-  // 例如：`ysm.func1(param1, param2).var1` =>
-  // [
-  //   { name: 'ysm' },
-  //   { name: 'func1', params: ['param1', 'param2'] },
-  //   { name: 'var1' }
-  // ]
-  void parsedSegments;
-  return '1';
+  return resolveYsmExpression(ysmExpression);
 };

@@ -233,7 +233,6 @@ export const parseYsmExpression = (ysmExpression: string): YsmSegment[] => {
     const params = paramsRaw.trim().length === 0
       ? []
       : splitTopLevel(paramsRaw, ',').map((param) => param.trim()).filter(Boolean);
-
     return {name, params};
   });
 };
