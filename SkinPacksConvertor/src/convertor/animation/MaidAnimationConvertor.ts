@@ -196,8 +196,8 @@ export class MaidAnimationConvertor {
       for (const modelId of allModelIds) {
         const types = models?.get(modelId);
         const animateAssigns = types
-          ? (Object.entries(types) as [AnimationTypes, number][])
-            .map(([type, id]) => `v.animate_${type}=${id};`)
+          ? (Object.values(AnimationTypes) as AnimationTypes[])
+            .map((type) => `v.animate_${type}=${types[type] ?? -1};`)
             .join("")
           : "";
 
