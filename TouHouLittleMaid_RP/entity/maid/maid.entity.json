@@ -5,7 +5,7 @@
       "identifier": "thlmm:maid",
       "materials": {
         "default": "warden",
-        "wing": "wing_default", // 旧的附加模型包会使用这个
+        "wing": "wing_default",
         "wing_default": "wing_default",
         "wind_solid": "warden",
         "blending": "danmaku_blending",
@@ -305,8 +305,7 @@
           "v.scale = 1;",
           "v.animate_walk = 0;",
           "v.animate_beg = 0;",
-          "v.animate_sit = 0;",
-          "temp.pack=q.property('thlm:skin_pack'); temp.model=q.variant; (temp.pack == 1001) ? { (temp.model==1) ? { v.scale = 5; }; } : { v.scale = 0.1; };"
+          "v.animate_sit = 0;"
         ],
         "should_update_bones_and_effects_offscreen": true,
         "animate": [
@@ -318,7 +317,7 @@
           { "look_at_target": "!query.property('thlm:is_hug')" },
           { "hug": "!q.is_in_ui && query.property('thlm:is_hug')" },
 
-          { "walk": "v.animate_walk == 0 && !query.property('thlm:is_sitting') && query.tcos0 > 0" },
+          { "walk": "v.animate_walk == 0 && !query.property('thlm:is_sitting')" },
           { "beg": "v.animate_beg == 0 && query.is_interested" },
           { "sit": "v.animate_sit == 0 && !q.is_in_ui && query.property('thlm:is_sitting')" }
         ]
