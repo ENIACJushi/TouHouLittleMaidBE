@@ -387,20 +387,16 @@ export class ActionbarMessage{
         pl.dimension.runCommand(`titleraw ${playerCMDName(pl.name)} actionbar {"rawtext":[{"translate":"${key}"}]}`);
     }
     /**
-     * 发送一条物品栏上方的文本信息
-     * @param {Player} pl 
-     * @param {string} text 
+     * 发送一条物品栏上方的文本或 rawtext 信息
+     * @param {Player} pl
+     * @param {string|Object} content 纯文本字符串，或 rawtext JSON 对象
      */
-    static text(pl, text){
-        pl.runCommand(`titleraw @s actionbar {"rawtext":[{"text":"${text}"}]}`);
-    }
-    /**
-     * 发送一条物品栏上方的rawtext信息
-     * @param {Player} pl 
-     * @param {Object} object 
-     */
-    static text(pl, object){
-        pl.dimension.runCommand(`titleraw ${playerCMDName(name)} actionbar ${JSON.stringify(object)}`);
+    static text(pl, content){
+        if (typeof content === "string") {
+            pl.runCommand(`titleraw @s actionbar {"rawtext":[{"text":"${content}"}]}`);
+            return;
+        }
+        pl.dimension.runCommand(`titleraw ${playerCMDName(pl.name)} actionbar ${JSON.stringify(content)}`);
     }
 }
 
