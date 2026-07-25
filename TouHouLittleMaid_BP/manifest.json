@@ -11,8 +11,8 @@
     "description": "pack.description",
     "min_engine_version": [
       1,
-      21,
-      30
+      26,
+      0
     ]
   },
   "modules": [

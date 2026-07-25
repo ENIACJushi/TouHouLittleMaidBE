@@ -1,5 +1,5 @@
 {
-  "format_version": "1.21.80",
+  "format_version": "1.26.30",
   "minecraft:block": {
     "description": {
       "identifier": "touhou_little_maid:warden_skull",

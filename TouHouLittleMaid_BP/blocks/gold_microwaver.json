@@ -1,13 +1,13 @@
 {
-  "format_version": "1.20.0",
+  "format_version": "1.26.30",
   "minecraft:block": {
     "description": {
       "identifier": "touhou_little_maid:gold_microwaver",
       "menu_category": { "category": "none" },
-      "traits" : {
+      "traits": {
         "minecraft:placement_direction": {
           "enabled_states": ["minecraft:cardinal_direction"],
-          "y_rotation_offset": 0.0
+          "y_rotation_offset": 0
         }
       },
       "states": {
@@ -21,25 +21,25 @@
       {
         "condition": "query.block_state('minecraft:cardinal_direction') == 'north'",
         "components": {
-          "minecraft:transformation": { "rotation": [ 0, 0, 0 ] }
+          "minecraft:transformation": { "rotation": [0, 0, 0] }
         }
       },
       {
         "condition": "query.block_state('minecraft:cardinal_direction') == 'east'",
         "components": {
-          "minecraft:transformation": { "rotation": [ 0, 270, 0 ] }
+          "minecraft:transformation": { "rotation": [0, 270, 0] }
         }
       },
       {
         "condition": "query.block_state('minecraft:cardinal_direction') == 'west'",
         "components": {
-          "minecraft:transformation": { "rotation": [ 0, 90, 0 ] }
+          "minecraft:transformation": { "rotation": [0, 90, 0] }
         }
       },
       {
         "condition": "query.block_state('minecraft:cardinal_direction') == 'south'",
         "components": {
-          "minecraft:transformation": { "rotation": [ 0, 180, 0 ] }
+          "minecraft:transformation": { "rotation": [0, 180, 0] }
         }
       },
       {
@@ -50,7 +50,7 @@
       }
     ],
     "components": {
-      "minecraft:custom_components": ["tlm:microwaver"],
+      "tlm:microwaver": {},
       "minecraft:destructible_by_mining": { "seconds_to_destroy": 0.5 },
       "minecraft:light_dampening": 0,
       "minecraft:destructible_by_explosion": { "explosion_resistance": 0.25 },
@@ -58,8 +58,8 @@
       "minecraft:geometry": "geometry.touhou_little_maid.gold_microwaver_place",
       "minecraft:material_instances": { "*": { "texture": "gold_microwaver", "render_method": "opaque" } },
       "minecraft:loot": "loot_tables/blocks/gold_microwaver.json",
-      "minecraft:collision_box": { "origin": [ -8.0, 0.0, -7.0 ], "size": [ 16.0, 11.0, 13.0 ] },
-      "minecraft:selection_box": { "origin": [ -8.0, 0.0, -7.0 ], "size": [ 16.0, 11.0, 13.0 ] }
+      "minecraft:collision_box": { "origin": [-8.0, 0.0, -7.0], "size": [16.0, 11.0, 13.0] },
+      "minecraft:selection_box": { "origin": [-8.0, 0.0, -7.0], "size": [16.0, 11.0, 13.0] }
     }
   }
 }

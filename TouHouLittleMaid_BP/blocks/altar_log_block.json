@@ -1,30 +1,29 @@
 {
-	"format_version": "1.20.0",
-	"minecraft:block": {
-		"description": {
-			"identifier": "touhou_little_maid:altar_log_block",
-			"menu_category": { "category": "none" }
-		},
-		"permutations": [
-		],
-		"components": {
-			"minecraft:custom_components": ["tlm:altar"],
-			"minecraft:geometry": "geometry.touhou_little_maid.void",
-			"minecraft:material_instances": {
-				"*": { "texture": "altar_log_block", "render_method": "alpha_test" }
-			},
-			"tag:wood": {},
-			"minecraft:collision_box": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
-			"minecraft:selection_box": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
-			"minecraft:map_color": "#52221D",
-			"minecraft:loot": "loot_tables/blocks/altar_log_block.json",
-			"minecraft:destructible_by_explosion": {
-                "explosion_resistance": 2
-            },
-			"minecraft:destructible_by_mining":{
-				"seconds_to_destroy": 0.5
-			},
-			"minecraft:light_dampening": 0
-		}
-	}
+  "format_version": "1.26.30",
+  "minecraft:block": {
+    "description": {
+      "identifier": "touhou_little_maid:altar_log_block",
+      "menu_category": { "category": "none" }
+    },
+    "permutations": [],
+    "components": {
+      "tlm:altar": {},
+      "minecraft:geometry": "geometry.touhou_little_maid.void",
+      "minecraft:material_instances": {
+        "*": { "texture": "altar_log_block", "render_method": "alpha_test" }
+      },
+      "minecraft:tags": ["wood"],
+      "minecraft:collision_box": { "origin": [-8, 0, -8], "size": [16, 16, 16] },
+      "minecraft:selection_box": { "origin": [-8, 0, -8], "size": [16, 16, 16] },
+      "minecraft:map_color": "#52221D",
+      "minecraft:loot": "loot_tables/blocks/altar_log_block.json",
+      "minecraft:destructible_by_explosion": {
+        "explosion_resistance": 2
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.5
+      },
+      "minecraft:light_dampening": 0
+    }
+  }
 }

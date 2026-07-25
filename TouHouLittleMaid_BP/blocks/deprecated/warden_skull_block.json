@@ -1,13 +1,13 @@
 {
-  "format_version": "1.20.0",
+  "format_version": "1.26.30",
   "minecraft:block": {
     "description": {
       "identifier": "touhou_little_maid:warden_skull_block",
       "menu_category": { "category": "none" },
-      "traits" : {
+      "traits": {
         "minecraft:placement_direction": {
           "enabled_states": ["minecraft:cardinal_direction"],
-          "y_rotation_offset": 0.0
+          "y_rotation_offset": 0
         },
         "minecraft:placement_position": {
           "enabled_states": [
@@ -19,71 +19,70 @@
     "permutations": [
       {
         "condition": "(query.block_state('minecraft:block_face')=='up'||query.block_state('minecraft:block_face')=='down') && query.block_state('minecraft:cardinal_direction') == 'north'",
-        "components": { "minecraft:transformation": { "rotation": [ 0, 180, 0 ] } }
+        "components": { "minecraft:transformation": { "rotation": [0, 180, 0] } }
       },
       {
         "condition": "(query.block_state('minecraft:block_face')=='up'||query.block_state('minecraft:block_face')=='down') && query.block_state('minecraft:cardinal_direction') == 'south'",
-        "components": { "minecraft:transformation": { "rotation": [ 0, 0, 0 ] } }
+        "components": { "minecraft:transformation": { "rotation": [0, 0, 0] } }
       },
       {
         "condition": "(query.block_state('minecraft:block_face')=='up'||query.block_state('minecraft:block_face')=='down') && query.block_state('minecraft:cardinal_direction') == 'west'",
-        "components": { "minecraft:transformation": { "rotation": [ 0, 270, 0 ] } }
+        "components": { "minecraft:transformation": { "rotation": [0, 270, 0] } }
       },
       {
         "condition": "(query.block_state('minecraft:block_face')=='up'||query.block_state('minecraft:block_face')=='down') && query.block_state('minecraft:cardinal_direction') == 'east'",
-        "components": { "minecraft:transformation": { "rotation": [ 0, 90, 0 ] } }
+        "components": { "minecraft:transformation": { "rotation": [0, 90, 0] } }
       },
-
       {
         "condition": "query.block_state('minecraft:block_face')=='up'",
         "components": {
           "minecraft:geometry": "geometry.touhou_little_maid.warden_skull_block_up",
-          "minecraft:collision_box": { "origin": [ -4, 0, -2.5 ], "size": [ 8, 8, 5 ] },
-          "minecraft:selection_box": { "origin": [ -4, 0, -2.5 ], "size": [ 8, 8, 5 ] }
+          "minecraft:collision_box": { "origin": [-4, 0, -2.5], "size": [8, 8, 5] },
+          "minecraft:selection_box": { "origin": [-4, 0, -2.5], "size": [8, 8, 5] }
         }
       },
       {
         "condition": "query.block_state('minecraft:block_face')=='down'",
         "components": {
           "minecraft:geometry": "geometry.touhou_little_maid.warden_skull_block_down",
-          "minecraft:collision_box": { "origin": [ -4, 11, -4 ], "size": [ 8, 5, 8 ] },
-          "minecraft:selection_box": { "origin": [ -4, 11, -4 ], "size": [ 8, 5, 8 ] }
+          "minecraft:collision_box": { "origin": [-4, 11, -4], "size": [8, 5, 8] },
+          "minecraft:selection_box": { "origin": [-4, 11, -4], "size": [8, 5, 8] }
         }
       },
       {
         "condition": "query.block_state('minecraft:block_face')=='south'",
         "components": {
-          "minecraft:transformation": { "rotation": [ 0, 180, 0 ] },
+          "minecraft:transformation": { "rotation": [0, 180, 0] },
           "minecraft:geometry": "geometry.touhou_little_maid.warden_skull_block_side",
-          "minecraft:collision_box": { "origin": [ -4, 4, 3 ], "size": [ 8, 8, 5 ] },
-          "minecraft:selection_box": { "origin": [ -4, 4, 3 ], "size": [ 8, 8, 5 ] }
+          "minecraft:collision_box": { "origin": [-4, 4, 3], "size": [8, 8, 5] },
+          "minecraft:selection_box": { "origin": [-4, 4, 3], "size": [8, 8, 5] }
         }
       },
       {
         "condition": "query.block_state('minecraft:block_face')=='north'",
         "components": {
-          "minecraft:transformation": { "rotation": [ 0, 0, 0 ] },
+          "minecraft:transformation": { "rotation": [0, 0, 0] },
           "minecraft:geometry": "geometry.touhou_little_maid.warden_skull_block_side",
-          "minecraft:collision_box": { "origin": [ -4, 4, 3 ], "size": [ 8, 8, 5 ] },
-          "minecraft:selection_box": { "origin": [ -4, 4, 3 ], "size": [ 8, 8, 5 ] }
+          "minecraft:collision_box": { "origin": [-4, 4, 3], "size": [8, 8, 5] },
+          "minecraft:selection_box": { "origin": [-4, 4, 3], "size": [8, 8, 5] }
         }
       },
       {
         "condition": "query.block_state('minecraft:block_face')=='west'",
         "components": {
-          "minecraft:transformation": { "rotation": [ 0, 90, 0 ] },
+          "minecraft:transformation": { "rotation": [0, 90, 0] },
           "minecraft:geometry": "geometry.touhou_little_maid.warden_skull_block_side",
-          "minecraft:collision_box": { "origin": [ -4, 4, 3 ], "size": [ 8, 8, 5 ] },
-          "minecraft:selection_box": { "origin": [ -4, 4, 3 ], "size": [ 8, 8, 5 ] }
+          "minecraft:collision_box": { "origin": [-4, 4, 3], "size": [8, 8, 5] },
+          "minecraft:selection_box": { "origin": [-4, 4, 3], "size": [8, 8, 5] }
         }
       },
       {
         "condition": "query.block_state('minecraft:block_face')=='east'",
         "components": {
-          "minecraft:transformation": { "rotation": [ 0, 270, 0 ] },
+          "minecraft:transformation": { "rotation": [0, 270, 0] },
           "minecraft:geometry": "geometry.touhou_little_maid.warden_skull_block_side",
-          "minecraft:collision_box": { "origin": [ -4, 4, 3 ], "size": [ 8, 8, 5 ] },
-          "minecraft:selection_box": { "origin": [ -4, 4, 3 ], "size": [ 8, 8, 5 ] }
+          "minecraft:collision_box": { "origin": [-4, 4, 3], "size": [8, 8, 5] },
+          "minecraft:selection_box": { "origin": [-4, 4, 3], "size": [8, 8, 5] }
         }
       }
     ],

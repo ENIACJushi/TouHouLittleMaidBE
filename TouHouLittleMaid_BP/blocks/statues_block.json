@@ -1,23 +1,22 @@
 {
-	"format_version": "1.20.0",
-	"minecraft:block": {
-		"description": {
-			"identifier": "touhou_little_maid:statues_block",
-			"menu_category": { "category": "none" }
-		},
-		"permutations": [
-		],
-		"components": {
-			"minecraft:custom_components": ["tlm:statues"],
-			"minecraft:geometry": "geometry.touhou_little_maid.void",
-			"minecraft:material_instances": { "*": { "texture": "clay", "render_method": "alpha_test" } },
-			"minecraft:destructible_by_mining": { "seconds_to_destroy": 0.3 },
-			"minecraft:collision_box": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
-            "minecraft:selection_box": { "origin": [ -8, 0, -8 ], "size": [ 16, 16, 16 ] },
-			"minecraft:map_color": "#3E9ABF",
-			"minecraft:loot": "loot_tables/blocks/statues_block.json",
-			"minecraft:light_dampening": 0,
-			"minecraft:destructible_by_explosion": false
-		}
-	}
+  "format_version": "1.26.30",
+  "minecraft:block": {
+    "description": {
+      "identifier": "touhou_little_maid:statues_block",
+      "menu_category": { "category": "none" }
+    },
+    "permutations": [],
+    "components": {
+      "tlm:statues": {},
+      "minecraft:geometry": "geometry.touhou_little_maid.void",
+      "minecraft:material_instances": { "*": { "texture": "clay", "render_method": "alpha_test" } },
+      "minecraft:destructible_by_mining": { "seconds_to_destroy": 0.3 },
+      "minecraft:collision_box": { "origin": [-8, 0, -8], "size": [16, 16, 16] },
+      "minecraft:selection_box": { "origin": [-8, 0, -8], "size": [16, 16, 16] },
+      "minecraft:map_color": "#3E9ABF",
+      "minecraft:loot": "loot_tables/blocks/statues_block.json",
+      "minecraft:light_dampening": 0,
+      "minecraft:destructible_by_explosion": false
+    }
+  }
 }
