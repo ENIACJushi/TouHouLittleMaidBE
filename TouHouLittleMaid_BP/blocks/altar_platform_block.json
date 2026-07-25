@@ -11,7 +11,7 @@
     },
     "permutations": [],
     "components": {
-      "tlm:altar": {},
+      "minecraft:custom_components": ["tlm:altar"],
       "minecraft:geometry": "geometry.touhou_little_maid.void",
       "minecraft:material_instances": {
         "*": { "texture": "altar_log_block", "render_method": "alpha_test" }

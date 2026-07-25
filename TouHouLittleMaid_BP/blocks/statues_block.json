@@ -7,12 +7,20 @@
     },
     "permutations": [],
     "components": {
-      "tlm:statues": {},
+      "minecraft:custom_components": ["tlm:statues"],
       "minecraft:geometry": "geometry.touhou_little_maid.void",
-      "minecraft:material_instances": { "*": { "texture": "clay", "render_method": "alpha_test" } },
+      "minecraft:material_instances": {
+        "*": { "texture": "clay", "render_method": "alpha_test" }
+      },
       "minecraft:destructible_by_mining": { "seconds_to_destroy": 0.3 },
-      "minecraft:collision_box": { "origin": [-8, 0, -8], "size": [16, 16, 16] },
-      "minecraft:selection_box": { "origin": [-8, 0, -8], "size": [16, 16, 16] },
+      "minecraft:collision_box": {
+        "origin": [-8, 0, -8],
+        "size": [16, 16, 16]
+      },
+      "minecraft:selection_box": {
+        "origin": [-8, 0, -8],
+        "size": [16, 16, 16]
+      },
       "minecraft:map_color": "#3E9ABF",
       "minecraft:loot": "loot_tables/blocks/statues_block.json",
       "minecraft:light_dampening": 0,

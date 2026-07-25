@@ -7,13 +7,19 @@
     },
     "permutations": [],
     "components": {
-      "tlm:altar": {},
+      "minecraft:custom_components": ["tlm:altar"],
       "minecraft:geometry": "geometry.touhou_little_maid.void",
       "minecraft:material_instances": {
         "*": { "texture": "altar_torii_block", "render_method": "alpha_test" }
       },
-      "minecraft:collision_box": { "origin": [-8, 0, -8], "size": [16, 16, 16] },
-      "minecraft:selection_box": { "origin": [-8, 0, -8], "size": [16, 16, 16] },
+      "minecraft:collision_box": {
+        "origin": [-8, 0, -8],
+        "size": [16, 16, 16]
+      },
+      "minecraft:selection_box": {
+        "origin": [-8, 0, -8],
+        "size": [16, 16, 16]
+      },
       "minecraft:map_color": "#A12722",
       "minecraft:loot": "loot_tables/blocks/altar_torii_block.json",
       "minecraft:destructible_by_mining": {
