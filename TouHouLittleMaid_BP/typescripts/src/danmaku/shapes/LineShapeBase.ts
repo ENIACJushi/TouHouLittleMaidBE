@@ -1,5 +1,5 @@
 import { Vector } from "../../libs/VectorMC";
-import {Dimension, Entity} from "@minecraft/server";
+import { Dimension } from "@minecraft/server";
 
 /**
  * 线型弹幕基础

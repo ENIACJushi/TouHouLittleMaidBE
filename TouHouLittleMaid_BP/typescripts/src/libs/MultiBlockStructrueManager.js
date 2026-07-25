@@ -8,8 +8,7 @@
    *  Date        :  2023.02.15                   *
   \* -------------------------------------------- */
 
-import { Block, Dimension, BlockPermutation, BlockType } from "@minecraft/server"
-import { world } from "@minecraft/server";
+import { BlockPermutation } from "@minecraft/server"
 import { Logger } from "../controller/Logger";
 
 const TAG = 'MultiBlockStructrueManager';

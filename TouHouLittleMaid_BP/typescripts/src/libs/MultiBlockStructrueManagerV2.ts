@@ -3,10 +3,10 @@
  * 新多方块方案 目标是提高性能和拓展性
  * 但因为当前需求不高 暂时不会集中投入
  */
-import { Block, Dimension, BlockPermutation, BlockType, BlockVolume, ListBlockVolume } from "@minecraft/server";
+import { Dimension, BlockPermutation, ListBlockVolume } from "@minecraft/server";
 import { Vector } from "./VectorMC";
 
-const TAG = 'MultiBlockStructrueManager';
+const _TAG = 'MultiBlockStructrueManager';
 
 // [{name:"minecraft:air", data: null}]
 
@@ -32,7 +32,7 @@ export interface StructureDefinition {
   positions: Array<Vector>;
 }
 
-let structureDefinitions: Array<StructureDefinition> = [
+let _structureDefinitions: Array<StructureDefinition> = [
   {
     blockInactive: {name:"minecraft:air", state: undefined},
     blockActive: {name:"minecraft:air", state: undefined},

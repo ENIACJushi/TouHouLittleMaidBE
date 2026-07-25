@@ -8,15 +8,8 @@
 
 import {
     world,
-    Entity,
-    Dimension,
-    Player,
-    ItemStack,
     EquipmentSlot,
-    Block, EnchantmentType,
 } from "@minecraft/server";
-import { Vector } from "./VectorMC";
-import { config } from "../controller/Config";
 
 const TAG = 'ScarletToolKit';
 

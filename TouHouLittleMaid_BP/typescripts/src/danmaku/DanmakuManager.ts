@@ -1,7 +1,5 @@
 
-import * as Tool from "../libs/ScarletToolKit"
 import {
-  EntityTypes,
   world,
   Entity,
   system,
@@ -11,7 +9,7 @@ import {
 import { LineShoot } from "./shoots/LineShoot";
 import { DanmakuInterface } from "./DanmakuInterface";
 import { Vector, VO } from "../libs/VectorMC"
-import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "./shapes/main";
+import { GeneralBullet } from "./shapes/main";
 import { EntityDanmakuActor } from "./actors/EntityDanmakuActor";
 import { FanShapedPattern } from "./patterns/line/FanShapedPattern";
 import { FairyPatternTest0 } from "./patterns/fairy_test/FairyPatternTest0";

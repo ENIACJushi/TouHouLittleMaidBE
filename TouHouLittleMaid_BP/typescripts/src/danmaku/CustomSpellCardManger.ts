@@ -1,6 +1,5 @@
-import { ItemStack, ItemUseBeforeEvent, Player, ItemComponentUseEvent, StartupEvent } from "@minecraft/server";
+import { ItemComponentUseEvent, StartupEvent } from "@minecraft/server";
 import { spellCardList } from "../../data/spellcard/CustomSpellCardEntry"
-import * as Tool from "../libs/ScarletToolKit"
 
 export class CustomSpellCardManger {
   /**

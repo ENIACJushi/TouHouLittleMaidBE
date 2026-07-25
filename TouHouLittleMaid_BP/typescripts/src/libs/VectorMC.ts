@@ -1,7 +1,7 @@
 // 发现mc自己有向量运算方法后，修改原来的基于数组的方法
 import { Direction } from "@minecraft/server";
 
-const HALF_PI = Math.PI / 2;
+const _HALF_PI = Math.PI / 2;
 
 // 仅用于快速创建向量和指定类型
 export class Vector {

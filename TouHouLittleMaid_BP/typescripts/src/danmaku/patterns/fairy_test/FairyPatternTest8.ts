@@ -6,7 +6,6 @@ import { LineShoot } from "../../shoots/LineShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
 import { GeneralBullet, GeneralBulletColor, GeneralBulletType } from "../../shapes/main";
 import { Entity, system } from "@minecraft/server";
-import { Logger } from "../../../controller/main";
 
 const RADIUS_TOTAL = 360 - 360/13; // 扇形总角度
 

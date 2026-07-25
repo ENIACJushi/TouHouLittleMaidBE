@@ -5,7 +5,7 @@
       "identifier": "touhou_little_maid:fairy_skull_2_block",
       "menu_category": {
         "category": "items",
-        "group": "itemGroup.name.skull"
+        "group": "minecraft:itemGroup.name.skull"
       },
       "traits": {
         "minecraft:placement_position": {

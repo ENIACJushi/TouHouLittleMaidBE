@@ -1,8 +1,8 @@
-import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, system, world } from "@minecraft/server";
+import { ItemStack, system, world } from "@minecraft/server";
 import * as Tool from"../libs/ScarletToolKit";
 import { StrMaid } from "../maid/StrMaid";
 import { MaidSkin } from "../maid/MaidSkin";
-import { ConfigForm, ConfigHelper } from "./Config";
+import { ConfigForm } from "./Config";
 import { EntityMaid } from '../maid/EntityMaid'
 import { Logger } from "./Logger";
 

@@ -1,4 +1,4 @@
-import {Player, world, Dimension, Entity, StartupEvent, EntityTypes} from "@minecraft/server";
+import { Player, world, Dimension, Entity, StartupEvent } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 import { Logger } from "../controller/Logger";
@@ -31,7 +31,7 @@ export default class PowerPoint {
   /**
    * 初始化
    */
-  static init(event: StartupEvent) {
+  static init(_event: StartupEvent) {
     // 初始化计分板
     if (world.scoreboard.getObjective("p") == null) {
       world.getDimension("overworld").runCommand("scoreboard objectives add p dummy power");
@@ -256,11 +256,11 @@ export default class PowerPoint {
    */
   static summon_power_velocity(count_: number, dimension: Dimension, location: Vector, velocity: Array<any>) {
     let count = count_;
-    const overworld = world.getDimension("overworld");
+    const _overworld = world.getDimension("overworld");
     while (true) {
       let temp = dimension.spawnEntity("touhou_little_maid:p_point" as any, location);
-      let drectionX = Tool.getRandom() < 0.5 ? 1 : -1;
-      let drectionZ = Tool.getRandom() < 0.5 ? 1 : -1;
+      let _drectionX = Tool.getRandom() < 0.5 ? 1 : -1;
+      let _drectionZ = Tool.getRandom() < 0.5 ? 1 : -1;
 
       temp.applyImpulse(this.get_velocity_power_point(velocity));
       if (count >= 32) {

@@ -106,7 +106,7 @@ export class AmuletGoheiPattern {
   /**
    * 旧射击，使用通用弹幕类型
    */
-  static shootOld(entity: Entity, direction: Vector, damage: number = 3, piercing: number = 0) {
+  static shootOld(entity: Entity, direction: Vector, damage: number = 3, _piercing: number = 0) {
     // 创建旧符札弹种
     let bulletShoot = new LineShoot({
       thrower: new EntityDanmakuActor(entity, true),
@@ -120,7 +120,7 @@ export class AmuletGoheiPattern {
   /**
    * 测试射击，向随机方向发射符札，然后转弯，直到与发射者视线平行
    */
-  static shootDebug(entity: Entity, direction: Vector, damage: number = 3, piercing: number = 0) {
+  static shootDebug(entity: Entity, direction: Vector, damage: number = 3, _piercing: number = 0) {
     // 创建符札弹种
     let bulletShoot0 = new LineShoot({
       thrower: new EntityDanmakuActor(entity, true).setOffset(new Vector(0, -0.3, 0)),

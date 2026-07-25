@@ -1,4 +1,4 @@
-import { world, system, Entity, Player, RawText } from "@minecraft/server";
+import { world, system, Player, RawText } from "@minecraft/server";
 import { lang } from "../libs/ScarletToolKit"
 import { ActionFormData, MessageFormData, ModalFormData } from "@minecraft/server-ui";
 import { LoggerLevel } from "./Logger";
@@ -133,7 +133,7 @@ export class ConfigHelper {
 
   // 生成字符串
   static tostring() {
-    let i = 0;
+    let _i = 0;
     let result = "";
     for (let key in config) {
       let value = config[key as keyof Config];

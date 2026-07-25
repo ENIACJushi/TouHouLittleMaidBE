@@ -1,4 +1,4 @@
-import { Player, world, system } from "@minecraft/server"
+import { world, system } from "@minecraft/server"
 import * as Tool from"./libs/ScarletToolKit";
 import * as mcui from "@minecraft/server-ui"
 import { StrMaid } from "./maid/StrMaid";
@@ -30,7 +30,7 @@ export default class experiment {
         });
         // 测试字符
         world.afterEvents.chatSend.subscribe(event=>{
-            let player = event.sender;
+            let _player = event.sender;
             // 显示字符ASCII码
             // Logger.info(TAG, '􀐏'.charCodeAt(0).toString(16));
             // Logger.info(TAG, '一'.charCodeAt(0).toString(16));
@@ -117,7 +117,7 @@ export default class experiment {
                                     let a = x[0]-y[0]
                                     let b = x[1]-y[1]
                                     let c =x[2]-y[2]
-                                    let d = a*a+b*b+c*c
+                                    let _d = a*a+b*b+c*c
                                     // dimension.getBlock({
                                     //     x: 1,
                                     //     y: i,
@@ -147,7 +147,7 @@ function showForm(player){
         .body("-3427383902188")
         .button("ao")
         
-    form.show(player).then((response) => {
+    form.show(player).then((_response) => {
     });
     return;
     {
@@ -162,7 +162,7 @@ function showForm(player){
         .button("textures/items/iron_hoe")
         .button("textures/items/phantom_membrane")
         
-        form.show(player).then((response) => {
+        form.show(player).then((_response) => {
         });
     }
 }

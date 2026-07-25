@@ -9,14 +9,13 @@
  *  thlmm:<女仆id>
  *  thlmo:<主人生物id>
  */
-import { Direction, ItemStack, world, DataDrivenEntityTriggerAfterEvent, system, System, EntityDieAfterEvent, PlayerInteractWithBlockBeforeEvent, Dimension, EntityHurtAfterEvent, EntityHitEntityAfterEvent, Entity, Player } from "@minecraft/server";
+import { Direction, ItemStack, world, system } from "@minecraft/server";
 import { Vector, VO } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
 import * as UI from "./MaidUI"
 import { EntityMaid } from './EntityMaid';
 import { StrMaid } from "./StrMaid";
-import { LineShoot } from "../danmaku/shoots/LineShoot";
-import { Cocoa, Farm, MaidTarget, Melon } from "./MaidTarget";
+import { MaidTarget } from "./MaidTarget";
 import { isInteractContainerBlock } from "../../data/BadContainerBlocks";
 import { DP } from '../libs/DynamicPropertyInterface';
 
@@ -261,7 +260,7 @@ export class MaidManager {
         if (StrMaid.Owner.getId(strPure) !== player.id) return;
 
         // 放置
-        let maid = EntityMaid.fromStr(strPure, dimension, location, true);
+        let _maid = EntityMaid.fromStr(strPure, dimension, location, true);
 
         // 消耗照片
         Tool.ItemTool.setPlayerMainHand(player);
@@ -573,7 +572,7 @@ export class MaidManager {
       // 开始抱起
       let maid = event.entity;
       let player = EntityMaid.Owner.get(maid);
-      const dimension = maid.dimension;
+      const _dimension = maid.dimension;
 
       // 只能抱起一名女仆，如果有鹦鹉也不行，因为位置会乱
       let rideComponent = player.getComponent("rideable");

@@ -10,42 +10,42 @@ export class MaidInteractEvents {
   /**
    * 主人交互
    */
-  interact(data: DataDrivenEntityTriggerAfterEvent) {
+  interact(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 
   /**
    * 进入查包模式
    */
-  enterInventoryMode(data: DataDrivenEntityTriggerAfterEvent) {
+  enterInventoryMode(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 
   /**
    * 开始被抱起
    */
-  startHug(data: DataDrivenEntityTriggerAfterEvent) {
+  startHug(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 
   /**
    * 停止被抱起
    */
-  stopHug(data: DataDrivenEntityTriggerAfterEvent) {
+  stopHug(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 
   /**
    * 坐下
    */
-  sit(data: DataDrivenEntityTriggerAfterEvent) {
+  sit(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 
   /**
    * 站起
    */
-  stand(data: DataDrivenEntityTriggerAfterEvent) {
+  stand(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 }

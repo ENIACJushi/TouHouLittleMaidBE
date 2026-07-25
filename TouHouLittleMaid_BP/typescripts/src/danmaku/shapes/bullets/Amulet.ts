@@ -147,7 +147,7 @@ export class AmuletController {
     let selfNormalV = new Vector(-v0.z, 0, v0.x);
 
     // 需要旋转的度数
-    let v0Length = VO.length(v0);
+    let _v0Length = VO.length(v0);
     let totalAngle = Math.acos(VO.dot(v0, v) / VO.length(v0)) * ANGLE_PI; // v 已经单位化了 直接取 1
     // let totalAngle = VO.getAngle(v0, v);
 

@@ -4,7 +4,7 @@
  * 这里的一些方法只是为了保持接口一致而提供的，只是帮助定义和发射弹幕的工具类而不是弹幕本身
  * (Override方法是用于定义实体的，全部不提供)
  */
-import {Dimension, Entity, EntityProjectileComponent, system} from "@minecraft/server";
+import { Dimension, Entity, EntityProjectileComponent } from "@minecraft/server";
 import { Vector } from "../../../libs/VectorMC";
 import {DanmakuInterface} from "../../DanmakuInterface";
 import {LineShapeBase, LineShapeShootParams} from "../LineShapeBase";
@@ -94,7 +94,7 @@ export abstract class BulletShapeBase extends LineShapeBase {
   /**
    * 设置重力大小，暂未实现
    */
-  public setGravityVelocity(gravity: number): this {
+  public setGravityVelocity(_gravity: number): this {
     return this;
   }
 }

@@ -12,7 +12,7 @@ import {
   system,
 } from "@minecraft/server";
 import { VO } from "../libs/VectorMC";
-import { BlockTool, ItemTool } from "../libs/ScarletToolKit";
+import { ItemTool } from "../libs/ScarletToolKit";
 
 export class GoldMicrowaver {
   /**

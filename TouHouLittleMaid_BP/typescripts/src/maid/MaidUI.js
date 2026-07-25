@@ -1,5 +1,5 @@
 import * as mcui from '@minecraft/server-ui';
-import { system, world, Entity, Player } from "@minecraft/server"
+import { system } from "@minecraft/server"
 import { EntityMaid } from './EntityMaid';
 import { MaidSkin } from './MaidSkin';
 import { config } from '../controller/Config';
@@ -146,7 +146,7 @@ class MaidMenuSimple {
         const form = new mcui.ActionFormData()
         .title(this.maid_name) // 女仆名，为空则使用默认标题
         .body({rawtext:[{translate: "gui.touhou_little_maid:button.skin.name"}]});
-        let skinList = MaidSkin.SkinList;
+        let _skinList = MaidSkin.SkinList;
         let i = 0;
         for(; i < MaidSkin.DEFAULTAMOUNT ; i++){
             form.button(MaidSkin.getPackDisplayName(i), MaidSkin.getPackIcon(i));
@@ -269,7 +269,7 @@ class MaidMenuUI {
         const form = new mcui.ActionFormData()
         .title(maid_name) // 女仆名，为空则使用默认标题
         .body({rawtext:[{translate: "gui.touhou_little_maid:button.skin.name"}]});
-        let skinList = MaidSkin.SkinList;
+        let _skinList = MaidSkin.SkinList;
         let i = 0;
         for(; i < MaidSkin.DEFAULTAMOUNT ; i++){
             form.button(MaidSkin.getPackDisplayName(i), MaidSkin.getPackIcon(i));

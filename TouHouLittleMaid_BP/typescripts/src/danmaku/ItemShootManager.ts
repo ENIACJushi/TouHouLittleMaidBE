@@ -7,8 +7,7 @@
  *   shoot 定义发射函数，接收发射实体 entity 和物品 item
  *  定义文件需要在 ItemShootManager constructor 中注册
  */
-import { ItemStack, ItemUseAfterEvent, ItemUseBeforeEvent, Player } from "@minecraft/server";
-import * as Tool from "../libs/ScarletToolKit"
+import { ItemStack, ItemUseBeforeEvent, Player } from "@minecraft/server";
 
 
 export class ItemShootManager {

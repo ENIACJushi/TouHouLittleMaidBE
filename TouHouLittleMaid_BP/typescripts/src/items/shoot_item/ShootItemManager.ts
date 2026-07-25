@@ -6,7 +6,7 @@ import { HakureiGohei } from "./items/HakureiGohei";
 import { ShootItemBase } from "./items/template/ShootItemBase";
 import { SakuraGohei } from "./items/SakuraGohei";
 
-const TAG = 'HakureiGoheiManager';
+const _TAG = 'HakureiGoheiManager';
 
 /**
  * 射击物品管理类

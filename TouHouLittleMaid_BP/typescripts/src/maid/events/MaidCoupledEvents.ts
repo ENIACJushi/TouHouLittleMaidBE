@@ -9,14 +9,14 @@ export class MaidCoupledEvents {
   /**
    * 转化为NPC
    */
-  npcTransaction(data: DataDrivenEntityTriggerAfterEvent) {
+  npcTransaction(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 
   /**
    * 雕像扫描
    */
-  statusScan(data: DataDrivenEntityTriggerAfterEvent) {
+  statusScan(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 }

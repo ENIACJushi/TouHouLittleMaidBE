@@ -1,4 +1,4 @@
-import { EntityHitEntityAfterEvent, Entity, Dimension, system, BlockPermutation, BlockVolume } from "@minecraft/server";
+import { system, BlockPermutation, BlockVolume } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import { EntityMaid } from "./EntityMaid";
 import { pointInArea_3D } from "../libs/ScarletToolKit";
@@ -376,7 +376,7 @@ export class Farm{
         let zStart = Math.floor(location.z);
         let count = targets.length;
 
-        function* searchJob(){
+        function* _searchJob(){
             for(let ix = 0; ix < range; ix = ix > 0 ? -ix : 1-ix){
                 for(let iz = 0; iz < range; iz = iz > 0 ? -iz : 1-iz){
                     if(count > Farm.maxCount) break;
@@ -588,7 +588,7 @@ class SugarCane{
      * @param {Entity} target 
      * @param {Entity} maid 
      */
-    static acquire(target, maid){
+    static acquire(target, _maid){
         let block = target.dimension.getBlock(target.location);
         if(block !== undefined && block.typeId === "minecraft:reeds"){
             const l = block.location;
@@ -765,7 +765,7 @@ export class Melon{
      * @param {Entity} target 
      * @param {Entity} maid 
      */
-    static acquire(target, maid){
+    static acquire(target, _maid){
         const neededStep = 2;
         let block = target.dimension.getBlock(target.location);
         if(block !== undefined && 

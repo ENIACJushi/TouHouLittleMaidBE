@@ -1,4 +1,3 @@
-import { Player } from "@minecraft/server";
 import * as mcui from '@minecraft/server-ui';
 
 export class DogeBookData {
@@ -9,11 +8,11 @@ export class DogeBookData {
    * @param {string} title 章节标题 显示在目录
    * @param {string} icon  章节图标 显示在目录
    */
-  addChapter (title, icon) {
+  addChapter (_title, _icon) {
     
   }
 
-  addPage (chapter, ) {
+  addPage (_chapter, ) {
 
   }
   /**

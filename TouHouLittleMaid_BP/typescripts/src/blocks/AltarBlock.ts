@@ -9,7 +9,7 @@ export class AltarBlock {
           `execute positioned ${l.x} ${l.y} ${l.z} run function touhou_little_maid/altar_destroy`
         );
       },
-      onPlayerInteract(e) { }
+      onPlayerInteract(_e) { }
     })
   }
 }

@@ -45,7 +45,7 @@ export interface SeedlingBlockData extends BlockJNbt.BlockJNbt{
 }
 
 
-let sample: CropData = {
+let _sample: CropData = {
   block: {
     name: 'huh'
   },
@@ -66,7 +66,7 @@ let sample: CropData = {
   ]
 }
 
-let seedSample: SeedData = {
+let _seedSample: SeedData = {
   id: 'huh',
   seedling_blocks: [{
     pos: {x: 0, y: 0, z: 0},

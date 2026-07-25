@@ -21,10 +21,9 @@
     Logger.info(TAG, `backpackInvisibility:${StrMaid.backpackInvisibility.get(info)}`);
  */
 
-import * as Tool from "../libs/ScarletToolKit"
 import { EntityMaid } from "./EntityMaid";
 
-const TAG = 'StrMaid';
+const _TAG = 'StrMaid';
 
 export class StrMaid {
     /**

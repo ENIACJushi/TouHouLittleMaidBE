@@ -22,7 +22,7 @@ export class MaidScheduleEvents {
    * 进行弹幕攻击
    */
   tryDanmakuAttack(event: DataDrivenEntityTriggerAfterEvent) {
-    const AIMED_SHOT_PROBABILITY = 0.8; // java 0.9
+    const _AIMED_SHOT_PROBABILITY = 0.8; // java 0.9
     // 女仆不存在时退出
     let maid = event.entity;
     if (!maid) {

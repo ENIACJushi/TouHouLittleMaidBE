@@ -6,7 +6,6 @@ import { Entity, system } from "@minecraft/server";
 import { SakuraLaser } from "../../shapes/laser/SakuraLaser";
 import { LineShoot } from "../../shoots/LineShoot";
 import { EntityDanmakuActor } from "../../actors/EntityDanmakuActor";
-import { Vector } from "../../../libs/VectorMC";
 
 export class FairyPatternTest4 {
   shoot(thrower: Entity): boolean {

@@ -1,11 +1,10 @@
-import { ItemStack, ItemUseAfterEvent, Player } from "@minecraft/server";
 import { ItemTool, lore2Str, str2Lore } from "../libs/ScarletToolKit";
 import * as mcui from '@minecraft/server-ui';
 
 // 书本各章节的页码号(自动生成)
 // MG_AUTO_GENERATE_START
 const BOOK = [12, 16, 10];
-const BOOK_OP = 10; // op 章节
+const _BOOK_OP = 10; // op 章节
 // MG_AUTO_GENERATE_END
 
 const chapterButtonDelta = BOOK.length + BOOK.length % 2;

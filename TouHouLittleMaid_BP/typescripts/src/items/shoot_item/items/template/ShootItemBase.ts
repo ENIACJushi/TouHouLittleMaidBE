@@ -11,12 +11,12 @@ export class ShootItemBase {
   /**
    * 处理开始蓄力事件
    */
-  public startUseEvent (event: ItemStartUseAfterEvent) { }
+  public startUseEvent (_event: ItemStartUseAfterEvent) { }
 
   /**
    * 处理结束蓄力事件
    */
-  public stopUseEvent (event: ItemReleaseUseAfterEvent) { }
+  public stopUseEvent (_event: ItemReleaseUseAfterEvent) { }
 
   /**
    * 损耗物品

@@ -9,42 +9,42 @@ export class MaidLifeCycleEvents {
   /**
    * 心跳
    */
-  timer(data: DataDrivenEntityTriggerAfterEvent) {
+  timer(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 
   /**
    * 生成
    */
-  spawn(data: DataDrivenEntityTriggerAfterEvent) {
+  spawn(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 
   /**
    * 死亡
    */
-  death(data: DataDrivenEntityTriggerAfterEvent) {
+  death(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 
   /**
    * 被驯服
    */
-  tamed(data: DataDrivenEntityTriggerAfterEvent) {
+  tamed(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 
   /**
    * 被拍照
    */
-  photo(data: DataDrivenEntityTriggerAfterEvent) {
+  photo(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 
   /**
    * 被魂符收回
    */
-  smartSlabRecycle(data: DataDrivenEntityTriggerAfterEvent) {
+  smartSlabRecycle(_data: DataDrivenEntityTriggerAfterEvent) {
 
   }
 }

@@ -133,7 +133,7 @@ export class DanmakuDamageDispatcher {
     this.isTestingInvincibleTime = true;
     // 开始测试
     let i = 0;
-    let lastVal = entity.getComponent('health')?.currentValue;
+    let _lastVal = entity.getComponent('health')?.currentValue;
     let id = system.runInterval(() => {
       try {
         let beforeHealth = entity.getComponent('health')?.currentValue;
@@ -145,7 +145,7 @@ export class DanmakuDamageDispatcher {
           system.clearRun(id);
         }
         i++;
-      } catch (e) {
+      } catch (_e) {
         this.isTestingInvincibleTime = false;
         system.clearRun(id);
       }
@@ -167,7 +167,7 @@ export class DanmakuDamageDispatcher {
           cause: EntityDamageCause.magic,
           damagingEntity: source,
         });
-      } catch (e) {
+      } catch (_e) {
         this.isVerifyingInvincibleTime = false;
         system.clearRun(id);
       }

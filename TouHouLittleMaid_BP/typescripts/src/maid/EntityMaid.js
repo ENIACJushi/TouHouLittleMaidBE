@@ -1,5 +1,4 @@
-import { Entity, world, Dimension,system, EntityHealthComponent, Container, ItemStack, Block, Player, ContainerSlot, EntityRemoveAfterEvent } from "@minecraft/server";
-import { Vector } from "../libs/VectorMC";
+import { world, system } from "@minecraft/server";
 import * as Tool from "../libs/ScarletToolKit";
 import { StrMaid } from "./StrMaid";
 import { emote } from "../../data/emote";
@@ -289,7 +288,7 @@ export class EntityMaid{
          * @param {Entity} maid
          * @param {number} amount 
          */
-        setMax(maid, amount){
+        setMax(_maid, _amount){
             
         },
         // 特殊字符的起始位置
@@ -300,7 +299,7 @@ export class EntityMaid{
          */
         toStr(health){
             let result = "";
-            let stack = Math.floor(health / 20);
+            let _stack = Math.floor(health / 20);
             let value = health % 20;
             if(value===0) value=20;
             for(let i = 10; i > 0;){
@@ -445,7 +444,7 @@ export class EntityMaid{
     }
     // 骑乘模式
     static Ride = {
-        switchMode(maid){
+        switchMode(_maid){
             
         },
         getImg(is_open){

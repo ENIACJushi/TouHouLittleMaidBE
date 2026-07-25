@@ -1,5 +1,5 @@
 {
-  "format_version": "1.20.80",
+  "format_version": "1.21.10",
   "minecraft:item": {
     "description": {
       "identifier": "thlms:boundary_between_wave_and_particle_3d",

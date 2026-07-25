@@ -1,6 +1,5 @@
 import { Vector, VO } from "../../libs/VectorMC";
-import { BulletShapeBase } from "../shapes/main";
-import { Entity, EntityProjectileComponent } from "@minecraft/server";
+import { Entity } from "@minecraft/server";
 import { getRandom } from "../../libs/ScarletToolKit";
 import { DanmakuActor } from "../actors/DanmakuActor";
 import { EntityDanmakuActor } from "../actors/EntityDanmakuActor";

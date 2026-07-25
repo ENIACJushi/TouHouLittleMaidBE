@@ -1,11 +1,9 @@
-import { Dimension, EnchantmentTypes, ItemStack, Player } from "@minecraft/server";
-import { Vector } from "../libs/VectorMC";
+import { EnchantmentTypes, ItemStack } from "@minecraft/server";
 import * as Tool from "../libs/ScarletToolKit"
 import { recipeList } from "../../data/recipes/index"
 import { tagDefines } from "../../data/recipes/tag_define"
 import PowerPoint from "./PowerPoint";
 import { EntityMaid } from "../maid/EntityMaid"
-import { StrMaid } from "../maid/StrMaid";
 
 export class AltarCraftHelper{
     constructor(){
@@ -121,7 +119,7 @@ export class AltarCraftHelper{
                 case "minecraft:item":
                     let itemInfo = output["nbt"]["Item"];
                     let amount = 1;
-                    let data = 0;
+                    let _data = 0;
                     if(!itemInfo["id"]) return false;
                     if(itemInfo["Count"]) amount = itemInfo["Count"];
                     let output_item = new ItemStack(itemInfo["id"], amount);

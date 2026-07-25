@@ -64,7 +64,7 @@ export class ChannelMain{
      * @param {string} namespace 需要接收的scriptevent的命名空间
      * @param {Function} callback 回调，接收一个参数，即完整信息
      */
-    static subscribe(namespace, callback){
+    static subscribe(_namespace, _callback){
         
     }
 }
@@ -76,7 +76,7 @@ export class ChannelSender{
         this.activated = undefined;
         
         ///// 尝试注册 /////
-        let event = undefined;
+        let _event = undefined;
         // 向主行为包发送信息
         sendScripMessage("thlmc", "register", this.senderID);
         let tryID = system.runInterval(()=>{
@@ -104,7 +104,7 @@ export class ChannelSender{
      * @param {string} namespace scriptevent的命名空间
      * @param {string} msg 完整的消息
     */
-    send(namespace, msg){
+    send(_namespace, _msg){
         
     }
 
