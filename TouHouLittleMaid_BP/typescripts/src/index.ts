@@ -1,3 +1,8 @@
+/**
+ * 入口：先完成自定义组件 early-execution 注册，再挂载其余事件
+ */
+import "./registerCustomComponents";
+
 import { world, system } from "@minecraft/server"
 import experiment from "./experiment"
 import { initTest } from "../test/index";

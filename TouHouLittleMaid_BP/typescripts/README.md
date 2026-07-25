@@ -16,3 +16,9 @@ npm run build:deploy
 ```
 
 - 当前 **PBR 不打入** `.mcaddon`（仅部署到开发目录）；若发布需要 PBR，请单独分发 `TouHouLittleMaid_PBR`
+
+## 自定义组件（V2）
+
+- 方块 JSON 使用 `"tlm:xxx": {}`（`format_version` ≥ 1.21.90）
+- 脚本在 [`src/registerCustomComponents.ts`](src/registerCustomComponents.ts) **顶层**订阅 `system.beforeEvents.startup` 注册
+- Content log 里若出现 `tlm:* ... not present in the Schema`：多为静态 Schema 校验噪声，不等于未注册；进世界后应能看到 `[TLM][CC_REGISTER] Custom Components V2 registered ...`

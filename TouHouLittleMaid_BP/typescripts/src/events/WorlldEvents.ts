@@ -1,50 +1,14 @@
-import { ScriptEventCommandMessageAfterEvent, system, StartupEvent } from "@minecraft/server";
+import { ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
 import { CommandManager } from "../controller/Command";
-import { Skull } from "../blocks/Skull";
-import { StatuesBlock } from "../blocks/StatuesBlock";
-import { AltarBlock } from "../blocks/AltarBlock";
-import { GarageKit } from "../blocks/GarageKit";
-import { GoldMicrowaver } from "../blocks/GoldMicrowaver";
-import { ShootItemManager } from "../items/shoot_item/ShootItemManager";
-import { CustomSpellCardManger } from "../danmaku/CustomSpellCardManger";
-import PowerPoint from "../altar/PowerPoint";
-import { ConfigHelper } from "../controller/Config";
-import { MaidManager } from "../maid/MaidManager";
-import { MaidSkin } from "../maid/MaidSkin";
-import { Logger } from "../controller/Logger";
-import { DeprecatedItemHelper } from "../items/deprecated_helper/DeprecatedHelper";
 
+/**
+ * 世界级脚本事件等（自定义组件注册已移至 registerCustomComponents.ts）
+ */
 export class WorldEvents {
   public registerAllEvents () {
     system.afterEvents.scriptEventReceive.subscribe(event => {
       system.run(() => { this.thlmScriptEventReceive(event); })
     }, { namespaces: ["thlm"] });
-
-    
-    system.beforeEvents.startup.subscribe((e) => {
-      this.worldInitialize(e);
-    });
-  }
-
-  // 世界初始化
-  private worldInitialize(e: StartupEvent) {
-    // 注册方块自定义组件
-    Skull.registerCC(e);
-    StatuesBlock.registerCC(e);
-    AltarBlock.registerCC(e);
-    GarageKit.registerCC(e);
-    GoldMicrowaver.registerCC(e);
-    // 注册物品自定义组件
-    CustomSpellCardManger.registerCC(e);
-    PowerPoint.registerCC(e);
-    DeprecatedItemHelper.registerCC(e);
-    // 初始化模块
-    system.run(() => {
-      // 初始化
-      ConfigHelper.init();
-      PowerPoint.init(e);
-      MaidSkin.initScoreboard();
-    });
   }
 
   // 脚本事件：THLM

@@ -96,6 +96,12 @@
               8,
               5
             ]
+          },
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "warden_skull",
+              "render_method": "alpha_test"
+            }
           }
         }
       },
@@ -126,6 +132,12 @@
               5,
               8
             ]
+          },
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "warden_skull",
+              "render_method": "alpha_test"
+            }
           }
         }
       },
@@ -163,6 +175,12 @@
               8,
               5
             ]
+          },
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "warden_skull",
+              "render_method": "alpha_test"
+            }
           }
         }
       },
@@ -200,6 +218,12 @@
               8,
               5
             ]
+          },
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "warden_skull",
+              "render_method": "alpha_test"
+            }
           }
         }
       },
@@ -237,6 +261,12 @@
               8,
               5
             ]
+          },
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "warden_skull",
+              "render_method": "alpha_test"
+            }
           }
         }
       },
@@ -274,6 +304,12 @@
               8,
               5
             ]
+          },
+          "minecraft:material_instances": {
+            "*": {
+              "texture": "warden_skull",
+              "render_method": "alpha_test"
+            }
           }
         }
       }
