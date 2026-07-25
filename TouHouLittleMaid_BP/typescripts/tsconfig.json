@@ -8,17 +8,27 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "listFiles": false,
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "noLib": false,
     "noImplicitAny": true,
     "noImplicitReturns": false,
-    "noImplicitUseStrict": false,
     "outDir": "../scripts",
     "pretty": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es6",
+    "target": "ES2022",
+    "skipLibCheck": true,
+    "types": []
   },
+  "include": [
+    "src/**/*",
+    "data/**/*",
+    "test/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "../scripts"
+  ],
   "compileOnSave": false
 }
