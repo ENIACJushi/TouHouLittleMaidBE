@@ -7,20 +7,14 @@
     },
     "permutations": [],
     "components": {
-      "minecraft:custom_components": ["tlm:altar"],
+      "tlm:altar": {},
       "minecraft:geometry": "geometry.touhou_little_maid.void",
       "minecraft:material_instances": {
         "*": { "texture": "altar_log_block", "render_method": "alpha_test" }
       },
       "minecraft:tags": ["wood"],
-      "minecraft:collision_box": {
-        "origin": [-8, 0, -8],
-        "size": [16, 16, 16]
-      },
-      "minecraft:selection_box": {
-        "origin": [-8, 0, -8],
-        "size": [16, 16, 16]
-      },
+      "minecraft:collision_box": { "origin": [-8, 0, -8], "size": [16, 16, 16] },
+      "minecraft:selection_box": { "origin": [-8, 0, -8], "size": [16, 16, 16] },
       "minecraft:map_color": "#52221D",
       "minecraft:loot": "loot_tables/blocks/altar_log_block.json",
       "minecraft:destructible_by_explosion": {

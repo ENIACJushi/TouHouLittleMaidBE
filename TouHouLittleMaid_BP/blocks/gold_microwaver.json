@@ -50,24 +50,16 @@
       }
     ],
     "components": {
-      "minecraft:custom_components": ["tlm:microwaver"],
+      "tlm:microwaver": {},
       "minecraft:destructible_by_mining": { "seconds_to_destroy": 0.5 },
       "minecraft:light_dampening": 0,
       "minecraft:destructible_by_explosion": { "explosion_resistance": 0.25 },
       "minecraft:map_color": "#FFD700",
       "minecraft:geometry": "geometry.touhou_little_maid.gold_microwaver_place",
-      "minecraft:material_instances": {
-        "*": { "texture": "gold_microwaver", "render_method": "opaque" }
-      },
+      "minecraft:material_instances": { "*": { "texture": "gold_microwaver", "render_method": "opaque" } },
       "minecraft:loot": "loot_tables/blocks/gold_microwaver.json",
-      "minecraft:collision_box": {
-        "origin": [-8.0, 0.0, -7.0],
-        "size": [16.0, 11.0, 13.0]
-      },
-      "minecraft:selection_box": {
-        "origin": [-8.0, 0.0, -7.0],
-        "size": [16.0, 11.0, 13.0]
-      }
+      "minecraft:collision_box": { "origin": [-8.0, 0.0, -7.0], "size": [16.0, 11.0, 13.0] },
+      "minecraft:selection_box": { "origin": [-8.0, 0.0, -7.0], "size": [16.0, 11.0, 13.0] }
     }
   }
 }
