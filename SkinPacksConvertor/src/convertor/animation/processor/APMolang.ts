@@ -51,6 +51,8 @@ let processMolang = (_molang: Molang) => {
     if (molang.includes('ysm.')) {
       molang = replaceYsmExpressions(molang, handleYsmExpression);
     }
+    // 属性兜底适配
+
 
     return molang;
   }
