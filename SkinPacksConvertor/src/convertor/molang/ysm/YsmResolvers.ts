@@ -1,4 +1,4 @@
-import {parseYsmExpression, YsmSegment} from "./YsmExpression";
+import {parseYsmExpression, YsmSegment} from "../PrefixedExpression";
 
 /**
  * 单条 ysm 解析规则。

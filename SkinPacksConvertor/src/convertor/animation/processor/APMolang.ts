@@ -1,5 +1,5 @@
 import {AnimationDefinition180, Molang} from "../types/AnimationSchema180";
-import {replaceYsmExpressions} from "../../molang/ysm/YsmExpression";
+import {replacePrefixedExpressions} from "../../molang/PrefixedExpression";
 import {resolveYsmExpression} from "../../molang/ysm/YsmResolvers";
 import {APUtils} from "./APUtils";
 
@@ -47,18 +47,23 @@ let processMolang = (_molang: Molang) => {
         }
       }
     }
-    // ysm 动画属性适配
-    if (molang.includes('ysm.')) {
-      molang = replaceYsmExpressions(molang, handleYsmExpression);
-    }
-    // 属性兜底适配
-
+    // 前缀字段链适配；候选前缀由 DEFAULT_EXPRESSION_PREFIXES 统一维护
+    molang = replacePrefixedExpressions(molang, handlePrefixedExpression);
 
     return molang;
   }
   return _molang;
 }
 
-let handleYsmExpression = (ysmExpression: string): string => {
-  return resolveYsmExpression(ysmExpression);
+/**
+ * 按根前缀分发替换规则。
+ * - ysm：走既有 ysm resolver
+ * - v：后续在此接入属性兜底；暂时原样返回，避免误伤
+ */
+let handlePrefixedExpression = (expression: string, prefix: string): string => {
+  if (prefix === 'ysm') {
+    return resolveYsmExpression(expression);
+  }
+  // 属性兜底适配（v.xxx 等）预留
+  return expression;
 };
