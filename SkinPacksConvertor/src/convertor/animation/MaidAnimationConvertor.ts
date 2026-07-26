@@ -47,6 +47,9 @@ export class MaidAnimationConvertor {
     let res: AnimationDefinition = {
       scripts: {
         scale: "query.property('thlm:scale') * v.scale",
+        /**
+         * 添加变量时，需要同步加进白名单 `src/convertor/molang/v/VariableResolvers.ts`
+         */
         pre_animation: [
           // 特殊行走动画属性
           "variable.walk_process = Math.min(1, Math.abs(query.modified_move_speed / 0.9));",

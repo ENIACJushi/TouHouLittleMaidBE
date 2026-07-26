@@ -1,6 +1,13 @@
 import {AnimationDefinition180, Molang} from "../types/AnimationSchema180";
-import {replacePrefixedExpressions} from "../../molang/PrefixedExpression";
+import {
+  PrefixedExpressionOperatorContext,
+  replacePrefixedExpressions,
+} from "../../molang/PrefixedExpression";
 import {resolveYsmExpression} from "../../molang/ysm/YsmResolvers";
+import {
+  AnimationBoneChannel,
+  resolveVariableExpression,
+} from "../../molang/v/VariableResolvers";
 import {APUtils} from "./APUtils";
 
 
@@ -14,9 +21,9 @@ export const data = {
     if (animation.bones) {
       for (let boneName in animation.bones) {
         let bone = animation.bones[boneName];
-        bone.position = APUtils.forEachMolangOfChannel(bone.position, processMolang);
-        bone.rotation = APUtils.forEachMolangOfChannel(bone.rotation, processMolang);
-        bone.scale = APUtils.forEachMolangOfChannel(bone.scale, processMolang);
+        bone.position = APUtils.forEachMolangOfChannel(bone.position, (m) => processMolang(m, 'position'));
+        bone.rotation = APUtils.forEachMolangOfChannel(bone.rotation, (m) => processMolang(m, 'rotation'));
+        bone.scale = APUtils.forEachMolangOfChannel(bone.scale, (m) => processMolang(m, 'scale'));
       }
     }
     return;
@@ -25,7 +32,7 @@ export const data = {
 
 
 
-let processMolang = (_molang: Molang) => {
+let processMolang = (_molang: Molang, channel: AnimationBoneChannel) => {
   if (typeof _molang === 'string') {
     let molang = _molang;
     // 删除 ';'
@@ -48,7 +55,9 @@ let processMolang = (_molang: Molang) => {
       }
     }
     // 前缀字段链适配；候选前缀由 DEFAULT_EXPRESSION_PREFIXES 统一维护
-    molang = replacePrefixedExpressions(molang, handlePrefixedExpression);
+    molang = replacePrefixedExpressions(molang, (expression, prefix, ctx) =>
+      handlePrefixedExpression(expression, prefix, ctx, channel),
+    );
 
     return molang;
   }
@@ -58,12 +67,19 @@ let processMolang = (_molang: Molang) => {
 /**
  * 按根前缀分发替换规则。
  * - ysm：走既有 ysm resolver
- * - v：后续在此接入属性兜底；暂时原样返回，避免误伤
+ * - v / variable：白名单保留，其余按通道与运算符兜底
  */
-let handlePrefixedExpression = (expression: string, prefix: string): string => {
+let handlePrefixedExpression = (
+  expression: string,
+  prefix: string,
+  ctx: PrefixedExpressionOperatorContext,
+  channel: AnimationBoneChannel,
+): string => {
   if (prefix === 'ysm') {
     return resolveYsmExpression(expression);
   }
-  // 属性兜底适配（v.xxx 等）预留
+  if (prefix === 'v' || prefix === 'variable') {
+    return resolveVariableExpression(expression, channel, ctx);
+  }
   return expression;
 };
