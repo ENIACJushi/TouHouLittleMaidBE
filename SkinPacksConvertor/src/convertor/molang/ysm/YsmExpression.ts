@@ -1,3 +1,5 @@
+import {MolangLexer, Token, TokenKind} from '../engin';
+
 /**
  * ysm 表达式分段结构。
  *
@@ -11,82 +13,82 @@ export type YsmSegment = {
   params?: string[];
 };
 
-/** 判断字符是否可作为标识符的一部分 */
-const isIdentifierChar = (char: string): boolean => /[A-Za-z0-9_]/.test(char);
+/** engin 词法器会把标识符统一归一化到 `value`，这里集中处理空值兜底。 */
+const getIdentifierName = (token: Token): string => token.value ?? '';
 
-/**
- * 从 `startIndex` 开始向右消费一个标识符，返回结束位置（开区间）。
- *
- * 例如：`func1(` 中从 `f` 开始，会返回 `(` 的位置。
- */
-const consumeIdentifier = (source: string, startIndex: number): number => {
-  let index = startIndex;
-  while (index < source.length && isIdentifierChar(source[index])) {
-    index++;
-  }
-  return index;
+/** 判断当前位置是否是 `.identifier` 形式的字段访问。 */
+const isFieldAccess = (tokens: Token[], dotIndex: number): boolean => {
+  return tokens[dotIndex]?.kind === TokenKind.DOT && tokens[dotIndex + 1]?.kind === TokenKind.IDENTIFIER;
 };
 
 /**
- * 从 `(` 开始消费完整的平衡括号片段，返回右括号后一位。
+ * 从一个左括号 token 开始，向后找到同层级的右括号 token。
  *
- * 支持：
- * - 嵌套括号：`a(b(c))`
- * - 引号内容：`"a,b"` / `'x.y'`
- * - 转义字符：`"a\"b"`
- *
- * 若括号不平衡，则返回 `startIndex`，交给上层做降级处理。
+ * ysm 表达式中函数参数本身也可能包含 Molang 表达式，例如
+ * `ysm.func(math.clamp(a, 0, 1))`，因此不能只查找第一个 `)`，而需要按 token
+ * 维护括号深度。
  */
-const consumeBalancedParentheses = (source: string, startIndex: number): number => {
-  if (source[startIndex] !== '(') {
-    return startIndex;
+const findBalancedClose = (tokens: Token[], openIndex: number): number | null => {
+  if (tokens[openIndex]?.kind !== TokenKind.LPAREN) {
+    return null;
   }
 
-  let index = startIndex;
   let depth = 0;
-  let quote: '' | '"' | "'" = '';
-
-  while (index < source.length) {
-    const char = source[index];
-
-    if (quote) {
-      if (char === '\\') {
-        index += 2;
-        continue;
-      }
-      if (char === quote) {
-        quote = '';
-      }
-      index++;
-      continue;
-    }
-
-    if (char === '"' || char === "'") {
-      quote = char;
-      index++;
-      continue;
-    }
-
-    if (char === '(') {
+  for (let index = openIndex; index < tokens.length; index++) {
+    const kind = tokens[index].kind;
+    if (kind === TokenKind.LPAREN) {
       depth++;
-      index++;
       continue;
     }
-
-    if (char === ')') {
+    if (kind === TokenKind.RPAREN) {
       depth--;
-      index++;
       if (depth === 0) {
         return index;
       }
-      continue;
     }
-
-    index++;
   }
 
-  // 括号不平衡时，退回 startIndex，让上层逻辑仅匹配到 `ysm.xxx`
-  return startIndex;
+  return null;
+};
+
+/**
+ * 定位从指定 token 开始的完整 `ysm.xxx(...)` 字段链。
+ *
+ * 该逻辑只负责基于 engin 词法 token 判断边界；遇到不平衡括号时，会和旧实现一样退化为
+ * 仅匹配到当前标识符。
+ */
+const findYsmExpressionEnd = (tokens: Token[], startIndex: number): number | null => {
+  const root = tokens[startIndex];
+  if (root?.kind !== TokenKind.IDENTIFIER || root.value !== 'ysm') {
+    return null;
+  }
+
+  // 合法 ysm 表达式必须以 `ysm.` 开头；单独的 `ysm` 不会被替换。
+  let index = startIndex + 1;
+  if (!isFieldAccess(tokens, index)) {
+    return null;
+  }
+
+  let lastIndex = startIndex;
+  while (isFieldAccess(tokens, index)) {
+    // 跳过 `.`，并把字段名 token 记为当前表达式的最后一段。
+    index++;
+    lastIndex = index;
+    index++;
+
+    // 如果字段后紧跟括号，则把它识别为函数调用段，并整体吞掉参数列表。
+    if (tokens[index]?.kind === TokenKind.LPAREN) {
+      const closeIndex = findBalancedClose(tokens, index);
+      if (closeIndex === null) {
+        // 括号不完整时保留已识别的字段名边界，避免把后续源码错误吞入 ysm 表达式。
+        break;
+      }
+      lastIndex = closeIndex;
+      index = closeIndex + 1;
+    }
+  }
+
+  return lastIndex > startIndex ? lastIndex : null;
 };
 
 /**
@@ -100,112 +102,116 @@ const consumeBalancedParentheses = (source: string, startIndex: number): number 
  * 该函数只负责“定位 + 截取 + 回调替换”，不关心业务替换规则。
  */
 export function replaceYsmExpressions(source: string, replacer: (ysmExpression: string) => string): string {
+  // 第一步：整段 Molang 源码先交给通用 engin 词法器，后续只基于 token 边界判断，
+  // 避免手写字符扫描时重复处理字符串、数字、小数点等词法细节。
+  const tokens = MolangLexer.tokenizeAll(source);
   let result = '';
-  let index = 0;
-
-  while (index < source.length) {
-    const ysmIndex = source.indexOf('ysm.', index);
-    if (ysmIndex < 0) {
-      result += source.slice(index);
-      break;
-    }
-
-    result += source.slice(index, ysmIndex);
-
-    const identifierStart = ysmIndex + 4;
-    let endIndex = consumeIdentifier(source, identifierStart);
-
-    if (endIndex === identifierStart) {
-      // 不是有效的 `ysm.xxx`，按普通文本处理
-      result += 'ysm.';
-      index = identifierStart;
+  let sourceIndex = 0;
+  for (let tokenIndex = 0; tokenIndex < tokens.length;) {
+    const token = tokens[tokenIndex];
+    if (token.end <= sourceIndex) {
+      tokenIndex++;
       continue;
     }
 
-    if (source[endIndex] === '(') {
-      const callEndIndex = consumeBalancedParentheses(source, endIndex);
-      if (callEndIndex > endIndex) {
-        endIndex = callEndIndex;
-      }
+    // 第二步：尝试从当前 token 起识别一条完整 ysm 字段链。
+    const endTokenIndex = findYsmExpressionEnd(tokens, tokenIndex);
+    if (endTokenIndex === null) {
+      tokenIndex++;
+      continue;
     }
 
-    while (source[endIndex] === '.') {
-      const propertyStart = endIndex + 1;
-      const propertyEnd = consumeIdentifier(source, propertyStart);
-      if (propertyEnd === propertyStart) {
-        break;
-      }
-      endIndex = propertyEnd;
-    }
+    // 第三步：把 ysm 表达式前面的普通源码原样写回，只替换 token 边界内的表达式片段。
+    const start = token.start;
+    const end = tokens[endTokenIndex].end;
+    result += source.slice(sourceIndex, start);
+    result += replacer(source.slice(start, end));
 
-    const matched = source.slice(ysmIndex, endIndex);
-    result += replacer(matched);
-    index = endIndex;
+    // 第四步：推进源码游标和 token 游标，继续扫描后续可能存在的 ysm 表达式。
+    sourceIndex = end;
+    tokenIndex = endTokenIndex + 1;
   }
 
-  return result;
+  return result + source.slice(sourceIndex);
 }
 
 /**
- * 仅按“顶层”分隔符切分字符串。
+ * 仅按顶层逗号切分函数参数。
  *
- * 顶层的定义：不在引号内，且不在任何括号嵌套内。
- *
- * 用途：
- * - 按 `.` 拆分 `ysm.func(a,b).var`
- * - 按 `,` 拆分 `func(a, math.clamp(x,0,1), b)` 的参数
+ * 参数里可能继续出现函数调用、数组或执行作用域，所以只有在 `()` / `[]` / `{}`
+ * 深度全部为 0 时，逗号才是真正的参数分隔符。
  */
-const splitTopLevel = (source: string, separator: '.' | ','): string[] => {
-  const parts: string[] = [];
-  let current = '';
-  let depth = 0;
-  let quote: '' | '"' | "'" = '';
-
-  for (let i = 0; i < source.length; i++) {
-    const char = source[i];
-
-    if (quote) {
-      current += char;
-      if (char === '\\' && i + 1 < source.length) {
-        current += source[i + 1];
-        i++;
-        continue;
-      }
-      if (char === quote) {
-        quote = '';
-      }
-      continue;
-    }
-
-    if (char === '"' || char === "'") {
-      quote = char;
-      current += char;
-      continue;
-    }
-
-    if (char === '(') {
-      depth++;
-      current += char;
-      continue;
-    }
-
-    if (char === ')') {
-      depth = Math.max(depth - 1, 0);
-      current += char;
-      continue;
-    }
-
-    if (char === separator && depth === 0) {
-      parts.push(current.trim());
-      current = '';
-      continue;
-    }
-
-    current += char;
+const splitTopLevelArguments = (source: string, tokens: Token[], start: number, end: number): string[] => {
+  if (source.slice(start, end).trim().length === 0) {
+    return [];
   }
 
-  parts.push(current.trim());
-  return parts;
+  const params: string[] = [];
+  let currentStart = start;
+  let parenDepth = 0;
+  let bracketDepth = 0;
+  let braceDepth = 0;
+
+  for (const token of tokens) {
+    if (token.start < start || token.end > end) {
+      continue;
+    }
+
+    // 在参数范围内用括号深度过滤嵌套结构，确保只切分当前函数的直接参数。
+    switch (token.kind) {
+      case TokenKind.LPAREN:
+        parenDepth++;
+        break;
+      case TokenKind.RPAREN:
+        parenDepth = Math.max(parenDepth - 1, 0);
+        break;
+      case TokenKind.LBRACKET:
+        bracketDepth++;
+        break;
+      case TokenKind.RBRACKET:
+        bracketDepth = Math.max(bracketDepth - 1, 0);
+        break;
+      case TokenKind.LBRACE:
+        braceDepth++;
+        break;
+      case TokenKind.RBRACE:
+        braceDepth = Math.max(braceDepth - 1, 0);
+        break;
+      case TokenKind.COMMA:
+        if (parenDepth === 0 && bracketDepth === 0 && braceDepth === 0) {
+          params.push(source.slice(currentStart, token.start).trim());
+          currentStart = token.end;
+        }
+        break;
+    }
+  }
+
+  params.push(source.slice(currentStart, end).trim());
+  return params.filter(Boolean);
+};
+
+/**
+ * 读取一个 ysm 段。
+ *
+ * 输入位置必须指向段名标识符：
+ * - 后面没有括号时，输出普通段 `{ name }`
+ * - 后面紧跟括号时，输出函数段 `{ name, params }`，并把 `nextIndex` 推进到右括号之后
+ */
+const readSegment = (source: string, tokens: Token[], identifierIndex: number): {segment: YsmSegment; nextIndex: number} => {
+  const nameToken = tokens[identifierIndex];
+  const segment: YsmSegment = {name: getIdentifierName(nameToken)};
+  let nextIndex = identifierIndex + 1;
+
+  if (tokens[nextIndex]?.kind === TokenKind.LPAREN) {
+    const closeIndex = findBalancedClose(tokens, nextIndex);
+    if (closeIndex !== null) {
+      // 参数保留原始源码片段，便于后续 resolver 直接拼回目标 Molang 表达式。
+      segment.params = splitTopLevelArguments(source, tokens, tokens[nextIndex].end, tokens[closeIndex].start);
+      nextIndex = closeIndex + 1;
+    }
+  }
+
+  return {segment, nextIndex};
 };
 
 /**
@@ -220,19 +226,23 @@ const splitTopLevel = (source: string, separator: '.' | ','): string[] => {
  * ]
  */
 export const parseYsmExpression = (ysmExpression: string): YsmSegment[] => {
-  const segments = splitTopLevel(ysmExpression.trim(), '.').filter(Boolean);
+  // 解析入口只处理单个已经定位好的 ysm 表达式；先 trim，避免外围空白影响 token 坐标。
+  const source = ysmExpression.trim();
+  const tokens = MolangLexer.tokenizeAll(source);
+  if (tokens[0]?.kind !== TokenKind.IDENTIFIER) {
+    return [];
+  }
 
-  return segments.map((segment): YsmSegment => {
-    const leftParenIndex = segment.indexOf('(');
-    if (leftParenIndex <= 0 || !segment.endsWith(')')) {
-      return {name: segment};
-    }
+  // 先读取根段 `ysm`，再按 `.identifier` 循环读取后续字段或函数段。
+  const segments: YsmSegment[] = [];
+  let {segment, nextIndex} = readSegment(source, tokens, 0);
+  segments.push(segment);
 
-    const name = segment.slice(0, leftParenIndex).trim();
-    const paramsRaw = segment.slice(leftParenIndex + 1, -1);
-    const params = paramsRaw.trim().length === 0
-      ? []
-      : splitTopLevel(paramsRaw, ',').map((param) => param.trim()).filter(Boolean);
-    return {name, params};
-  });
+  while (isFieldAccess(tokens, nextIndex)) {
+    const identifierIndex = nextIndex + 1;
+    ({segment, nextIndex} = readSegment(source, tokens, identifierIndex));
+    segments.push(segment);
+  }
+
+  return segments;
 };
