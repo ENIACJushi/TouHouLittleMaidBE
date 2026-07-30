@@ -1,6 +1,10 @@
 import {AnimationTypes} from "./types/AnimationTypes";
 import {AnimationFileInfo} from "../resource_manager/AnimationManager";
 import {AnimationProcessor} from "./processor/AnimationProcessor";
+import {
+  buildSkinPackAnimationName,
+} from "./default/DefaultGeckoAnimation";
+import { DEFAULT_ANIMATION_ID } from "../config";
 
 /** 与 SkinPackConvertor 一致：皮肤包属性 = packId + BASE_INDEX */
 const BASE_INDEX = 1000;
@@ -60,11 +64,11 @@ export class MaidAnimationConvertor {
           "variable.emote_speed=Math.max(1, Math.floor(query.property('thlm:emote')/1000000) );",
 
           "v.biaoqing = 0;", // 表情当前未实现，置0
-          // 默认使用主包动画（编号 0）
+          // 默认使用主资源包默认动画（id 见 DEFAULT_ANIMATION_ID）
           "v.scale = 1;", // 缩放
-          "v.animate_walk = 0;",
-          "v.animate_beg = 0;",
-          "v.animate_sit = 0;",
+          `v.animate_walk = ${DEFAULT_ANIMATION_ID};`,
+          `v.animate_beg = ${DEFAULT_ANIMATION_ID};`,
+          `v.animate_sit = ${DEFAULT_ANIMATION_ID};`,
         ],
         should_update_bones_and_effects_offscreen: true,
         animate: [
@@ -78,7 +82,11 @@ export class MaidAnimationConvertor {
 
           { "walk": "v.animate_walk == 0 && !query.property('thlm:is_sitting')" },
           { "beg": "v.animate_beg == 0 && query.is_interested" },
-          { "sit": "v.animate_sit == 0 && !q.is_in_ui && query.property('thlm:is_sitting')" }
+          { "sit": "v.animate_sit == 0 && !q.is_in_ui && query.property('thlm:is_sitting')" },
+          // 默认动画由主资源包提供，命名与转换动画一致
+          { "walk_1": `v.animate_walk == ${DEFAULT_ANIMATION_ID} && !query.property('thlm:is_sitting')` },
+          { "beg_1": `v.animate_beg == ${DEFAULT_ANIMATION_ID} && query.is_interested` },
+          { "sit_1": `v.animate_sit == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && query.property('thlm:is_sitting')` }
         ],
       },
       animations: {
@@ -92,7 +100,11 @@ export class MaidAnimationConvertor {
 
         "walk": "animation.touhou_little_maid.basic.walk",
         "beg": "animation.touhou_little_maid.maid.beg",
-        "sit": "animation.touhou_little_maid.maid.sit"
+        "sit": "animation.touhou_little_maid.maid.sit",
+        // 默认 walk/beg/sit：主资源包按 animation.tlm.skin_pack.<DEFAULT_ANIMATION_ID>.<type> 提供
+        "walk_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.walk),
+        "beg_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.beg),
+        "sit_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.sit),
       },
       animationList: {},
     };
@@ -111,8 +123,8 @@ export class MaidAnimationConvertor {
           if (!animList) {
             continue;
           }
-          // 导出编号：为主包动画留出 0
-          const exportId = fileInfo.id + 1;
+          // 导出编号与动画 id 一致（从 CONVERTED_ANIMATION_ID_START 起，默认动画占用更小 id）
+          const exportId = fileInfo.id;
 
           for (const type of Object.values(AnimationTypes) as AnimationTypes[]) {
             if (!animList[type]) {
@@ -162,10 +174,10 @@ export class MaidAnimationConvertor {
   }
 
   /**
-   * 生成基岩版唯一动画名：animation.tlm.skin_pack.<packId>.<animationId>.<type>
+   * 生成基岩版唯一动画名：animation.tlm.skin_pack.<animationId>.<type>
    */
   private buildAnimationName(fileInfo: AnimationFileInfo, type: AnimationTypes): string {
-    return `animation.tlm.skin_pack.${fileInfo.id}.${type}`;
+    return buildSkinPackAnimationName(fileInfo.id, type);
   }
 
   /**
