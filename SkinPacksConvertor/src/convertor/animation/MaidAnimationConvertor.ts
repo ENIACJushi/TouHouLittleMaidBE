@@ -54,13 +54,16 @@ const ANIMATE_EXTRA_CONDITION: Record<AnimationTypes, string> = {
 export class MaidAnimationConvertor {
   modelAnimation: Map<number, Map<number, AnimationFileInfo[]>>;
   modelScale: Map<number, Map<number, number>>;
+  modelIsGecko: Map<number, Map<number, boolean>>;
 
   constructor(
     modelAnimation: Map<number, Map<number, AnimationFileInfo[]>>,
     modelScale: Map<number, Map<number, number>>,
+    modelIsGecko: Map<number, Map<number, boolean>>,
   ) {
     this.modelAnimation = modelAnimation;
     this.modelScale = modelScale;
+    this.modelIsGecko = modelIsGecko;
   }
 
   /**
@@ -128,7 +131,11 @@ export class MaidAnimationConvertor {
     }
 
     // 汇总展示条件到 pre_animation
-    const conditionMolang = this.buildShowConditionMolang(showConditions, this.modelScale);
+    const conditionMolang = this.buildShowConditionMolang(
+      showConditions,
+      this.modelScale,
+      this.modelIsGecko,
+    );
     if (conditionMolang) {
       res.scripts.pre_animation.push(conditionMolang);
     }
@@ -152,6 +159,7 @@ export class MaidAnimationConvertor {
   private buildShowConditionMolang(
     showConditions: Map<number, Map<number, Partial<Record<AnimationTypes, number>>>>,
     modelScale: Map<number, Map<number, number>>,
+    modelIsGecko: Map<number, Map<number, boolean>>,
   ): string {
     if (showConditions.size === 0 && modelScale.size === 0) {
       return "";
@@ -167,6 +175,7 @@ export class MaidAnimationConvertor {
       const skinPack = packId + BASE_INDEX;
       const models = showConditions.get(packId);
       const scales = modelScale.get(packId);
+      const geckoFlags = modelIsGecko.get(packId);
       const allModelIds = new Set<number>([
         ...(models?.keys() ?? []),
         ...(scales?.keys() ?? []),
@@ -175,9 +184,13 @@ export class MaidAnimationConvertor {
       let modelBlocks = "";
       for (const modelId of allModelIds) {
         const types = models?.get(modelId);
-        const animateAssigns = types
+        const isGecko = geckoFlags?.get(modelId) ?? false;
+        // 未定义动画时，geck 模型使用默认动画1，非geck模型使用默认动画0
+        const defaultAnimId = isGecko ? DEFAULT_ANIMATION_ID : 0;
+        const needAnimateAssigns = types !== undefined || isGecko;
+        const animateAssigns = needAnimateAssigns
           ? (Object.values(AnimationTypes) as AnimationTypes[])
-            .map((type) => `v.animate_${type}=${types[type] ?? -1};`)
+            .map((type) => `v.animate_${type}=${types?.[type] ?? defaultAnimId};`)
             .join("")
           : "";
 

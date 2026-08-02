@@ -27,6 +27,10 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       `v.animate_walk = 0;`,
       `v.animate_beg = 0;`,
       `v.animate_sit = 0;`,
+      `v.animate_parallel0 = 0;`,
+      `v.animate_parallel1 = 0;`,
+      `v.animate_parallel2 = 0;`,
+      `v.animate_parallel3 = 0;`,
     ],
     should_update_bones_and_effects_offscreen: true,
     animate: [
@@ -44,7 +48,11 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       // 默认动画由主资源包提供，命名与转换动画一致
       { "walk_1": `v.animate_walk == ${DEFAULT_ANIMATION_ID} && !query.property('thlm:is_sitting')` },
       { "beg_1": `v.animate_beg == ${DEFAULT_ANIMATION_ID} && query.is_interested` },
-      { "sit_1": `v.animate_sit == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && query.property('thlm:is_sitting')` }
+      { "sit_1": `v.animate_sit == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && query.property('thlm:is_sitting')` },
+      { "parallel0_1": `v.animate_parallel0 == ${DEFAULT_ANIMATION_ID}` },
+      { "parallel1_1": `v.animate_parallel1 == ${DEFAULT_ANIMATION_ID}` },
+      { "parallel2_1": `v.animate_parallel2 == ${DEFAULT_ANIMATION_ID}` },
+      { "parallel3_1": `v.animate_parallel3 == ${DEFAULT_ANIMATION_ID}` }
     ],
   },
   animations: {
@@ -63,6 +71,11 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
     "walk_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.walk),
     "beg_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.beg),
     "sit_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.sit),
+    "parallel0_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.parallel0),
+    "parallel1_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.parallel1),
+    "parallel2_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.parallel2),
+    "parallel3_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.parallel3),
   },
+  // 用到的所有动画
   animationList: {},
 };

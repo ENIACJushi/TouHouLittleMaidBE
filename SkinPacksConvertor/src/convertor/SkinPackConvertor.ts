@@ -358,6 +358,7 @@ export class SkinPackConvertor {
     const rawScale = modelInfo.render_entity_scale ?? 1;
     const scale = Math.max(0.2, Math.min(2, rawScale));
     this.animationManager.bindModelScale(this.packId, seq, scale);
+    this.animationManager.bindModelIsGecko(this.packId, seq, !!modelInfo.is_gecko);
   }
   /** 解析模型 - 动画 animation */
   private async parseModelAnimation(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {

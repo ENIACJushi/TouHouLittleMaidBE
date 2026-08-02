@@ -20,6 +20,8 @@ export class AnimationManager {
   private modelAnimation: Map<number, Map<number, AnimationFileInfo[]>> = new Map();
   /** 包id - 模型id - 缩放 映射 */
   private modelScale: Map<number, Map<number, number>> = new Map();
+  /** 包id - 模型id - 是否 geck 模型 */
+  private modelIsGecko: Map<number, Map<number, boolean>> = new Map();
 
   constructor(resource?: ResourceManager) {
     this.resource = resource;
@@ -122,6 +124,18 @@ export class AnimationManager {
   }
 
   /**
+   * 绑定模型是否为 geck
+   */
+  bindModelIsGecko(packId: number, modelId: number, isGecko: boolean) {
+    let pack = this.modelIsGecko.get(packId);
+    if (!pack) {
+      pack = new Map();
+      this.modelIsGecko.set(packId, pack);
+    }
+    pack.set(modelId, isGecko);
+  }
+
+  /**
    * 获取动画信息，用于导出
    */
   getAnimationInfos() {
@@ -133,6 +147,13 @@ export class AnimationManager {
    */
   getModelScaleInfos() {
     return this.modelScale;
+  }
+
+  /**
+   * 获取模型是否 geck，用于导出
+   */
+  getModelIsGeckoInfos() {
+    return this.modelIsGecko;
   }
 }
 

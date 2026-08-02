@@ -52,6 +52,7 @@ export class SkinConvertor {
     let convertor = new MaidAnimationConvertor(
       this.animationManager.getAnimationInfos(),
       this.animationManager.getModelScaleInfos(),
+      this.animationManager.getModelIsGeckoInfos(),
     );
     let definition = await convertor.exportDefinition();
     let description = this.result.maid_entity['minecraft:client_entity'].description;
