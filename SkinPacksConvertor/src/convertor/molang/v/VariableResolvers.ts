@@ -3,37 +3,10 @@ import {
   parsePrefixedExpression,
   PrefixedExpressionOperatorContext,
 } from '../PrefixedExpression';
+import {MOLANG_VARIABLE_RESOLVE_RULES} from "../../config";
 
 /** 动画骨骼通道类型，用于决定未匹配变量的兜底恒等元。 */
 export type AnimationBoneChannel = 'position' | 'rotation' | 'scale';
-
-/**
- * 已知应原样保留的 `v.` / `variable.` 单段字段名。
- *
- * 包含特殊字段（如 `exp`）以及本转换器在 pre_animation / 脚本中已初始化的变量。
- *
- * 参考 `src/convertor/animation/MaidAnimationConvertor.ts` 的 `exportDefinition` 中的默认变量
- */
-export const KNOWN_VARIABLE_NAMES: ReadonlySet<string> = new Set([
-  'exp',
-  'tcos0',
-  'walk_process',
-  'gliding_speed_value',
-  'emote_index',
-  'emote_frame',
-  'emote_speed',
-  'scale',
-  'biaoqing',
-  'animate_walk',
-  'animate_beg',
-  'animate_sit',
-]);
-
-/** 判断字段名是否应以白名单策略保留。 */
-export const isKnownVariableName = (name: string): boolean => {
-  const lower = name.toLowerCase();
-  return KNOWN_VARIABLE_NAMES.has(lower) || lower.startsWith('animate_');
-};
 
 /**
  * 乘除语境：左右相邻 token 任一侧为 `*` 或 `/`。
@@ -65,8 +38,9 @@ export const fallbackVariableValue = (
 /**
  * `v` / `variable` 表达式统一解析入口。
  *
- * - 白名单单段字段（及 `animate_*`）→ 原样保留
- * - 其余 → 按通道 + 相邻运算符兜底为 `0` / `1`
+ * - 命中规则且 `keep` → 原样保留
+ * - 命中规则且 `replace` → 替换为指定值
+ * - 未命中 → 按通道 + 相邻运算符兜底为 `0` / `1`
  */
 export const resolveVariableExpression = (
   expression: string,
@@ -79,9 +53,18 @@ export const resolveVariableExpression = (
     return expression;
   }
 
-  // 仅一段字段名时才走白名单；多段如 `v.tcos0.x` 走兜底。
-  if (segments.length === 2 && isKnownVariableName(segments[1].name)) {
-    return expression;
+  // 仅一段字段名时才走规则；多段如 `v.tcos0.x` 走兜底。
+  if (segments.length === 2) {
+    const field = segments[1].name.toLowerCase();
+    for (const rule of MOLANG_VARIABLE_RESOLVE_RULES) {
+      if (!field.startsWith(rule.name)) {
+        continue;
+      }
+      if (rule.type === 'keep') {
+        return expression;
+      }
+      return rule.value;
+    }
   }
 
   return fallbackVariableValue(channel, ctx);

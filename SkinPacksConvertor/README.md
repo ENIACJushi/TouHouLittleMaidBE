@@ -21,22 +21,28 @@
 
 动画异常：
 - [x] 宇航员酒狐歪头时头发没歪：宇航员酒狐没有歪头动画（有头盔歪不动？），但是给了非 geck 模型的默认动画。
-  - 目前直接清除了动画，后续考虑给 geck 通用默认动画试试
-- [ ] 战术酒狐的枪会不停变大 winefox_tactics: 在 scale 使用了未定义的变量 `v.roaming.gun` 和 `v.roaming.humujing`
+  - 给 geck 通用默认动画
+- [x] 战术酒狐的枪会不停变大 winefox_tactics: 在 scale 使用了未定义的变量 `v.roaming.gun` 和 `v.roaming.humujing`
   - 将未定义且暂无对应解析的 `scale` 变量统一设为 0。不设为 1 是因为需要调整 scale 的模型骨骼通常是有隐藏状态的，相比可能导致异常或过于杂乱的显示状态，隐藏状态更可控。
   - 这个 roaming 很奇怪，模型包里没有地方会设置 `roaming` 或 `gun` 的值，有可能是模组内置的变量。
-- [ ] 年糕狐的茶杯会不停变大 rice_cake_fox
-- [ ] 圣女酒狐头巾不断播放放大动画 winefox_saint
+- [x] 年糕狐的茶杯会不停变大 rice_cake_fox
+- [x] 圣女酒狐头巾不断播放放大动画 winefox_saint
+- [x] 狐巫女没有行走动画 foxmaid
+- [x] 斯塔·柏隐形了 sta
+- [x] 年糕狐身体被隐藏 rice_cake_fox
+- [x] 精灵酒狐身体被隐藏 winefox_elf
+
 - [ ] 精灵酒狐常态展示绿框 winefox_elf
-- [ ] 斯塔·柏隐形了 sta
 - [ ] 幸存者酒狐常态展示狐形态 winefox_survivor
 - [ ] 莫莫酒狐常态展示狐形态 winefox_momo
-- [ ] 狐巫女没有行走动画 foxmaid
 - [ ] 海螺狐常态展示攻击轨迹 hailuo
 - [ ] 大酒狐常态展示办公椅和伞 winefox_matured
-- [ ] 宇航员酒狐总是处于彻底怒了的状态 winefox_astronaut
 - [ ] 魔法酒狐的魔法常态没有消失 winefox_magical
-- [ ] 大量模型变量报错，考虑简单兼容（设为1/0）
+
+- [ ] 宇航员酒狐总是处于彻底怒了的状态 winefox_astronaut
+- [ ] 莫莫酒狐大量模型变量报错 winefox_momo
+- [ ] 海螺狐大量模型变量报错 hailuo
+- [ ] geck hug 动画兼容
 
 低优先级：
 - 模型单独展示描述和作者，目前没位置放，需要确定方案
