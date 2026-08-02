@@ -28,3 +28,15 @@ export const MOLANG_VARIABLE_RESOLVE_RULES: readonly MolangVariableResolveRule[]
   {name: 'animate_', type: 'keep'},
   {name: 'player_size', type: 'replace', value: '1'}, // 大小固定为 1
 ];
+
+/**
+ * `tlm.` 单段字段的转换规则
+ *
+ * - `keep`：原样保留
+ * - `replace`：替换为 `value`
+ *
+ * `name` 为前缀，按 `startsWith` 匹配；先匹配到的规则生效。
+ */
+export const MOLANG_TLM_RESOLVE_RULES: readonly MolangVariableResolveRule[] = [
+  {name: 'has_backpack', type: 'replace', value: "(q.property('thlm:backpack_type')!=0)"},
+];

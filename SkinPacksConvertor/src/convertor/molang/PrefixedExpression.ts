@@ -17,7 +17,7 @@ export type ExpressionSegment = {
 export type YsmSegment = ExpressionSegment;
 
 /** 默认识别的根前缀集合。 */
-export const DEFAULT_EXPRESSION_PREFIXES: readonly string[] = ['ysm', 'v', 'variable'];
+export const DEFAULT_EXPRESSION_PREFIXES: readonly string[] = ['ysm', 'v', 'variable', 'tlm'];
 
 /** 前缀表达式替换时的相邻运算符上下文。 */
 export type PrefixedExpressionOperatorContext = {
@@ -137,15 +137,15 @@ export function containsPrefixedExpression(
 /**
  * 在字符串中查找所有指定前缀风格的字段链表达式，并交给 `replacer` 决定替换值。
  *
- * 当前匹配形态包括（以 `ysm` / `v` / `variable` 为例）：
- * - `ysm.xxx` / `v.xxx` / `variable.xxx`
- * - `ysm.xxx(...)` / `v.xxx(...)`
- * - `ysm.xxx(...).yyy` / `v.xxx(...).yyy`
+ * 当前匹配形态包括（以 `ysm` / `v` / `variable` / `tlm` 为例）：
+ * - `ysm.xxx` / `v.xxx` / `variable.xxx` / `tlm.xxx`
+ * - `ysm.xxx(...)` / `v.xxx(...)` / `tlm.xxx(...)`
+ * - `ysm.xxx(...).yyy` / `v.xxx(...).yyy` / `tlm.xxx(...).yyy`
  *
  * 该函数只负责“定位 + 截取 + 回调替换”，不关心业务替换规则。
  * 无候选前缀时会直接返回原串，调用方无需再写前缀预检。
  *
- * @param prefixes 根前缀列表，默认 `['ysm', 'v', 'variable']`；大小写不敏感。
+ * @param prefixes 根前缀列表，默认 `['ysm', 'v', 'variable', 'tlm']`；大小写不敏感。
  */
 export function replacePrefixedExpressions(
   source: string,

@@ -10,6 +10,7 @@ import {
   registerMolangVariableKeep,
   resolveVariableExpression,
 } from "../../molang/v/VariableResolvers";
+import {resolveTlmExpression} from "../../molang/tlm/TlmResolvers";
 import {APUtils} from "./APUtils";
 
 
@@ -117,6 +118,7 @@ let processMolang = (_molang: Molang, channel: AnimationBoneChannel) => {
  * 按根前缀分发替换规则。
  * - ysm：走既有 ysm resolver
  * - v / variable：白名单保留，其余按通道与运算符兜底
+ * - tlm：按规则替换，未命中时与 v 相同兜底
  */
 let handlePrefixedExpression = (
   expression: string,
@@ -129,6 +131,9 @@ let handlePrefixedExpression = (
   }
   if (prefix === 'v' || prefix === 'variable') {
     return resolveVariableExpression(expression, channel, ctx);
+  }
+  if (prefix === 'tlm') {
+    return resolveTlmExpression(expression, channel, ctx);
   }
   return expression;
 };
