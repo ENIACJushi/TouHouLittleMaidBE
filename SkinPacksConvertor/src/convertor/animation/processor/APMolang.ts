@@ -21,6 +21,11 @@ export const data = {
   func: async (animation: AnimationDefinition180) => {
     if (animation.bones) {
       for (let boneName in animation.bones) {
+        // Java 侧用名为 molang 的伪骨骼做变量副作用赋值，基岩版无对应骨骼，直接删除
+        if (boneName === 'molang' || boneName === 'Molang') {
+          delete animation.bones[boneName];
+          continue;
+        }
         let bone = animation.bones[boneName];
         bone.position = APUtils.forEachMolangOfChannel(bone.position, (m) => processMolang(m, 'position'));
         bone.rotation = APUtils.forEachMolangOfChannel(bone.rotation, (m) => processMolang(m, 'rotation'));
