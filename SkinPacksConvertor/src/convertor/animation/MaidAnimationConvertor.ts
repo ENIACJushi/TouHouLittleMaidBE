@@ -8,6 +8,50 @@ import {
   DEFAULT_ANIMATION_ID,
   ANIMATION_DEF_TEMPLATE,
 } from "../config";
+import {registerMolangVariableKeep} from "../molang/v/VariableResolvers";
+
+/**
+ * 从赋值表达式解析变量名：取第一个单字符 `=` 左侧，
+ * 且以 `v.` / `variable.` 开头时返回该左值（如 `v.bv`）。
+ */
+const parsePreAnimVariableName = (line: string): string | null => {
+  let assignIdx = -1;
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] !== '=') continue;
+    const prev = i > 0 ? line[i - 1] : '';
+    const next = i < line.length - 1 ? line[i + 1] : '';
+    if (prev !== '=' && next !== '=' && prev !== '!' && prev !== '<' && prev !== '>') {
+      assignIdx = i;
+      break;
+    }
+  }
+  if (assignIdx < 0) {
+    return null;
+  }
+  const lhs = line.slice(0, assignIdx).trim();
+  const lower = lhs.toLowerCase();
+  if (lower.startsWith('v.') || lower.startsWith('variable.')) {
+    return lhs;
+  }
+  return null;
+};
+
+/** 去重键：`variable.xxx` 与 `v.xxx` 视为同一变量 */
+const toPreAnimVarKey = (varName: string): string => {
+  return varName.toLowerCase().replace(/^variable\./, 'v.');
+};
+
+/** 收集模板中已注册的 pre_animation 变量（规范化小写键） */
+const collectRegisteredPreAnimVars = (preAnimation: string[]): Set<string> => {
+  const registered = new Set<string>();
+  for (const line of preAnimation) {
+    const varName = parsePreAnimVariableName(line);
+    if (varName) {
+      registered.add(toPreAnimVarKey(varName));
+    }
+  }
+  return registered;
+};
 
 /** 与 SkinPackConvertor 一致：皮肤包属性 = packId + BASE_INDEX */
 const BASE_INDEX = 1000;
@@ -75,7 +119,8 @@ export class MaidAnimationConvertor {
    *   - 将原 json 动画文件的固定动画名（即 AnimationTypes）转换为基岩版的唯一动画名；<namespace>.<文件名（去掉.json）>.<type>
    *   - 将动画添加到 AnimationDefinition.animations，生成唯一编号;
    *   - 将动画注册到 scripts - animate，使用动画变量 `v.animate_xxx = n` 控制展示;
-   *   - 汇总所有的动画展示条件，输出到 scripts - pre_animation
+   *   - 汇总所有的动画展示条件，输出到 scripts - pre_animation;
+   *   - 将 molang 伪骨骼提取的变量赋值并入 scripts - pre_animation（按动画开关门控）
    */
   async exportDefinition(): Promise<AnimationDefinition> {
     // 从模板创建基础动画定义
@@ -83,6 +128,8 @@ export class MaidAnimationConvertor {
 
     // 记录已注册到 animations / animate 的 shortKey，避免重复
     const registered = new Set<string>();
+    // 已在 pre_animation 注册初始化的变量字段名（小写），用于去重
+    const registeredPreAnimVars = collectRegisteredPreAnimVars(res.scripts.pre_animation);
     // packId -> modelId -> 动画类型 -> 导出编号（后解析的文件覆盖先解析的）
     const showConditions = new Map<number, Map<number, Partial<Record<AnimationTypes, number>>>>();
     // 动画列表
@@ -113,8 +160,22 @@ export class MaidAnimationConvertor {
               });
               if (!animationList[animationName]) {
                 // 若动画还未注册，则执行转换并注册
-                animationList[animationName] = await AnimationProcessor.getInstance()
+                const processed = await AnimationProcessor.getInstance()
                   .process(type, fileInfo.animation.animations[type]);
+                // molang 伪骨骼处理
+                if (processed.extractedScripts?.length) {
+                  // 单独注册变量初始化行
+                  for (const script of processed.extractedScripts) {
+                    this.registerPreAnimVariable(script, res.scripts.pre_animation, registeredPreAnimVars);
+                  }
+                  // 按动画开关写入赋值
+                  const body = processed.extractedScripts.join('');
+                  res.scripts.pre_animation.push(
+                    `(v.animate_${type}==${exportId}) ? { ${body} };`,
+                  );
+                  delete processed.extractedScripts;
+                }
+                animationList[animationName] = processed;
               }
             }
             // 记录该模型应播放的动画编号（同类型后文件覆盖）
@@ -154,6 +215,29 @@ export class MaidAnimationConvertor {
    */
   private buildAnimationName(fileInfo: AnimationFileInfo, type: AnimationTypes): string {
     return buildSkinPackAnimationName(fileInfo.id, type);
+  }
+
+  /**
+   * 在 pre_animation 中为变量单独注册初始化行 `v.xxx=1;`（已注册则跳过）。
+   */
+  private registerPreAnimVariable(
+    script: string,
+    preAnimation: string[],
+    registeredVars: Set<string>,
+  ): void {
+    const varName = parsePreAnimVariableName(script);
+    if (!varName) {
+      return;
+    }
+    const key = toPreAnimVarKey(varName);
+    if (registeredVars.has(key)) {
+      return;
+    }
+    registeredVars.add(key);
+    preAnimation.push(`${varName}=1;`);
+    // keep 白名单按字段名匹配
+    const field = varName.replace(/^(?:v|variable)\./i, '');
+    registerMolangVariableKeep(field);
   }
 
   /**

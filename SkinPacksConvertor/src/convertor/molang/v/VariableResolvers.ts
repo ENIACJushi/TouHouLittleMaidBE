@@ -8,6 +8,14 @@ import {MOLANG_VARIABLE_RESOLVE_RULES} from "../../config";
 /** 动画骨骼通道类型，用于决定未匹配变量的兜底恒等元。 */
 export type AnimationBoneChannel = 'position' | 'rotation' | 'scale';
 
+/** 运行期追加的 keep 字段（如 molang 伪骨骼定义的变量），小写。 */
+const dynamicKeepVariableFields = new Set<string>();
+
+/** 将字段名加入 keep 白名单（大小写不敏感）。 */
+export const registerMolangVariableKeep = (fieldName: string): void => {
+  dynamicKeepVariableFields.add(fieldName.toLowerCase());
+};
+
 /**
  * 乘除语境：左右相邻 token 任一侧为 `*` 或 `/`。
  * 此时未匹配变量应替换为乘除恒等元 `1`。
@@ -56,6 +64,9 @@ export const resolveVariableExpression = (
   // 仅一段字段名时才走规则；多段如 `v.tcos0.x` 走兜底。
   if (segments.length === 2) {
     const field = segments[1].name.toLowerCase();
+    if (dynamicKeepVariableFields.has(field)) {
+      return expression;
+    }
     for (const rule of MOLANG_VARIABLE_RESOLVE_RULES) {
       if (!field.startsWith(rule.name)) {
         continue;

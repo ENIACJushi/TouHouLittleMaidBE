@@ -1,4 +1,4 @@
-import {AnimationDefinition180, Molang} from "../types/AnimationSchema180";
+import {AnimationDefinition180, BoneAnimation, Molang} from "../types/AnimationSchema180";
 import {
   PrefixedExpressionOperatorContext,
   replacePrefixedExpressions,
@@ -7,6 +7,7 @@ import {MolangLexer, Token, TokenKind} from "../../molang/engin";
 import {resolveYsmExpression} from "../../molang/ysm/YsmResolvers";
 import {
   AnimationBoneChannel,
+  registerMolangVariableKeep,
   resolveVariableExpression,
 } from "../../molang/v/VariableResolvers";
 import {APUtils} from "./APUtils";
@@ -19,24 +20,71 @@ import {APUtils} from "./APUtils";
 export const data = {
   types: undefined, // 对所有动画均执行
   func: async (animation: AnimationDefinition180) => {
-    if (animation.bones) {
-      for (let boneName in animation.bones) {
-        // Java 侧用名为 molang 的伪骨骼做变量副作用赋值，基岩版无对应骨骼，直接删除
-        if (boneName === 'molang' || boneName === 'Molang') {
-          delete animation.bones[boneName];
-          continue;
-        }
-        let bone = animation.bones[boneName];
-        bone.position = APUtils.forEachMolangOfChannel(bone.position, (m) => processMolang(m, 'position'));
-        bone.rotation = APUtils.forEachMolangOfChannel(bone.rotation, (m) => processMolang(m, 'rotation'));
-        bone.scale = APUtils.forEachMolangOfChannel(bone.scale, (m) => processMolang(m, 'scale'));
+    if (!animation.bones) {
+      return;
+    }
+
+    // 第一遍：收集 molang 伪骨骼赋值，并提前加入 keep 白名单，供后续骨骼转换保留引用
+    for (const boneName of Object.keys(animation.bones)) {
+      if (boneName !== 'molang' && boneName !== 'Molang' && boneName !== 'molang2' && boneName !== 'Molang2') {
+        continue;
       }
+      const bone = animation.bones[boneName];
+      const scripts = collectMolangBoneScripts(bone);
+      if (scripts.length > 0) {
+        // 将赋值规则加入与 bones 平级的预留属性
+        if (!animation.extractedScripts) {
+          animation.extractedScripts = [];
+        }
+        animation.extractedScripts.push(...scripts);
+        for (const script of scripts) {
+          // 查找等号
+          const assignIdx = findSingleAssignIndex(script);
+          if (assignIdx < 0) {
+            continue;
+          }
+          const lhs = script.slice(0, assignIdx).trim();
+          const lower = lhs.toLowerCase();
+          if (!lower.startsWith('v.') && !lower.startsWith('variable.')) {
+            continue;
+          }
+          registerMolangVariableKeep(lhs.replace(/^(?:v|variable)\./i, ''));
+        }
+      }
+      delete animation.bones[boneName];
+    }
+
+    // 第二遍：普通骨骼转换
+    for (const boneName of Object.keys(animation.bones)) {
+      const bone = animation.bones[boneName];
+      bone.position = APUtils.forEachMolangOfChannel(bone.position, (m) => processMolang(m, 'position'));
+      bone.rotation = APUtils.forEachMolangOfChannel(bone.rotation, (m) => processMolang(m, 'rotation'));
+      bone.scale = APUtils.forEachMolangOfChannel(bone.scale, (m) => processMolang(m, 'scale'));
     }
     return;
   }
 };
 
+/**
+ * 定位第一个单字符赋值 `=` 的下标（排除 ==、!=、<=、>=）。
+ */
+const findSingleAssignIndex = (source: string): number => {
+  for (let i = 0; i < source.length; i++) {
+    if (source[i] !== '=') continue;
+    const prev = i > 0 ? source[i - 1] : '';
+    const next = i < source.length - 1 ? source[i + 1] : '';
+    if (prev !== '=' && next !== '=' && prev !== '!' && prev !== '<' && prev !== '>') {
+      return i;
+    }
+  }
+  return -1;
+};
 
+/** 是否为 `v.xxx` / `variable.xxx` 赋值目标 */
+const isVariableAssignTarget = (lhs: string): boolean => {
+  const lower = lhs.toLowerCase();
+  return lower.startsWith('v.') || lower.startsWith('variable.');
+};
 
 let processMolang = (_molang: Molang, channel: AnimationBoneChannel) => {
   if (typeof _molang === 'string') {
@@ -47,17 +95,10 @@ let processMolang = (_molang: Molang, channel: AnimationBoneChannel) => {
     }
     // 对于 "=" 只保留右值
     if (molang.includes('=')) {
-      for (let i = 0; i < molang.length; i++) {
-        if (molang[i] !== '=') continue;
-
-        const prev = i > 0 ? molang[i - 1] : '';
-        const next = i < molang.length - 1 ? molang[i + 1] : '';
-        const isSingleAssign = prev !== '=' && next !== '=' && prev !== '!' && prev !== '<' && prev !== '>';
-
-        if (isSingleAssign) {
-          const rightValue = molang.slice(i + 1).trim();
-          molang = rightValue || molang;
-        }
+      const assignIdx = findSingleAssignIndex(molang);
+      if (assignIdx >= 0) {
+        const rightValue = molang.slice(assignIdx + 1).trim();
+        molang = rightValue || molang;
       }
     }
     // 前缀字段链适配；候选前缀由 DEFAULT_EXPRESSION_PREFIXES 统一维护
@@ -188,4 +229,45 @@ const findNullCoalesceRhsEnd = (tokens: Token[], startIndex: number): number | n
     last = i;
   }
   return last;
+};
+
+///// Molang 伪骨骼解析 ///
+/**
+ * 将原始语句转为 scripts 条目。
+ *  一行可含多条以 `;` 分隔的赋值；左值保留，右值走普通 molang 转换。
+ */
+const convertAssignmentsToScripts = (source: string, channel: AnimationBoneChannel): string[] => {
+  const statements = source.split(';').map((s) => s.trim()).filter((s) => s.length > 0);
+  const scripts: string[] = [];
+  for (const statement of statements) {
+    const assignIdx = findSingleAssignIndex(statement);
+    if (assignIdx < 0) {
+      continue;
+    }
+    const lhs = statement.slice(0, assignIdx).trim();
+    const rhs = statement.slice(assignIdx + 1).trim();
+    if (!lhs || !rhs || !isVariableAssignTarget(lhs)) {
+      continue;
+    }
+    const convertedRhs = processMolang(rhs, channel);
+    scripts.push(`${lhs}=${convertedRhs};`);
+  }
+  return scripts;
+};
+
+/**
+ * 从 molang 伪骨骼各通道收集变量定义与赋值脚本。
+ */
+const collectMolangBoneScripts = (bone: BoneAnimation): string[] => {
+  const scripts: string[] = [];
+  const visit = (channel: AnimationBoneChannel) => (m: Molang): Molang => {
+    if (typeof m === 'string') {
+      scripts.push(...convertAssignmentsToScripts(m, channel));
+    }
+    return m;
+  };
+  APUtils.forEachMolangOfChannel(bone.position, visit('position'));
+  APUtils.forEachMolangOfChannel(bone.rotation, visit('rotation'));
+  APUtils.forEachMolangOfChannel(bone.scale, visit('scale'));
+  return scripts;
 };
