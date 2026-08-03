@@ -40,10 +40,10 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       `v.animate_pre_parallel5 = 0;`,
       `v.animate_pre_parallel6 = 0;`,
       `v.animate_pre_parallel7 = 0;`,
-      // 眨眼：每 100~200 次循环闭眼一次，持续 20 次循环
-      "v.ysm_blink_timer = (v.ysm_blink_timer ?? Math.random(100, 200)) - 1;",
-      "v.ysm_is_close_eyes = v.ysm_blink_timer <= 0 && v.ysm_blink_timer > -20;",
-      "v.ysm_blink_timer = v.ysm_blink_timer <= -20 ? Math.random(100, 200) : v.ysm_blink_timer;",
+      // 眨眼：下次闭眼时刻随机落在当前起 2s~4s，闭眼持续 0.15 秒
+      "v.ysm_blink_at = v.ysm_blink_at ?? (query.life_time + math.random(2.5, 4));",
+      "v.ysm_is_close_eyes = query.life_time >= v.ysm_blink_at && query.life_time < v.ysm_blink_at + 0.15;",
+      "v.ysm_blink_at = query.life_time >= v.ysm_blink_at + 0.15 ? (query.life_time + math.random(2, 4)) : v.ysm_blink_at;",
     ],
     should_update_bones_and_effects_offscreen: true,
     animate: [

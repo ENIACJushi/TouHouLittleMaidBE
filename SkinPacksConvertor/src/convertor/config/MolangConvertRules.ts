@@ -29,7 +29,7 @@ export const MOLANG_VARIABLE_RESOLVE_RULES: readonly MolangVariableResolveRule[]
   {name: 'player_size', type: 'replace', value: '1'}, // 大小固定为 1
   // ysm 适配变量
   {name: 'ysm_is_close_eyes', type: 'keep'}, // ysm 闭眼变量，ysm.is_close_eyes 将会引导至此
-  {name: 'ysm_blink_timer', type: 'keep'}, // 眨眼倒计时
+  {name: 'ysm_blink_at', type: 'keep'}, // 下次闭眼的 life_time 时刻
 ];
 
 /**

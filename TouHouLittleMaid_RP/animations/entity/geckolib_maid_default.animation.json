@@ -2011,21 +2011,13 @@
       "animation_length": 0.375,
       "bones": {
         "LeftEyebrow": {
-          "position": [
-            0,
-            "1 ? -1 : 0",
-            0
-          ]
+          "position": [0, "v.ysm_is_close_eyes ? -1 : 0", 0]
         },
         "RightEyebrow": {
-          "position": [
-            0,
-            "1 ? -1 : 0",
-            0
-          ]
+          "position": [0, "v.ysm_is_close_eyes ? -1 : 0", 0]
         },
         "Eyelid": {
-          "scale": "1 ? 0 : 1"
+          "scale": "v.ysm_is_close_eyes ? 0 : 1"
         },
         "long_h1": {
           "rotation": [
