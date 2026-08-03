@@ -54,7 +54,7 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       { "look_at_target": "!query.property('thlm:is_hug')" },
       { "hug": "!q.is_in_ui && query.property('thlm:is_hug')" },
 
-      { "blink" : "v.animate_blink === 0 && query.property('thlm:work') >= -1" },
+      { "blink" : "v.animate_blink == 0 && query.property('thlm:work') >= -1" },
       { "walk": "v.animate_walk == 0 && !query.property('thlm:is_sitting')" },
       { "beg": "v.animate_beg == 0 && query.is_interested" },
       { "sit": "v.animate_sit == 0 && !q.is_in_ui && query.property('thlm:is_sitting')" },

@@ -62,13 +62,28 @@ export const data = {
       }
     }
     ///// 处理 timeline /////
+    // timeline 节点为赋值语句（string 或 string[]），左值保留、右值走 processMolang
     if (animation.timeline) {
-      for (let timeNode in animation.timeline) {
-        let node = animation.timeline[timeNode];
+      for (const timeNode of Object.keys(animation.timeline)) {
+        const node = animation.timeline[timeNode];
+        if (Array.isArray(node)) {
+          animation.timeline[timeNode] = node.map((script) => convertTimelineAssignment(script));
+        } else if (typeof node === 'string') {
+          animation.timeline[timeNode] = convertTimelineAssignment(node);
+        }
       }
     }
     return;
   }
+};
+
+/**
+ * 转换 timeline 中的赋值语句。
+ * 与 Molang 伪骨骼一致：左值保留，右值走 processMolang；多条赋值写回为连续语句。
+ */
+const convertTimelineAssignment = (source: string): string => {
+  const scripts = convertAssignmentsToScripts(source, 'position');
+  return scripts.length > 0 ? scripts.join('') : source;
 };
 
 /**
