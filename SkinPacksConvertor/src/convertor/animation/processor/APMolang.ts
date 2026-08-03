@@ -21,46 +21,51 @@ import {APUtils} from "./APUtils";
 export const data = {
   types: undefined, // 对所有动画均执行
   func: async (animation: AnimationDefinition180) => {
-    if (!animation.bones) {
-      return;
-    }
-
-    // 第一遍：收集 molang 伪骨骼赋值，并提前加入 keep 白名单，供后续骨骼转换保留引用
-    for (const boneName of Object.keys(animation.bones)) {
-      if (boneName !== 'molang' && boneName !== 'Molang' && boneName !== 'molang2' && boneName !== 'Molang2') {
-        continue;
-      }
-      const bone = animation.bones[boneName];
-      const scripts = collectMolangBoneScripts(bone);
-      if (scripts.length > 0) {
-        // 将赋值规则加入与 bones 平级的预留属性
-        if (!animation.extractedScripts) {
-          animation.extractedScripts = [];
+    ///// 处理骨骼 /////
+    if (animation.bones) {
+      // 第一遍：收集 molang 伪骨骼赋值，并提前加入 keep 白名单，供后续骨骼转换保留引用
+      for (const boneName of Object.keys(animation.bones)) {
+        if (boneName !== 'molang' && boneName !== 'Molang' && boneName !== 'molang2' && boneName !== 'Molang2') {
+          continue;
         }
-        animation.extractedScripts.push(...scripts);
-        for (const script of scripts) {
-          // 查找等号
-          const assignIdx = findSingleAssignIndex(script);
-          if (assignIdx < 0) {
-            continue;
+        const bone = animation.bones[boneName];
+        const scripts = collectMolangBoneScripts(bone);
+        if (scripts.length > 0) {
+          // 将赋值规则加入与 bones 平级的预留属性
+          if (!animation.extractedScripts) {
+            animation.extractedScripts = [];
           }
-          const lhs = script.slice(0, assignIdx).trim();
-          const lower = lhs.toLowerCase();
-          if (!lower.startsWith('v.') && !lower.startsWith('variable.')) {
-            continue;
+          animation.extractedScripts.push(...scripts);
+          for (const script of scripts) {
+            // 查找等号
+            const assignIdx = findSingleAssignIndex(script);
+            if (assignIdx < 0) {
+              continue;
+            }
+            const lhs = script.slice(0, assignIdx).trim();
+            const lower = lhs.toLowerCase();
+            if (!lower.startsWith('v.') && !lower.startsWith('variable.')) {
+              continue;
+            }
+            registerMolangVariableKeep(lhs.replace(/^(?:v|variable)\./i, ''));
           }
-          registerMolangVariableKeep(lhs.replace(/^(?:v|variable)\./i, ''));
         }
+        delete animation.bones[boneName];
       }
-      delete animation.bones[boneName];
-    }
 
-    // 第二遍：普通骨骼转换
-    for (const boneName of Object.keys(animation.bones)) {
-      const bone = animation.bones[boneName];
-      bone.position = APUtils.forEachMolangOfChannel(bone.position, (m) => processMolang(m, 'position'));
-      bone.rotation = APUtils.forEachMolangOfChannel(bone.rotation, (m) => processMolang(m, 'rotation'));
-      bone.scale = APUtils.forEachMolangOfChannel(bone.scale, (m) => processMolang(m, 'scale'));
+      // 第二遍：普通骨骼转换
+      for (const boneName of Object.keys(animation.bones)) {
+        const bone = animation.bones[boneName];
+        bone.position = APUtils.forEachMolangOfChannel(bone.position, (m) => processMolang(m, 'position'));
+        bone.rotation = APUtils.forEachMolangOfChannel(bone.rotation, (m) => processMolang(m, 'rotation'));
+        bone.scale = APUtils.forEachMolangOfChannel(bone.scale, (m) => processMolang(m, 'scale'));
+      }
+    }
+    ///// 处理 timeline /////
+    if (animation.timeline) {
+      for (let timeNode in animation.timeline) {
+        let node = animation.timeline[timeNode];
+      }
     }
     return;
   }
@@ -116,9 +121,7 @@ let processMolang = (_molang: Molang, channel: AnimationBoneChannel) => {
 
 /**
  * 按根前缀分发替换规则。
- * - ysm：走既有 ysm resolver
- * - v / variable：白名单保留，其余按通道与运算符兜底
- * - tlm：按规则替换，未命中时与 v 相同兜底
+ * - ysm / v / variable / tlm：均按配置规则替换，未命中时按通道与运算符兜底
  */
 let handlePrefixedExpression = (
   expression: string,
@@ -127,7 +130,7 @@ let handlePrefixedExpression = (
   channel: AnimationBoneChannel,
 ): string => {
   if (prefix === 'ysm') {
-    return resolveYsmExpression(expression);
+    return resolveYsmExpression(expression, channel, ctx);
   }
   if (prefix === 'v' || prefix === 'variable') {
     return resolveVariableExpression(expression, channel, ctx);

@@ -24,6 +24,7 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       "v.biaoqing = 0;", // 表情当前未实现，置0
       // 默认使用主资源包默认动画（id 见 DEFAULT_ANIMATION_ID）
       "v.scale = 1;", // 缩放
+      `v.animate_blink = 1;`, // 眨眼动画，目前仅非 geck 模型会使用专门的眨眼动画 todo 为了便于测试，这里设为1了
       `v.animate_walk = 0;`,
       `v.animate_beg = 0;`,
       `v.animate_sit = 0;`,
@@ -39,6 +40,10 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       `v.animate_pre_parallel5 = 0;`,
       `v.animate_pre_parallel6 = 0;`,
       `v.animate_pre_parallel7 = 0;`,
+      // 眨眼：每 100~200 次循环闭眼一次，持续 20 次循环
+      "v.ysm_blink_timer = (v.ysm_blink_timer ?? Math.random(100, 200)) - 1;",
+      "v.ysm_is_close_eyes = v.ysm_blink_timer <= 0 && v.ysm_blink_timer > -20;",
+      "v.ysm_blink_timer = v.ysm_blink_timer <= -20 ? Math.random(100, 200) : v.ysm_blink_timer;",
     ],
     should_update_bones_and_effects_offscreen: true,
     animate: [
@@ -46,10 +51,10 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       "wing",
       "emote",
       { "statue_base": "(q.property('thlm:work') >= -4) && (q.property('thlm:work') <= -2)" },
-      { "blink" : "query.property('thlm:work') >= -1" },
       { "look_at_target": "!query.property('thlm:is_hug')" },
       { "hug": "!q.is_in_ui && query.property('thlm:is_hug')" },
 
+      { "blink" : "v.animate_blink === 0 && query.property('thlm:work') >= -1" },
       { "walk": "v.animate_walk == 0 && !query.property('thlm:is_sitting')" },
       { "beg": "v.animate_beg == 0 && query.is_interested" },
       { "sit": "v.animate_sit == 0 && !q.is_in_ui && query.property('thlm:is_sitting')" },
@@ -76,10 +81,10 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
     "wing": "animation.touhou_little_maid.basic.wing",
     "emote": "animation.touhou_little_maid.emote",
     "statue_base": "animation.touhou_little_maid.statue_base",
-    "blink": "animation.touhou_little_maid.basic.blink",
     "look_at_target": "animation.common.look_at_target",
     "hug": "animation.touhou_little_maid.maid.hug",
 
+    "blink": "animation.touhou_little_maid.basic.blink",
     "walk": "animation.touhou_little_maid.basic.walk",
     "beg": "animation.touhou_little_maid.maid.beg",
     "sit": "animation.touhou_little_maid.maid.sit",
