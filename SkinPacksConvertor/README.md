@@ -31,17 +31,24 @@
 - [x] 斯塔·柏隐形了 sta
 - [x] 年糕狐身体被隐藏 rice_cake_fox
 - [x] 精灵酒狐身体被隐藏 winefox_elf
+- [x] 精灵酒狐常态展示绿框 winefox_elf
+- [x] 幸存者酒狐常态展示狐形态 winefox_survivor
+- [x] 莫莫酒狐常态展示狐形态 winefox_momo
+- [x] 海螺狐常态展示攻击轨迹 hailuo
+- [x] 大酒狐常态展示办公椅 winefox_matured
+- [x] 魔法酒狐的魔法常态没有消失 winefox_magical
+- [x] 狐巫女坐下后会马上站起 foxmaid
 
-- [ ] 精灵酒狐常态展示绿框 winefox_elf
-- [ ] 幸存者酒狐常态展示狐形态 winefox_survivor
-- [ ] 莫莫酒狐常态展示狐形态 winefox_momo
-- [ ] 海螺狐常态展示攻击轨迹 hailuo
-- [ ] 大酒狐常态展示办公椅和伞 winefox_matured
-- [ ] 魔法酒狐的魔法常态没有消失 winefox_magical
+- [ ] 部分酒狐眼睛没了，可能需要解析 blink 动画
 
+【节点：发预览视频】
+
+- [ ] 大酒狐常态展示伞 winefox_matured
 - [ ] 宇航员酒狐总是处于彻底怒了的状态 winefox_astronaut
 - [ ] 莫莫酒狐大量模型变量报错 winefox_momo
 - [ ] 海螺狐大量模型变量报错 hailuo
+- [ ] 幸存者酒狐大量模型变量报错 winefox_survivor
+
 - [ ] geck hug 动画兼容
 
 低优先级：
