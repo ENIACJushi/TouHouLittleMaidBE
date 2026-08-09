@@ -2,6 +2,7 @@
 import { AnimationTypes } from "../types/AnimationTypes";
 import { AnimationDefinition180 } from "../types/AnimationSchema180";
 import { data as dataWalk } from "./APWalk";
+import { data as dataHug } from "./APHug";
 import { data as dataMolang } from "./APMolang";
 
 export type APFunc = (animation: AnimationDefinition180) => Promise<void>;
@@ -31,6 +32,7 @@ export class AnimationProcessor {
     };
     registerFunc(dataMolang);
     registerFunc(dataWalk);
+    registerFunc(dataHug);
   }
 
   /**

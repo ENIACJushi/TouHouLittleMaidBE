@@ -21,10 +21,20 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       "variable.emote_frame=Math.max(1, Math.mod( Math.floor(query.property('thlm:emote')/1000), 1000) );",
       "variable.emote_speed=Math.max(1, Math.floor(query.property('thlm:emote')/1000000) );",
 
+      ///// 状态变量 /////
+      // 眨眼：下次闭眼时刻随机落在当前起 2s~4s，闭眼持续 0.15 秒
+      "v.ysm_blink_at = v.ysm_blink_at ?? (query.life_time + math.random(2.5, 4));",
+      "v.ysm_is_close_eyes = query.life_time >= v.ysm_blink_at && query.life_time < v.ysm_blink_at + 0.15;",
+      "v.ysm_blink_at = query.life_time >= v.ysm_blink_at + 0.15 ? (query.life_time + math.random(2, 4)) : v.ysm_blink_at;",
       "v.biaoqing = 0;", // 表情当前未实现，置0
+      "v.tlm_is_hug = query.property('thlm:is_hug');", // 是否处于抱起状态
+      "v.tlm_is_sitting = query.property('thlm:is_sitting');", // 是否处于坐下状态
+
+      ///// 动画变量 /////
       // 默认使用主资源包默认动画（id 见 DEFAULT_ANIMATION_ID）
       "v.scale = 1;", // 缩放
       `v.animate_blink = 1;`, // 眨眼动画，目前仅非 geck 模型会使用专门的眨眼动画 todo 为了便于测试，这里设为1了
+      `v.animate_hug = 0;`,
       `v.animate_walk = 0;`,
       `v.animate_beg = 0;`,
       `v.animate_sit = 0;`,
@@ -40,10 +50,6 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       `v.animate_pre_parallel5 = 0;`,
       `v.animate_pre_parallel6 = 0;`,
       `v.animate_pre_parallel7 = 0;`,
-      // 眨眼：下次闭眼时刻随机落在当前起 2s~4s，闭眼持续 0.15 秒
-      "v.ysm_blink_at = v.ysm_blink_at ?? (query.life_time + math.random(2.5, 4));",
-      "v.ysm_is_close_eyes = query.life_time >= v.ysm_blink_at && query.life_time < v.ysm_blink_at + 0.15;",
-      "v.ysm_blink_at = query.life_time >= v.ysm_blink_at + 0.15 ? (query.life_time + math.random(2, 4)) : v.ysm_blink_at;",
     ],
     should_update_bones_and_effects_offscreen: true,
     animate: [
@@ -51,17 +57,19 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       "wing",
       "emote",
       { "statue_base": "(q.property('thlm:work') >= -4) && (q.property('thlm:work') <= -2)" },
-      { "look_at_target": "!query.property('thlm:is_hug')" },
-      { "hug": "!q.is_in_ui && query.property('thlm:is_hug')" },
-
+      { "look_at_target": "!v.tlm_is_hug" },
       { "blink" : "v.animate_blink == 0 && query.property('thlm:work') >= -1" },
-      { "walk": "v.animate_walk == 0 && !query.property('thlm:is_sitting')" },
+      // 非 gecko 默认动画
+      { "hug": "v.animate_hug == 0 && !q.is_in_ui && v.tlm_is_hug" },
+      { "walk": "v.animate_walk == 0 && !v.tlm_is_sitting" },
       { "beg": "v.animate_beg == 0 && query.is_interested" },
-      { "sit": "v.animate_sit == 0 && !q.is_in_ui && query.property('thlm:is_sitting')" },
+      { "sit": "v.animate_sit == 0 && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug" },
       // 默认动画由主资源包提供，命名与转换动画一致
-      { "walk_1": `v.animate_walk == ${DEFAULT_ANIMATION_ID} && !query.property('thlm:is_sitting')` },
+      { "hug_1": `v.animate_hug == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && v.tlm_is_hug` },
+      { "gecko_hug_base": `v.animate_hug != 0 && !q.is_in_ui && v.tlm_is_hug` },
+      { "walk_1": `v.animate_walk == ${DEFAULT_ANIMATION_ID} && !v.tlm_is_sitting` },
       { "beg_1": `v.animate_beg == ${DEFAULT_ANIMATION_ID} && query.is_interested` },
-      { "sit_1": `v.animate_sit == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && query.property('thlm:is_sitting')` },
+      { "sit_1": `v.animate_sit == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug` },
       { "parallel0_1": `v.animate_parallel0 == ${DEFAULT_ANIMATION_ID}` },
       { "parallel1_1": `v.animate_parallel1 == ${DEFAULT_ANIMATION_ID}` },
       { "parallel2_1": `v.animate_parallel2 == ${DEFAULT_ANIMATION_ID}` },
@@ -89,6 +97,8 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
     "beg": "animation.touhou_little_maid.maid.beg",
     "sit": "animation.touhou_little_maid.maid.sit",
     // 默认 walk/beg/sit：主资源包按 animation.tlm.skin_pack.<DEFAULT_ANIMATION_ID>.<type> 提供
+    "hug_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.hug),
+    "gecko_hug_base": "animation.touhou_little_maid.maid.hug_gecko_base", // 抵消鹦鹉座位偏移
     "walk_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.walk),
     "beg_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.beg),
     "sit_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.sit),

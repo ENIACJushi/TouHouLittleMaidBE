@@ -1,4 +1,3 @@
-import {AnimationTypes} from "./AnimationTypes";
 import {AnimationDefinition180} from "./AnimationSchema180";
 
 /**
@@ -9,6 +8,10 @@ export interface MaidAnimationFileSchema180 {
   animations: MaidAnimationListSchema180;
 }
 
+/**
+ * Java 动画列表：键多为 AnimationTypes 枚举值，
+ * 少数例外（如 hug → vehicle$minecraft:player）见 getAnimationSourceKey。
+ */
 export type MaidAnimationListSchema180 = {
-  [K in AnimationTypes]?: AnimationDefinition180;
-}
+  [key: string]: AnimationDefinition180 | undefined;
+};

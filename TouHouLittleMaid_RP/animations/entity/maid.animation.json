@@ -121,6 +121,14 @@
 					"rotation": [-5, 0, 0]
 				}
 			}
+		},
+		"animation.touhou_little_maid.maid.hug_gecko_base": {
+			"loop": true,
+			"bones": {
+				"Root": {
+					"position": [-6.4, -25.6, -1.6]
+				}
+			}
 		}
 	}
 }

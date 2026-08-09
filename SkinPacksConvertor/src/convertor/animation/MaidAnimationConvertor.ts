@@ -1,4 +1,4 @@
-import {AnimationTypes} from "./types/AnimationTypes";
+import {AnimationTypes, getAnimationSourceKey} from "./types/AnimationTypes";
 import {AnimationFileInfo} from "../resource_manager/AnimationManager";
 import {AnimationProcessor} from "./processor/AnimationProcessor";
 import {
@@ -61,9 +61,10 @@ const BASE_INDEX = 1000;
  *  （主条件 `v.animate_xxx == n` 之外）
  */
 const ANIMATE_EXTRA_CONDITION: Record<AnimationTypes, string> = {
-  [AnimationTypes.walk]: " && !query.property('thlm:is_sitting') && v.walk_process>0",
+  [AnimationTypes.hug]: " && !q.is_in_ui && v.tlm_is_hug",
+  [AnimationTypes.walk]: " && !v.tlm_is_sitting && v.walk_process>0",
   [AnimationTypes.beg]: " && query.is_interested",
-  [AnimationTypes.sit]: " && !q.is_in_ui && query.property('thlm:is_sitting')",
+  [AnimationTypes.sit]: " && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug", // 被抱起时不可播放坐下动画
   [AnimationTypes.parallel0]: "",
   [AnimationTypes.parallel1]: "",
   [AnimationTypes.parallel2]: "",
@@ -146,7 +147,9 @@ export class MaidAnimationConvertor {
           const exportId = fileInfo.id;
 
           for (const type of Object.values(AnimationTypes) as AnimationTypes[]) {
-            if (!animList[type]) {
+            const sourceKey = getAnimationSourceKey(type);
+            const sourceAnim = animList[sourceKey];
+            if (!sourceAnim) {
               continue;
             }
             const shortKey = `${type}_${exportId}`;
@@ -161,7 +164,7 @@ export class MaidAnimationConvertor {
               if (!animationList[animationName]) {
                 // 若动画还未注册，则执行转换并注册
                 const processed = await AnimationProcessor.getInstance()
-                  .process(type, fileInfo.animation.animations[type]);
+                  .process(type, sourceAnim);
                 // molang 伪骨骼处理
                 if (processed.extractedScripts?.length) {
                   // 单独注册变量初始化行

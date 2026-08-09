@@ -1,14 +1,16 @@
 
 /**
- * java 动画键名列表
+ * 动画类型（基岩侧短名 / v.animate_xxx）
  *
  * 添加一个动画解析的流程：
  * - 在 `AnimationTemplates.ts` - `ANIMATION_DEF_TEMPLATE` 的
  *    `scripts.pre_animation`、`scripts.animate`、`animations` 三处补充定义
  * - 在 `AnimationTypes` 补充枚举
  * - 在 `ANIMATE_EXTRA_CONDITION` 定义额外条件
+ * - 若 Java 源动画键名与枚举值不同，在 `ANIMATION_SOURCE_KEYS` 登记映射
  */
 export enum AnimationTypes {
+  hug = 'hug',
   walk = 'walk',
   beg = 'beg',
   sit = 'sit',
@@ -44,6 +46,19 @@ export enum AnimationTypes {
   // sleep = 'sleep',
   // game_win = 'game_win',
   // game_lost = 'game_lost',
+}
+
+/**
+ * Java 源动画 JSON 键名与 AnimationTypes 不一致时的映射。
+ * 未登记的类型默认使用枚举值本身作为源键名。
+ */
+const ANIMATION_SOURCE_KEYS: Partial<Record<AnimationTypes, string>> = {
+  [AnimationTypes.hug]: 'vehicle$minecraft:player',
+};
+
+/** 取 Java 动画文件中对应的键名 */
+export function getAnimationSourceKey(type: AnimationTypes): string {
+  return ANIMATION_SOURCE_KEYS[type] ?? type;
 }
 
 export enum AnimationConvertStrategy {

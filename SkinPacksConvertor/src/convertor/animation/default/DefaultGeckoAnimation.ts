@@ -8,6 +8,7 @@ import { AnimationTypes } from "../types/AnimationTypes";
 
 /** 默认动画涵盖的类型（主资源包按同名规则提供） */
 export const DEFAULT_ANIMATION_TYPES = [
+  AnimationTypes.hug,
   AnimationTypes.walk,
   AnimationTypes.beg,
   AnimationTypes.sit,

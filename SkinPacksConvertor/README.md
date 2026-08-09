@@ -38,18 +38,15 @@
 - [x] 大酒狐常态展示办公椅 winefox_matured
 - [x] 魔法酒狐的魔法常态没有消失 winefox_magical
 - [x] 狐巫女坐下后会马上站起 foxmaid
+- [x] 部分酒狐眼睛没了，可能需要解析 blink 动画
+- [x] geck hug 动画兼容
 
-- [ ] 部分酒狐眼睛没了，可能需要解析 blink 动画
-
-【节点：发预览视频】
-
+- [ ] 大正酒狐低血量模式错误显示了常态模型
 - [ ] 大酒狐常态展示伞 winefox_matured
 - [ ] 宇航员酒狐总是处于彻底怒了的状态 winefox_astronaut
 - [ ] 莫莫酒狐大量模型变量报错 winefox_momo
 - [ ] 海螺狐大量模型变量报错 hailuo
 - [ ] 幸存者酒狐大量模型变量报错 winefox_survivor
-
-- [ ] geck hug 动画兼容
 
 低优先级：
 - 模型单独展示描述和作者，目前没位置放，需要确定方案
