@@ -328,7 +328,7 @@
         "emote": "animation.touhou_little_maid.emote",
         "statue_base": "animation.touhou_little_maid.statue_base",
         "blink": "animation.touhou_little_maid.basic.blink",
-        "look_at_target": "animation.common.look_at_target",
+        "look_at_target": "animation.touhou_little_maid.maid.look_at_target",
         "hug": "animation.touhou_little_maid.maid.hug",
 
         "walk": "animation.touhou_little_maid.basic.walk",

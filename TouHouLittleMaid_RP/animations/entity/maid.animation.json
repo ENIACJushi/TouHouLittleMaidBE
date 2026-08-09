@@ -1,6 +1,18 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
+		"animation.touhou_little_maid.maid.look_at_target": {
+			"loop": true,
+			"bones": {
+				"head": {
+					"rotation": [
+						"query.target_x_rotation - this",
+						"query.target_y_rotation - this",
+						0.0
+					]
+				}
+			}
+		},
 		"animation.touhou_little_maid.statue_base": {
 			"loop": true,
 			"bones": {

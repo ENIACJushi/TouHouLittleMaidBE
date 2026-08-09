@@ -89,7 +89,7 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
     "wing": "animation.touhou_little_maid.basic.wing",
     "emote": "animation.touhou_little_maid.emote",
     "statue_base": "animation.touhou_little_maid.statue_base",
-    "look_at_target": "animation.common.look_at_target",
+    "look_at_target": "animation.touhou_little_maid.maid.look_at_target",
     "hug": "animation.touhou_little_maid.maid.hug",
 
     "blink": "animation.touhou_little_maid.basic.blink",
