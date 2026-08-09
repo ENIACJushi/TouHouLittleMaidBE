@@ -31,6 +31,8 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       "v.tlm_is_sitting = query.property('thlm:is_sitting');", // 是否处于坐下状态
       // sit/idle 自带眨眼关键帧时置 1，抑制 pre_parallel 的 molang 眨眼（对齐 Java main 覆盖）
       "v.tlm_suppress_molang_blink = 0;",
+      // 经验，预留
+      "v.exp = 0;",
 
       ///// 动画变量 /////
       // 默认使用主资源包默认动画（id 见 DEFAULT_ANIMATION_ID）
