@@ -12,6 +12,7 @@ export const DEFAULT_ANIMATION_TYPES = [
   AnimationTypes.walk,
   AnimationTypes.beg,
   AnimationTypes.sit,
+  AnimationTypes.idle,
 ] as const;
 
 /**

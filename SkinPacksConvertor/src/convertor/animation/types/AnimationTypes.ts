@@ -27,9 +27,10 @@ export enum AnimationTypes {
   pre_parallel6 = 'pre_parallel6',
   pre_parallel7 = 'pre_parallel7',
 
+  idle = 'idle',
+
   // 可实现对应状态，但暂未加入
   // swing_hand = 'swing_hand',
-  // idle = 'idle',
   // run = 'run',
   // jump = 'jump',
   // death = 'death',

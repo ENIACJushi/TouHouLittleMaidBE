@@ -77,8 +77,9 @@ const ANIMATE_EXTRA_CONDITION: Record<AnimationTypes, string> = {
   [AnimationTypes.pre_parallel5]: "",
   [AnimationTypes.pre_parallel6]: "",
   [AnimationTypes.pre_parallel7]: "",
+  // 对齐 Java Priority.LOWEST 兜底：更高优先级主状态（sit/hug/walk）都不匹配时播放
+  [AnimationTypes.idle]: " && !v.tlm_is_sitting && !v.tlm_is_hug && v.walk_process<=0",
   // [AnimationTypes.swing_hand]: "",
-  // [AnimationTypes.idle]: "",
   // [AnimationTypes.run]: "",
   // [AnimationTypes.jump]: "",
   // [AnimationTypes.death]: "",

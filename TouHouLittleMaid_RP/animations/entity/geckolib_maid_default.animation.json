@@ -2120,6 +2120,73 @@
         }
       }
     },
+    "animation.tlm.skin_pack.1.idle": {
+      "animation_length": 0.375,
+      "loop": true,
+      "bones": {
+        "Root": {
+          "rotation": [0, 0, 0],
+          "scale": 1
+        },
+        "UpBody": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "LeftArm": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "LeftForeArm": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "RightArm": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "RightForeArm": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "LeftLeg": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "LeftLowerLeg": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "LeftFoot": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "RightLeg": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "RightLowerLeg": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "RightFoot": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "AllBody": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0],
+          "scale": 1
+        },
+        "AllHead": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        },
+        "Head": {
+          "rotation": [0, 0, 0],
+          "position": [0, 0, 0]
+        }
+      }
+    },
     "animation.tlm.skin_pack.1.parallel0": {
       "loop": true
     },
