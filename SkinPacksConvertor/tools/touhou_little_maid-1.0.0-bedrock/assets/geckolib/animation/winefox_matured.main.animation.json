@@ -6093,9 +6093,6 @@
 				"Rightfist": {
 					"rotation": [0, -180, 0]
 				},
-				"LeftForeArm4": {
-					"position": [-1.8, 0.3, 7]
-				},
 				"UMBRELLA": {
 					"scale": 1
 				},
@@ -8654,9 +8651,6 @@
 				"Rightfist": {
 					"rotation": [0, -180, 0],
 					"position": [-7, 0, 0]
-				},
-				"LeftForeArm4": {
-					"position": [-1.8, 0.3, 7]
 				}
 			}
 		},
