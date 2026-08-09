@@ -84,6 +84,12 @@ export interface AnimationDefinition180 {
    */
   extractedScripts?: string[];
 
+  /**
+   * 从 pre_parallel 拆出的眼部骨骼动画；导出为独立动画，
+   * 仅在 !v.tlm_suppress_molang_blink 时播放。不写入原动画 json。
+   */
+  extractedEyeAnimation?: AnimationDefinition180;
+
   /** override calculated value and set animation length in seconds */
   animation_length?: number;
 }

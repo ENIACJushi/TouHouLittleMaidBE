@@ -1,6 +1,7 @@
 import {AnimationTypes, getAnimationSourceKey} from "./types/AnimationTypes";
 import {AnimationFileInfo} from "../resource_manager/AnimationManager";
 import {AnimationProcessor} from "./processor/AnimationProcessor";
+import {animationHasEyeBones} from "./processor/APPreParallelEyeGuard";
 import {
   buildSkinPackAnimationName,
 } from "./default/DefaultGeckoAnimation";
@@ -9,6 +10,12 @@ import {
   ANIMATION_DEF_TEMPLATE,
 } from "../config";
 import {registerMolangVariableKeep} from "../molang/v/VariableResolvers";
+
+/** 自带眨眼关键帧时，播放期间需抑制 pre_parallel molang 眨眼的主状态 */
+const MAIN_ANIM_EYE_GUARD_TYPES: readonly AnimationTypes[] = [
+  AnimationTypes.sit,
+  AnimationTypes.idle,
+];
 
 /**
  * 从赋值表达式解析变量名：取第一个单字符 `=` 左侧，
@@ -140,6 +147,11 @@ export class MaidAnimationConvertor {
     const showConditions = new Map<number, Map<number, Partial<Record<AnimationTypes, number>>>>();
     // 动画列表
     let animationList: Record<string, object> = {};
+    // sit/idle 导出 id → 是否含眼皮关键帧（用于抑制 molang 眨眼）
+    const mainAnimHasEyeBones = new Map<AnimationTypes, Set<number>>();
+    for (const type of MAIN_ANIM_EYE_GUARD_TYPES) {
+      mainAnimHasEyeBones.set(type, new Set());
+    }
 
     for (const [packId, models] of this.modelAnimation) {
       for (const [modelId, fileInfos] of models) {
@@ -156,6 +168,11 @@ export class MaidAnimationConvertor {
             const sourceAnim = animList[sourceKey];
             if (!sourceAnim) {
               continue;
+            }
+            // 记录会与 pre_parallel molang 眨眼抢眼皮通道的主动画
+            const eyeGuardIds = mainAnimHasEyeBones.get(type);
+            if (eyeGuardIds && animationHasEyeBones(sourceAnim)) {
+              eyeGuardIds.add(exportId);
             }
             const shortKey = `${type}_${exportId}`;
             // 注册唯一动画名与 animate 条件（同一动画文件只注册一次）
@@ -182,6 +199,18 @@ export class MaidAnimationConvertor {
                     `(v.animate_${type}==${exportId}) ? { ${body} };`,
                   );
                   delete processed.extractedScripts;
+                }
+                // pre_parallel 眼部骨骼：独立动画，sit/idle 自带眨眼时不播
+                if (processed.extractedEyeAnimation) {
+                  const eyeShortKey = `${type}_eye_${exportId}`;
+                  const eyeAnimName = buildSkinPackAnimationName(exportId, `${type}_eye`);
+                  res.animations[eyeShortKey] = eyeAnimName;
+                  res.scripts.animate.push({
+                    [eyeShortKey]:
+                      `v.animate_${type}==${exportId} && !v.tlm_suppress_molang_blink`,
+                  });
+                  animationList[eyeAnimName] = processed.extractedEyeAnimation;
+                  delete processed.extractedEyeAnimation;
                 }
                 animationList[animationName] = processed;
               }
@@ -211,6 +240,11 @@ export class MaidAnimationConvertor {
     );
     if (conditionMolang) {
       res.scripts.pre_animation.push(conditionMolang);
+    }
+    // 须在 animate_* 赋值之后：sit/idle 自带眨眼时抑制 molang 眨眼
+    const suppressMolang = this.buildSuppressMolangBlinkMolang(mainAnimHasEyeBones);
+    if (suppressMolang) {
+      res.scripts.pre_animation.push(suppressMolang);
     }
     // 汇总动画到 animationList
     res.animationList = animationList;
@@ -246,6 +280,30 @@ export class MaidAnimationConvertor {
     // keep 白名单按字段名匹配
     const field = varName.replace(/^(?:v|variable)\./i, '');
     registerMolangVariableKeep(field);
+  }
+
+  /**
+   * 当 sit/idle 导出动画含眼皮关键帧且实际在播时，置 v.tlm_suppress_molang_blink=1。
+   * 须接在 showCondition（赋值 v.animate_*）之后。
+   * 条件与 scripts.animate 额外条件对齐：v.animate_* 会被模型常驻赋值，不能只判断 id。
+   */
+  private buildSuppressMolangBlinkMolang(
+    mainAnimHasEyeBones: Map<AnimationTypes, Set<number>>,
+  ): string {
+    const clauses: string[] = [];
+    for (const type of MAIN_ANIM_EYE_GUARD_TYPES) {
+      const ids = mainAnimHasEyeBones.get(type);
+      if (!ids || ids.size === 0) {
+        continue;
+      }
+      const extra = ANIMATE_EXTRA_CONDITION[type] ?? '';
+      const idCheck = [...ids]
+        .sort((a, b) => a - b)
+        .map((id) => `(v.animate_${type}==${id}${extra})`)
+        .join('||');
+      clauses.push(`(${idCheck}) ? { v.tlm_suppress_molang_blink=1; };`);
+    }
+    return clauses.join('');
   }
 
   /**

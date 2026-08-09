@@ -32,6 +32,7 @@ export const MOLANG_VARIABLE_RESOLVE_RULES: readonly MolangVariableResolveRule[]
   {name: 'ysm_blink_at', type: 'keep'}, // 下次闭眼的 life_time 时刻
   // tlm 适配变量
   {name: 'tlm_is_sitting', type: 'keep'}, // tlm 坐下变量
+  {name: 'tlm_suppress_molang_blink', type: 'keep'}, // sit/idle 自带眨眼时抑制 pre_parallel molang 眨眼
 ];
 
 /**
