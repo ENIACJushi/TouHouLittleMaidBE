@@ -11,6 +11,7 @@ import {
   resolveVariableExpression,
 } from "../../molang/v/VariableResolvers";
 import {resolveTlmExpression} from "../../molang/tlm/TlmResolvers";
+import {convertJavaItemNameAnyQueries} from "../../molang/query/ItemQueryResolvers";
 import {APUtils} from "./APUtils";
 
 
@@ -126,6 +127,8 @@ let processMolang = (_molang: Molang, channel: AnimationBoneChannel) => {
     molang = replacePrefixedExpressions(molang, (expression, prefix, ctx) =>
       handlePrefixedExpression(expression, prefix, ctx, channel),
     );
+    // Java/YSM 手持物品 query → 基岩 slot + 完整物品 id
+    molang = convertJavaItemNameAnyQueries(molang);
     // 全部处理结束后：基岩版 `??` 左侧不能是数值，化简为左值
     molang = simplifyNumericNullCoalesce(molang);
 
