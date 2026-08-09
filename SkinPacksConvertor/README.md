@@ -42,11 +42,10 @@
 - [x] geck hug 动画兼容
 - [x] 大正酒狐低血量模式错误显示了常态模型
 - [x] 大酒狐常态展示伞 winefox_matured
-
-- [ ] 宇航员酒狐总是处于彻底怒了的状态 winefox_astronaut
-- [ ] 莫莫酒狐大量模型变量报错 winefox_momo
-- [ ] 海螺狐大量模型变量报错 hailuo
-- [ ] 幸存者酒狐大量模型变量报错 winefox_survivor
+- [x] 宇航员酒狐总是处于彻底怒了的状态 winefox_astronaut
+- [x] 莫莫酒狐大量模型变量报错 winefox_momo
+- [x] 海螺狐大量模型变量报错 hailuo
+- [x] 幸存者酒狐大量模型变量报错 winefox_survivor
 
 低优先级：
 - 模型单独展示描述和作者，目前没位置放，需要确定方案

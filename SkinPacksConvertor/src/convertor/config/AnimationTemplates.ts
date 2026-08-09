@@ -29,6 +29,7 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       "v.biaoqing = 0;", // 表情当前未实现，置0
       "v.tlm_is_hug = query.property('thlm:is_hug');", // 是否处于抱起状态
       "v.tlm_is_sitting = query.property('thlm:is_sitting');", // 是否处于坐下状态
+      "v.tlm_is_gecko = 0;", // 是否为 gecko 模型（gecko 模型在展示条件中覆写为 1）
       // sit/idle 自带眨眼关键帧时置 1，抑制 pre_parallel 的 molang 眨眼（对齐 Java main 覆盖）
       "v.tlm_suppress_molang_blink = 0;",
       // 经验，预留
@@ -37,7 +38,8 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       ///// 动画变量 /////
       // 默认使用主资源包默认动画（id 见 DEFAULT_ANIMATION_ID）
       "v.scale = 1;", // 缩放
-      `v.animate_blink = 1;`, // 眨眼动画，目前仅非 geck 模型会使用专门的眨眼动画 todo 为了便于测试，这里设为1了
+      // 眨眼动画开关；gecko 模型在展示条件中覆写为 0
+      `v.animate_blink = 1;`,
       `v.animate_hug = 0;`,
       `v.animate_walk = 0;`,
       `v.animate_beg = 0;`,

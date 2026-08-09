@@ -315,7 +315,7 @@ export class MaidAnimationConvertor {
     modelScale: Map<number, Map<number, number>>,
     modelIsGecko: Map<number, Map<number, boolean>>,
   ): string {
-    if (showConditions.size === 0 && modelScale.size === 0) {
+    if (showConditions.size === 0 && modelScale.size === 0 && modelIsGecko.size === 0) {
       return "";
     }
     let molang = `temp.pack=q.property('thlm:skin_pack');temp.model=q.variant;`;
@@ -323,6 +323,7 @@ export class MaidAnimationConvertor {
     const allPackIds = new Set<number>([
       ...showConditions.keys(),
       ...modelScale.keys(),
+      ...modelIsGecko.keys(),
     ]);
 
     for (const packId of allPackIds) {
@@ -333,6 +334,7 @@ export class MaidAnimationConvertor {
       const allModelIds = new Set<number>([
         ...(models?.keys() ?? []),
         ...(scales?.keys() ?? []),
+        ...(geckoFlags?.keys() ?? []),
       ]);
 
       let modelBlocks = "";
@@ -350,7 +352,9 @@ export class MaidAnimationConvertor {
 
         const scale = scales?.get(modelId);
         const scaleAssign = scale !== undefined ? `v.scale=${scale};` : "";
-        const assigns = `${scaleAssign}${animateAssigns}`;
+        // gecko：animate_blink 置 0，并标记 tlm_is_gecko
+        const geckoAssign = isGecko ? "v.animate_blink=0;v.tlm_is_gecko=1;" : "";
+        const assigns = `${scaleAssign}${animateAssigns}${geckoAssign}`;
 
         if (!assigns) {
           continue;
