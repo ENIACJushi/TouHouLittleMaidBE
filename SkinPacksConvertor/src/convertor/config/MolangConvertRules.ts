@@ -30,6 +30,8 @@ export const MOLANG_VARIABLE_RESOLVE_RULES: readonly MolangVariableResolveRule[]
   // ysm 适配变量
   {name: 'ysm_is_close_eyes', type: 'keep'}, // ysm 闭眼变量，ysm.is_close_eyes 将会引导至此
   {name: 'ysm_blink_at', type: 'keep'}, // 下次闭眼的 life_time 时刻
+  // tlm 适配变量
+  {name: 'tlm_is_sitting', type: 'keep'}, // tlm 坐下变量
 ];
 
 /**
@@ -42,6 +44,7 @@ export const MOLANG_VARIABLE_RESOLVE_RULES: readonly MolangVariableResolveRule[]
  */
 export const MOLANG_TLM_RESOLVE_RULES: readonly MolangVariableResolveRule[] = [
   {name: 'has_backpack', type: 'replace', value: "(q.property('thlm:backpack_type')!=0)"},
+  {name: 'is_sitting', type: 'replace', value: 'v.tlm_is_sitting'},
 ];
 
 /**
