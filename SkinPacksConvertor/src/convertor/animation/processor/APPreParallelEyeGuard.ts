@@ -4,6 +4,9 @@ import {AnimationTypes} from '../types/AnimationTypes';
 /** 与主动画眨眼冲突的眼部骨骼（睑/眉/瞳点） */
 const EYE_BONE_NAME_RE = /eyelid|eyebrow|eyedot/i;
 
+/** 眼部骨骼拆尽后的无操作占位骨骼，避免原动画变为不被允许的 `{}` */
+const PLACEHOLDER_BONE_NAME = 'tlm_placeholder';
+
 /**
  * 对齐 Java：main（sit/idle）覆盖同通道时，pre_parallel 的眼皮写入应消失。
  *
@@ -43,6 +46,10 @@ export const data = {
       anim_time_update: animation.anim_time_update,
       bones: eyeBones,
     };
+    // 眼部骨骼拆尽后 bones 为空时，原动画会变成无效的 {}，补占位骨骼
+    if (Object.keys(animation.bones).length === 0) {
+      animation.bones[PLACEHOLDER_BONE_NAME] = {};
+    }
   },
 };
 
