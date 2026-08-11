@@ -4,12 +4,15 @@ import {AnimationProcessor} from "./processor/AnimationProcessor";
 import {animationHasEyeBones} from "./processor/APPreParallelEyeGuard";
 import {
   buildSkinPackAnimationName,
+  DEFAULT_ANIMATION_TYPES,
+  DEFAULT_MAID_ANIMATION_SOURCE,
 } from "./default/DefaultGeckoAnimation";
 import {
   DEFAULT_ANIMATION_ID,
   ANIMATION_DEF_TEMPLATE,
 } from "../config";
 import {registerMolangVariableKeep} from "../molang/v/VariableResolvers";
+import { AnimationDefinition180 } from "./types/AnimationSchema180";
 
 /** 自带眨眼关键帧时，播放期间需抑制 pre_parallel molang 眨眼的主状态 */
 const MAIN_ANIM_EYE_GUARD_TYPES: readonly AnimationTypes[] = [
@@ -129,6 +132,7 @@ export class MaidAnimationConvertor {
 
   /**
    * 导出实体定义的动画信息
+   *   - 先将内置兜底源动画单独转换并写入 animationList（id = DEFAULT_ANIMATION_ID）；
    *   - 将原 json 动画文件的固定动画名（即 AnimationTypes）转换为基岩版的唯一动画名；<namespace>.<文件名（去掉.json）>.<type>
    *   - 将动画添加到 AnimationDefinition.animations，生成唯一编号;
    *   - 将动画注册到 scripts - animate，使用动画变量 `v.animate_xxx = n` 控制展示;
@@ -152,6 +156,14 @@ export class MaidAnimationConvertor {
     for (const type of MAIN_ANIM_EYE_GUARD_TYPES) {
       mainAnimHasEyeBones.set(type, new Set());
     }
+
+    // 先单独转换内置兜底源动画（DEFAULT_ANIMATION_ID），再处理皮肤包动画
+    await this.convertDefaultAnimations(
+      res,
+      animationList,
+      registeredPreAnimVars,
+      mainAnimHasEyeBones,
+    );
 
     for (const [packId, models] of this.modelAnimation) {
       for (const [modelId, fileInfos] of models) {
@@ -187,32 +199,15 @@ export class MaidAnimationConvertor {
                 // 若动画还未注册，则执行转换并注册
                 const processed = await AnimationProcessor.getInstance()
                   .process(type, sourceAnim);
-                // molang 伪骨骼处理
-                if (processed.extractedScripts?.length) {
-                  // 单独注册变量初始化行
-                  for (const script of processed.extractedScripts) {
-                    this.registerPreAnimVariable(script, res.scripts.pre_animation, registeredPreAnimVars);
-                  }
-                  // 按动画开关写入赋值
-                  const body = processed.extractedScripts.join('');
-                  res.scripts.pre_animation.push(
-                    `(v.animate_${type}==${exportId}) ? { ${body} };`,
-                  );
-                  delete processed.extractedScripts;
-                }
-                // pre_parallel 眼部骨骼：独立动画，sit/idle 自带眨眼时不播
-                if (processed.extractedEyeAnimation) {
-                  const eyeShortKey = `${type}_eye_${exportId}`;
-                  const eyeAnimName = buildSkinPackAnimationName(exportId, `${type}_eye`);
-                  res.animations[eyeShortKey] = eyeAnimName;
-                  res.scripts.animate.push({
-                    [eyeShortKey]:
-                      `v.animate_${type}==${exportId} && !v.tlm_suppress_molang_blink`,
-                  });
-                  animationList[eyeAnimName] = processed.extractedEyeAnimation;
-                  delete processed.extractedEyeAnimation;
-                }
-                animationList[animationName] = processed;
+                this.applyProcessedAnimation(
+                  type,
+                  exportId,
+                  animationName,
+                  processed,
+                  res,
+                  animationList,
+                  registeredPreAnimVars,
+                );
               }
             }
             // 记录该模型应播放的动画编号（同类型后文件覆盖）
@@ -250,6 +245,88 @@ export class MaidAnimationConvertor {
     res.animationList = animationList;
 
     return res;
+  }
+
+  /**
+   * 将内置兜底源动画（maid.animation.json）按 AnimationTypes 单独转换，
+   * 写入 animationList；模板中已预置 *_1 的 animations / animate 引用。
+   */
+  private async convertDefaultAnimations(
+    res: AnimationDefinition,
+    animationList: Record<string, object>,
+    registeredPreAnimVars: Set<string>,
+    mainAnimHasEyeBones: Map<AnimationTypes, Set<number>>,
+  ): Promise<void> {
+    const sourceAnims = DEFAULT_MAID_ANIMATION_SOURCE.animations;
+    const exportId = DEFAULT_ANIMATION_ID;
+
+    for (const type of DEFAULT_ANIMATION_TYPES) {
+      const sourceKey = getAnimationSourceKey(type);
+      const sourceAnim = sourceAnims[sourceKey];
+      if (!sourceAnim) {
+        continue;
+      }
+      // 深拷贝，避免处理器原地修改污染内置源模块
+      const cloned: AnimationDefinition180 = JSON.parse(JSON.stringify(sourceAnim));
+      const eyeGuardIds = mainAnimHasEyeBones.get(type);
+      if (eyeGuardIds && animationHasEyeBones(cloned)) {
+        eyeGuardIds.add(exportId);
+      }
+      const animationName = buildSkinPackAnimationName(exportId, type);
+      if (animationList[animationName]) {
+        continue;
+      }
+      const processed = await AnimationProcessor.getInstance().process(type, cloned);
+      this.applyProcessedAnimation(
+        type,
+        exportId,
+        animationName,
+        processed,
+        res,
+        animationList,
+        registeredPreAnimVars,
+      );
+    }
+  }
+
+  /**
+   * 将已处理动画写入列表，并处理 molang 伪骨骼 / 拆分出的眼部动画。
+   */
+  private applyProcessedAnimation(
+    type: AnimationTypes,
+    exportId: number,
+    animationName: string,
+    processed: AnimationDefinition180,
+    res: AnimationDefinition,
+    animationList: Record<string, object>,
+    registeredPreAnimVars: Set<string>,
+  ): void {
+    // molang 伪骨骼处理
+    if (processed.extractedScripts?.length) {
+      // 单独注册变量初始化行
+      for (const script of processed.extractedScripts) {
+        this.registerPreAnimVariable(script, res.scripts.pre_animation, registeredPreAnimVars);
+      }
+      // 按动画开关写入赋值
+      const body = processed.extractedScripts.join('');
+      res.scripts.pre_animation.push(
+        `(v.animate_${type}==${exportId}) ? { ${body} };`,
+      );
+      delete processed.extractedScripts;
+    }
+    // pre_parallel 眼部骨骼：独立动画，sit/idle 自带眨眼时不播
+    if (processed.extractedEyeAnimation) {
+      const eyeShortKey = `${type}_eye_${exportId}`;
+      const eyeAnimName = buildSkinPackAnimationName(exportId, `${type}_eye`);
+      res.animations[eyeShortKey] = eyeAnimName;
+      res.scripts.animate.push({
+        [eyeShortKey]:
+          `v.animate_${type}==${exportId} && !v.tlm_suppress_molang_blink`,
+      });
+      animationList[eyeAnimName] = processed.extractedEyeAnimation;
+      delete processed.extractedEyeAnimation;
+    }
+    animationList[animationName] = processed;
   }
 
   /**

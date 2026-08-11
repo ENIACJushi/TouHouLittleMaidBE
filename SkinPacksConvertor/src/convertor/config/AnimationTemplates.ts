@@ -36,7 +36,7 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       "v.exp = 0;",
 
       ///// 动画变量 /////
-      // 默认使用主资源包默认动画（id 见 DEFAULT_ANIMATION_ID）
+      // 默认使用转换器内置兜底动画（id 见 DEFAULT_ANIMATION_ID）
       "v.scale = 1;", // 缩放
       // 眨眼动画开关；gecko 模型在展示条件中覆写为 0
       `v.animate_blink = 1;`,
@@ -75,7 +75,7 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       { "walk": "v.animate_walk == 0 && !v.tlm_is_sitting && v.walk_process>0" },
       { "beg": "v.animate_beg == 0 && query.is_interested" },
       { "sit": "v.animate_sit == 0 && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug" },
-      // 默认动画由主资源包提供，命名与转换动画一致
+      // 兜底动画由转换器内置源文件转换生成，命名与皮肤包动画一致
       { "hug_1": `v.animate_hug == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && v.tlm_is_hug` },
       { "gecko_hug_base": `v.animate_hug != 0 && !q.is_in_ui && v.tlm_is_hug` },
       { "walk_1": `v.animate_walk == ${DEFAULT_ANIMATION_ID} && !v.tlm_is_sitting && v.walk_process>0` },
@@ -108,7 +108,7 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
     "walk": "animation.touhou_little_maid.basic.walk",
     "beg": "animation.touhou_little_maid.maid.beg",
     "sit": "animation.touhou_little_maid.maid.sit",
-    // 默认 walk/beg/sit：主资源包按 animation.tlm.skin_pack.<DEFAULT_ANIMATION_ID>.<type> 提供
+    // 兜底动画：由内置源文件转换，键名 animation.tlm.skin_pack.<DEFAULT_ANIMATION_ID>.<type>
     "hug_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.hug),
     "gecko_hug_base": "animation.touhou_little_maid.maid.hug_gecko_base", // 抵消鹦鹉座位偏移
     "walk_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.walk),
