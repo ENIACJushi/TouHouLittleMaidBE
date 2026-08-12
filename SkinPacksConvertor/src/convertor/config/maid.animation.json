@@ -2070,6 +2070,7 @@
 			}
 		},
 		"sit": {
+			"loop": true,
 			"animation_length": 0.375,
 			"bones": {
 				"Root": {
