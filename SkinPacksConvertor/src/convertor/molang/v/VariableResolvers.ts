@@ -2,6 +2,8 @@ import {TokenKind} from '../engin';
 import {
   parsePrefixedExpression,
   PrefixedExpressionOperatorContext,
+  PrefixedExpressionReplaceResult,
+  TAKE_NULL_COALESCE_RHS,
 } from '../PrefixedExpression';
 import {MOLANG_VARIABLE_RESOLVE_RULES} from "../../config";
 
@@ -30,13 +32,19 @@ const isMultiplicativeContext = (ctx: PrefixedExpressionOperatorContext): boolea
 /**
  * 按通道与运算符上下文，为未匹配的 `v.` / `variable.` 选择兜底值。
  *
+ * - 位于 `??` 左侧：返回 {@link TAKE_NULL_COALESCE_RHS}，由替换层丢弃左值与 `??`、保留右值
+ *   （例：`v.player_scale??1` → `1`，不会产生 `??1` 中间态）
  * - scale：一律 `0`
  * - position / rotation：乘除语境 → `1`，其它 → `0`
  */
 export const fallbackVariableValue = (
   channel: AnimationBoneChannel,
   ctx: PrefixedExpressionOperatorContext,
-): string => {
+): PrefixedExpressionReplaceResult => {
+  // 未匹配变量在 ?? 左侧：取空值合并右值，避免先写成 0 再破坏 ?? 语义
+  if (ctx.rightOperator === TokenKind.QUESQUES) {
+    return TAKE_NULL_COALESCE_RHS;
+  }
   if (channel === 'scale') {
     return '0';
   }
@@ -48,13 +56,13 @@ export const fallbackVariableValue = (
  *
  * - 命中规则且 `keep` → 原样保留
  * - 命中规则且 `replace` → 替换为指定值
- * - 未命中 → 按通道 + 相邻运算符兜底为 `0` / `1`
+ * - 未命中 → 按通道 + 相邻运算符兜底为 `0` / `1`，或取 `??` 右值
  */
 export const resolveVariableExpression = (
   expression: string,
   channel: AnimationBoneChannel,
   ctx: PrefixedExpressionOperatorContext,
-): string => {
+): PrefixedExpressionReplaceResult => {
   const segments = parsePrefixedExpression(expression);
   const root = segments[0]?.name.toLowerCase();
   if (root !== 'v' && root !== 'variable') {

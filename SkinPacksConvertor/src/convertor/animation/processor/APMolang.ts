@@ -1,6 +1,7 @@
 import {AnimationDefinition180, BoneAnimation, Molang} from "../types/AnimationSchema180";
 import {
   PrefixedExpressionOperatorContext,
+  PrefixedExpressionReplaceResult,
   replacePrefixedExpressions,
 } from "../../molang/PrefixedExpression";
 import {MolangLexer, Token, TokenKind} from "../../molang/engin";
@@ -149,7 +150,7 @@ let handlePrefixedExpression = (
   prefix: string,
   ctx: PrefixedExpressionOperatorContext,
   channel: AnimationBoneChannel,
-): string => {
+): PrefixedExpressionReplaceResult => {
   if (prefix === 'ysm') {
     return resolveYsmExpression(expression, channel, ctx);
   }
@@ -168,6 +169,9 @@ let handlePrefixedExpression = (
  * 基岩版限制 `??` 左侧必须是直接变量引用，不能是数值。
  * 对所有「左边是数值」的 `??` 表达式，直接化简为左边的值。
  * 例：`0??1` → `0`；`1??0` → `1`
+ *
+ * 未匹配变量在 `??` 左侧的情况已在 {@link replacePrefixedExpressions} 中直接取右值，
+ * 不会进入本函数的数值左值分支。
  */
 const simplifyNumericNullCoalesce = (source: string): string => {
   if (!source.includes('??')) {

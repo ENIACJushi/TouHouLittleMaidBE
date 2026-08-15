@@ -1,6 +1,7 @@
 import {
   parsePrefixedExpression,
   PrefixedExpressionOperatorContext,
+  PrefixedExpressionReplaceResult,
 } from '../PrefixedExpression';
 import {MOLANG_YSM_RESOLVE_RULES} from '../../config';
 import {
@@ -15,13 +16,13 @@ import {writeErrorLog} from '../../../common/Log';
  * 处理流程与 `v` / `variable` / `tlm` 一致：
  * - 命中规则且 `keep` → 原样保留
  * - 命中规则且 `replace` → 替换为指定值
- * - 未命中 → 按通道 + 相邻运算符兜底为 `0` / `1`
+ * - 未命中 → 按通道 + 相邻运算符兜底为 `0` / `1`，或取 `??` 右值
  */
 export const resolveYsmExpression = (
   expression: string,
   channel: AnimationBoneChannel,
   ctx: PrefixedExpressionOperatorContext,
-): string => {
+): PrefixedExpressionReplaceResult => {
   const segments = parsePrefixedExpression(expression);
   const root = segments[0]?.name.toLowerCase();
   if (root !== 'ysm') {

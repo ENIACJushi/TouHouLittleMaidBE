@@ -27,6 +27,21 @@ export type PrefixedExpressionOperatorContext = {
   rightOperator: TokenKind | null;
 };
 
+/**
+ * 前缀表达式替换结果。
+ * - `string`：用该文本替换匹配段
+ * - `{ takeNullCoalesceRhs: true }`：丢弃匹配段与紧随的 `??`，右值留在源码中继续扫描
+ *   （避免先写成空串产生 `??1` 这类非法中间态）
+ */
+export type PrefixedExpressionReplaceResult =
+  | string
+  | { readonly takeNullCoalesceRhs: true };
+
+/** 未匹配变量位于 `??` 左侧时的替换结果：取空值合并右值。 */
+export const TAKE_NULL_COALESCE_RHS: PrefixedExpressionReplaceResult = {
+  takeNullCoalesceRhs: true,
+};
+
 /** engin 词法器会把标识符统一归一化到 `value`，这里集中处理空值兜底。 */
 const getIdentifierName = (token: Token): string => token.value ?? '';
 
@@ -149,7 +164,11 @@ export function containsPrefixedExpression(
  */
 export function replacePrefixedExpressions(
   source: string,
-  replacer: (expression: string, prefix: string, ctx: PrefixedExpressionOperatorContext) => string,
+  replacer: (
+    expression: string,
+    prefix: string,
+    ctx: PrefixedExpressionOperatorContext,
+  ) => PrefixedExpressionReplaceResult,
   prefixes: readonly string[] = DEFAULT_EXPRESSION_PREFIXES,
 ): string {
   // 无候选前缀时跳过词法扫描，前缀列表变更后此处无需同步修改调用方。
@@ -187,7 +206,23 @@ export function replacePrefixedExpressions(
       rightOperator: rightToken?.kind ?? null,
     };
     result += source.slice(sourceIndex, start);
-    result += replacer(source.slice(start, end), matched.prefix, ctx);
+    const replaced = replacer(source.slice(start, end), matched.prefix, ctx);
+
+    // 未匹配变量在 ?? 左侧：丢弃左值与 ??，右值留在源码中继续扫描（可含其它前缀表达式）
+    if (typeof replaced !== 'string' && replaced.takeNullCoalesceRhs) {
+      if (rightToken?.kind === TokenKind.QUESQUES) {
+        sourceIndex = rightToken.end;
+        tokenIndex = matched.endIndex + 2;
+        continue;
+      }
+      // 防御：无紧随 ?? 时不应触发，保留原表达式
+      result += source.slice(start, end);
+      sourceIndex = end;
+      tokenIndex = matched.endIndex + 1;
+      continue;
+    }
+
+    result += replaced;
 
     // 第四步：推进源码游标和 token 游标，继续扫描后续可能存在的表达式。
     sourceIndex = end;
