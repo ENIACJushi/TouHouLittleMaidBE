@@ -2899,7 +2899,7 @@
 			"bones": {
 				"Root": {
 					"rotation": [0, -90, -115],
-					"position": [9, 20.5, 7]
+					"position": [9, 20.5, 9]
 				},
 				"AllBody": {
 					"rotation": [0, 0, 0]
