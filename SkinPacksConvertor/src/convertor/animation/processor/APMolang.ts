@@ -18,6 +18,11 @@ import {convertJavaHeadRotationQueries} from "../../molang/query/HeadRotationQue
 import {APUtils} from "./APUtils";
 
 
+/** 是否为 molang 伪骨骼：`molang` / `molang2` / `molang3` …（大小写不敏感） */
+const isMolangPseudoBone = (boneName: string): boolean => {
+  return /^molang\d*$/i.test(boneName);
+};
+
 /**
  * molang 处理
  *  java 版的molang格式无法被基岩版体系识别，需要额外处理，并删除不支持的部分
@@ -27,11 +32,15 @@ export const data = {
   func: async ({ animation }) => {
     ///// 处理骨骼 /////
     if (animation.bones) {
-      // 第一遍：收集 molang 伪骨骼赋值，并提前加入 keep 白名单，供后续骨骼转换保留引用
-      for (const boneName of Object.keys(animation.bones)) {
-        if (boneName !== 'molang' && boneName !== 'Molang' && boneName !== 'molang2' && boneName !== 'Molang2') {
-          continue;
-        }
+      const molangBoneNames = Object.keys(animation.bones).filter(isMolangPseudoBone);
+
+      // 第一遍：先登记所有伪骨骼赋值左值到 keep，避免 molang2 引用尚未处理的 molang3 变量时被兜底成 0/1
+      for (const boneName of molangBoneNames) {
+        registerMolangBoneAssignTargets(animation.bones[boneName]);
+      }
+
+      // 第二遍：收集赋值脚本并删除伪骨骼
+      for (const boneName of molangBoneNames) {
         const bone = animation.bones[boneName];
         const scripts = collectMolangBoneScripts(bone);
         if (scripts.length > 0) {
@@ -57,7 +66,7 @@ export const data = {
         delete animation.bones[boneName];
       }
 
-      // 第二遍：普通骨骼转换
+      // 第三遍：普通骨骼转换
       for (const boneName of Object.keys(animation.bones)) {
         const bone = animation.bones[boneName];
         bone.position = APUtils.forEachMolangOfChannel(bone.position, (m) => processMolang(m, 'position'));
@@ -268,6 +277,34 @@ const findNullCoalesceRhsEnd = (tokens: Token[], startIndex: number): number | n
 };
 
 ///// Molang 伪骨骼解析 ///
+/**
+ * 从伪骨骼通道中扫描 `v.` / `variable.` 赋值左值并登记 keep（不转换右值）。
+ * 用于在抽取脚本前建立白名单，保证跨伪骨骼引用（如 molang2 → molang3）不被兜底。
+ */
+const registerMolangBoneAssignTargets = (bone: BoneAnimation): void => {
+  const visit = (_channel: AnimationBoneChannel) => (m: Molang): Molang => {
+    if (typeof m !== 'string') {
+      return m;
+    }
+    const statements = m.split(';').map((s) => s.trim()).filter((s) => s.length > 0);
+    for (const statement of statements) {
+      const assignIdx = findSingleAssignIndex(statement);
+      if (assignIdx < 0) {
+        continue;
+      }
+      const lhs = statement.slice(0, assignIdx).trim();
+      if (!isVariableAssignTarget(lhs)) {
+        continue;
+      }
+      registerMolangVariableKeep(lhs.replace(/^(?:v|variable)\./i, ''));
+    }
+    return m;
+  };
+  APUtils.forEachMolangOfChannel(bone.position, visit('position'));
+  APUtils.forEachMolangOfChannel(bone.rotation, visit('rotation'));
+  APUtils.forEachMolangOfChannel(bone.scale, visit('scale'));
+};
+
 /**
  * 将原始语句转为 scripts 条目。
  *  一行可含多条以 `;` 分隔的赋值；左值保留，右值走普通 molang 转换。
