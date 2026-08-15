@@ -1,11 +1,27 @@
 
 ### 皮肤包转换器
 
+#### 构建
+
 皮肤包转换器使用 `webpack` 生成单文件网站，使用如下指令构建：
 
 ```npm run build:single```
 
 尽量不使用额外实体属性实现模型动画和语音包等功能，因为实体属性只能设32个。
+
+#### 测试
+
+使用如下指令快速得到测试包：
+
+```
+// 基础构建
+npm run test:convert
+// 带参数
+npm run test:convert --move --uuid=你的-uuid
+```
+
+- `--move`/`--m`：自动安装到 development_resource_packs（需要配置环境变量 MinecraftPath）
+- `--uuid=xxx`/`--u=xxx`：指定生成包的 uuid
 
 #### 计划
 
