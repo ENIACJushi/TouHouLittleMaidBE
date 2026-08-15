@@ -2899,7 +2899,7 @@
 			"bones": {
 				"Root": {
 					"rotation": [0, -90, -115],
-					"position": [9, 30.5, 11]
+					"position": [9, 20.5, 7]
 				},
 				"AllBody": {
 					"rotation": [0, 0, 0]
@@ -2957,6 +2957,9 @@
 				"clothe": {
 					"rotation": [-10, 0, 0],
 					"scale": [1.065, 1, 1]
+				},
+				"MTail": {
+					"position": [0, 1, 3]
 				}
 			}
 		}

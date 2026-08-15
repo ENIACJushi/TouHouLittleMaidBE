@@ -5992,7 +5992,7 @@
 				{
 					"name": "MTail",
 					"parent": "UpperBody",
-					"pivot": [0, 7, 0]
+					"pivot": [0, 7, 1]
 				},
 				{
 					"name": "Tail",

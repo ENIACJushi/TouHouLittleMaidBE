@@ -63,9 +63,9 @@ npm run test:convert --move --uuid=你的-uuid
 - [x] 海螺狐大量模型变量报错 hailuo
 - [x] 幸存者酒狐大量模型变量报错 winefox_survivor
 
-
-- [ ] 小酒狐抱起位置错误 抱起问题大概是因为java处理动画时pos会连同scale
-- [ ] 迷你酒狐抱起位置错误，骨骼位置异常 winefox_mini
+- [x] 迷你酒狐抱起位置错误，骨骼位置异常 winefox_mini
+  原因未知，有可能和upbody枢纽点位置有关，因为通过改枢纽点可以基本对上动画。目前采用给迷你酒狐补充专用抱起动画解决
+- [ ] 小酒狐抱起位置错误
 - [ ] 海螺螺抱起位置偏前
 
 - [ ] k螺诺亚消失了
