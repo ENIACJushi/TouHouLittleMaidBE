@@ -71,8 +71,9 @@ npm run test:convert --move --uuid=你的-uuid
 - [x] 年糕狐眼睛消失 rice_cake_fox
 - [x] 斯塔·柏眼睛消失 sta
 
-- [ ] 圣女酒狐报错 winefox_saint
+- [x] 圣女酒狐报错 winefox_saint
   Error: passing incorrect number of parameters to query.head_y_rotation - horses, zombie horses, skeleton horses, donkeys and mules require a clamp value in degrees while withers require a head-index [0..2] - otherwise value must be 0
+  head_y_rotation 需要提供参数，java版是直接调用的 → 无参 `query.head_y_rotation` / `q.head_y_rotation` 补为 `(0)`
 - [ ] 部分酒狐没有摇尾巴（店员酒狐）
 
 低优先级：
