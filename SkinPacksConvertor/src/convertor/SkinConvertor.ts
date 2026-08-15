@@ -89,6 +89,10 @@ export class SkinConvertor {
         }
         // 解析子模型包
         for (let [domain, info] of resource.getSubPacks()) {
+          if (!info.zipFolder.file('maid_model.json')) {
+            console.log(`Skip pack (缺少 maid_model.json): ${domain}`);
+            continue;
+          }
           count++;
           let packConvertor = new SkinPackConvertor({
             packId: count,

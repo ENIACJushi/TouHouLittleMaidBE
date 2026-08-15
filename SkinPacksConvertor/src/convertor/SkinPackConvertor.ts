@@ -54,6 +54,11 @@ export class SkinPackConvertor {
    */
   async handlePack() {
     console.log(`Process pack: ${this.packName}`);
+    // 椅子包、语音包等没有 maid_model.json，不是女仆皮肤子包，直接跳过
+    if (!this.input.file('maid_model.json')) {
+      console.log(`Skip pack (缺少 maid_model.json): ${this.packName}`);
+      return;
+    }
     // 确定模型包安全名称
     this.getPackName();
     // 移动女仆贴图
@@ -126,12 +131,13 @@ export class SkinPackConvertor {
     let pack_textures = this.res.textures.folder(this.packName);
     let tasks = [];
     this.input.folder(`textures/`).forEach((path, file) => {
-      if (path !== "maid_icon.png") {
-        tasks.push(async () => {
-          let content = await file.async("blob");
-          pack_textures.file(path, content);
-        });
+      if (file.dir || path === "maid_icon.png") {
+        return;
       }
+      tasks.push(async () => {
+        let content = await file.async("blob");
+        pack_textures.file(path, content);
+      });
     });
     for (let task of tasks) {
       await task();
@@ -145,6 +151,9 @@ export class SkinPackConvertor {
   async convertModels() {
     let tasks = [];
     this.input.folder(`models/`).forEach((path, file) => {
+      if (file.dir) {
+        return;
+      }
       tasks.push(this.convertModel(path, file));
     });
     for (let task of tasks) {

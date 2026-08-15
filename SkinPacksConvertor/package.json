@@ -3,13 +3,17 @@
   "version": "1.0.0",
   "scripts": {
     "build": "webpack",
-    "build:single": "npm run build && node ./scripts/build-single-html.js"
+    "build:single": "npm run build && node ./scripts/build-single-html.js",
+    "test:convert": "tsx test/convert.ts"
   },
   "dependencies": {
     "jszip": "^3.10.1"
   },
   "devDependencies": {
+    "@types/node": "^22.15.3",
+    "pngjs": "^7.0.0",
     "ts-loader": "^9.5.2",
+    "tsx": "^4.19.4",
     "typescript": "^5.9.2",
     "webpack": "^5.99.9",
     "webpack-cli": "^6.0.1"
