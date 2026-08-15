@@ -5,8 +5,9 @@ import { data as dataWalk } from "./APWalk";
 import { data as dataHug } from "./APHug";
 import { data as dataMolang } from "./APMolang";
 import { data as dataPreParallelEyeGuard } from "./APPreParallelEyeGuard";
+import { APContext, APFunc } from "./APTypes";
 
-export type APFunc = (animation: AnimationDefinition180) => Promise<void>;
+export type { APContext, APFunc } from "./APTypes";
 
 /**
  * 动画处理器
@@ -65,12 +66,20 @@ export class AnimationProcessor {
 
   /**
    * 接收动画，进行处理
+   * @param type 动画类型
+   * @param animation 动画定义
+   * @param scale 模型缩放，缺省为 1
    */
-  async process(type: AnimationTypes, animation: AnimationDefinition180): Promise<AnimationDefinition180> {
+  async process(
+    type: AnimationTypes,
+    animation: AnimationDefinition180,
+    scale: number = 1,
+  ): Promise<AnimationDefinition180> {
     let funcArr = this.processFunc.get(type);
     if (funcArr) {
+      const ctx: APContext = { animation, scale };
       for (let func of funcArr) {
-        await func(animation);
+        await func(ctx);
       }
     }
     return animation;

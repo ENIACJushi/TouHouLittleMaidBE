@@ -196,9 +196,10 @@ export class MaidAnimationConvertor {
                 [shortKey]: `v.animate_${type}==${exportId}${ANIMATE_EXTRA_CONDITION[type]}`,
               });
               if (!animationList[animationName]) {
-                // 若动画还未注册，则执行转换并注册
+                // 若动画还未注册，则执行转换并注册（传入该模型的缩放）
+                const scale = this.modelScale.get(packId)?.get(modelId) ?? 1;
                 const processed = await AnimationProcessor.getInstance()
-                  .process(type, sourceAnim);
+                  .process(type, sourceAnim, scale);
                 this.applyProcessedAnimation(
                   type,
                   exportId,

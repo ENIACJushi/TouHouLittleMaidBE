@@ -1,5 +1,4 @@
 import {
-  AnimationDefinition180,
   Molang,
   PositionChannel,
   RotationChannel,
@@ -17,7 +16,7 @@ export const data = {
   types: [
     AnimationTypes.walk,
   ],
-  func: async (animation: AnimationDefinition180) => {
+  func: async ({ animation }) => {
     if (animation.bones) {
       for (let boneName in animation.bones) {
         let bone = animation.bones[boneName];

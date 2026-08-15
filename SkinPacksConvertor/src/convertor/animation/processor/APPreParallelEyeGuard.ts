@@ -24,7 +24,7 @@ export const data = {
     AnimationTypes.pre_parallel6,
     AnimationTypes.pre_parallel7,
   ],
-  func: async (animation: AnimationDefinition180) => {
+  func: async ({ animation }) => {
     if (!animation.bones) {
       return;
     }

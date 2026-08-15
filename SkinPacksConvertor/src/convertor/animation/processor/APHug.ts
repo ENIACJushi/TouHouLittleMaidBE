@@ -1,35 +1,36 @@
-import {AnimationDefinition180, Molang} from "../types/AnimationSchema180";
+import {Molang} from "../types/AnimationSchema180";
 import {AnimationTypes} from "../types/AnimationTypes";
 import {APUtils} from "./APUtils";
+import {APContext} from "./APTypes";
 
 
 /**
- * hug 动画处理：根骨骼 position.z 取反（Java / 基岩坐标系差异）
+ * hug 动画处理：根骨骼 position.z 取反（Java / 基岩坐标系差异），并按模型缩放校正位移
  */
 export const data = {
   types: [
     AnimationTypes.hug,
   ],
-  func: async (animation: AnimationDefinition180) => {
+  func: async ({ animation, scale }: APContext) => {
     if (!animation.bones) {
       return;
     }
     for (const boneName of Object.keys(animation.bones)) {
       let lowerName = boneName.toLowerCase();
-      // if (!['root', 'AllBody'].includes(lowerName)) {
-      //   continue;
-      // }
+      if (!['root', 'allbody'].includes(lowerName)) {
+        continue;
+      }
       APUtils.forEachVec3MolangOfChannel(animation.bones[boneName].position, (vec3) => {
-        vec3[2] = negateMolang(vec3[2]);
+        vec3[2] = negateMolang(vec3[2], scale);
       });
     }
   },
 };
 
-/** 对 Molang 表达式乘 -1 */
-function negateMolang(value: Molang): Molang {
+/** 对 Molang 表达式乘 -1，并乘以模型缩放 */
+function negateMolang(value: Molang, scale: number = 1): Molang {
   if (typeof value === 'number') {
-    return -value;
+    return -value * scale;
   }
-  return `-(${value})`;
+  return `-${scale}*(${value})`;
 }

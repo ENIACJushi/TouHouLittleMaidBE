@@ -22,7 +22,7 @@ import {APUtils} from "./APUtils";
  */
 export const data = {
   types: undefined, // 对所有动画均执行
-  func: async (animation: AnimationDefinition180) => {
+  func: async ({ animation }) => {
     ///// 处理骨骼 /////
     if (animation.bones) {
       // 第一遍：收集 molang 伪骨骼赋值，并提前加入 keep 白名单，供后续骨骼转换保留引用
