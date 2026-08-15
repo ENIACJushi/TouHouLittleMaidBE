@@ -5,6 +5,7 @@ import { data as dataWalk } from "./APWalk";
 import { data as dataHug } from "./APHug";
 import { data as dataMolang } from "./APMolang";
 import { data as dataPreParallelEyeGuard } from "./APPreParallelEyeGuard";
+import { data as dataCatmullRomScaleHold } from "./APCatmullRomScaleHold";
 import { APContext, APFunc } from "./APTypes";
 
 export type { APContext, APFunc } from "./APTypes";
@@ -37,6 +38,8 @@ export class AnimationProcessor {
     registerFunc(dataHug);
     // 须在 APMolang 之后：对已转换的眼皮 molang 包 suppress?this
     registerFunc(dataPreParallelEyeGuard);
+    // 须在 EyeGuard 之后：同时处理原动画与 extractedEyeAnimation 的 scale hold
+    registerFunc(dataCatmullRomScaleHold);
   }
 
   /**

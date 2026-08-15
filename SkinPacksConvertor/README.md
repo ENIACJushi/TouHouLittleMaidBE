@@ -67,10 +67,12 @@ npm run test:convert --move --uuid=你的-uuid
 - [x] 小酒狐抱起位置错误 winefox_little
 - [x] 海螺螺抱起位置偏前 hailuo
 - [x] k螺诺亚消失了 kluonoa
-- [ ] 年糕狐眼睛消失 rice_cake_fox
-- [ ] 斯塔·柏眼睛消失 sta
+- [x] k螺诺亚眼睛消失 kluonoa
+- [x] 年糕狐眼睛消失 rice_cake_fox
+- [x] 斯塔·柏眼睛消失 sta
 
-- [ ] 圣女酒狐报错
+- [ ] 圣女酒狐报错 winefox_saint
+  Error: passing incorrect number of parameters to query.head_y_rotation - horses, zombie horses, skeleton horses, donkeys and mules require a clamp value in degrees while withers require a head-index [0..2] - otherwise value must be 0
 - [ ] 部分酒狐没有摇尾巴（店员酒狐）
 
 低优先级：
