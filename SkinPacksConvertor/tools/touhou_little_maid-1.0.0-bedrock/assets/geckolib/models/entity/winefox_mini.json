@@ -28,7 +28,7 @@
 				{
 					"name": "UpBody",
 					"parent": "AllBody",
-					"pivot": [-0.2, -1.17048, 0.03619]
+					"pivot": [-0.2, 3.82952, 0.03619]
 				},
 				{
 					"name": "MUpperBody",
