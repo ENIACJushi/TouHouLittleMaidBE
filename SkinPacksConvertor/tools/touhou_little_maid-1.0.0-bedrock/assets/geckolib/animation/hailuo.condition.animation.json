@@ -14,7 +14,7 @@
 				},
 				"Root": {
 					"rotation": [7.5, 0, 0],
-					"position": [2, 3, 10]
+					"position": [-2, -7, 6]
 				},
 				"AllBody": {
 					"rotation": [0, -90, -115],

@@ -18379,7 +18379,7 @@
 			"bones": {
 				"Root": {
 					"rotation": [0, -90, -115],
-					"position": [7, 18.5, 13]
+					"position": [7, 20.5, 13]
 				},
 				"AllBody": {
 					"rotation": [0, 0, 0]
