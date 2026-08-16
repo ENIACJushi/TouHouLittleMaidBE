@@ -124,7 +124,16 @@ npm run test:convert -- --move
 3. 游戏内 **重进世界 / 重选皮肤**（`initialize` 仅在实体加载时执行）。
 4. 观察店员酒狐 / 小酒狐尾巴；ContentLog 不应再刷大量 unknown `variable.l*`。
 
-## 7. 相关文件
+## 8. 特例：莫莫酒狐缺少弹簧 parallel
+
+`winefox_momo` 的 `pre_parallel2` 含 Tail（读 `v.L13_P*`）与 `molang2`（写 `v.tail*`），
+但源文件原先**没有** `parallel3/4` 弹簧 timeline（`parallel1` 被占用为低血量变身/眼皮）。
+
+Java 缺 key 时只会合并模组默认 `maid.animation.json` 的空 parallel，同样没有酒狐弹簧；
+因此在 **源文件** `tools/.../winefox_momo.main.animation.json` 中直接补上与小酒狐一致的
+`parallel3`（常数）+ `parallel4`（积分），不在转换器里做特例回填。
+
+## 9. 相关文件
 
 - `src/convertor/animation/processor/APMolang.ts`
 - `src/convertor/animation/MaidAnimationConvertor.ts`
@@ -134,3 +143,4 @@ npm run test:convert -- --move
 - `src/convertor/config/AnimationTemplates.ts`
 - `src/convertor/model/Templates.ts`
 - `src/convertor/animation/types/AnimationSchema180.ts`
+- `tools/.../geckolib/animation/winefox_momo.main.animation.json`（补 parallel3/4）
