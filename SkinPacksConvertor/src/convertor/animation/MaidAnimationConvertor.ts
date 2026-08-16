@@ -304,10 +304,34 @@ export class MaidAnimationConvertor {
       for (const script of processed.extractedScripts) {
         this.registerInitVariable(script, res.scripts.initialize, registeredScriptVars);
       }
-      const body = processed.extractedScripts.join('');
-      deferredGatedScripts.push(
-        `(v.animate_${type}==${exportId}) ? { ${body} };`,
-      );
+      // math.random 在 Java timeline 通常只在进入关键时掷一次；抽到 pre_animation 后若每帧执行会高频抖
+      const onceScripts: string[] = [];
+      const everyFrameScripts: string[] = [];
+      for (const script of processed.extractedScripts) {
+        if (/math\.random/i.test(script)) {
+          onceScripts.push(script);
+        } else {
+          everyFrameScripts.push(script);
+        }
+      }
+      if (everyFrameScripts.length > 0) {
+        deferredGatedScripts.push(
+          `(v.animate_${type}==${exportId}) ? { ${everyFrameScripts.join('')} };`,
+        );
+      }
+      if (onceScripts.length > 0) {
+        const flagVar = `v.tlm_anim_once_${type}_${exportId}`;
+        const flagKey = toVariableAssignKey(flagVar);
+        if (!registeredScriptVars.has(flagKey)) {
+          registeredScriptVars.add(flagKey);
+          res.scripts.initialize.push(`${flagVar}=0;`);
+        }
+        const extra = ANIMATE_EXTRA_CONDITION[type] ?? '';
+        const active = `v.animate_${type}==${exportId}${extra}`;
+        deferredGatedScripts.push(
+          `(${active}) ? { (${flagVar}==0) ? { ${onceScripts.join('')}${flagVar}=1; }; } : { ${flagVar}=0; };`,
+        );
+      }
       delete processed.extractedScripts;
     }
     // pre_parallel 眼部骨骼：独立动画，sit/idle 自带眨眼时不播

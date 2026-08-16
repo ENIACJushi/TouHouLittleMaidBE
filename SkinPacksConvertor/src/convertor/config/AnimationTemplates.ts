@@ -12,7 +12,10 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
     /**
      * 实体加载时执行一次。动态 keep 变量的默认 0 会追加到这里。
      */
-    initialize: [],
+    initialize: [
+      // 表情：默认 0；坐下等动画 timeline 的 random 只在进入时掷一次，故不在此每帧清零
+      "v.biaoqing=0;",
+    ],
     /**
      * 添加变量时，需要同步加进白名单 `src/convertor/molang/v/VariableResolvers.ts`
      */
@@ -32,7 +35,6 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       "v.ysm_blink_at = v.ysm_blink_at ?? (query.life_time + math.random(2.5, 4));",
       "v.ysm_is_close_eyes = query.life_time >= v.ysm_blink_at && query.life_time < v.ysm_blink_at + 0.15;",
       "v.ysm_blink_at = query.life_time >= v.ysm_blink_at + 0.15 ? (query.life_time + math.random(2, 4)) : v.ysm_blink_at;",
-      "v.biaoqing = 0;", // 表情当前未实现，置0
       "v.tlm_is_hug = query.property('thlm:is_hug');", // 是否处于抱起状态
       "v.tlm_is_sitting = query.property('thlm:is_sitting');", // 是否处于坐下状态
       "v.tlm_is_gecko = 0;", // 是否为 gecko 模型（gecko 模型在展示条件中覆写为 1）

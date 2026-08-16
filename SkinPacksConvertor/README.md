@@ -77,11 +77,11 @@ npm run test:convert --move --uuid=你的-uuid
   - 见 [docs/gecko-tail-physics-bedrock.md](docs/gecko-tail-physics-bedrock.md)：keep + timeline 抽到实体 scripts；默认 0 必须放 `initialize` 而非每帧 `pre_animation`
   - 莫莫酒狐：源文件补 parallel3/4 弹簧（与小酒狐一致），不改转换器
 - [x] 莫莫酒狐没有摇尾巴，状态固定在摇向一边
+- [x] 汉服酒狐坐下眉毛抖动：sit timeline 的 `v.biaoqing=math.random` 被抽到 pre_animation 后每帧重掷；改为进入坐下时只掷一次，且不再每帧把 biaoqing 清 0
+- [x] 纸板狐(2)坐下时眉毛抖动，表情不断变化
+- [x] 纸板狐(3)坐下时眉毛抖动，表情不断变化
 
-- [ ] 汉服酒狐坐下时眉毛抖动
 - [ ] 纸板狐(1)抱起位置偏高
-- [ ] 纸板狐(2)坐下时眉毛抖动，表情不断变化
-- [ ] 纸板狐(3)坐下时眉毛抖动，表情不断变化
 
 - [ ] 浮点精度取整处理
 - [ ] 头发会穿模，需要补充头部角度变量
