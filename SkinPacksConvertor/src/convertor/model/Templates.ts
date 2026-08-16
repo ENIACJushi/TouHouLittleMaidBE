@@ -95,6 +95,7 @@ export namespace TemplatesBE {
         render_controllers: string[],
         scripts?: {
           scale: string,
+          initialize?: string[],
           pre_animation: string[],
           should_update_bones_and_effects_offscreen: true,
           animate: (string | Record<string, string>)[],

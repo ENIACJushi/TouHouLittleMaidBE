@@ -70,11 +70,20 @@ npm run test:convert --move --uuid=你的-uuid
 - [x] k螺诺亚眼睛消失 kluonoa
 - [x] 年糕狐眼睛消失 rice_cake_fox
 - [x] 斯塔·柏眼睛消失 sta
-
 - [x] 圣女酒狐报错 winefox_saint
   Error: passing incorrect number of parameters to query.head_y_rotation - horses, zombie horses, skeleton horses, donkeys and mules require a clamp value in degrees while withers require a head-index [0..2] - otherwise value must be 0
   head_y_rotation 需要提供参数，java版是直接调用的 → 无参 `query.head_y_rotation` / `q.head_y_rotation` 补为 `(0)`
-- [ ] 部分酒狐没有摇尾巴（店员酒狐）
+- [x] 部分酒狐没有摇尾巴（店员酒狐）
+  - 见 [docs/gecko-tail-physics-bedrock.md](docs/gecko-tail-physics-bedrock.md)：keep + timeline 抽到实体 scripts；默认 0 必须放 `initialize` 而非每帧 `pre_animation`
+
+- [ ] 汉服酒狐坐下时眉毛抖动
+- [ ] 莫莫酒狐没有摇尾巴，状态固定在摇向一边
+- [ ] 纸板狐(1)抱起位置偏高
+- [ ] 纸板狐(2)坐下时眉毛抖动，表情不断变化
+- [ ] 纸板狐(3)坐下时眉毛抖动，表情不断变化
+- [ ] 浮点精度取整处理
+- [ ] 头发会穿模，需要补充头部角度变量
+- [ ] 打个变量列表，没转换的也先记下来
 
 低优先级：
 - 模型单独展示描述和作者，目前没位置放，需要确定方案

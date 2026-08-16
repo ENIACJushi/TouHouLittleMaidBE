@@ -79,8 +79,9 @@ export interface AnimationDefinition180 {
   timeline?: Record<string, string | string[]>;
 
   /**
-   * 处理过程中由 molang 伪骨骼提取的变量赋值，导出时并入实体 scripts.pre_animation。
-   *  不写入最终动画 json。
+   * 处理过程中由 molang 伪骨骼 / timeline 提取的变量赋值。
+   * 导出时：左值默认 0 → scripts.initialize；赋值体按动画门控 → scripts.pre_animation。
+   * 不写入最终动画 json。
    */
   extractedScripts?: string[];
 

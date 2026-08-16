@@ -18,6 +18,11 @@ export const registerMolangVariableKeep = (fieldName: string): void => {
   dynamicKeepVariableFields.add(fieldName.toLowerCase());
 };
 
+/** 取出转换过程中登记的全部 keep 字段（已小写）。 */
+export const getDynamicMolangKeepFields = (): string[] => {
+  return [...dynamicKeepVariableFields];
+};
+
 /**
  * 乘除语境：左右相邻 token 任一侧为 `*` 或 `/`。
  * 此时未匹配变量应替换为乘除恒等元 `1`。
@@ -80,6 +85,8 @@ export const resolveVariableExpression = (
         continue;
       }
       if (rule.type === 'keep') {
+        // 静态 keep 也会在导出时写入 initialize=0（如源动画未赋值却被引用的 v.tail5z）
+        registerMolangVariableKeep(field);
         return expression;
       }
       return rule.value;

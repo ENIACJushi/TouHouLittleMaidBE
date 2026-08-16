@@ -11,7 +11,11 @@ import {
   DEFAULT_ANIMATION_ID,
   ANIMATION_DEF_TEMPLATE,
 } from "../config";
-import {registerMolangVariableKeep} from "../molang/v/VariableResolvers";
+import {getDynamicMolangKeepFields} from "../molang/v/VariableResolvers";
+import {
+  parseVariableAssignLhs,
+  toVariableAssignKey,
+} from "../molang/MolangAssign";
 import { AnimationDefinition180 } from "./types/AnimationSchema180";
 
 /** 自带眨眼关键帧时，播放期间需抑制 pre_parallel molang 眨眼的主状态 */
@@ -20,48 +24,22 @@ const MAIN_ANIM_EYE_GUARD_TYPES: readonly AnimationTypes[] = [
   AnimationTypes.idle,
 ];
 
-/**
- * 从赋值表达式解析变量名：取第一个单字符 `=` 左侧，
- * 且以 `v.` / `variable.` 开头时返回该左值（如 `v.bv`）。
- */
-const parsePreAnimVariableName = (line: string): string | null => {
-  let assignIdx = -1;
-  for (let i = 0; i < line.length; i++) {
-    if (line[i] !== '=') continue;
-    const prev = i > 0 ? line[i - 1] : '';
-    const next = i < line.length - 1 ? line[i + 1] : '';
-    if (prev !== '=' && next !== '=' && prev !== '!' && prev !== '<' && prev !== '>') {
-      assignIdx = i;
-      break;
-    }
-  }
-  if (assignIdx < 0) {
-    return null;
-  }
-  const lhs = line.slice(0, assignIdx).trim();
-  const lower = lhs.toLowerCase();
-  if (lower.startsWith('v.') || lower.startsWith('variable.')) {
-    return lhs;
-  }
-  return null;
-};
-
-/** 去重键：`variable.xxx` 与 `v.xxx` 视为同一变量 */
-const toPreAnimVarKey = (varName: string): string => {
-  return varName.toLowerCase().replace(/^variable\./, 'v.');
-};
-
-/** 收集模板中已注册的 pre_animation 变量（规范化小写键） */
-const collectRegisteredPreAnimVars = (preAnimation: string[]): Set<string> => {
+/** 收集模板中已注册的变量（规范化小写键；含 initialize / pre_animation） */
+const collectRegisteredScriptVars = (lines: string[]): Set<string> => {
   const registered = new Set<string>();
-  for (const line of preAnimation) {
-    const varName = parsePreAnimVariableName(line);
+  for (const line of lines) {
+    const varName = parseVariableAssignLhs(line);
     if (varName) {
-      registered.add(toPreAnimVarKey(varName));
+      // `variable.xxx` 与 `v.xxx` 视为同一变量
+      registered.add(toVariableAssignKey(varName));
     }
   }
   return registered;
 };
+
+/** 门控脚本排序：pre_parallel 目标赋值优先于 parallel 弹簧积分 */
+const gatedScriptOrder = (script: string): number =>
+  script.includes('animate_pre_parallel') ? 0 : 1;
 
 /** 与 SkinPackConvertor 一致：皮肤包属性 = packId + BASE_INDEX */
 const BASE_INDEX = 1000;
@@ -137,7 +115,8 @@ export class MaidAnimationConvertor {
    *   - 将动画添加到 AnimationDefinition.animations，生成唯一编号;
    *   - 将动画注册到 scripts - animate，使用动画变量 `v.animate_xxx = n` 控制展示;
    *   - 汇总所有的动画展示条件，输出到 scripts - pre_animation;
-   *   - 将 molang 伪骨骼提取的变量赋值并入 scripts - pre_animation（按动画开关门控）
+   *   - 将 molang 伪骨骼提取的变量赋值并入 scripts - pre_animation（按动画开关门控）；
+   *   - 变量默认 0 写入 scripts.initialize（只跑一次，避免每帧清零弹簧状态）
    */
   async exportDefinition(): Promise<AnimationDefinition> {
     // 从模板创建基础动画定义
@@ -145,8 +124,11 @@ export class MaidAnimationConvertor {
 
     // 记录已注册到 animations / animate 的 shortKey，避免重复
     const registered = new Set<string>();
-    // 已在 pre_animation 注册初始化的变量字段名（小写），用于去重
-    const registeredPreAnimVars = collectRegisteredPreAnimVars(res.scripts.pre_animation);
+    // 已写入 initialize / 模板 scripts 的变量键（小写），用于去重
+    const registeredScriptVars = collectRegisteredScriptVars([
+      ...res.scripts.initialize,
+      ...res.scripts.pre_animation,
+    ]);
     // packId -> modelId -> 动画类型 -> 导出编号（后解析的文件覆盖先解析的）
     const showConditions = new Map<number, Map<number, Partial<Record<AnimationTypes, number>>>>();
     // 动画列表
@@ -156,13 +138,16 @@ export class MaidAnimationConvertor {
     for (const type of MAIN_ANIM_EYE_GUARD_TYPES) {
       mainAnimHasEyeBones.set(type, new Set());
     }
+    // 门控赋值须在 showCondition（写入 v.animate_*）之后执行，先暂存
+    const deferredGatedScripts: string[] = [];
 
     // 先单独转换内置兜底源动画（DEFAULT_ANIMATION_ID），再处理皮肤包动画
     await this.convertDefaultAnimations(
       res,
       animationList,
-      registeredPreAnimVars,
+      registeredScriptVars,
       mainAnimHasEyeBones,
+      deferredGatedScripts,
     );
 
     for (const [packId, models] of this.modelAnimation) {
@@ -207,7 +192,8 @@ export class MaidAnimationConvertor {
                   processed,
                   res,
                   animationList,
-                  registeredPreAnimVars,
+                  registeredScriptVars,
+                  deferredGatedScripts,
                 );
               }
             }
@@ -228,7 +214,12 @@ export class MaidAnimationConvertor {
       }
     }
 
-    // 汇总展示条件到 pre_animation
+    // 变量默认 0：必须写入 initialize（只跑一次）。若放进 pre_animation 会每帧清零弹簧状态
+    this.appendMissingKeepVarsToInitialize(
+      res.scripts.initialize,
+      registeredScriptVars,
+    );
+    // 汇总展示条件：写入 v.animate_*（门控脚本依赖这些值）
     const conditionMolang = this.buildShowConditionMolang(
       showConditions,
       this.modelScale,
@@ -237,6 +228,9 @@ export class MaidAnimationConvertor {
     if (conditionMolang) {
       res.scripts.pre_animation.push(conditionMolang);
     }
+    // pre_parallel 目标赋值优先于 parallel 弹簧积分（同帧内先更新 tail* 再积 L13）
+    deferredGatedScripts.sort((a, b) => gatedScriptOrder(a) - gatedScriptOrder(b));
+    res.scripts.pre_animation.push(...deferredGatedScripts);
     // 须在 animate_* 赋值之后：sit/idle 自带眨眼时抑制 molang 眨眼
     const suppressMolang = this.buildSuppressMolangBlinkMolang(mainAnimHasEyeBones);
     if (suppressMolang) {
@@ -255,8 +249,9 @@ export class MaidAnimationConvertor {
   private async convertDefaultAnimations(
     res: AnimationDefinition,
     animationList: Record<string, object>,
-    registeredPreAnimVars: Set<string>,
+    registeredScriptVars: Set<string>,
     mainAnimHasEyeBones: Map<AnimationTypes, Set<number>>,
+    deferredGatedScripts: string[],
   ): Promise<void> {
     const sourceAnims = DEFAULT_MAID_ANIMATION_SOURCE.animations;
     const exportId = DEFAULT_ANIMATION_ID;
@@ -285,7 +280,8 @@ export class MaidAnimationConvertor {
         processed,
         res,
         animationList,
-        registeredPreAnimVars,
+        registeredScriptVars,
+        deferredGatedScripts,
       );
     }
   }
@@ -300,17 +296,16 @@ export class MaidAnimationConvertor {
     processed: AnimationDefinition180,
     res: AnimationDefinition,
     animationList: Record<string, object>,
-    registeredPreAnimVars: Set<string>,
+    registeredScriptVars: Set<string>,
+    deferredGatedScripts: string[],
   ): void {
-    // molang 伪骨骼处理
+    // molang 伪骨骼 / timeline 赋值：变量先 initialize，门控体延后到 showCondition 之后
     if (processed.extractedScripts?.length) {
-      // 单独注册变量初始化行
       for (const script of processed.extractedScripts) {
-        this.registerPreAnimVariable(script, res.scripts.pre_animation, registeredPreAnimVars);
+        this.registerInitVariable(script, res.scripts.initialize, registeredScriptVars);
       }
-      // 按动画开关写入赋值
       const body = processed.extractedScripts.join('');
-      res.scripts.pre_animation.push(
+      deferredGatedScripts.push(
         `(v.animate_${type}==${exportId}) ? { ${body} };`,
       );
       delete processed.extractedScripts;
@@ -338,26 +333,42 @@ export class MaidAnimationConvertor {
   }
 
   /**
-   * 在 pre_animation 中为变量单独注册初始化行 `v.xxx=1;`（已注册则跳过）。
+   * 在 scripts.initialize 中注册 `v.xxx=0;`（实体加载时执行一次；已注册则跳过）。
+   * keep 登记由 APMolang 在转换期完成；此处只负责一次性默认值，切勿写入 pre_animation。
    */
-  private registerPreAnimVariable(
+  private registerInitVariable(
     script: string,
-    preAnimation: string[],
+    initialize: string[],
     registeredVars: Set<string>,
   ): void {
-    const varName = parsePreAnimVariableName(script);
+    const varName = parseVariableAssignLhs(script);
     if (!varName) {
       return;
     }
-    const key = toPreAnimVarKey(varName);
+    const key = toVariableAssignKey(varName);
     if (registeredVars.has(key)) {
       return;
     }
     registeredVars.add(key);
-    preAnimation.push(`${varName}=1;`);
-    // keep 白名单按字段名匹配
-    const field = varName.replace(/^(?:v|variable)\./i, '');
-    registerMolangVariableKeep(field);
+    initialize.push(`${varName}=0;`);
+  }
+
+  /**
+   * 将转换期 keep 白名单中尚未初始化的变量写入 scripts.initialize（默认 0）。
+   * 覆盖只在骨骼通道引用、未出现在 extractedScripts 左值的变量（如 v.tail5z）。
+   */
+  private appendMissingKeepVarsToInitialize(
+    initialize: string[],
+    registeredVars: Set<string>,
+  ): void {
+    for (const field of getDynamicMolangKeepFields().sort()) {
+      const key = `v.${field}`;
+      if (registeredVars.has(key)) {
+        continue;
+      }
+      registeredVars.add(key);
+      initialize.push(`${key}=0;`);
+    }
   }
 
   /**
@@ -464,6 +475,8 @@ export interface AnimationDefinition {
  */
 export interface AnimationScriptsDefinition {
   scale: string;
+  /** 实体加载时执行一次；弹簧状态等默认值必须放这里，不能放 pre_animation（否则每帧清零） */
+  initialize: string[];
   pre_animation: string[];
   should_update_bones_and_effects_offscreen: true;
   animate: (string | Record<string,string>)[];

@@ -10,11 +10,17 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
   scripts: {
     scale: "query.property('thlm:scale') * v.scale",
     /**
+     * 实体加载时执行一次。动态 keep 变量的默认 0 会追加到这里。
+     */
+    initialize: [],
+    /**
      * 添加变量时，需要同步加进白名单 `src/convertor/molang/v/VariableResolvers.ts`
      */
     pre_animation: [
       // 特殊行走动画属性
       "variable.walk_process = Math.min(1, Math.abs(query.modified_move_speed / 0.9));",
+      // 行走式中的除数；原版实体动画通常预置为 1（须在 tcos0 之前）
+      "variable.gliding_speed_value = 1;",
       // 基础动画
       "variable.tcos0 = (Math.cos(query.modified_distance_moved * 38.17) * query.modified_move_speed / variable.gliding_speed_value) * 28.65;",
       "variable.emote_index=Math.mod(query.property('thlm:emote'),1000);",

@@ -26,6 +26,8 @@ export const MOLANG_VARIABLE_RESOLVE_RULES: readonly MolangVariableResolveRule[]
   {name: 'scale', type: 'keep'},
   {name: 'biaoqing', type: 'keep'},
   {name: 'animate_', type: 'keep'},
+  // 尾巴弹簧目标：写在 pre_parallel 的 molang，却被更早转换的 parallel timeline 引用
+  {name: 'tail', type: 'keep'},
   {name: 'player_size', type: 'replace', value: '1'}, // 大小固定为 1
   // ysm 适配变量
   {name: 'ysm_is_close_eyes', type: 'keep'}, // ysm 闭眼变量，ysm.is_close_eyes 将会引导至此
