@@ -5,6 +5,7 @@ import {MolangLexer, Token, TokenKind} from '../engin';
  * 基岩要求：非马/凋灵等特殊实体时参数固定为 `0`。
  */
 const HEAD_ROTATION_QUERIES_NEED_ARG: ReadonlySet<string> = new Set([
+  'head_x_rotation',
   'head_y_rotation',
 ]);
 
@@ -21,12 +22,13 @@ type HeadRotationMatch = {
 /**
  * 将无参的头部旋转 query 补为固定参数 `0`。
  *
+ * - `query.head_x_rotation` → `query.head_x_rotation(0)`
  * - `query.head_y_rotation` → `query.head_y_rotation(0)`
- * - `q.head_y_rotation` → `q.head_y_rotation(0)`
- * - 已带括号（如 `query.head_y_rotation(0)`）时原样保留
+ * - `q.head_*_rotation` 同样处理
+ * - 已带括号（如 `query.head_x_rotation(0)`）时原样保留
  */
 export const convertJavaHeadRotationQueries = (source: string): string => {
-  if (!/head_y_rotation/i.test(source)) {
+  if (!/head_[xy]_rotation/i.test(source)) {
     return source;
   }
 
@@ -53,7 +55,7 @@ export const convertJavaHeadRotationQueries = (source: string): string => {
 };
 
 /**
- * 匹配无参的 `q.head_y_rotation` / `query.head_y_rotation`
+ * 匹配无参的 `q.head_x_rotation` / `query.head_y_rotation` 等
  */
 const matchHeadRotationQueryWithoutArgs = (
   source: string,

@@ -5,7 +5,7 @@
 /** variable 转换规则：按字段名前缀匹配。 */
 export type MolangVariableResolveRule =
   | {name: string; type: 'keep'}
-  | {name: string; type: 'replace'; value: string};
+  | {name: string; type: 'replace'; value: string; positionValue?: string};
 
 /**
  * `v.` / `variable.` 单段字段的转换规则
@@ -61,4 +61,8 @@ export const MOLANG_TLM_RESOLVE_RULES: readonly MolangVariableResolveRule[] = [
  */
 export const MOLANG_YSM_RESOLVE_RULES: readonly MolangVariableResolveRule[] = [
   {name: 'is_close_eyes', type: 'replace', value: 'v.ysm_is_close_eyes'},
+  // YSM 抬头为正；基岩 target_x 抬头为负。括号避免运算符粘连。
+  {name: 'head_pitch', type: 'replace', value: '(-query.target_x_rotation)'},
+  // 旋转：头-身 yaw。位置：瞳孔取反并限制余光，避免叠 look_at。
+  {name: 'head_yaw', type: 'replace', value: '(math.clamp(query.target_y_rotation,-80,80))', positionValue: '(-math.clamp(query.target_y_rotation,-30,30))'},
 ];

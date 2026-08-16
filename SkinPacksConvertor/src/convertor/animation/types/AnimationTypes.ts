@@ -66,6 +66,11 @@ export function getAnimationSourceKey(type: AnimationTypes): string {
   return ANIMATION_SOURCE_KEYS[type] ?? type;
 }
 
+/** 是否为常驻 parallel / pre_parallel（缺省时不应套默认动画，避免叠头发/眼睛） */
+export function isParallelAnimationType(type: AnimationTypes): boolean {
+  return type.startsWith('parallel') || type.startsWith('pre_parallel');
+}
+
 export enum AnimationConvertStrategy {
   ANIMATE = 0,
   ANIMATION_CONTROLLER = 1,

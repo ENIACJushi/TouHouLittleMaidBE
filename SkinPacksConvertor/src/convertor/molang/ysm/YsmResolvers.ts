@@ -39,6 +39,10 @@ export const resolveYsmExpression = (
       if (rule.type === 'keep') {
         return expression;
       }
+      // 匹配position专用的值
+      if (channel === 'position' && rule.positionValue !== undefined) {
+        return rule.positionValue;
+      }
       return rule.value;
     }
   }

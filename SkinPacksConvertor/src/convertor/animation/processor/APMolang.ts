@@ -118,7 +118,7 @@ export const data = {
  * 与 Molang 伪骨骼一致：左值保留，右值走 processMolang；多条赋值写回为连续语句。
  */
 const convertTimelineAssignment = (source: string): string => {
-  const scripts = convertAssignmentsToScripts(source, 'position');
+  const scripts = convertAssignmentsToScripts(source, 'script');
   return scripts.length > 0 ? scripts.join('') : source;
 };
 

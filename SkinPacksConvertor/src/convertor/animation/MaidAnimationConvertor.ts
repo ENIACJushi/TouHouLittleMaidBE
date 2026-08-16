@@ -1,4 +1,4 @@
-import {AnimationTypes, getAnimationSourceKey} from "./types/AnimationTypes";
+import {AnimationTypes, getAnimationSourceKey, isParallelAnimationType} from "./types/AnimationTypes";
 import {AnimationFileInfo} from "../resource_manager/AnimationManager";
 import {AnimationProcessor} from "./processor/AnimationProcessor";
 import {animationHasEyeBones} from "./processor/APPreParallelEyeGuard";
@@ -454,12 +454,21 @@ export class MaidAnimationConvertor {
       for (const modelId of allModelIds) {
         const types = models?.get(modelId);
         const isGecko = geckoFlags?.get(modelId) ?? false;
-        // 未定义动画时，geck 模型使用默认动画1，非geck模型使用默认动画0
+        // 未定义主动画时，gecko 用默认动画1，非 gecko 用 0。
+        // 已有自定义动画的 gecko：缺省的 parallel/pre_parallel 不要套默认1，
+        // 否则会把默认 LongHair/眼睛叠到模型自己的头发物理上。
         const defaultAnimId = isGecko ? DEFAULT_ANIMATION_ID : 0;
-        const needAnimateAssigns = types !== undefined || isGecko;
+        const hasCustomAnims = types !== undefined;
+        const needAnimateAssigns = hasCustomAnims || isGecko;
+        const fallbackAnimId = (type: AnimationTypes): number => {
+          if (hasCustomAnims && isGecko && isParallelAnimationType(type)) {
+            return 0;
+          }
+          return defaultAnimId;
+        };
         const animateAssigns = needAnimateAssigns
           ? (Object.values(AnimationTypes) as AnimationTypes[])
-            .map((type) => `v.animate_${type}=${types?.[type] ?? defaultAnimId};`)
+            .map((type) => `v.animate_${type}=${types?.[type] ?? fallbackAnimId(type)};`)
             .join("")
           : "";
 

@@ -86,9 +86,12 @@ npm run test:convert --move --uuid=你的-uuid
 - [x] 纸板狐(2)坐下时眉毛抖动，表情不断变化
 - [x] 纸板狐(3)坐下时眉毛抖动，表情不断变化
 - [x] 纸板狐(1)抱起位置偏高：使用专属抱起动画调整位置
+- [x] 浮点精度取整处理：不处理，会造成原本不闪的部分闪起来的问题
 
-- [ ] 浮点精度取整处理
-- [ ] 头发会穿模，需要补充头部角度变量
+- [x] 头发会穿模，需要补充头部角度变量
+  - `ysm.head_pitch` → `(-query.target_x_rotation)`（与 look_at_target 同源；YSM 抬头为正）
+  - `ysm.head_yaw` → `math.clamp(query.target_y_rotation,-80,80)`；position 取反并钳 ±30°
+  - gecko `look_at_target` 同时驱动 `head` / `Head`；自定义 gecko 缺省 parallel 不再套默认1，避免叠 LongHair
 - [ ] 打个变量列表，没转换的也先记下来
 
 低优先级：

@@ -10,6 +10,13 @@
 						"query.target_y_rotation - this",
 						0.0
 					]
+				},
+				"Head": {
+					"rotation": [
+						"query.target_x_rotation - this",
+						"query.target_y_rotation - this",
+						0.0
+					]
 				}
 			}
 		},

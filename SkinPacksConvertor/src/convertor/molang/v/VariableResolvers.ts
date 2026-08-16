@@ -8,7 +8,7 @@ import {
 import {MOLANG_VARIABLE_RESOLVE_RULES} from "../../config";
 
 /** 动画骨骼通道类型，用于决定未匹配变量的兜底恒等元。 */
-export type AnimationBoneChannel = 'position' | 'rotation' | 'scale';
+export type AnimationBoneChannel = 'position' | 'rotation' | 'scale' | 'script';
 
 /** 运行期追加的 keep 字段（如 molang 伪骨骼定义的变量），小写。 */
 const dynamicKeepVariableFields = new Set<string>();
@@ -40,7 +40,7 @@ const isMultiplicativeContext = (ctx: PrefixedExpressionOperatorContext): boolea
  * - 位于 `??` 左侧：返回 {@link TAKE_NULL_COALESCE_RHS}，由替换层丢弃左值与 `??`、保留右值
  *   （例：`v.player_scale??1` → `1`，不会产生 `??1` 中间态）
  * - scale：一律 `0`
- * - position / rotation：乘除语境 → `1`，其它 → `0`
+ * - position / rotation / script：乘除语境 → `1`，其它 → `0`
  */
 export const fallbackVariableValue = (
   channel: AnimationBoneChannel,
