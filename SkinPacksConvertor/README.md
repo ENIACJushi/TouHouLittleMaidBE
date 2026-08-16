@@ -39,7 +39,8 @@ npm run test:convert --move --uuid=你的-uuid
 - [x] 宇航员酒狐歪头时头发没歪：宇航员酒狐没有歪头动画（有头盔歪不动？），但是给了非 geck 模型的默认动画。
   - 给 geck 通用默认动画
 - [x] 战术酒狐的枪会不停变大 winefox_tactics: 在 scale 使用了未定义的变量 `v.roaming.gun` 和 `v.roaming.humujing`
-  - 将未定义且暂无对应解析的 `scale` 变量统一设为 0。不设为 1 是因为需要调整 scale 的模型骨骼通常是有隐藏状态的，相比可能导致异常或过于杂乱的显示状态，隐藏状态更可控。
+  - 将未定义且暂无对应解析的 `scale` 变量统一设为 0。
+    不设为 1 是因为需要调整 scale 的模型骨骼通常是有隐藏状态的，相比可能导致异常或过于杂乱的显示状态，隐藏状态更可控。
   - 这个 roaming 很奇怪，模型包里没有地方会设置 `roaming` 或 `gun` 的值，有可能是模组内置的变量。
 - [x] 年糕狐的茶杯会不停变大 rice_cake_fox
 - [x] 圣女酒狐头巾不断播放放大动画 winefox_saint
@@ -71,17 +72,20 @@ npm run test:convert --move --uuid=你的-uuid
 - [x] 年糕狐眼睛消失 rice_cake_fox
 - [x] 斯塔·柏眼睛消失 sta
 - [x] 圣女酒狐报错 winefox_saint
-  Error: passing incorrect number of parameters to query.head_y_rotation - horses, zombie horses, skeleton horses, donkeys and mules require a clamp value in degrees while withers require a head-index [0..2] - otherwise value must be 0
-  head_y_rotation 需要提供参数，java版是直接调用的 → 无参 `query.head_y_rotation` / `q.head_y_rotation` 补为 `(0)`
+  - Error: passing incorrect number of parameters to query.head_y_rotation - 
+    horses, zombie horses, skeleton horses, donkeys and mules require a clamp value in degrees while withers require
+    a head-index [0..2] - otherwise value must be 0
+  - head_y_rotation 需要提供参数，java版是直接调用的 → 无参 `query.head_y_rotation` / `q.head_y_rotation` 补为 `(0)`
 - [x] 部分酒狐没有摇尾巴（店员酒狐）
-  - 见 [docs/gecko-tail-physics-bedrock.md](docs/gecko-tail-physics-bedrock.md)：keep + timeline 抽到实体 scripts；默认 0 必须放 `initialize` 而非每帧 `pre_animation`
+  - 见 [docs/gecko-tail-physics-bedrock.md](docs/gecko-tail-physics-bedrock.md)：keep + timeline 抽到实体 scripts；
+    默认 0 必须放 `initialize` 而非每帧 `pre_animation`
   - 莫莫酒狐：源文件补 parallel3/4 弹簧（与小酒狐一致），不改转换器
 - [x] 莫莫酒狐没有摇尾巴，状态固定在摇向一边
-- [x] 汉服酒狐坐下眉毛抖动：sit timeline 的 `v.biaoqing=math.random` 被抽到 pre_animation 后每帧重掷；改为进入坐下时只掷一次，且不再每帧把 biaoqing 清 0
+- [x] 汉服酒狐坐下眉毛抖动：sit timeline 的 `v.biaoqing=math.random` 被抽到 pre_animation 后每帧重掷；改为进入坐下时只掷一次，
+      且不再每帧把 biaoqing 清 0
 - [x] 纸板狐(2)坐下时眉毛抖动，表情不断变化
 - [x] 纸板狐(3)坐下时眉毛抖动，表情不断变化
-
-- [ ] 纸板狐(1)抱起位置偏高
+- [x] 纸板狐(1)抱起位置偏高：使用专属抱起动画调整位置
 
 - [ ] 浮点精度取整处理
 - [ ] 头发会穿模，需要补充头部角度变量

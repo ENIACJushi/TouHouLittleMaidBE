@@ -21,7 +21,11 @@ export const data = {
         continue;
       }
       APUtils.forEachVec3MolangOfChannel(animation.bones[boneName].position, (vec3) => {
+        // z轴反转并缩放
         vec3[2] = negateMolang(vec3[2], scale);
+        // y、x轴仅缩放
+        vec3[1] = scaleMolang(vec3[1], scale);
+        vec3[0] = scaleMolang(vec3[0], scale);
       });
     }
   },
@@ -33,4 +37,12 @@ function negateMolang(value: Molang, scale: number = 1): Molang {
     return -value * scale;
   }
   return `-${scale}*(${value})`;
+}
+
+/** 对 Molang 表达式，乘以模型缩放 */
+function scaleMolang(value: Molang, scale: number = 1) {
+  if (typeof value === 'number') {
+    return value * scale;
+  }
+  return `${scale}*(${value})`;
 }
