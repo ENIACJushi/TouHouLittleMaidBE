@@ -5,6 +5,10 @@ const TAG = 'ResourceManager';
 /**
  * 模型包资源管理器
  * 注意：不同压缩包之间的 domain 不通用，这个管理器仅在一个压缩包下使用
+ *
+ * 支持两类布局：
+ * - TLM：`assets/<domain>/...`
+ * - YSM：模型包根目录（含 `ysm.json`），以模型 ID 作为 domain
  */
 export class ResourceManager {
   /** 子模型包 [domain（文件夹名）-信息] 映射 */
@@ -29,8 +33,27 @@ export class ResourceManager {
       console.log(TAG, `Add subpack, name=${domain}`);
       this.subPacks.set(domain, {
         zipFolder: input.folder(`assets/${domain}`),
+        kind: 'tlm',
       });
     }
+  }
+
+  /**
+   * 注册一个扁平 domain（用于 YSM：整个模型包根目录即资源根）。
+   * 若 domain 已存在则覆盖。
+   */
+  addFlatDomain(domain: string, zipFolder: JSZip, kind: SubPackKind = 'ysm') {
+    console.log(TAG, `Add flat subpack, name=${domain}, kind=${kind}`);
+    this.subPacks.set(domain, { zipFolder, kind });
+  }
+
+  /**
+   * 仅包含指定扁平 domain 的资源管理器（供 AnimationManager 按包切换使用）
+   */
+  static fromFlatDomain(domain: string, zipFolder: JSZip, kind: SubPackKind = 'ysm'): ResourceManager {
+    const rm = new ResourceManager(new JSZip());
+    rm.addFlatDomain(domain, zipFolder, kind);
+    return rm;
   }
 
   /**
@@ -65,14 +88,15 @@ export class ResourceManager {
   }
 }
 
+/** 子包类型：TLM 资源域或 YSM 模型包根 */
+export type SubPackKind = 'tlm' | 'ysm';
+
 /**
  * 子模型包资源
  */
 export interface SubPackResource {
   /** 该子模型包的 zip 文件夹 */
   zipFolder: JSZip;
-  /** 动画资源 */
-
-  /** 模型资源 */
-
+  /** 子包来源类型，缺省按 TLM 处理 */
+  kind?: SubPackKind;
 }

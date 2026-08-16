@@ -39,12 +39,18 @@ export class AnimationManager {
 
   /**
    * 绑定模型包对应的动画文件
+   * @returns 已绑定的动画文件信息（便于调用方做空桩填充等后处理）
    */
-  async bindModelAnimation(packId: number, modelId: number, animationFile: string, defaultNamespace: string) {
+  async bindModelAnimation(
+    packId: number,
+    modelId: number,
+    animationFile: string,
+    defaultNamespace: string,
+  ): Promise<AnimationFileInfo | undefined> {
     // 获取动画
     let animations = await this.getAnimationData(animationFile, defaultNamespace);
     if (!animations) {
-      return;
+      return undefined;
     }
     // 进行记录
     let pack = this.modelAnimation.get(packId);
@@ -58,6 +64,7 @@ export class AnimationManager {
       pack.set(modelId, modelAnimations);
     }
     modelAnimations.push(animations);
+    return animations;
   }
 
   /**

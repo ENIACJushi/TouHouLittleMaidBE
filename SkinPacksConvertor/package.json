@@ -4,7 +4,8 @@
   "scripts": {
     "build": "webpack",
     "build:single": "npm run build && node ./scripts/build-single-html.js",
-    "test:convert": "tsx test/convert.ts"
+    "test:convert": "tsx test/convert.ts",
+    "test:convert:ysm": "tsx test/convert.ts --ysm"
   },
   "dependencies": {
     "jszip": "^3.10.1"

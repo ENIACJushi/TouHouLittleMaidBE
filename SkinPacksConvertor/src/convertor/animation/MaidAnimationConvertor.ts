@@ -17,6 +17,7 @@ import {
   toVariableAssignKey,
 } from "../molang/MolangAssign";
 import { AnimationDefinition180 } from "./types/AnimationSchema180";
+import { isAnimationEmpty } from "./YsmLocomotionResolver";
 
 /** 自带眨眼关键帧时，播放期间需抑制 pre_parallel molang 眨眼的主状态 */
 const MAIN_ANIM_EYE_GUARD_TYPES: readonly AnimationTypes[] = [
@@ -163,7 +164,8 @@ export class MaidAnimationConvertor {
           for (const type of Object.values(AnimationTypes) as AnimationTypes[]) {
             const sourceKey = getAnimationSourceKey(type);
             const sourceAnim = animList[sourceKey];
-            if (!sourceAnim) {
+            // 空桩（YSM 常见 walk/idle 占位）视为缺失，避免覆盖默认动画
+            if (!sourceAnim || isAnimationEmpty(sourceAnim)) {
               continue;
             }
             // 记录会与 pre_parallel molang 眨眼抢眼皮通道的主动画

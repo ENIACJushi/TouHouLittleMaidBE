@@ -1,11 +1,14 @@
 /**
- * 测试脚本：调用皮肤转换器，将官方 Java 模型包转为基岩版皮肤包
+ * 测试脚本：调用皮肤转换器，将官方 Java 模型包 / YSM 模型包转为基岩版皮肤包
  *
- * 源目录：tools/touhou_little_maid-1.0.0-bedrock
+ * 源目录：
+ *   TLM 默认：tools/touhou_little_maid-1.0.0-bedrock
+ *   YSM：仓库 .ref/koishi（npm run test:convert -- --ysm）
  * 输出：test/output/TLM_MaidSkinPack/ 与 test/output/TLM_MaidSkinPack.mcpack
  *
  * 运行：
  *   npm run test:convert
+ *   npm run test:convert -- --ysm
  *   npm run test:convert -m
  *   npm run test:convert --move
  *   npm run test:convert --uuid=<uuid>
@@ -14,6 +17,7 @@
  *   -u / --uuid  指定资源包 UUID（不传则使用内置测试 UUID；npm 传参需用等号，如 --uuid=xxx）
  *   -m / --move  同步到 %MinecraftPath%\development_resource_packs\TLM_MaidSkinPack
  *                目标目录已有文件时，先删除 manifest.json 以外的内容，且不覆盖 manifest.json
+ *   --ysm        使用 .ref/koishi 作为 YSM 样例包（zip 引入）
  */
 import './node-polyfill';
 import * as fs from 'fs/promises';
@@ -31,10 +35,12 @@ const MANIFEST_FILE = 'manifest.json';
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(testDir, '..');
+const repoRoot = path.resolve(projectRoot, '..');
 
 interface ConvertArgs {
   uuid: string;
   moveToMinecraft: boolean;
+  useYsm: boolean;
 }
 
 /**
@@ -60,6 +66,7 @@ function npmConfigValue(...names: string[]): string | undefined {
  * 解析命令行与 npm 传参：
  *   -m / --move → 安装开关
  *   -u / --uuid → UUID（npm 侧需写成 -u=xxx / --uuid=xxx）
+ *   --ysm → 使用 YSM 样例包
  */
 function parseArgs(argv: string[]): ConvertArgs {
   // npm run test:convert --move → npm_config_move=true
@@ -68,11 +75,16 @@ function parseArgs(argv: string[]): ConvertArgs {
   // npm run test:convert --uuid=xxx → npm_config_uuid
   // npm run test:convert -u=xxx     → npm_config_u
   let uuid = npmConfigValue('uuid', 'u') ?? TEST_UUID;
+  let useYsm = npmConfigEnabled('ysm');
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '-m' || arg === '--move') {
       moveToMinecraft = true;
+      continue;
+    }
+    if (arg === '--ysm') {
+      useYsm = true;
       continue;
     }
     if (arg === '-u' || arg === '--uuid') {
@@ -97,7 +109,7 @@ function parseArgs(argv: string[]): ConvertArgs {
     }
     throw new Error(`未知参数: ${arg}（UUID 请使用 -u= / --uuid=）`);
   }
-  return { uuid, moveToMinecraft };
+  return { uuid, moveToMinecraft, useYsm };
 }
 
 function resolveMinecraftPackDir(): string {
@@ -196,10 +208,13 @@ async function writeZipToDir(zipBuffer: Buffer, outDir: string) {
 }
 
 async function main() {
-  const { uuid, moveToMinecraft } = parseArgs(process.argv.slice(2));
+  const { uuid, moveToMinecraft, useYsm } = parseArgs(process.argv.slice(2));
   const minecraftPackDir = moveToMinecraft ? resolveMinecraftPackDir() : '';
 
-  const sourceDir = path.join(projectRoot, 'tools', 'touhou_little_maid-1.0.0-bedrock');
+  const sourceDir = useYsm
+    ? path.join(repoRoot, '.ref', 'koishi')
+    : path.join(projectRoot, 'tools', 'touhou_little_maid-1.0.0-bedrock');
+  const zipName = useYsm ? 'koishi.zip' : 'touhou_little_maid-1.0.0-bedrock.zip';
   const outputRoot = path.join(testDir, 'output');
   const packDir = path.join(outputRoot, PACK_FOLDER_NAME);
   const mcpackPath = path.join(outputRoot, `${PACK_FOLDER_NAME}.mcpack`);
@@ -209,6 +224,7 @@ async function main() {
     throw new Error(`源目录不存在: ${sourceDir}`);
   }
 
+  console.log(`模式: ${useYsm ? 'YSM' : 'TLM'}`);
   console.log(`源目录: ${sourceDir}`);
   console.log(`UUID: ${uuid}`);
   if (moveToMinecraft) {
@@ -217,7 +233,7 @@ async function main() {
   console.log('正在打包源模型包...');
   const packBuffer = await zipFolder(sourceDir);
   const packFile = Object.assign(packBuffer, {
-    name: 'touhou_little_maid-1.0.0-bedrock.zip',
+    name: zipName,
   });
 
   console.log('开始转换...');
