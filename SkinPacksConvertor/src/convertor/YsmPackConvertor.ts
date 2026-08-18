@@ -12,6 +12,11 @@ import {
   fillEmptyCanonicalClips,
   YsmAnimationControllerFile,
 } from './animation/YsmLocomotionResolver';
+import {registerYsmAccessoryDefaults} from './animation/YsmAccessoryDefaults';
+import {
+  applyHideBonesToGeometry,
+  collectYsmHideBoneNames,
+} from './animation/YsmAccessoryGeoHide';
 
 const TAG = 'YsmPackConvertor';
 const BASE_INDEX = 1000;
@@ -84,11 +89,64 @@ export class YsmPackConvertor {
 
     await this.parseAllLang();
     await this.convertMetadata();
-    await this.convertMainModel();
-    // 先解析控制器提示，供贴图变体绑定时填充 walk/idle 空桩
+    // 配饰默认值须在藏骨/动画转换之前登记
     this.controllerHints = await this.loadControllerHints();
+    await this.registerAccessoryDefaults();
+    const hideBones = await this.collectHideBoneNames();
+    await this.convertMainModel(hideBones);
     await this.convertTexturesAndModels();
     this.finalizeRenderController();
+  }
+
+  /**
+   * 读取 main/tlm 动画文本 + ysm.json 轮盘配置，登记 v.roaming.* 默认值。
+   */
+  private async registerAccessoryDefaults() {
+    const texts = await this.readMaidAnimationTexts();
+    registerYsmAccessoryDefaults(this.manifest, texts);
+  }
+
+  /**
+   * 从动画中收集默认应隐藏的骨骼，并在几何体层永久隐藏。
+   */
+  private async collectHideBoneNames(): Promise<Set<string>> {
+    const animMap = this.manifest.files.player.animation ?? {};
+    const jsonList: object[] = [];
+    for (const role of MAID_ANIMATION_ROLES) {
+      const relPath = animMap[role];
+      if (!relPath) {
+        continue;
+      }
+      const file = this.input.file(relPath);
+      if (!file) {
+        continue;
+      }
+      try {
+        jsonList.push(JSON.parse(await file.async('string')));
+      } catch (e) {
+        console.warn(TAG, `解析动画失败: ${relPath}`, e);
+      }
+    }
+    const hide = collectYsmHideBoneNames(jsonList);
+    console.log(TAG, `几何体隐藏骨骼 ${hide.size} 个`);
+    return hide;
+  }
+
+  private async readMaidAnimationTexts(): Promise<string[]> {
+    const animMap = this.manifest.files.player.animation ?? {};
+    const texts: string[] = [];
+    for (const role of MAID_ANIMATION_ROLES) {
+      const relPath = animMap[role];
+      if (!relPath) {
+        continue;
+      }
+      const file = this.input.file(relPath);
+      if (!file) {
+        continue;
+      }
+      texts.push(await file.async('string'));
+    }
+    return texts;
   }
 
   /**
@@ -139,20 +197,25 @@ export class YsmPackConvertor {
 
   /**
    * 转换主模型（arm 第一人称模型对女仆实体无用，跳过）
+   * @param hideBones 默认应隐藏的配饰骨骼（几何体层永久隐藏）
    */
-  private async convertMainModel() {
+  private async convertMainModel(hideBones: Set<string> = new Set()) {
     const mainPath = this.manifest.files.player.model.main;
     const file = this.input.file(mainPath);
     if (!file) {
       throw new Error(`${TAG}: 主模型不存在: ${mainPath}`);
     }
-    await this.convertModelFile(mainPath, file);
+    await this.convertModelFile(mainPath, file, hideBones);
   }
 
   /**
-   * 转换单个 geo JSON：改 identifier、补 Root 骨
+   * 转换单个 geo JSON：改 identifier、补 Root 骨、隐藏配饰骨
    */
-  private async convertModelFile(path: string, file: JSZip.JSZipObject): Promise<boolean> {
+  private async convertModelFile(
+    path: string,
+    file: JSZip.JSZipObject,
+    hideBones: Set<string> = new Set(),
+  ): Promise<boolean> {
     const modelName = getJsonBaseName(path);
     if (!modelName) {
       return false;
@@ -182,6 +245,12 @@ export class YsmPackConvertor {
       for (const geo of beModel['minecraft:geometry'] ?? []) {
         this.processBones(geo['bones']);
       }
+    }
+
+    // 几何体层永久隐藏配饰（动画 scale:0 在基岩上不可靠）
+    const hidden = applyHideBonesToGeometry(beModel, hideBones);
+    if (hidden > 0) {
+      console.log(TAG, `已在几何体隐藏 ${hidden} 个配饰骨骼`);
     }
 
     // 输出路径统一落到 models/entity/<pack>/main.json 等形式

@@ -6,6 +6,7 @@ import { data as dataHug } from "./APHug";
 import { data as dataMolang } from "./APMolang";
 import { data as dataPreParallelEyeGuard } from "./APPreParallelEyeGuard";
 import { data as dataCatmullRomScaleHold } from "./APCatmullRomScaleHold";
+import { data as dataYsmAccessoryHide } from "./APYsmAccessoryHide";
 import { APContext, APFunc } from "./APTypes";
 
 export type { APContext, APFunc } from "./APTypes";
@@ -34,6 +35,8 @@ export class AnimationProcessor {
       this.registerAP(data.func, data.types);
     };
     registerFunc(dataMolang);
+    // 须在 APMolang 之后：把配饰 scale 烘焙为 0，不再依赖运行时 roaming 变量
+    registerFunc(dataYsmAccessoryHide);
     registerFunc(dataWalk);
     registerFunc(dataHug);
     // 须在 APMolang 之后：对已转换的眼皮 molang 包 suppress?this

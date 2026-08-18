@@ -13,14 +13,46 @@ export type AnimationBoneChannel = 'position' | 'rotation' | 'scale' | 'script';
 /** 运行期追加的 keep 字段（如 molang 伪骨骼定义的变量），小写。 */
 const dynamicKeepVariableFields = new Set<string>();
 
+/** 运行期登记的变量默认值（字段小写 → 数值），用于 scripts.initialize */
+const dynamicVariableDefaults = new Map<string, number>();
+
 /** 将字段名加入 keep 白名单（大小写不敏感）。 */
 export const registerMolangVariableKeep = (fieldName: string): void => {
   dynamicKeepVariableFields.add(fieldName.toLowerCase());
 };
 
+/**
+ * 登记变量默认值，并加入 keep 白名单。
+ * @param fieldName 不含 `v.` 前缀，如 `ysm_roaming_fumo` / `tail5z`
+ */
+export const registerMolangVariableDefault = (fieldName: string, value: number): void => {
+  const key = fieldName.toLowerCase();
+  dynamicKeepVariableFields.add(key);
+  dynamicVariableDefaults.set(key, value);
+};
+
+/**
+ * YSM `v.roaming.xxx` → 基岩扁平变量名 `ysm_roaming_xxx`。
+ * 基岩实体脚本对嵌套 `v.roaming.xxx` 赋值不稳定，几秒后常丢回 0。
+ */
+export const toFlatYsmRoamingField = (roamingLeaf: string): string => {
+  return `ysm_roaming_${roamingLeaf.toLowerCase()}`;
+};
+
+/** 将 `roaming.xxx` 或 `xxx` 规范为扁平 keep 字段名 */
+export const toYsmRoamingKeepField = (roamingPathOrLeaf: string): string => {
+  const raw = roamingPathOrLeaf.toLowerCase().replace(/^roaming\./, '');
+  return toFlatYsmRoamingField(raw);
+};
+
 /** 取出转换过程中登记的全部 keep 字段（已小写）。 */
 export const getDynamicMolangKeepFields = (): string[] => {
   return [...dynamicKeepVariableFields];
+};
+
+/** 取出变量默认值表（已小写）。未登记的字段导出时仍默认 0。 */
+export const getDynamicMolangVariableDefaults = (): ReadonlyMap<string, number> => {
+  return dynamicVariableDefaults;
 };
 
 /**
@@ -72,6 +104,17 @@ export const resolveVariableExpression = (
   const root = segments[0]?.name.toLowerCase();
   if (root !== 'v' && root !== 'variable') {
     return expression;
+  }
+
+  // YSM 轮盘/配饰：`v.roaming.xxx` → 扁平 `v.ysm_roaming_xxx`（基岩嵌套变量会丢值）
+  if (segments.length >= 3 && segments[1].name.toLowerCase() === 'roaming') {
+    const leaf = segments
+      .slice(2)
+      .map((s) => s.name.toLowerCase())
+      .join('_');
+    const flatField = toFlatYsmRoamingField(leaf);
+    registerMolangVariableKeep(flatField);
+    return `v.${flatField}`;
   }
 
   // 仅一段字段名时才走规则；多段如 `v.tcos0.x` 走兜底。

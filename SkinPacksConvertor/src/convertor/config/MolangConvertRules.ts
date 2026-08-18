@@ -32,6 +32,7 @@ export const MOLANG_VARIABLE_RESOLVE_RULES: readonly MolangVariableResolveRule[]
   // ysm 适配变量
   {name: 'ysm_is_close_eyes', type: 'keep'}, // ysm 闭眼变量，ysm.is_close_eyes 将会引导至此
   {name: 'ysm_blink_at', type: 'keep'}, // 下次闭眼的 life_time 时刻
+  {name: 'ysm_roaming_', type: 'keep'}, // YSM 配饰扁平变量（由 v.roaming.xxx 转换）
   // tlm 适配变量
   {name: 'tlm_is_sitting', type: 'keep'}, // tlm 坐下变量
   {name: 'tlm_is_gecko', type: 'keep'}, // tlm gecko 模型标记

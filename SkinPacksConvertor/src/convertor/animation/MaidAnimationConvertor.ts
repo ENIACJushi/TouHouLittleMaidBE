@@ -11,7 +11,7 @@ import {
   DEFAULT_ANIMATION_ID,
   ANIMATION_DEF_TEMPLATE,
 } from "../config";
-import {getDynamicMolangKeepFields} from "../molang/v/VariableResolvers";
+import {getDynamicMolangKeepFields, getDynamicMolangVariableDefaults} from "../molang/v/VariableResolvers";
 import {
   parseVariableAssignLhs,
   toVariableAssignKey,
@@ -216,11 +216,13 @@ export class MaidAnimationConvertor {
       }
     }
 
-    // 变量默认 0：必须写入 initialize（只跑一次）。若放进 pre_animation 会每帧清零弹簧状态
+    // 变量默认值：必须写入 initialize（只跑一次）。
     this.appendMissingKeepVarsToInitialize(
       res.scripts.initialize,
       registeredScriptVars,
     );
+    // 配饰隐藏值每帧再写一次，避免基岩嵌套/状态重置后重新露出来
+    this.appendForcedAccessoryDefaultsToPreAnimation(res.scripts.pre_animation);
     // 汇总展示条件：写入 v.animate_*（门控脚本依赖这些值）
     const conditionMolang = this.buildShowConditionMolang(
       showConditions,
@@ -380,20 +382,45 @@ export class MaidAnimationConvertor {
   }
 
   /**
-   * 将转换期 keep 白名单中尚未初始化的变量写入 scripts.initialize（默认 0）。
-   * 覆盖只在骨骼通道引用、未出现在 extractedScripts 左值的变量（如 v.tail5z）。
+   * 将转换期 keep 白名单中尚未初始化的变量写入 scripts.initialize。
+   * 覆盖只在骨骼通道引用、未出现在 extractedScripts 左值的变量（如 v.tail5z / v.ysm_roaming_fumo）。
+   * 默认值优先取 {@link registerMolangVariableDefault}，否则为 0。
    */
   private appendMissingKeepVarsToInitialize(
     initialize: string[],
     registeredVars: Set<string>,
   ): void {
+    const defaults = getDynamicMolangVariableDefaults();
     for (const field of getDynamicMolangKeepFields().sort()) {
       const key = `v.${field}`;
       if (registeredVars.has(key)) {
         continue;
       }
       registeredVars.add(key);
-      initialize.push(`${key}=0;`);
+      const value = defaults.get(field) ?? 0;
+      initialize.push(`${key}=${value};`);
+    }
+  }
+
+  /**
+   * 将「默认非 0」的配饰变量每帧写入 pre_animation，保证一直隐藏。
+   * 仅处理 ysm_roaming_*，不影响弹簧等需保持状态的 keep 变量。
+   */
+  private appendForcedAccessoryDefaultsToPreAnimation(preAnimation: string[]): void {
+    const defaults = getDynamicMolangVariableDefaults();
+    const lines: string[] = [];
+    for (const [field, value] of [...defaults.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+      if (!field.startsWith('ysm_roaming_')) {
+        continue;
+      }
+      if (value === 0) {
+        continue;
+      }
+      lines.push(`v.${field}=${value};`);
+    }
+    if (lines.length > 0) {
+      // 放在 pre_animation 靠前，确保同帧后续动画读取到隐藏值
+      preAnimation.unshift(...lines);
     }
   }
 
