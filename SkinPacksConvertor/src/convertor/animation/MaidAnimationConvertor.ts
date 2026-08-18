@@ -10,6 +10,7 @@ import {
 import {
   DEFAULT_ANIMATION_ID,
   ANIMATION_DEF_TEMPLATE,
+  WALK_PROCESS_MOVING_MIN,
 } from "../config";
 import {getDynamicMolangKeepFields, getDynamicMolangVariableDefaults} from "../molang/v/VariableResolvers";
 import {
@@ -52,7 +53,7 @@ const BASE_INDEX = 1000;
  */
 const ANIMATE_EXTRA_CONDITION: Record<AnimationTypes, string> = {
   [AnimationTypes.hug]: " && !q.is_in_ui && v.tlm_is_hug",
-  [AnimationTypes.walk]: " && !v.tlm_is_sitting && v.walk_process>0",
+  [AnimationTypes.walk]: ` && !v.tlm_is_sitting && v.walk_process>${WALK_PROCESS_MOVING_MIN}`,
   [AnimationTypes.beg]: " && query.is_interested",
   [AnimationTypes.sit]: " && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug", // 被抱起时不可播放坐下动画
   [AnimationTypes.parallel0]: "",
@@ -71,8 +72,9 @@ const ANIMATE_EXTRA_CONDITION: Record<AnimationTypes, string> = {
   [AnimationTypes.pre_parallel5]: "",
   [AnimationTypes.pre_parallel6]: "",
   [AnimationTypes.pre_parallel7]: "",
-  // 对齐 Java Priority.LOWEST 兜底：更高优先级主状态（sit/hug/walk）都不匹配时播放
-  [AnimationTypes.idle]: " && !v.tlm_is_sitting && !v.tlm_is_hug && v.walk_process<=0",
+  // 对齐 Java Priority.LOWEST 兜底：更高优先级主状态（sit/hug/walk）都不匹配时播放。
+  // walk_process 阈值对齐 YSM MIN_SPEED，停步后微小速度仍回 idle。
+  [AnimationTypes.idle]: ` && !v.tlm_is_sitting && !v.tlm_is_hug && v.walk_process<=${WALK_PROCESS_MOVING_MIN}`,
   // [AnimationTypes.swing_hand]: "",
   // [AnimationTypes.run]: "",
   // [AnimationTypes.jump]: "",

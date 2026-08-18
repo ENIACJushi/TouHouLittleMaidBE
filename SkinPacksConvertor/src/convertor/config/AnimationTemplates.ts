@@ -1,4 +1,7 @@
-import {DEFAULT_ANIMATION_ID} from "./Constants";
+import {
+  DEFAULT_ANIMATION_ID,
+  WALK_PROCESS_MOVING_MIN,
+} from "./Constants";
 import {buildSkinPackAnimationName} from "../animation/default/DefaultGeckoAnimation";
 import {AnimationTypes} from "../animation/types/AnimationTypes";
 import {AnimationDefinition} from "../animation/MaidAnimationConvertor";
@@ -80,16 +83,16 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       { "blink" : "v.animate_blink == 0 && query.property('thlm:work') >= -1" },
       // 非 gecko 默认动画
       { "hug": "v.animate_hug == 0 && !q.is_in_ui && v.tlm_is_hug" },
-      { "walk": "v.animate_walk == 0 && !v.tlm_is_sitting && v.walk_process>0" },
+      { "walk": `v.animate_walk == 0 && !v.tlm_is_sitting && v.walk_process>${WALK_PROCESS_MOVING_MIN}` },
       { "beg": "v.animate_beg == 0 && query.is_interested" },
       { "sit": "v.animate_sit == 0 && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug" },
       // 兜底动画由转换器内置源文件转换生成，命名与皮肤包动画一致
       { "hug_1": `v.animate_hug == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && v.tlm_is_hug` },
       { "gecko_hug_base": `v.animate_hug != 0 && !q.is_in_ui && v.tlm_is_hug` },
-      { "walk_1": `v.animate_walk == ${DEFAULT_ANIMATION_ID} && !v.tlm_is_sitting && v.walk_process>0` },
+      { "walk_1": `v.animate_walk == ${DEFAULT_ANIMATION_ID} && !v.tlm_is_sitting && v.walk_process>${WALK_PROCESS_MOVING_MIN}` },
       { "beg_1": `v.animate_beg == ${DEFAULT_ANIMATION_ID} && query.is_interested` },
       { "sit_1": `v.animate_sit == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug` },
-      { "idle_1": `v.animate_idle == ${DEFAULT_ANIMATION_ID} && !v.tlm_is_sitting && !v.tlm_is_hug && v.walk_process<=0` },
+      { "idle_1": `v.animate_idle == ${DEFAULT_ANIMATION_ID} && !v.tlm_is_sitting && !v.tlm_is_hug && v.walk_process<=${WALK_PROCESS_MOVING_MIN}` },
       { "parallel0_1": `v.animate_parallel0 == ${DEFAULT_ANIMATION_ID}` },
       { "parallel1_1": `v.animate_parallel1 == ${DEFAULT_ANIMATION_ID}` },
       { "parallel2_1": `v.animate_parallel2 == ${DEFAULT_ANIMATION_ID}` },
