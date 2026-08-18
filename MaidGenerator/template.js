@@ -89,7 +89,8 @@ export let TEMPLATE = {
         "minecraft:breathable"   : { "total_supply": 15, "suffocate_time": 0 },
         "minecraft:is_hidden_when_invisible": { },
         "minecraft:conditional_bandwidth_optimization": { },
-        "minecraft:behavior.look_at_player": { "priority": 9, "look_distance": 6.0, "probability": 0.02 },
+        // 占用 look/move，看向玩家时打断 random_stroll
+        "minecraft:behavior.look_at_player": { "priority": 7, "look_distance": 6.0, "look_time": [ 2, 4 ], "probability": 0.03, "control_flags": [ "look", "move" ] },
 
         ///// 交互属性 /////
         "minecraft:healable": {
@@ -98,7 +99,8 @@ export let TEMPLATE = {
             {"item": "apple", "heal_amount": 3}
           ]
         },
-        "minecraft:behavior.beg": { "priority": 9, "look_distance": 8, "look_time": [ 2, 4 ], "items": [ "cake" ] },
+        // 占用 look/move，打断 random_stroll
+        "minecraft:behavior.beg": { "priority": 7, "look_distance": 8, "look_time": [ 15, 30 ], "items": [ "cake" ], "control_flags": [ "look", "move" ] },
 
         ///// AI属性 /////
 
