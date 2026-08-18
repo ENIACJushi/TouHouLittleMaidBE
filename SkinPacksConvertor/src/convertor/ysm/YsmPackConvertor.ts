@@ -1,22 +1,23 @@
 import JSZip from 'jszip';
-import {PackFile} from './model/PackFile';
-import {TemplatesBE} from './model/Templates';
-import {LangFile, LangFileType, LangType} from './model/LangFile';
-import {YsmJson, YsmTextureEntry} from './model/YsmJson';
-import {ResourceManager} from './resource_manager/ResourceManager';
-import {AnimationManager} from './resource_manager/AnimationManager';
-import {YsmPackRoot} from './resource_manager/YsmPackLocator';
+import {PackFile} from '../model/PackFile';
+import {TemplatesBE} from '../model/Templates';
+import {LangFile, LangFileType, LangType} from '../model/LangFile';
+import {YsmJson, YsmTextureEntry} from './YsmJson';
+import {ResourceManager} from '../resource_manager/ResourceManager';
+import {AnimationManager} from '../resource_manager/AnimationManager';
+import {YsmPackRoot} from './YsmPackLocator';
 import {
   buildControllerClipHints,
   ControllerClipHints,
   fillEmptyCanonicalClips,
   YsmAnimationControllerFile,
-} from './animation/YsmLocomotionResolver';
-import {registerYsmAccessoryDefaults} from './animation/YsmAccessoryDefaults';
+} from './YsmLocomotionResolver';
+import {registerYsmAccessoryDefaults} from './accessory/YsmAccessoryDefaults';
 import {
   applyHideBonesToGeometry,
   collectYsmHideBoneNames,
-} from './animation/YsmAccessoryGeoHide';
+} from './accessory/YsmAccessoryGeoHide';
+import {toSafeIdentifier} from './YsmIdentifier';
 
 const TAG = 'YsmPackConvertor';
 const BASE_INDEX = 1000;
@@ -32,6 +33,8 @@ const MAID_ANIMATION_ROLES = ['main', 'tlm'] as const;
  *
  * 将单个 YSM 包（根目录含 `ysm.json`）转换为基岩女仆皮肤条目，
  * 输出结构与 {@link SkinPackConvertor} 对齐，以便共用 AnimationManager / PackFile。
+ *
+ * 处理顺序见 {@link handlePack}；总模块说明见 `ysm/index.ts`。
  */
 export class YsmPackConvertor {
   packId: number;
@@ -65,7 +68,9 @@ export class YsmPackConvertor {
   }
 
   /**
-   * 执行单个 YSM 包转换
+   * 执行单个 YSM 包转换。
+   *
+   * 顺序不可随意调换：配饰默认值登记 → 藏骨名单 → 写几何体 → 绑动画（含空桩填充）。
    */
   async handlePack() {
     console.log(TAG, `Process YSM pack: ${this.modelId} → ${this.packNameSafe}`);
@@ -89,11 +94,14 @@ export class YsmPackConvertor {
 
     await this.parseAllLang();
     await this.convertMetadata();
-    // 配饰默认值须在藏骨/动画转换之前登记
+    // 1) 控制器提示（walk/idle 真实 clip 常在 pre_main）
     this.controllerHints = await this.loadControllerHints();
+    // 2) 配饰默认值须在藏骨 / 动画烘焙之前登记
     await this.registerAccessoryDefaults();
+    // 3) 几何体层永久隐藏（动画 scale:0 在基岩上不可靠）
     const hideBones = await this.collectHideBoneNames();
     await this.convertMainModel(hideBones);
+    // 4) 贴图变体 + 动画绑定 + 空桩填充
     await this.convertTexturesAndModels();
     this.finalizeRenderController();
   }
@@ -454,20 +462,8 @@ export interface YsmPackConvertorInitParams {
   res: PackFile;
 }
 
-/** 将任意名称转为可用作 geometry / 路径段的安全标识 */
-export function toSafeIdentifier(name: string, fallbackId: number): string {
-  let safe = name
-    .replace(/[^a-zA-Z0-9_]/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '');
-  if (!safe) {
-    safe = `ysm_${fallbackId}`;
-  }
-  if (/^[0-9]/.test(safe)) {
-    safe = `a${safe}`;
-  }
-  return safe.toLowerCase();
-}
+/** 安全标识工具，亦可通过 `./YsmIdentifier` 直接导入 */
+export {toSafeIdentifier} from './YsmIdentifier';
 
 function getJsonBaseName(path: string): string | undefined {
   const parts = path.replace(/\\/g, '/').split('/');

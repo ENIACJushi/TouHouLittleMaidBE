@@ -1,8 +1,6 @@
-import {
-  getDynamicMolangVariableDefaults,
-  toYsmRoamingKeepField,
-} from '../molang/v/VariableResolvers';
-import {evalSimpleYsmRoamingExpr} from './YsmRoamingExpr';
+import {getDynamicMolangVariableDefaults} from '../../molang/v/VariableResolvers';
+import {toYsmRoamingKeepField} from '../roaming/YsmRoamingFields';
+import {evalSimpleYsmRoamingExpr} from '../roaming/YsmRoamingExpr';
 
 /**
  * 与眨眼/眉眼相关的骨骼：动画里常出现瞬时 scale:0，绝不能据此永久删几何体。

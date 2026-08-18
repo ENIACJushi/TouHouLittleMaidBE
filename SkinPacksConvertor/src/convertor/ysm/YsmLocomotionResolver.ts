@@ -1,11 +1,16 @@
-import {AnimationTypes, getAnimationSourceKey} from './types/AnimationTypes';
-import {AnimationDefinition180} from './types/AnimationSchema180';
-import {MaidAnimationListSchema180} from './types/MaidAnimationFileSchema180';
+import {AnimationTypes, getAnimationSourceKey} from '../animation/types/AnimationTypes';
+import {AnimationDefinition180} from '../animation/types/AnimationSchema180';
+import {MaidAnimationListSchema180} from '../animation/types/MaidAnimationFileSchema180';
 
 const TAG = 'YsmLocomotionResolver';
 
 /**
- * 当规范键（walk/idle/…）为空桩时的启发式后备名。
+ * YSM locomotion：规范键（walk/idle/…）常为空桩，真实 clip 在 animation_controllers
+ *（如 player.pre_main → walk1front）或启发式命名中。本模块负责解析与回填。
+ */
+
+/**
+ * 当规范键为空桩时的启发式后备名。
  * 参考 YSM 常见 Blockbench 命名与 `.ref/koishi` / wine_fox 样例。
  */
 const HEURISTIC_FALLBACKS: Partial<Record<AnimationTypes, readonly string[]>> = {

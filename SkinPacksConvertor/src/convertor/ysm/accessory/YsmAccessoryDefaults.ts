@@ -1,9 +1,9 @@
-import {YsmJson, YsmConfigForm} from '../model/YsmJson';
+import {YsmJson, YsmConfigForm} from '../YsmJson';
 import {
   registerMolangVariableDefault,
   registerMolangVariableKeep,
-  toYsmRoamingKeepField,
-} from '../molang/v/VariableResolvers';
+} from '../../molang/v/VariableResolvers';
+import {toYsmRoamingKeepField} from '../roaming/YsmRoamingFields';
 
 const TAG = 'YsmAccessoryDefaults';
 

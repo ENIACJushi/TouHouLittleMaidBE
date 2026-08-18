@@ -6,7 +6,7 @@ import { data as dataHug } from "./APHug";
 import { data as dataMolang } from "./APMolang";
 import { data as dataPreParallelEyeGuard } from "./APPreParallelEyeGuard";
 import { data as dataCatmullRomScaleHold } from "./APCatmullRomScaleHold";
-import { data as dataYsmAccessoryHide } from "./APYsmAccessoryHide";
+import { data as dataYsmAccessoryHide } from "../../ysm/accessory/APYsmAccessoryHide";
 import { APContext, APFunc } from "./APTypes";
 
 export type { APContext, APFunc } from "./APTypes";

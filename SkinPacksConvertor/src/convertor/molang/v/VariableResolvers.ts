@@ -6,6 +6,13 @@ import {
   TAKE_NULL_COALESCE_RHS,
 } from '../PrefixedExpression';
 import {MOLANG_VARIABLE_RESOLVE_RULES} from "../../config";
+import {
+  toFlatYsmRoamingField,
+  toYsmRoamingKeepField,
+} from '../../ysm/roaming/YsmRoamingFields';
+
+// 供其它模块继续从 VariableResolvers 一并导入字段工具
+export {toFlatYsmRoamingField, toYsmRoamingKeepField};
 
 /** 动画骨骼通道类型，用于决定未匹配变量的兜底恒等元。 */
 export type AnimationBoneChannel = 'position' | 'rotation' | 'scale' | 'script';
@@ -43,24 +50,6 @@ export const registerMolangVariableDefault = (fieldName: string, value: number):
   const key = fieldName.toLowerCase();
   dynamicKeepVariableFields.add(key);
   dynamicVariableDefaults.set(key, value);
-};
-
-/**
- * YSM 叶子名 → 基岩扁平变量字段名（不含 `v.`）。
- * 例：`fumo` → `ysm_roaming_fumo`。
- * 基岩对嵌套 `v.roaming.xxx` 赋值不稳定，转换期统一展平。
- */
-export const toFlatYsmRoamingField = (roamingLeaf: string): string => {
-  return `ysm_roaming_${roamingLeaf.toLowerCase()}`;
-};
-
-/**
- * 将 `roaming.xxx` 或裸叶子 `xxx` 规范为扁平 keep 字段名。
- * 例：`roaming.fumo` / `fumo` → `ysm_roaming_fumo`。
- */
-export const toYsmRoamingKeepField = (roamingPathOrLeaf: string): string => {
-  const raw = roamingPathOrLeaf.toLowerCase().replace(/^roaming\./, '');
-  return toFlatYsmRoamingField(raw);
 };
 
 /** 取出转换过程中登记的全部 keep 字段（已小写）。 */

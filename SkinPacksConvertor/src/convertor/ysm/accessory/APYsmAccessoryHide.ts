@@ -1,6 +1,6 @@
-import {AnimationDefinition180, ScaleChannel} from '../types/AnimationSchema180';
+import {AnimationDefinition180, ScaleChannel} from '../../animation/types/AnimationSchema180';
 import {getDynamicMolangVariableDefaults} from '../../molang/v/VariableResolvers';
-import {evalSimpleYsmRoamingExpr} from '../YsmRoamingExpr';
+import {evalSimpleYsmRoamingExpr} from '../roaming/YsmRoamingExpr';
 
 /**
  * 动画处理器：将 YSM 配饰相关 scale 按登记默认值烘焙成常量。

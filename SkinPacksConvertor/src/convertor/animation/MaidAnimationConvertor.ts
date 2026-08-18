@@ -17,7 +17,8 @@ import {
   toVariableAssignKey,
 } from "../molang/MolangAssign";
 import { AnimationDefinition180 } from "./types/AnimationSchema180";
-import { isAnimationEmpty } from "./YsmLocomotionResolver";
+import { isAnimationEmpty } from "../ysm/YsmLocomotionResolver";
+import { appendForcedYsmAccessoryDefaultsToPreAnimation } from "../ysm/accessory/appendForcedAccessoryDefaults";
 
 /** 自带眨眼关键帧时，播放期间需抑制 pre_parallel molang 眨眼的主状态 */
 const MAIN_ANIM_EYE_GUARD_TYPES: readonly AnimationTypes[] = [
@@ -221,8 +222,8 @@ export class MaidAnimationConvertor {
       res.scripts.initialize,
       registeredScriptVars,
     );
-    // 配饰隐藏值每帧再写一次，避免基岩嵌套/状态重置后重新露出来
-    this.appendForcedAccessoryDefaultsToPreAnimation(res.scripts.pre_animation);
+    // 配饰隐藏值每帧再写一次，避免基岩嵌套/状态重置后重新露出来（实现见 ysm/accessory）
+    appendForcedYsmAccessoryDefaultsToPreAnimation(res.scripts.pre_animation);
     // 汇总展示条件：写入 v.animate_*（门控脚本依赖这些值）
     const conditionMolang = this.buildShowConditionMolang(
       showConditions,
@@ -399,28 +400,6 @@ export class MaidAnimationConvertor {
       registeredVars.add(key);
       const value = defaults.get(field) ?? 0;
       initialize.push(`${key}=${value};`);
-    }
-  }
-
-  /**
-   * 将「默认非 0」的配饰变量每帧写入 pre_animation，保证一直隐藏。
-   * 仅处理 ysm_roaming_*，不影响弹簧等需保持状态的 keep 变量。
-   */
-  private appendForcedAccessoryDefaultsToPreAnimation(preAnimation: string[]): void {
-    const defaults = getDynamicMolangVariableDefaults();
-    const lines: string[] = [];
-    for (const [field, value] of [...defaults.entries()].sort(([a], [b]) => a.localeCompare(b))) {
-      if (!field.startsWith('ysm_roaming_')) {
-        continue;
-      }
-      if (value === 0) {
-        continue;
-      }
-      lines.push(`v.${field}=${value};`);
-    }
-    if (lines.length > 0) {
-      // 放在 pre_animation 靠前，确保同帧后续动画读取到隐藏值
-      preAnimation.unshift(...lines);
     }
   }
 

@@ -1,20 +1,19 @@
 import JSZip from "jszip";
 import { writeErrorLog } from "../common/Log";
 import { SkinPackConvertor } from "./SkinPackConvertor";
-import { YsmPackConvertor, toSafeIdentifier } from "./YsmPackConvertor";
 import { PackFile } from "./model/PackFile";
 import { ResourceManager } from "./resource_manager/ResourceManager";
 import { AnimationManager } from "./resource_manager/AnimationManager";
 import { MaidAnimationConvertor } from "./animation/MaidAnimationConvertor";
-import { YsmPackLocator, YsmPackRoot } from "./resource_manager/YsmPackLocator";
+import { convertYsmPackRoot, YsmPackLocator } from "./ysm";
 import { clearDynamicMolangRegistrations } from "./molang/v/VariableResolvers";
 
 /**
- * 转换器
+ * 转换器总入口
  *
  * 支持以 zip 同时引入：
  * - TLM：`assets/<domain>/maid_model.json`
- * - YSM：根目录（或子文件夹）含 `ysm.json`（结构见 Yes Steve Model / `.ref/koishi`）
+ * - YSM：根目录（或子文件夹）含 `ysm.json`（实现集中在 `./ysm/`）
  */
 export class SkinConvertor {
   fileList = []; // java / ysm 模型包列表
@@ -76,7 +75,7 @@ export class SkinConvertor {
   }
 
   /**
-   * 逐个处理所有输入的模型包
+   * 逐个处理所有输入的模型包：YSM 优先，否则按 TLM 扫描。
    */
   async handleAllPacks() {
     let count = 0;
@@ -93,12 +92,18 @@ export class SkinConvertor {
 
         const packZip = await JSZip.loadAsync(fileEntry);
 
-        // 优先识别 YSM（根或子目录含 ysm.json）
+        // 优先识别 YSM（根或子目录含 ysm.json）→ 细节在 convertor/ysm
         const ysmRoots = YsmPackLocator.locate(packZip, fileName);
         if (ysmRoots.length > 0) {
           for (const root of ysmRoots) {
             count++;
-            await this.handleYsmRoot(count, i, root);
+            await convertYsmPackRoot({
+              packId: count,
+              zipIndex: i,
+              root,
+              animationManager: this.animationManager,
+              result: this.result,
+            });
           }
           continue;
         }
@@ -133,63 +138,6 @@ export class SkinConvertor {
       } catch (e) {
         writeErrorLog(`Error reading ${this.fileList[i].name}: ${e.message}\n${e.stack}`);
       }
-    }
-  }
-
-  /**
-   * 处理单个 YSM 模型根目录
-   */
-  private async handleYsmRoot(packId: number, zipIndex: number, root: YsmPackRoot) {
-    // domain 须与 YsmPackConvertor.packNameSafe 一致，AnimationManager 才能按 namespace 取到文件
-    const domain = toSafeIdentifier(root.modelId, packId);
-    const resource = ResourceManager.fromFlatDomain(domain, root.zipFolder, 'ysm');
-    this.animationManager.setResourceManager(resource, zipIndex);
-
-    if (packId === 1) {
-      await this.tryCopyYsmPackIcon(root.zipFolder);
-    }
-
-    const packConvertor = new YsmPackConvertor({
-      packId,
-      root,
-      resourceManager: resource,
-      animationManager: this.animationManager,
-      res: this.result,
-    });
-    await packConvertor.handlePack();
-  }
-
-  /**
-   * 尝试将 YSM 包内可用图片写为资源包 pack_icon.png
-   */
-  private async tryCopyYsmPackIcon(folder: JSZip) {
-    try {
-      const manifestFile = folder.file('ysm.json');
-      if (!manifestFile) {
-        return;
-      }
-      const manifest = JSON.parse(await manifestFile.async('string'));
-      const avatar = manifest?.metadata?.authors?.[0]?.avatar;
-      const candidates: string[] = [];
-      if (avatar) {
-        candidates.push(avatar);
-      }
-      const textures = manifest?.files?.player?.texture ?? [];
-      for (const t of textures) {
-        candidates.push(typeof t === 'string' ? t : t?.uv);
-      }
-      for (const path of candidates) {
-        if (!path) {
-          continue;
-        }
-        const file = folder.file(path);
-        if (file) {
-          this.result.resultFile.file('pack_icon.png', await file.async('blob'));
-          return;
-        }
-      }
-    } catch (e) {
-      console.error('tryCopyYsmPackIcon ERROR', e);
     }
   }
 }
