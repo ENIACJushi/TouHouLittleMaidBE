@@ -16,6 +16,17 @@ const dynamicKeepVariableFields = new Set<string>();
 /** 运行期登记的变量默认值（字段小写 → 数值），用于 scripts.initialize */
 const dynamicVariableDefaults = new Map<string, number>();
 
+/**
+ * 清空本次转换累积的 keep / 默认值登记。
+ *
+ * 必须在每次 {@link SkinConvertor.startConvert} 开头调用：模块级 Set/Map 会在
+ * 浏览器连续转换多个包时泄漏到下一轮，导致错误的 initialize 与配饰烘焙。
+ */
+export const clearDynamicMolangRegistrations = (): void => {
+  dynamicKeepVariableFields.clear();
+  dynamicVariableDefaults.clear();
+};
+
 /** 将字段名加入 keep 白名单（大小写不敏感）。 */
 export const registerMolangVariableKeep = (fieldName: string): void => {
   dynamicKeepVariableFields.add(fieldName.toLowerCase());
@@ -23,7 +34,10 @@ export const registerMolangVariableKeep = (fieldName: string): void => {
 
 /**
  * 登记变量默认值，并加入 keep 白名单。
+ * 供 {@link MaidAnimationConvertor} 写入 `scripts.initialize` / 强制 `pre_animation`，
+ * 以及配饰 scale 烘焙求值使用。
  * @param fieldName 不含 `v.` 前缀，如 `ysm_roaming_fumo` / `tail5z`
+ * @param value 实体加载时的初始数值（配饰隐藏常用 1）
  */
 export const registerMolangVariableDefault = (fieldName: string, value: number): void => {
   const key = fieldName.toLowerCase();
@@ -32,14 +46,18 @@ export const registerMolangVariableDefault = (fieldName: string, value: number):
 };
 
 /**
- * YSM `v.roaming.xxx` → 基岩扁平变量名 `ysm_roaming_xxx`。
- * 基岩实体脚本对嵌套 `v.roaming.xxx` 赋值不稳定，几秒后常丢回 0。
+ * YSM 叶子名 → 基岩扁平变量字段名（不含 `v.`）。
+ * 例：`fumo` → `ysm_roaming_fumo`。
+ * 基岩对嵌套 `v.roaming.xxx` 赋值不稳定，转换期统一展平。
  */
 export const toFlatYsmRoamingField = (roamingLeaf: string): string => {
   return `ysm_roaming_${roamingLeaf.toLowerCase()}`;
 };
 
-/** 将 `roaming.xxx` 或 `xxx` 规范为扁平 keep 字段名 */
+/**
+ * 将 `roaming.xxx` 或裸叶子 `xxx` 规范为扁平 keep 字段名。
+ * 例：`roaming.fumo` / `fumo` → `ysm_roaming_fumo`。
+ */
 export const toYsmRoamingKeepField = (roamingPathOrLeaf: string): string => {
   const raw = roamingPathOrLeaf.toLowerCase().replace(/^roaming\./, '');
   return toFlatYsmRoamingField(raw);
@@ -50,7 +68,10 @@ export const getDynamicMolangKeepFields = (): string[] => {
   return [...dynamicKeepVariableFields];
 };
 
-/** 取出变量默认值表（已小写）。未登记的字段导出时仍默认 0。 */
+/**
+ * 取出变量默认值表（字段小写 → 数值，只读视图）。
+ * 未登记字段在导出 initialize 时仍按 0 处理。
+ */
 export const getDynamicMolangVariableDefaults = (): ReadonlyMap<string, number> => {
   return dynamicVariableDefaults;
 };

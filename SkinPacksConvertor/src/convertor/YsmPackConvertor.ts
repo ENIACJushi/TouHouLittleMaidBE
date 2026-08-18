@@ -107,7 +107,8 @@ export class YsmPackConvertor {
   }
 
   /**
-   * 从动画中收集默认应隐藏的骨骼，并在几何体层永久隐藏。
+   * 读取 main/tlm 动画 JSON，收集「默认应隐藏」的骨骼名集合。
+   * 仅收集名单，真正写几何体在 {@link convertModelFile} → {@link applyHideBonesToGeometry}。
    */
   private async collectHideBoneNames(): Promise<Set<string>> {
     const animMap = this.manifest.files.player.animation ?? {};
@@ -132,6 +133,10 @@ export class YsmPackConvertor {
     return hide;
   }
 
+  /**
+   * 读取女仆相关动画文件原文（main / tlm），供配饰默认值扫描使用。
+   * 缺文件时跳过，不抛错。
+   */
   private async readMaidAnimationTexts(): Promise<string[]> {
     const animMap = this.manifest.files.player.animation ?? {};
     const texts: string[] = [];

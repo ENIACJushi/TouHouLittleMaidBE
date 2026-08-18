@@ -57,7 +57,11 @@ export function registerYsmAccessoryDefaults(
 }
 
 /**
- * 从 checkbox / range 表单项提取默认值（写入扁平字段名）。
+ * 从单个轮盘配置表单项提取 `ysm_roaming_*` 默认值。
+ *
+ * - 仅处理 `value` 为 `v.roaming.xxx` / `variable.roaming.xxx` 的项
+ * - checkbox：标题/描述命中「消失」等关键词 → 1，否则 → 0
+ * - range / radio：未登记时默认 0（保留常服/默认表情）
  */
 function applyConfigFormDefault(form: YsmConfigForm, defaults: Map<string, number>): void {
   const field = roamingFieldFromValue(form.value);
@@ -80,7 +84,12 @@ function applyConfigFormDefault(form: YsmConfigForm, defaults: Map<string, numbe
 }
 
 /**
- * 按动画中的 scale 写法推断默认值。
+ * 按动画 JSON 文本中的 scale 写法推断尚未登记的 roaming 默认值。
+ *
+ * - `"scale":"v.roaming.x"`（显示型）：缺省 0 → 缩放为 0，默认不显示
+ * - `1-(v.roaming.x…)`（隐藏型）：缺省 1 → `1-1=0`，默认隐藏
+ * - 同一变量两种写法并存时优先按显示型保持 0（勾选才出现）
+ * - 已有表单默认值时不覆盖
  */
 function applyAnimationPatternDefaults(text: string, defaults: Map<string, number>): void {
   const hideWhen1 = new Set<string>();
@@ -112,7 +121,10 @@ function applyAnimationPatternDefaults(text: string, defaults: Map<string, numbe
   }
 }
 
-/** `v.roaming.foo` → `ysm_roaming_foo` */
+/**
+ * 从轮盘 `value` 字段解析扁平 keep 名。
+ * @returns 如 `ysm_roaming_fumo`；非 `v|variable.roaming.*` 时返回 undefined
+ */
 function roamingFieldFromValue(value?: string): string | undefined {
   if (!value) {
     return undefined;

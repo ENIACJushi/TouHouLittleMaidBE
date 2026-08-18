@@ -7,6 +7,7 @@ import { ResourceManager } from "./resource_manager/ResourceManager";
 import { AnimationManager } from "./resource_manager/AnimationManager";
 import { MaidAnimationConvertor } from "./animation/MaidAnimationConvertor";
 import { YsmPackLocator, YsmPackRoot } from "./resource_manager/YsmPackLocator";
+import { clearDynamicMolangRegistrations } from "./molang/v/VariableResolvers";
 
 /**
  * 转换器
@@ -45,6 +46,8 @@ export class SkinConvertor {
     this.uuid = uuid;
 
     /// 执行转换 ///
+    // 清空上一次转换残留的 keep / 配饰默认值，避免网页连续转换串包
+    clearDynamicMolangRegistrations();
     this.result = new PackFile(uuid);
     // 处理所有模型包
     await this.handleAllPacks();

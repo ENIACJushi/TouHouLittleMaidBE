@@ -1,8 +1,12 @@
 import {AnimationDefinition180, ScaleChannel} from '../types/AnimationSchema180';
 import {getDynamicMolangVariableDefaults} from '../../molang/v/VariableResolvers';
+import {evalSimpleYsmRoamingExpr} from '../YsmRoamingExpr';
 
 /**
- * 将 YSM 配饰相关 scale 按登记默认值烘焙成常量。
+ * 动画处理器：将 YSM 配饰相关 scale 按登记默认值烘焙成常量。
+ *
+ * 注册于 {@link AnimationProcessor}，须在 APMolang 之后执行（此时 `v.roaming.*`
+ * 已扁平为 `v.ysm_roaming_*`）。
  *
  * 基岩 animation molang 读取实体脚本变量不稳定（常见：加载后几秒变量失效，
  * `1-v.xxx` 变回 1，配饰重新显示）。转换器无轮盘 UI，故在导出期把
@@ -10,12 +14,13 @@ import {getDynamicMolangVariableDefaults} from '../../molang/v/VariableResolvers
  *
  * 服装类 `v.ysm_roaming_shangyi==0?1:0` 会按默认 0 求成 1（保持默认外观），
  * 道具类 `1-v.ysm_roaming_fumo` 按默认 1 求成 0（永久隐藏）。
+ *
+ * 无 YSM 配饰登记时直接跳过，避免影响纯 TLM 包。
  */
 export const data = {
   types: undefined as undefined,
   func: async ({ animation }: { animation: AnimationDefinition180 }) => {
     const defaults = getDynamicMolangVariableDefaults();
-    // 无 YSM 配饰默认登记时不处理（纯 TLM 包）
     const hasYsmRoaming = [...defaults.keys()].some((k) => k.startsWith('ysm_roaming_'));
     if (!hasYsmRoaming) {
       return;
@@ -27,6 +32,9 @@ export const data = {
   },
 };
 
+/**
+ * 遍历动画骨骼：可求值的 roaming scale 写成数字；同组道具伴随骨一并藏掉。
+ */
 function bakeRoamingScales(
   animation: AnimationDefinition180,
   defaults: ReadonlyMap<string, number>,
@@ -66,7 +74,7 @@ function bakeRoamingScales(
 }
 
 /**
- * 尝试把含 ysm_roaming 的 scale 求成数字；无法识别则原样返回 undefined。
+ * 尝试把含 ysm_roaming 的 scale 求成数字；无法识别则返回 undefined（保留原值）。
  */
 function tryBakeScale(
   scale: ScaleChannel | undefined,
@@ -76,11 +84,7 @@ function tryBakeScale(
     return undefined;
   }
   if (typeof scale !== 'string') {
-    // 关键帧 / 数组：若整体是简单 roaming 表达式较罕见，暂不处理
-    const text = JSON.stringify(scale);
-    if (!/ysm_roaming_/i.test(text)) {
-      return undefined;
-    }
+    // 关键帧 / 数组中的 roaming 较罕见，暂不烘焙以免误伤
     return undefined;
   }
   if (!/ysm_roaming_/i.test(scale)) {
@@ -88,75 +92,28 @@ function tryBakeScale(
   }
 
   const expr = scale.replace(/\s+/g, '');
-  const value = evalSimpleRoamingExpr(expr, defaults);
-  return value;
+  return evalSimpleYsmRoamingExpr(expr, defaults);
 }
 
 /**
- * 求值常见配饰/服装 scale 写法；失败返回 undefined。
+ * 去掉骨骼名末尾数字，得到组名前缀（Fumo2 → Fumo），用于匹配伴随骨。
  */
-function evalSimpleRoamingExpr(
-  expr: string,
-  defaults: ReadonlyMap<string, number>,
-): number | undefined {
-  // v.ysm_roaming_xxx
-  let m = /^v\.(ysm_roaming_[a-z0-9_]+)$/i.exec(expr);
-  if (m) {
-    return defaults.get(m[1].toLowerCase()) ?? 0;
-  }
-
-  // 1-v.ysm_roaming_xxx
-  m = /^1-v\.(ysm_roaming_[a-z0-9_]+)$/i.exec(expr);
-  if (m) {
-    return 1 - (defaults.get(m[1].toLowerCase()) ?? 0);
-  }
-
-  // 1-(v.ysm_roaming_xxx==N?1:0) 或 1-(v.ysm_roaming_xxx?1:0)
-  m = /^1-\(v\.(ysm_roaming_[a-z0-9_]+)(==([0-9.]+))?(\?1:0)?\)$/i.exec(expr);
-  if (m) {
-    const cur = defaults.get(m[1].toLowerCase()) ?? 0;
-    if (m[2]) {
-      const n = Number(m[3]);
-      return 1 - (cur === n ? 1 : 0);
-    }
-    return 1 - (cur ? 1 : 0);
-  }
-
-  // v.ysm_roaming_xxx==N?1:0
-  m = /^v\.(ysm_roaming_[a-z0-9_]+)==([0-9.]+)\?1:0$/i.exec(expr);
-  if (m) {
-    const cur = defaults.get(m[1].toLowerCase()) ?? 0;
-    return cur === Number(m[2]) ? 1 : 0;
-  }
-
-  // (v.ysm_roaming_xxx==N)?1:0
-  m = /^\(v\.(ysm_roaming_[a-z0-9_]+)==([0-9.]+)\)\?1:0$/i.exec(expr);
-  if (m) {
-    const cur = defaults.get(m[1].toLowerCase()) ?? 0;
-    return cur === Number(m[2]) ? 1 : 0;
-  }
-
-  // 0+v.ysm_roaming_xxx==1 之类宽松写法
-  m = /^0\+v\.(ysm_roaming_[a-z0-9_]+)==1$/i.exec(expr);
-  if (m) {
-    const cur = defaults.get(m[1].toLowerCase()) ?? 0;
-    return cur === 1 ? 1 : 0;
-  }
-
-  return undefined;
-}
-
 function stripTrailingDigits(name: string): string {
   return name.replace(/\d+$/, '');
 }
 
-/** 仅对明确的道具类伴随骨强制隐藏，避免误伤 Hair/Clothes */
+/**
+ * 仅对明确的道具类伴随骨强制隐藏，避免误伤 Hair/Clothes 等同前缀骨骼。
+ */
 function isPropAccessoryStem(stem: string): boolean {
   return /^(Fumo|Saisenbako|Table|Tatami|BigNiaoju|MiniSaisenbako|OnmyouDama|Goin|baijian|Niaoju)$/i.test(
     stem,
   );
 }
 
+/**
+ * 判断 scale 是否已是「全 0」（数字 / 字符串 / 三元组）。
+ */
 function isZeroScale(scale: ScaleChannel | undefined): boolean {
   if (scale === 0 || scale === '0') {
     return true;
