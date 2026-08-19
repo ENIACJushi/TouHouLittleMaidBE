@@ -25,78 +25,24 @@ npm run test:convert --move --uuid=你的-uuid
 
 #### 计划
 
-- [x] 核心目标：支持动画解析
-  - [x] 解析动画文件索引
-  - [x] 将动画信息加到实体定义里
-  - [x] 生成动画调用参数（已确定格式）
-- [x] 考虑取消sit等动画的动画控制器，实现动画转换的统一，并且过渡动画对一些动画来说是多余的，
-      比如汉服酒狐的坐下动画，长裙是通过缩小动画隐藏的
-- [x] 缩放。实际上和动画的关联非常高
-- [x] 彩蛋。对于酒狐来说比较重要，因为有狐形态（实际上是血量低的时候变成狐形态）
-- [x] palleral 动画，添加成本较低
-
-动画异常：
-- [x] 宇航员酒狐歪头时头发没歪：宇航员酒狐没有歪头动画（有头盔歪不动？），但是给了非 geck 模型的默认动画。
-  - 给 geck 通用默认动画
-- [x] 战术酒狐的枪会不停变大 winefox_tactics: 在 scale 使用了未定义的变量 `v.roaming.gun` 和 `v.roaming.humujing`
-  - 将未定义且暂无对应解析的 `scale` 变量统一设为 0。
-    不设为 1 是因为需要调整 scale 的模型骨骼通常是有隐藏状态的，相比可能导致异常或过于杂乱的显示状态，隐藏状态更可控。
-  - 这个 roaming 很奇怪，模型包里没有地方会设置 `roaming` 或 `gun` 的值，有可能是模组内置的变量。
-- [x] 年糕狐的茶杯会不停变大 rice_cake_fox
-- [x] 圣女酒狐头巾不断播放放大动画 winefox_saint
-- [x] 狐巫女没有行走动画 foxmaid
-- [x] 斯塔·柏隐形了 sta
-- [x] 年糕狐身体被隐藏 rice_cake_fox
-- [x] 精灵酒狐身体被隐藏 winefox_elf
-- [x] 精灵酒狐常态展示绿框 winefox_elf
-- [x] 幸存者酒狐常态展示狐形态 winefox_survivor
-- [x] 莫莫酒狐常态展示狐形态 winefox_momo
-- [x] 海螺狐常态展示攻击轨迹 hailuo
-- [x] 大酒狐常态展示办公椅 winefox_matured
-- [x] 魔法酒狐的魔法常态没有消失 winefox_magical
-- [x] 狐巫女坐下后会马上站起 foxmaid
-- [x] 部分酒狐眼睛没了，可能需要解析 blink 动画
-- [x] geck hug 动画兼容
-- [x] 大正酒狐低血量模式错误显示了常态模型
-- [x] 大酒狐常态展示伞 winefox_matured
-- [x] 宇航员酒狐总是处于彻底怒了的状态 winefox_astronaut
-- [x] 莫莫酒狐大量模型变量报错 winefox_momo
-- [x] 海螺狐大量模型变量报错 hailuo
-- [x] 幸存者酒狐大量模型变量报错 winefox_survivor
-- [x] 迷你酒狐抱起位置错误，骨骼位置异常 winefox_mini
-  原因未知，有可能和upbody枢纽点位置有关，因为通过改枢纽点可以基本对上动画。目前采用给迷你酒狐补充专用抱起动画解决
-- [x] 小酒狐抱起位置错误 winefox_little
-- [x] 海螺螺抱起位置偏前 hailuo
-- [x] k螺诺亚消失了 kluonoa
-- [x] k螺诺亚眼睛消失 kluonoa
-- [x] 年糕狐眼睛消失 rice_cake_fox
-- [x] 斯塔·柏眼睛消失 sta
-- [x] 圣女酒狐报错 winefox_saint
-  - Error: passing incorrect number of parameters to query.head_y_rotation - 
-    horses, zombie horses, skeleton horses, donkeys and mules require a clamp value in degrees while withers require
-    a head-index [0..2] - otherwise value must be 0
-  - head_y_rotation 需要提供参数，java版是直接调用的 → 无参 `query.head_y_rotation` / `q.head_y_rotation` 补为 `(0)`
-- [x] 部分酒狐没有摇尾巴（店员酒狐）
-  - 见 [docs/gecko-tail-physics-bedrock.md](docs/gecko-tail-physics-bedrock.md)：keep + timeline 抽到实体 scripts；
-    默认 0 必须放 `initialize` 而非每帧 `pre_animation`
-  - 莫莫酒狐：源文件补 parallel3/4 弹簧（与小酒狐一致），不改转换器
-- [x] 莫莫酒狐没有摇尾巴，状态固定在摇向一边
-- [x] 汉服酒狐坐下眉毛抖动：sit timeline 的 `v.biaoqing=math.random` 被抽到 pre_animation 后每帧重掷；改为进入坐下时只掷一次，
-      且不再每帧把 biaoqing 清 0
-- [x] 纸板狐(2)坐下时眉毛抖动，表情不断变化
-- [x] 纸板狐(3)坐下时眉毛抖动，表情不断变化
-- [x] 纸板狐(1)抱起位置偏高：使用专属抱起动画调整位置
-- [x] 浮点精度取整处理：不处理，会造成原本不闪的部分闪起来的问题
-- [x] 头发会穿模，需要补充头部角度变量
-  - `ysm.head_pitch` → `(-query.target_x_rotation)`（与 look_at_target 同源；YSM 抬头为正）
-  - `ysm.head_yaw` → `math.clamp(query.target_y_rotation,-80,80)`；position 取反并钳 ±30°
-  - gecko `look_at_target` 同时驱动 `head` / `Head`；自定义 gecko 缺省 parallel 不再套默认1，避免叠 LongHair
-
-- [x] 打个变量列表，没转换的也先记下来
+版本发布前：
+- [x] 调整idle动画播放条件
+- [x] 调整看玩家和beg的优先级，要高于闲逛
+- [x] 完成基础的ysm直转功能，解决一些明显、容易解决且回报高的问题；
+- [x] 为转换器实现两套配置：玩家转换，模板附带所有信息；默认包转换，模板仅附带手动转换的东方包
+- [ ] 加入将酒狐包等默认包
+- [ ] 行走动画的最低速度没有改全，动作幅度也需要使用0.05作为最低速度，不然从移动到静止的过渡会比较突兀
+- [ ] 表单化皮肤包配置。使用物品调出管理表单，皮肤包配置将作为一个分配置项，之后的皮肤包加载均使用json结构，以传递更多信息（或者也可以使用别的高效纯字符方案）
+- [ ] 皮肤自动变更：检测到女仆正在使用一个未注册的皮肤时，重新随机一个皮肤。触发时机需要看看现有事件，最好是女仆刚加载的时候，以后做女仆管理也是很有用的。（取名 onLoad）
+- [ ] 旧皮肤包检查：检查默认旧皮肤包的动画是否正常，同时也要检查旧皮肤包的转换是否正常
+- [ ] 压缩动画变量，将 坐下、躺下、抱起 等boolean状态合并为一个int变量，通过位运算获取值，省下宝贵的变量空间。
+  最好趁这次动画大改一起加进去，这是个兼容大坑
+- [ ] 实现一些简单动画，如 swing，
+  其实最关键的是要让脚本能调用，因为农作的破坏方块实际上是没有女仆参与的。
+- [ ] 都完成后，再加个坐垫包转换，应该比较容易
 
 低优先级：
 - 模型单独展示描述和作者，目前没位置放，需要确定方案
-- 纯 UI 皮肤包设置，因为指令需要开启作弊才能执行
 - 目前不实现覆盖默认女仆动画的逻辑，非is_gecko模型均使用默认动画
 - 支持按模型包排序（支持一个压缩包含有多模型包引入的需求）
 - 如果要用脚本调用动画，可能得靠指令来注册（目前没有需要脚本调用的动画），不确定是否有方便的修改实体动画参数的方法，指令动画实际上并不需要被注册在实体定义中

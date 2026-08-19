@@ -9,8 +9,8 @@ import {
 } from "./default/DefaultGeckoAnimation";
 import {
   DEFAULT_ANIMATION_ID,
-  ANIMATION_DEF_TEMPLATE,
   WALK_PROCESS_MOVING_MIN,
+  PROFILE,
 } from "../config";
 import {getDynamicMolangKeepFields, getDynamicMolangVariableDefaults} from "../molang/v/VariableResolvers";
 import {
@@ -43,9 +43,6 @@ const collectRegisteredScriptVars = (lines: string[]): Set<string> => {
 /** 门控脚本排序：pre_parallel 目标赋值优先于 parallel 弹簧积分 */
 const gatedScriptOrder = (script: string): number =>
   script.includes('animate_pre_parallel') ? 0 : 1;
-
-/** 与 SkinPackConvertor 一致：皮肤包属性 = packId + BASE_INDEX */
-const BASE_INDEX = 1000;
 
 /**
  * 各动画类型在 scripts.animate 中的额外触发条件
@@ -124,7 +121,7 @@ export class MaidAnimationConvertor {
    */
   async exportDefinition(): Promise<AnimationDefinition> {
     // 从模板创建基础动画定义
-    let res: AnimationDefinition = JSON.parse(JSON.stringify(ANIMATION_DEF_TEMPLATE));
+    let res: AnimationDefinition = JSON.parse(JSON.stringify(PROFILE.ANIMATION_DEF_TEMPLATE));
 
     // 记录已注册到 animations / animate 的 shortKey，避免重复
     const registered = new Set<string>();
@@ -450,7 +447,7 @@ export class MaidAnimationConvertor {
     ]);
 
     for (const packId of allPackIds) {
-      const skinPack = packId + BASE_INDEX;
+      const skinPack = packId + PROFILE.BASE_PACK_INDEX;
       const models = showConditions.get(packId);
       const scales = modelScale.get(packId);
       const geckoFlags = modelIsGecko.get(packId);

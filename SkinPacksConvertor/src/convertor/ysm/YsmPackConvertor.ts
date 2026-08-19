@@ -18,9 +18,9 @@ import {
   collectYsmHideBoneNames,
 } from './accessory/YsmAccessoryGeoHide';
 import {toSafeIdentifier} from './YsmIdentifier';
+import {PROFILE} from "../config";
 
 const TAG = 'YsmPackConvertor';
-const BASE_INDEX = 1000;
 
 /**
  * 女仆侧优先绑定的 YSM 动画角色（顺序有意义：后绑定可覆盖同名 clip）。
@@ -167,7 +167,7 @@ export class YsmPackConvertor {
    */
   private async convertMetadata() {
     const meta = this.manifest.metadata;
-    const packKey = this.packId + BASE_INDEX;
+    const packKey = this.packId + PROFILE.BASE_PACK_INDEX;
 
     // 包名
     const packName = meta?.name ?? this.modelId;
@@ -205,7 +205,7 @@ export class YsmPackConvertor {
       return;
     }
     const blob = await iconFile.async('blob');
-    this.res.textures_icon.file(`pack_pack_${this.packId + BASE_INDEX}.png`, blob);
+    this.res.textures_icon.file(`pack_pack_${this.packId + PROFILE.BASE_PACK_INDEX}.png`, blob);
   }
 
   /**
@@ -328,9 +328,9 @@ export class YsmPackConvertor {
       const displayName = this.manifest.metadata?.name
         ? (ordered.length > 1 ? `${this.manifest.metadata.name} (${texBase})` : this.manifest.metadata.name)
         : `${this.modelId}_${texBase}`;
-      this.res.lang.setLang(`model.${this.packId + BASE_INDEX}.${seq}.name`, displayName);
+      this.res.lang.setLang(`model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.name`, displayName);
       this.res.lang.setLang(
-        `model.${this.packId + BASE_INDEX}.${seq}.desc`,
+        `model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.desc`,
         this.manifest.metadata?.tips ?? '',
       );
 
@@ -410,9 +410,9 @@ export class YsmPackConvertor {
 
   private finalizeRenderController() {
     this.pack_controller['geometry'] = this.pack_controller['geometry']
-      .replace('<index>', `${this.packId + BASE_INDEX}`);
+      .replace('<index>', `${this.packId + PROFILE.BASE_PACK_INDEX}`);
     this.pack_controller['textures'][0] = this.pack_controller['textures'][0]
-      .replace('<index>', `${this.packId + BASE_INDEX}`);
+      .replace('<index>', `${this.packId + PROFILE.BASE_PACK_INDEX}`);
 
     this.res.render_controller['render_controllers'][
       `controller.render.touhou_little_maid.pack_${this.packNameSafe}`

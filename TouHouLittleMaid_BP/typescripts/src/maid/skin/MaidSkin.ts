@@ -6,7 +6,10 @@ export class MaidSkin {
   /* 预置模型包参数 */
   static readonly PLACEHOLDER: number = 1000; // 最大预置模型包预留序号（不可更改此常量，否则皮肤包会出问题）
   static readonly DEFAULT_PACKS: [number, number][] = [
-    [0, 120]
+    [0, 120], // 东方
+    [1, 10], // 作者、贡献者
+    [2, 27], // 酒狐
+    [3, 4], // Minecraft
   ];
   /* 通用参数 */
   static readonly SCOREBOARD_NAME_OLD = 'thlmskin'; // 旧计分板 id，因为在默认模型包的记录上有缺陷，不再使用

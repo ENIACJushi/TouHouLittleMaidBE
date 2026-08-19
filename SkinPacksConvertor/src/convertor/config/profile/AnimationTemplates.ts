@@ -1,13 +1,14 @@
 import {
   DEFAULT_ANIMATION_ID,
   WALK_PROCESS_MOVING_MIN,
-} from "./Constants";
-import {buildSkinPackAnimationName} from "../animation/default/DefaultGeckoAnimation";
-import {AnimationTypes} from "../animation/types/AnimationTypes";
-import {AnimationDefinition} from "../animation/MaidAnimationConvertor";
+} from "../Constants";
+import {buildSkinPackAnimationName} from "../../animation/default/DefaultGeckoAnimation";
+import {AnimationTypes} from "../../animation/types/AnimationTypes";
+import {AnimationDefinition} from "../../animation/MaidAnimationConvertor";
 
 /**
- * 动画定义基础模板，导出的定义在此基础上生成
+ * 基础动画定义基础模板，只包含手动转换的东方包
+ * 内置包在此基础上生成
  */
 export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
   scripts: {

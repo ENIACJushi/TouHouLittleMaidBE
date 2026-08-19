@@ -5,9 +5,9 @@ import {MaidModelJava, TLMMaidModelInfo} from "./model/MaidModelJava";
 import {LangFile, LangFileType, LangType} from "./model/LangFile";
 import {ResourceManager} from "./resource_manager/ResourceManager";
 import {AnimationManager} from "./resource_manager/AnimationManager";
+import {PROFILE} from "./config";
 
 const TAG = 'SkinPackConvertor';
-const BASE_INDEX = 1000;
 
 /**
  * 子模型包转换器
@@ -89,7 +89,7 @@ export class SkinPackConvertor {
     if (icon) {
       let blob = await icon.async('blob');
       blob = await this.cropIconFirstFrame(blob);
-      this.res.textures_icon.file(`pack_pack_${this.packId + BASE_INDEX}.png`, blob);
+      this.res.textures_icon.file(`pack_pack_${this.packId + PROFILE.BASE_PACK_INDEX}.png`, blob);
     }
   }
 
@@ -262,11 +262,11 @@ export class SkinPackConvertor {
     // 解析图标 icon
     await this.parseIcon(inputJson.icon);
     // 解析作者字符串 author，使用通用 I18n 文本/数组解析方案
-    this.parseI18n(`maid_pack.${this.packId + BASE_INDEX}.authors`, inputJson.author);
+    this.parseI18n(`maid_pack.${this.packId + PROFILE.BASE_PACK_INDEX}.authors`, inputJson.author);
     // 解析包名 pack_name，使用通用 I18n 文本解析方案
-    this.parseI18nText(`maid_pack.${this.packId + BASE_INDEX}.name`, inputJson.pack_name);
+    this.parseI18nText(`maid_pack.${this.packId + PROFILE.BASE_PACK_INDEX}.name`, inputJson.pack_name);
     // 解析包描述 description，使用通用 I18n 文本数组解析方案
-    this.parseI18nTextArray(`maid_pack.${this.packId + BASE_INDEX}.desc`, inputJson.description);
+    this.parseI18nTextArray(`maid_pack.${this.packId + PROFILE.BASE_PACK_INDEX}.desc`, inputJson.description);
 
     // 解析模型列表 model_list
     this.res.modelAmount[this.packId - 1] = inputJson.model_list.length; // 确定模型数量
@@ -276,9 +276,9 @@ export class SkinPackConvertor {
 
     // 在包渲染控制器定义 variant 对应的皮肤和模型
     this.pack_controller["geometry"] = this.pack_controller["geometry"]
-      .replace("<index>", `${this.packId + BASE_INDEX}`);
+      .replace("<index>", `${this.packId + PROFILE.BASE_PACK_INDEX}`);
     this.pack_controller["textures"][0] = this.pack_controller["textures"][0]
-      .replace("<index>", `${this.packId + BASE_INDEX}`);
+      .replace("<index>", `${this.packId + PROFILE.BASE_PACK_INDEX}`);
     // 将包渲染控制器添加到总渲染控制器
     this.res.render_controller["render_controllers"][`controller.render.touhou_little_maid.pack_${this.packNameSafe}`] =
       this.pack_controller;
@@ -316,7 +316,7 @@ export class SkinPackConvertor {
   }
   /** 解析模型 - 名称 name */
   private parseModelName(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
-    const nameKey = `model.${this.packId + BASE_INDEX}.${seq}.name`; // 基岩版文本键
+    const nameKey = `model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.name`; // 基岩版文本键
     const infoName = modelInfo.name;
     if (infoName === undefined) {
       // 缺省时，使用 `{model.<namespace>.<path>.name}`，其中 `<namespace>` 和 `<path>` 来自 `model_id`
@@ -328,7 +328,7 @@ export class SkinPackConvertor {
   }
   /** 解析模型 - 描述 description */
   private parseModelDesc(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
-    const descKey = `model.${this.packId + BASE_INDEX}.${seq}.desc`; // 基岩版文本键
+    const descKey = `model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.desc`; // 基岩版文本键
     if (modelInfo.description === undefined) {
       this.res.lang.setLang(descKey, this.langJava.getLang(`model.${idInfo.namespace}.${idInfo.path}.desc`));
     } else {

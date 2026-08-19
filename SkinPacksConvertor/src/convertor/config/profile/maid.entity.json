@@ -1,0 +1,432 @@
+{
+	"format_version": "1.10.0",
+	"minecraft:client_entity": {
+		"description": {
+			"identifier": "thlmm:maid",
+			"textures": {
+				"koishi_texture": "textures/koishi/entity/texture",
+				"koishi_texture2": "textures/koishi/entity/texture2",
+				"koishi_texture3": "textures/koishi/entity/texture3",
+				"koishi_texture4": "textures/koishi/entity/texture4"
+			},
+			"geometry": {
+				"koishi_texture": "geometry.koishi.main",
+				"koishi_texture2": "geometry.koishi.main",
+				"koishi_texture3": "geometry.koishi.main",
+				"koishi_texture4": "geometry.koishi.main"
+			},
+			"render_controllers": [
+				"controller.render.touhou_little_maid.maid.maid_backpack",
+				"controller.render.touhou_little_maid.maid.emote",
+				"controller.render.touhou_little_maid.maid_touhou_little_maid",
+				"controller.render.touhou_little_maid.maid.statue_base",
+				"controller.render.touhou_little_maid.pack_koishi"
+			],
+			"scripts": {
+				"scale": "query.property('thlm:scale') * v.scale",
+				"initialize": [
+					"v.biaoqing=0;",
+					"v.bv=0;",
+					"v.idleclock=0;",
+					"v.idlerandom=0;",
+					"v.tlm_anim_once_parallel0_100=0;",
+					"v.L1_F=0;",
+					"v.L1_C=0;",
+					"v.L1_R=0;",
+					"v.L1_K1=0;",
+					"v.L1_K2=0;",
+					"v.L1_K3=0;",
+					"v.L2_F=0;",
+					"v.L2_C=0;",
+					"v.L2_R=0;",
+					"v.L2_K1=0;",
+					"v.L2_K2=0;",
+					"v.L2_K3=0;",
+					"v.L3_F=0;",
+					"v.L3_C=0;",
+					"v.L3_R=0;",
+					"v.L3_K1=0;",
+					"v.L3_K2=0;",
+					"v.L3_K3=0;",
+					"v.L4_F=0;",
+					"v.L4_C=0;",
+					"v.L4_R=0;",
+					"v.L4_K1=0;",
+					"v.L4_K2=0;",
+					"v.L4_K3=0;",
+					"v.L5_F=0;",
+					"v.L5_C=0;",
+					"v.L5_R=0;",
+					"v.L5_K1=0;",
+					"v.L5_K2=0;",
+					"v.L5_K3=0;",
+					"v.L6_F=0;",
+					"v.L6_C=0;",
+					"v.L6_R=0;",
+					"v.L6_K1=0;",
+					"v.L6_K2=0;",
+					"v.L6_K3=0;",
+					"v.L7_F=0;",
+					"v.L7_C=0;",
+					"v.L7_R=0;",
+					"v.L7_K1=0;",
+					"v.L7_K2=0;",
+					"v.L7_K3=0;",
+					"v.L8_F=0;",
+					"v.L8_C=0;",
+					"v.L8_R=0;",
+					"v.L8_K1=0;",
+					"v.L8_K2=0;",
+					"v.L8_K3=0;",
+					"v.L9_F=0;",
+					"v.L9_C=0;",
+					"v.L9_R=0;",
+					"v.L9_K1=0;",
+					"v.L9_K2=0;",
+					"v.L9_K3=0;",
+					"v.L10_F=0;",
+					"v.L10_C=0;",
+					"v.L10_R=0;",
+					"v.L10_K1=0;",
+					"v.L10_K2=0;",
+					"v.L10_K3=0;",
+					"v.L11_F=0;",
+					"v.L11_C=0;",
+					"v.L11_R=0;",
+					"v.L11_K1=0;",
+					"v.L11_K2=0;",
+					"v.L11_K3=0;",
+					"v.L1_P1=0;",
+					"v.L2_P1=0;",
+					"v.L3_P1=0;",
+					"v.L4_P1=0;",
+					"v.L5_P1=0;",
+					"v.L6_P1=0;",
+					"v.L6_P10=0;",
+					"v.L7_P1=0;",
+					"v.L8_P1=0;",
+					"v.L9_P1=0;",
+					"v.L10_P1=0;",
+					"v.L11_P1=0;",
+					"v.L1_P1dot=0;",
+					"v.L2_P1dot=0;",
+					"v.L3_P1dot=0;",
+					"v.L4_P1dot=0;",
+					"v.L5_P1dot=0;",
+					"v.L6_P1dot=0;",
+					"v.L6_P10dot=0;",
+					"v.L7_P1dot=0;",
+					"v.L8_P1dot=0;",
+					"v.L9_P1dot=0;",
+					"v.L10_P1dot=0;",
+					"v.L11_P1dot=0;",
+					"v.L1_P0=0;",
+					"v.L2_P0=0;",
+					"v.L3_P0=0;",
+					"v.L4_P0=0;",
+					"v.L5_P0=0;",
+					"v.L6_P0=0;",
+					"v.L6_P00=0;",
+					"v.L7_P0=0;",
+					"v.L8_P0=0;",
+					"v.L9_P0=0;",
+					"v.L10_P0=0;",
+					"v.L11_P0=0;",
+					"v.L1_P0dot=0;",
+					"v.L2_P0dot=0;",
+					"v.L3_P0dot=0;",
+					"v.L4_P0dot=0;",
+					"v.L5_P0dot=0;",
+					"v.L6_P0dot=0;",
+					"v.L6_P00dot=0;",
+					"v.L7_P0dot=0;",
+					"v.L8_P0dot=0;",
+					"v.L9_P0dot=0;",
+					"v.L10_P0dot=0;",
+					"v.L11_P0dot=0;",
+					"v.Lyanxs=0;",
+					"v.Ryanxs=0;",
+					"v.zuixsx=0;",
+					"v.zuixsy=0;",
+					"v.ysm_roaming_a=0;",
+					"v.ysm_roaming_baijian=0;",
+					"v.ysm_roaming_bianzi=0;",
+					"v.ysm_roaming_c=0;",
+					"v.ysm_roaming_changfa=0;",
+					"v.ysm_roaming_fumo=1;",
+					"v.ysm_roaming_hudie=0;",
+					"v.ysm_roaming_hy=0;",
+					"v.ysm_roaming_kouzhao=0;",
+					"v.ysm_roaming_maozi=0;",
+					"v.ysm_roaming_mawei=0;",
+					"v.ysm_roaming_meigui=0;",
+					"v.ysm_roaming_mianju=0;",
+					"v.ysm_roaming_mima1=1;",
+					"v.ysm_roaming_mima2=1;",
+					"v.ysm_roaming_mima3=1;",
+					"v.ysm_roaming_mima4=1;",
+					"v.ysm_roaming_mima5=1;",
+					"v.ysm_roaming_mima6=1;",
+					"v.ysm_roaming_naian=0;",
+					"v.ysm_roaming_nasan=0;",
+					"v.ysm_roaming_niaoju=1;",
+					"v.ysm_roaming_qianfa=0;",
+					"v.ysm_roaming_qunzi=0;",
+					"v.ysm_roaming_r=0;",
+					"v.ysm_roaming_saihong=0;",
+					"v.ysm_roaming_saiqian=1;",
+					"v.ysm_roaming_saiqian2=0;",
+					"v.ysm_roaming_sh=0;",
+					"v.ysm_roaming_shangyi=0;",
+					"v.ysm_roaming_shoutao=0;",
+					"v.ysm_roaming_table=1;",
+					"v.ysm_roaming_tatami=1;",
+					"v.ysm_roaming_wazi=0;",
+					"v.ysm_roaming_weijin=0;",
+					"v.ysm_roaming_xian=0;",
+					"v.ysm_roaming_xiezi=0;",
+					"v.ysm_roaming_xiuzi=0;",
+					"v.ysm_roaming_yan=0;",
+					"v.ysm_roaming_yantong=0;",
+					"v.ysm_roaming_yinghua=0;",
+					"v.ysm_roaming_zui=0;"
+				],
+				"pre_animation": [
+					"v.ysm_roaming_fumo=1;",
+					"v.ysm_roaming_mima1=1;",
+					"v.ysm_roaming_mima2=1;",
+					"v.ysm_roaming_mima3=1;",
+					"v.ysm_roaming_mima4=1;",
+					"v.ysm_roaming_mima5=1;",
+					"v.ysm_roaming_mima6=1;",
+					"v.ysm_roaming_niaoju=1;",
+					"v.ysm_roaming_saiqian=1;",
+					"v.ysm_roaming_table=1;",
+					"v.ysm_roaming_tatami=1;",
+					"variable.walk_process = Math.min(1, Math.abs(query.modified_move_speed / 0.9));",
+					"variable.gliding_speed_value = 1;",
+					"variable.tcos0 = (Math.cos(query.modified_distance_moved * 38.17) * query.modified_move_speed / variable.gliding_speed_value) * 28.65;",
+					"variable.emote_index=Math.mod(query.property('thlm:emote'),1000);",
+					"variable.emote_frame=Math.max(1, Math.mod( Math.floor(query.property('thlm:emote')/1000), 1000) );",
+					"variable.emote_speed=Math.max(1, Math.floor(query.property('thlm:emote')/1000000) );",
+					"v.ysm_blink_at = v.ysm_blink_at ?? (query.life_time + math.random(2.5, 4));",
+					"v.ysm_is_close_eyes = query.life_time >= v.ysm_blink_at && query.life_time < v.ysm_blink_at + 0.15;",
+					"v.ysm_blink_at = query.life_time >= v.ysm_blink_at + 0.15 ? (query.life_time + math.random(2, 4)) : v.ysm_blink_at;",
+					"v.tlm_is_hug = query.property('thlm:is_hug');",
+					"v.tlm_is_sitting = query.property('thlm:is_sitting');",
+					"v.tlm_is_gecko = 0;",
+					"v.tlm_suppress_molang_blink = 0;",
+					"v.exp = 0;",
+					"v.scale = 1;",
+					"v.animate_blink = 1;",
+					"v.animate_hug = 0;",
+					"v.animate_walk = 0;",
+					"v.animate_beg = 0;",
+					"v.animate_sit = 0;",
+					"v.animate_idle = 0;",
+					"v.animate_parallel0 = 0;",
+					"v.animate_parallel1 = 0;",
+					"v.animate_parallel2 = 0;",
+					"v.animate_parallel3 = 0;",
+					"v.animate_parallel4 = 0;",
+					"v.animate_parallel5 = 0;",
+					"v.animate_parallel6 = 0;",
+					"v.animate_parallel7 = 0;",
+					"v.animate_pre_parallel0 = 0;",
+					"v.animate_pre_parallel1 = 0;",
+					"v.animate_pre_parallel2 = 0;",
+					"v.animate_pre_parallel3 = 0;",
+					"v.animate_pre_parallel4 = 0;",
+					"v.animate_pre_parallel5 = 0;",
+					"v.animate_pre_parallel6 = 0;",
+					"v.animate_pre_parallel7 = 0;",
+					"temp.pack=q.property('thlm:skin_pack');temp.model=q.variant;(temp.pack == 1001) ? { (temp.model==0) ? { v.scale=0.7;v.animate_hug=1;v.animate_walk=100;v.animate_beg=101;v.animate_sit=100;v.animate_parallel0=100;v.animate_parallel1=100;v.animate_parallel2=100;v.animate_parallel3=100;v.animate_parallel4=100;v.animate_parallel5=0;v.animate_parallel6=0;v.animate_parallel7=0;v.animate_pre_parallel0=100;v.animate_pre_parallel1=100;v.animate_pre_parallel2=100;v.animate_pre_parallel3=100;v.animate_pre_parallel4=100;v.animate_pre_parallel5=100;v.animate_pre_parallel6=100;v.animate_pre_parallel7=0;v.animate_idle=100;v.animate_blink=0;v.tlm_is_gecko=1; };(temp.model==1) ? { v.scale=0.7;v.animate_hug=1;v.animate_walk=100;v.animate_beg=101;v.animate_sit=100;v.animate_parallel0=100;v.animate_parallel1=100;v.animate_parallel2=100;v.animate_parallel3=100;v.animate_parallel4=100;v.animate_parallel5=0;v.animate_parallel6=0;v.animate_parallel7=0;v.animate_pre_parallel0=100;v.animate_pre_parallel1=100;v.animate_pre_parallel2=100;v.animate_pre_parallel3=100;v.animate_pre_parallel4=100;v.animate_pre_parallel5=100;v.animate_pre_parallel6=100;v.animate_pre_parallel7=0;v.animate_idle=100;v.animate_blink=0;v.tlm_is_gecko=1; };(temp.model==2) ? { v.scale=0.7;v.animate_hug=1;v.animate_walk=100;v.animate_beg=101;v.animate_sit=100;v.animate_parallel0=100;v.animate_parallel1=100;v.animate_parallel2=100;v.animate_parallel3=100;v.animate_parallel4=100;v.animate_parallel5=0;v.animate_parallel6=0;v.animate_parallel7=0;v.animate_pre_parallel0=100;v.animate_pre_parallel1=100;v.animate_pre_parallel2=100;v.animate_pre_parallel3=100;v.animate_pre_parallel4=100;v.animate_pre_parallel5=100;v.animate_pre_parallel6=100;v.animate_pre_parallel7=0;v.animate_idle=100;v.animate_blink=0;v.tlm_is_gecko=1; };(temp.model==3) ? { v.scale=0.7;v.animate_hug=1;v.animate_walk=100;v.animate_beg=101;v.animate_sit=100;v.animate_parallel0=100;v.animate_parallel1=100;v.animate_parallel2=100;v.animate_parallel3=100;v.animate_parallel4=100;v.animate_parallel5=0;v.animate_parallel6=0;v.animate_parallel7=0;v.animate_pre_parallel0=100;v.animate_pre_parallel1=100;v.animate_pre_parallel2=100;v.animate_pre_parallel3=100;v.animate_pre_parallel4=100;v.animate_pre_parallel5=100;v.animate_pre_parallel6=100;v.animate_pre_parallel7=0;v.animate_idle=100;v.animate_blink=0;v.tlm_is_gecko=1; }; };",
+					"(v.animate_pre_parallel3==100) ? { v.Lyanxs=1;v.Ryanxs=1;v.zuixsx=1;v.zuixsy=1; };",
+					"(v.animate_walk==100) ? { v.bv=math.sin(20+query.life_time*800)*3; };",
+					"(v.animate_parallel0==100) ? { (v.tlm_anim_once_parallel0_100==0) ? { v.idleclock=(v.idleclock<32?(v.idleclock+math.random(5,9)):0);v.idlerandom=(v.idleclock>32?math.random_integer(1,10):v.idlerandom);v.tlm_anim_once_parallel0_100=1; }; } : { v.tlm_anim_once_parallel0_100=0; };",
+					"(v.animate_parallel2==100) ? { v.L1_F=2;v.L1_C=0.6;v.L1_R=90;v.L1_K1=v.L1_C/math.pi/v.L1_F;v.L1_K2=1/math.pow(2*math.pi*v.L1_F,2);v.L1_K3=v.L1_R*v.L1_C/2/math.pi/v.L1_F;v.L2_F=2;v.L2_C=0.6;v.L2_R=60;v.L2_K1=v.L2_C/math.pi/v.L2_F;v.L2_K2=1/math.pow(2*math.pi*v.L2_F,2);v.L2_K3=v.L2_R*v.L2_C/2/math.pi/v.L2_F;v.L3_F=2;v.L3_C=0.6;v.L3_R=15;v.L3_K1=v.L3_C/math.pi/v.L3_F;v.L3_K2=1/math.pow(2*math.pi*v.L3_F,2);v.L3_K3=v.L3_R*v.L3_C/2/math.pi/v.L3_F;v.L4_F=2;v.L4_C=0.5;v.L4_R=28;v.L4_K1=v.L4_C/math.pi/v.L4_F;v.L4_K2=1/math.pow(2*math.pi*v.L4_F,2);v.L4_K3=v.L4_R*v.L4_C/2/math.pi/v.L4_F;v.L5_F=2;v.L5_C=0.5;v.L5_R=28;v.L5_K1=v.L5_C/math.pi/v.L5_F;v.L5_K2=1/math.pow(2*math.pi*v.L5_F,2);v.L5_K3=v.L5_R*v.L5_C/2/math.pi/v.L5_F;v.L6_F=1.2;v.L6_C=0.8;v.L6_R=10;v.L6_K1=v.L6_C/math.pi/v.L6_F;v.L6_K2=1/math.pow(2*math.pi*v.L6_F,2);v.L6_K3=v.L6_R*v.L6_C/2/math.pi/v.L6_F;v.L7_F=5;v.L7_C=0.2;v.L7_R=160;v.L7_K1=v.L7_C/math.pi/v.L7_F;v.L7_K2=1/math.pow(2*math.pi*v.L7_F,2);v.L7_K3=v.L7_R*v.L7_C/2/math.pi/v.L7_F;v.L8_F=5;v.L8_C=0.2;v.L8_R=160;v.L8_K1=v.L8_C/math.pi/v.L8_F;v.L8_K2=1/math.pow(2*math.pi*v.L8_F,2);v.L8_K3=v.L8_R*v.L8_C/2/math.pi/v.L8_F;v.L9_F=1.2;v.L9_C=0.6;v.L9_R=10;v.L9_K1=v.L9_C/math.pi/v.L9_F;v.L9_K2=1/math.pow(2*math.pi*v.L9_F,2);v.L9_K3=v.L9_R*v.L9_C/2/math.pi/v.L9_F;v.L10_F=1.2;v.L10_C=0.6;v.L10_R=10;v.L10_K1=v.L10_C/math.pi/v.L10_F;v.L10_K2=1/math.pow(2*math.pi*v.L10_F,2);v.L10_K3=v.L10_R*v.L10_C/2/math.pi/v.L10_F;v.L11_F=1.2;v.L11_C=0.6;v.L11_R=10;v.L11_K1=v.L11_C/math.pi/v.L11_F;v.L11_K2=1/math.pow(2*math.pi*v.L11_F,2);v.L11_K3=v.L11_R*v.L11_C/2/math.pi/v.L11_F; };",
+					"(v.animate_parallel3==100) ? { v.L1_P1=v.L1_P0+0.01*v.L1_P0dot;v.L2_P1=v.L2_P0+0.01*v.L2_P0dot;v.L3_P1=v.L3_P0+0.01*v.L3_P0dot;v.L4_P1=v.L4_P0+0.01*v.L4_P0dot;v.L5_P1=v.L5_P0+0.01*v.L5_P0dot;v.L6_P1=v.L6_P0+0.01*v.L6_P0dot;v.L6_P10=v.L6_P00+0.01*v.L6_P00dot;v.L7_P1=v.L7_P0+0.01*v.L7_P0dot;v.L8_P1=v.L8_P0+0.01*v.L8_P0dot;v.L9_P1=v.L9_P0+0.01*v.L9_P0dot;v.L10_P1=v.L10_P0+0.01*v.L10_P0dot;v.L11_P1=v.L11_P0+0.01*v.L11_P0dot;v.L1_P1dot=v.L1_P0dot+0.01*(v.L1_K3*math.clamp(q.vertical_speed+0,-30,1)-v.L1_P1-v.L1_K1*v.L1_P0dot)/v.L1_K2;v.L2_P1dot=v.L2_P0dot+0.01*(v.L2_K3*math.clamp(2*q.ground_speed+0,0,30)-v.L2_P1-v.L2_K1*v.L2_P0dot)/v.L2_K2;v.L3_P1dot=v.L3_P0dot+0.01*(v.L3_K3*math.clamp(q.yaw_speed,-600,600)-v.L3_P1-v.L3_K1*v.L3_P0dot)/v.L3_K2;v.L4_P1dot=v.L4_P0dot+0.01*(v.L4_K3*math.clamp((math.min(q.yaw_speed,-300)+math.max(q.yaw_speed,300)),-300,300)-v.L4_P1-v.L4_K1*v.L4_P0dot)/v.L4_K2;v.L5_P1dot=v.L5_P0dot+0.01*(v.L5_K3*((-query.target_x_rotation)>-40?(-query.target_x_rotation):-40)-v.L5_P1-v.L5_K1*v.L5_P0dot)/v.L5_K2;v.L6_P1dot=v.L6_P0dot+0.01*(v.L6_K3*(math.clamp(query.target_y_rotation,-80,80))-v.L6_P1-v.L6_K1*v.L6_P0dot)/v.L6_K2;v.L6_P10dot=v.L6_P00dot+0.01*(v.L6_K3*(-query.target_x_rotation)-v.L6_P10-v.L6_K1*v.L6_P00dot)/v.L6_K2;v.L7_P1dot=v.L7_P0dot+0.01*(v.L7_K3*math.clamp(q.vertical_speed+v.bv,-30,30)-v.L7_P1-v.L7_K1*v.L7_P0dot)/v.L7_K2;v.L8_P1dot=v.L8_P0dot+0.01*(v.L8_K3*math.clamp(q.ground_speed+0,0,20)-v.L8_P1-v.L8_K1*v.L8_P0dot)/v.L8_K2;v.L9_P1dot=v.L9_P0dot+0.01*(v.L9_K3*(100*query.position_delta(0))-v.L9_P1-v.L9_K1*v.L9_P0dot)/v.L9_K2;v.L10_P1dot=v.L10_P0dot+0.01*(v.L10_K3*(100*query.position_delta(1))-v.L10_P1-v.L10_K1*v.L10_P0dot)/v.L10_K2;v.L11_P1dot=v.L11_P0dot+0.01*(v.L11_K3*(100*query.position_delta(2))-v.L11_P1-v.L11_K1*v.L11_P0dot)/v.L11_K2;v.L1_P0=v.L1_P1;v.L2_P0=v.L2_P1;v.L3_P0=v.L3_P1;v.L4_P0=v.L4_P1;v.L5_P0=v.L5_P1;v.L6_P0=v.L6_P1;v.L6_P00=v.L6_P10;v.L7_P0=v.L7_P1;v.L8_P0=v.L8_P1;v.L9_P0=v.L9_P1;v.L10_P0=v.L10_P1;v.L11_P0=v.L11_P1;v.L1_P0dot=v.L1_P1dot;v.L2_P0dot=v.L2_P1dot;v.L3_P0dot=v.L3_P1dot;v.L4_P0dot=v.L4_P1dot;v.L5_P0dot=v.L5_P1dot;v.L6_P0dot=v.L6_P1dot;v.L6_P00dot=v.L6_P10dot;v.L7_P0dot=v.L7_P1dot;v.L8_P0dot=v.L8_P1dot;v.L9_P0dot=v.L9_P1dot;v.L10_P0dot=v.L10_P1dot;v.L11_P0dot=v.L11_P1dot; };"
+				],
+				"should_update_bones_and_effects_offscreen": true,
+				"animate": [
+					"backpack_offset",
+					"wing",
+					"emote",
+					{
+						"statue_base": "(q.property('thlm:work') >= -4) && (q.property('thlm:work') <= -2)"
+					},
+					{
+						"look_at_target": "!v.tlm_is_hug"
+					},
+					{
+						"blink": "v.animate_blink == 0 && query.property('thlm:work') >= -1"
+					},
+					{
+						"hug": "v.animate_hug == 0 && !q.is_in_ui && v.tlm_is_hug"
+					},
+					{
+						"walk": "v.animate_walk == 0 && !v.tlm_is_sitting && v.walk_process>0.05"
+					},
+					{
+						"beg": "v.animate_beg == 0 && query.is_interested"
+					},
+					{
+						"sit": "v.animate_sit == 0 && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug"
+					},
+					{
+						"hug_1": "v.animate_hug == 1 && !q.is_in_ui && v.tlm_is_hug"
+					},
+					{
+						"gecko_hug_base": "v.animate_hug != 0 && !q.is_in_ui && v.tlm_is_hug"
+					},
+					{
+						"walk_1": "v.animate_walk == 1 && !v.tlm_is_sitting && v.walk_process>0.05"
+					},
+					{
+						"beg_1": "v.animate_beg == 1 && query.is_interested"
+					},
+					{
+						"sit_1": "v.animate_sit == 1 && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug"
+					},
+					{
+						"idle_1": "v.animate_idle == 1 && !v.tlm_is_sitting && !v.tlm_is_hug && v.walk_process<=0.05"
+					},
+					{
+						"parallel0_1": "v.animate_parallel0 == 1"
+					},
+					{
+						"parallel1_1": "v.animate_parallel1 == 1"
+					},
+					{
+						"parallel2_1": "v.animate_parallel2 == 1"
+					},
+					{
+						"parallel3_1": "v.animate_parallel3 == 1"
+					},
+					{
+						"pre_parallel0_1": "v.animate_pre_parallel0 == 1"
+					},
+					{
+						"pre_parallel1_1": "v.animate_pre_parallel1 == 1"
+					},
+					{
+						"pre_parallel2_1": "v.animate_pre_parallel2 == 1"
+					},
+					{
+						"pre_parallel3_1": "v.animate_pre_parallel3 == 1"
+					},
+					{
+						"pre_parallel4_1": "v.animate_pre_parallel4 == 1"
+					},
+					{
+						"pre_parallel5_1": "v.animate_pre_parallel5 == 1"
+					},
+					{
+						"pre_parallel6_1": "v.animate_pre_parallel6 == 1"
+					},
+					{
+						"pre_parallel7_1": "v.animate_pre_parallel7 == 1"
+					},
+					{
+						"pre_parallel0_eye_1": "v.animate_pre_parallel0==1 && !v.tlm_suppress_molang_blink"
+					},
+					{
+						"walk_100": "v.animate_walk==100 && !v.tlm_is_sitting && v.walk_process>0.05"
+					},
+					{
+						"sit_100": "v.animate_sit==100 && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug"
+					},
+					{
+						"parallel0_100": "v.animate_parallel0==100"
+					},
+					{
+						"parallel1_100": "v.animate_parallel1==100"
+					},
+					{
+						"parallel2_100": "v.animate_parallel2==100"
+					},
+					{
+						"parallel3_100": "v.animate_parallel3==100"
+					},
+					{
+						"parallel4_100": "v.animate_parallel4==100"
+					},
+					{
+						"pre_parallel0_100": "v.animate_pre_parallel0==100"
+					},
+					{
+						"pre_parallel1_100": "v.animate_pre_parallel1==100"
+					},
+					{
+						"pre_parallel2_100": "v.animate_pre_parallel2==100"
+					},
+					{
+						"pre_parallel3_100": "v.animate_pre_parallel3==100"
+					},
+					{
+						"pre_parallel4_100": "v.animate_pre_parallel4==100"
+					},
+					{
+						"pre_parallel5_100": "v.animate_pre_parallel5==100"
+					},
+					{
+						"pre_parallel6_100": "v.animate_pre_parallel6==100"
+					},
+					{
+						"idle_100": "v.animate_idle==100 && !v.tlm_is_sitting && !v.tlm_is_hug && v.walk_process<=0.05"
+					},
+					{
+						"beg_101": "v.animate_beg==101 && query.is_interested"
+					}
+				]
+			},
+			"animations": {
+				"backpack_offset": "animation.touhou_little_maid.maid.backpack_offset",
+				"wing": "animation.touhou_little_maid.basic.wing",
+				"emote": "animation.touhou_little_maid.emote",
+				"statue_base": "animation.touhou_little_maid.statue_base",
+				"look_at_target": "animation.touhou_little_maid.maid.look_at_target",
+				"hug": "animation.touhou_little_maid.maid.hug",
+				"blink": "animation.touhou_little_maid.basic.blink",
+				"walk": "animation.touhou_little_maid.basic.walk",
+				"beg": "animation.touhou_little_maid.maid.beg",
+				"sit": "animation.touhou_little_maid.maid.sit",
+				"hug_1": "animation.tlm.skin_pack.1.hug",
+				"gecko_hug_base": "animation.touhou_little_maid.maid.hug_gecko_base",
+				"walk_1": "animation.tlm.skin_pack.1.walk",
+				"beg_1": "animation.tlm.skin_pack.1.beg",
+				"sit_1": "animation.tlm.skin_pack.1.sit",
+				"idle_1": "animation.tlm.skin_pack.1.idle",
+				"parallel0_1": "animation.tlm.skin_pack.1.parallel0",
+				"parallel1_1": "animation.tlm.skin_pack.1.parallel1",
+				"parallel2_1": "animation.tlm.skin_pack.1.parallel2",
+				"parallel3_1": "animation.tlm.skin_pack.1.parallel3",
+				"pre_parallel0_1": "animation.tlm.skin_pack.1.pre_parallel0",
+				"pre_parallel1_1": "animation.tlm.skin_pack.1.pre_parallel1",
+				"pre_parallel2_1": "animation.tlm.skin_pack.1.pre_parallel2",
+				"pre_parallel3_1": "animation.tlm.skin_pack.1.pre_parallel3",
+				"pre_parallel4_1": "animation.tlm.skin_pack.1.pre_parallel4",
+				"pre_parallel5_1": "animation.tlm.skin_pack.1.pre_parallel5",
+				"pre_parallel6_1": "animation.tlm.skin_pack.1.pre_parallel6",
+				"pre_parallel7_1": "animation.tlm.skin_pack.1.pre_parallel7",
+				"pre_parallel0_eye_1": "animation.tlm.skin_pack.1.pre_parallel0_eye",
+				"walk_100": "animation.tlm.skin_pack.100.walk",
+				"sit_100": "animation.tlm.skin_pack.100.sit",
+				"parallel0_100": "animation.tlm.skin_pack.100.parallel0",
+				"parallel1_100": "animation.tlm.skin_pack.100.parallel1",
+				"parallel2_100": "animation.tlm.skin_pack.100.parallel2",
+				"parallel3_100": "animation.tlm.skin_pack.100.parallel3",
+				"parallel4_100": "animation.tlm.skin_pack.100.parallel4",
+				"pre_parallel0_100": "animation.tlm.skin_pack.100.pre_parallel0",
+				"pre_parallel1_100": "animation.tlm.skin_pack.100.pre_parallel1",
+				"pre_parallel2_100": "animation.tlm.skin_pack.100.pre_parallel2",
+				"pre_parallel3_100": "animation.tlm.skin_pack.100.pre_parallel3",
+				"pre_parallel4_100": "animation.tlm.skin_pack.100.pre_parallel4",
+				"pre_parallel5_100": "animation.tlm.skin_pack.100.pre_parallel5",
+				"pre_parallel6_100": "animation.tlm.skin_pack.100.pre_parallel6",
+				"idle_100": "animation.tlm.skin_pack.100.idle",
+				"beg_101": "animation.tlm.skin_pack.101.beg"
+			}
+		}
+	}
+}

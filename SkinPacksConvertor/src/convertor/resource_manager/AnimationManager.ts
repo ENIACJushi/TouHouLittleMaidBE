@@ -1,6 +1,6 @@
 import {ResourceManager} from "./ResourceManager";
 import { MaidAnimationFileSchema180 } from "../animation/types/MaidAnimationFileSchema180";
-import { CONVERTED_ANIMATION_ID_START } from "../config";
+import { PROFILE } from "../config";
 
 /**
  * 全局包动画管理器
@@ -14,8 +14,8 @@ export class AnimationManager {
   private packId: number = 0;
   /** 已解析的 <包id>:<动画文件标识> - 动画信息 映射 */
   private parsedAnimations: Map<string, AnimationFileInfo> = new Map();
-  /** 下一个可分配的转换动画 id，从 {@link CONVERTED_ANIMATION_ID_START} 起 */
-  private nextAnimationId: number = CONVERTED_ANIMATION_ID_START;
+  /** 下一个可分配的转换动画 id，从 {@link PROFILE.CONVERTED_ANIMATION_ID_START} 起 */
+  private nextAnimationId: number = PROFILE.CONVERTED_ANIMATION_ID_START;
   /** 包id - 模型id - 动画列表 映射*/
   private modelAnimation: Map<number, Map<number, AnimationFileInfo[]>> = new Map();
   /** 包id - 模型id - 缩放 映射 */
@@ -170,7 +170,7 @@ export class AnimationManager {
  */
 export interface AnimationFileInfo {
   animation: MaidAnimationFileSchema180; // 动画
-  /** 动画 id，子动画均取这个 id；从 {@link CONVERTED_ANIMATION_ID_START} 起，默认动画使用更小的 id */
+  /** 动画 id，子动画均取这个 id；从 {@link PROFILE.CONVERTED_ANIMATION_ID_START} 起，默认动画使用更小的 id */
   id: number;
   packId: number; // 模型包id
   fileName: string; // 文件名（去路径及 .json）
