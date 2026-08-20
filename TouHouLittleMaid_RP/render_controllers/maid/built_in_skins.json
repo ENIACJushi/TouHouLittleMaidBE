@@ -1,0 +1,198 @@
+{
+	"format_version": "1.8.0",
+	"render_controllers": {
+		"controller.render.touhou_little_maid.pack_authors_and_credits": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.authors_and_credits_wine_fox_maid",
+						"Texture.authors_and_credits_wine_fox_taisho",
+						"Texture.authors_and_credits_sazuki",
+						"Texture.authors_and_credits_pajinyi",
+						"Texture.authors_and_credits_fledge",
+						"Texture.authors_and_credits_clocklalier",
+						"Texture.authors_and_credits_cyra",
+						"Texture.authors_and_credits_cyra_pow_wow",
+						"Texture.authors_and_credits_mory_chan",
+						"Texture.authors_and_credits_flower_candy"
+					]
+				},
+				"geometries": {
+					"Array.geos": [
+						"Geometry.void",
+						"Geometry.authors_and_credits_wine_fox_maid",
+						"Geometry.authors_and_credits_wine_fox_taisho",
+						"Geometry.authors_and_credits_sazuki",
+						"Geometry.authors_and_credits_pajinyi",
+						"Geometry.authors_and_credits_fledge",
+						"Geometry.authors_and_credits_clocklalier",
+						"Geometry.authors_and_credits_cyra",
+						"Geometry.authors_and_credits_cyra_pow_wow",
+						"Geometry.authors_and_credits_mory_chan",
+						"Geometry.authors_and_credits_flower_candy"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:skin_pack')==1?q.variant+1:0]",
+			"materials": [
+				{
+					"*": "Material.default"
+				},
+				{
+					"wingLeft": "Material.wing"
+				},
+				{
+					"wingRight": "Material.wing"
+				},
+				{
+					"_*": "Material.emissive"
+				}
+			],
+			"part_visibility": [
+				{
+					"blink": "!q.is_in_ui && q.property('thlm:work')>=-1"
+				}
+			],
+			"textures": [
+				"Array.skins[q.property('thlm:skin_pack')==1?q.variant+1:0]"
+			]
+		},
+		"controller.render.touhou_little_maid.pack_geckolib": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.geckolib_winefox",
+						"Texture.geckolib_winefox_blue",
+						"Texture.geckolib_winefox_nine_tailed",
+						"Texture.geckolib_winefox_hanfu",
+						"Texture.geckolib_winefox_new_year",
+						"Texture.geckolib_winefox_jk",
+						"Texture.geckolib_winefox_astronaut",
+						"Texture.geckolib_winefox_kongfu",
+						"Texture.geckolib_winefox_magical",
+						"Texture.geckolib_winefox_saint",
+						"Texture.geckolib_winefox_elf",
+						"Texture.geckolib_winefox_salesperson",
+						"Texture.geckolib_winefox_little",
+						"Texture.geckolib_winefox_matured",
+						"Texture.geckolib_winefox_momo",
+						"Texture.geckolib_winefox_wedding",
+						"Texture.geckolib_winefox_tactics",
+						"Texture.geckolib_winefox_mini",
+						"Texture.geckolib_winefox_survivor",
+						"Texture.geckolib_sta",
+						"Texture.geckolib_zhiban",
+						"Texture.geckolib_zhiban_hanfu",
+						"Texture.geckolib_zhiban_new_year",
+						"Texture.geckolib_hailuo_new_year",
+						"Texture.geckolib_kluonoa",
+						"Texture.geckolib_foxmaid",
+						"Texture.geckolib_rice_cake_fox"
+					]
+				},
+				"geometries": {
+					"Array.geos": [
+						"Geometry.void",
+						"Geometry.geckolib_winefox",
+						"Geometry.geckolib_winefox_blue",
+						"Geometry.geckolib_winefox_nine_tailed",
+						"Geometry.geckolib_winefox_hanfu",
+						"Geometry.geckolib_winefox_new_year",
+						"Geometry.geckolib_winefox_jk",
+						"Geometry.geckolib_winefox_astronaut",
+						"Geometry.geckolib_winefox_kongfu",
+						"Geometry.geckolib_winefox_magical",
+						"Geometry.geckolib_winefox_saint",
+						"Geometry.geckolib_winefox_elf",
+						"Geometry.geckolib_winefox_salesperson",
+						"Geometry.geckolib_winefox_little",
+						"Geometry.geckolib_winefox_matured",
+						"Geometry.geckolib_winefox_momo",
+						"Geometry.geckolib_winefox_wedding",
+						"Geometry.geckolib_winefox_tactics",
+						"Geometry.geckolib_winefox_mini",
+						"Geometry.geckolib_winefox_survivor",
+						"Geometry.geckolib_sta",
+						"Geometry.geckolib_zhiban",
+						"Geometry.geckolib_zhiban_hanfu",
+						"Geometry.geckolib_zhiban_new_year",
+						"Geometry.geckolib_hailuo_new_year",
+						"Geometry.geckolib_kluonoa",
+						"Geometry.geckolib_foxmaid",
+						"Geometry.geckolib_rice_cake_fox"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:skin_pack')==2?q.variant+1:0]",
+			"materials": [
+				{
+					"*": "Material.default"
+				},
+				{
+					"wingLeft": "Material.wing"
+				},
+				{
+					"wingRight": "Material.wing"
+				},
+				{
+					"_*": "Material.emissive"
+				}
+			],
+			"part_visibility": [
+				{
+					"blink": "!q.is_in_ui && q.property('thlm:work')>=-1"
+				}
+			],
+			"textures": [
+				"Array.skins[q.property('thlm:skin_pack')==2?q.variant+1:0]"
+			]
+		},
+		"controller.render.touhou_little_maid.pack_minecraft_15th": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.minecraft_15th_alex",
+						"Texture.minecraft_15th_rana",
+						"Texture.minecraft_15th_natalie",
+						"Texture.minecraft_15th_dawn"
+					]
+				},
+				"geometries": {
+					"Array.geos": [
+						"Geometry.void",
+						"Geometry.minecraft_15th_alex",
+						"Geometry.minecraft_15th_rana",
+						"Geometry.minecraft_15th_natalie",
+						"Geometry.minecraft_15th_dawn"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:skin_pack')==3?q.variant+1:0]",
+			"materials": [
+				{
+					"*": "Material.default"
+				},
+				{
+					"wingLeft": "Material.wing"
+				},
+				{
+					"wingRight": "Material.wing"
+				},
+				{
+					"_*": "Material.emissive"
+				}
+			],
+			"part_visibility": [
+				{
+					"blink": "!q.is_in_ui && q.property('thlm:work')>=-1"
+				}
+			],
+			"textures": [
+				"Array.skins[q.property('thlm:skin_pack')==3?q.variant+1:0]"
+			]
+		}
+	}
+}

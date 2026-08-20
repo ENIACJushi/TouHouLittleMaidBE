@@ -3,6 +3,10 @@
 
 执行内置包转换，并将其合并到`TouhouLittleMaid_RP`。
 
+```
+npm run convert:built-in
+```
+
 ### 文件说明
 
 - 基础模板文件：`SkinPacksConvertor/src/maid_basic.ts`
@@ -17,8 +21,8 @@
 
 #### 生物渲染定义合并
 
-- 内置包：`TLM_MaidSkinPack/entity/maid.entity.json`;
-- 基础模板文件：`SkinPacksConvertor/src/maid_basic.ts`;
+- 内置包（A）：`TLM_MaidSkinPack/entity/maid.entity.json`;
+- 基础模板文件（B）：`SkinPacksConvertor/src/maid_basic.ts`;
 - 目标文件：`TouhouLittleMaid_RP/entity/maid/maid.entity.json`、`SkinPacksConvertor/src/convertor/config/profile/maid.entity.json`;
 
 将内置包文件（A）和基础模板包文件（B）合并，然后覆写目标文件，json属性合并规则如下：
@@ -26,7 +30,7 @@
 - 使用内置包文件（A）：scripts、animations、render_controllers
 - 二者合并：textures、geometry
 
-合并完成后，使用结果覆写两个目标文件。
+合并完成后，将结果覆写到两个目标文件。
 
 #### 资源迁移
 

@@ -4,7 +4,7 @@ import {AnimationDefinition, AnimationScriptsDefinition} from "../../animation/M
 import {MAID_ENTITY_DEF_BASIC} from "../../../maid_basic";
 
 /** 是否启用内置模型包转换档案 */
-const USE_INNER_PACK_PROFILE = true;
+const USE_INNER_PACK_PROFILE = false;
 
 /**
  * 转换配置档案
