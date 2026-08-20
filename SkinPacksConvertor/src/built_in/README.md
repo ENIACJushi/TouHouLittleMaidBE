@@ -37,7 +37,9 @@ npm run convert:built-in
 - `TLM_MaidSkinPack/animations`：迁移到 `TouHouLittleMaid_RP/animations/built_in_skins`，这个文件夹专门为内置包准备，若已有文件，则先全部删除
 - `TLM_MaidSkinPack/entity`：这个文件比较特殊，见章节【生物渲染定义合并】
 - `TLM_MaidSkinPack/models/entity`：将目录下的文件夹迁移至 `TouHouLittleMaid_RP/models/entity/built_in_skins`，这个文件夹专门为内置包准备，若已有文件，则先全部删除
-- `TLM_MaidSkinPack/textures`：将目录下的文件夹迁移至 `TouHouLittleMaid_RP/textures`，除 `TLM_MaidSkinPack/textures/thlm` 以外，其它 `TLM_MaidSkinPack/textures` 下的文件夹均采用先删除目标文件夹内的全部文件，再迁移的方式
+- `TLM_MaidSkinPack/textures`：将目录下的文件夹迁移至 `TouHouLittleMaid_RP/textures`
+  - `TLM_MaidSkinPack/textures/thlm`：将其中文件合并到 `TouHouLittleMaid_RP/textures/thlm`，已有同名文件则覆盖，目标中多出来的文件保留
+  - 其它文件夹：先删除目标文件夹内的全部文件，再迁移
 - `TLM_MaidSkinPack/render_controllers/maid.json`：覆写 `TouHouLittleMaid_RP/render_controllers/maid/built_in_skins.json`
 - `TLM_MaidSkinPack/texts`：
   - 对于 `xxx.lang` 文件，将其内容全部追加到 `TouHouLittleMaid_RP/texts` 的同名文件上。首尾用 `##### BUILT_IN_SKINS_START #####` 和 `##### BUILT_IN_SKINS_END #####` 两行标签标记，如果在追加前找到了这两个标记，则先删除这两个标记之间的内容，然后在这两个标记之间追加。

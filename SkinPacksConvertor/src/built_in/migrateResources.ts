@@ -3,7 +3,8 @@ import * as path from 'path';
 
 const LANG_BLOCK_START = '##### BUILT_IN_SKINS_START #####';
 const LANG_BLOCK_END = '##### BUILT_IN_SKINS_END #####';
-const SKIP_TEXTURE_FOLDERS = new Set(['thlm']);
+/** 贴图目录：不清空目标，只把源文件拷进去，同名覆盖 */
+const MERGE_TEXTURE_FOLDERS = new Set(['thlm']);
 
 async function pathExists(target: string): Promise<boolean> {
   try {
@@ -36,6 +37,22 @@ async function replaceDirContents(srcDir: string, destDir: string): Promise<void
   await fs.rm(destDir, { recursive: true, force: true });
   await fs.mkdir(path.dirname(destDir), { recursive: true });
   await fs.cp(srcDir, destDir, { recursive: true });
+}
+
+/**
+ * 把源目录文件合并进目标目录：同名覆盖，目标中多出来的文件保留
+ */
+async function mergeDirFiles(srcDir: string, destDir: string): Promise<void> {
+  await fs.mkdir(destDir, { recursive: true });
+  for (const entry of await listEntries(srcDir)) {
+    const src = path.join(srcDir, entry.name);
+    const dest = path.join(destDir, entry.name);
+    if (entry.isDirectory()) {
+      await mergeDirFiles(src, dest);
+    } else {
+      await fs.copyFile(src, dest);
+    }
+  }
 }
 
 function detectEol(text: string): string {
@@ -124,19 +141,22 @@ export async function migrateBuiltInResources(innerPackDir: string, rpDir: strin
   }
   console.log(`已迁移模型: ${destModels}`);
 
-  // textures 下的文件夹（跳过 thlm）→ textures/<同名文件夹>
+  // textures 下的文件夹 → textures/<同名文件夹>
+  // thlm 等合并目录：不清空目标，只覆盖同名文件
   const srcTextures = path.join(innerPackDir, 'textures');
   const destTexturesRoot = path.join(rpDir, 'textures');
   for (const entry of await listEntries(srcTextures)) {
     if (!entry.isDirectory()) {
       continue;
     }
-    if (SKIP_TEXTURE_FOLDERS.has(entry.name)) {
-      console.log(`跳过贴图目录: textures/${entry.name}`);
+    const src = path.join(srcTextures, entry.name);
+    const dest = path.join(destTexturesRoot, entry.name);
+    if (MERGE_TEXTURE_FOLDERS.has(entry.name)) {
+      await mergeDirFiles(src, dest);
+      console.log(`已合并贴图: ${dest}`);
       continue;
     }
-    const dest = path.join(destTexturesRoot, entry.name);
-    await replaceDirContents(path.join(srcTextures, entry.name), dest);
+    await replaceDirContents(src, dest);
     console.log(`已迁移贴图: ${dest}`);
   }
 
