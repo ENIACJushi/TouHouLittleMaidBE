@@ -5,35 +5,54 @@ import {
 import {buildSkinPackAnimationName} from "../../animation/default/DefaultGeckoAnimation";
 import {AnimationTypes} from "../../animation/types/AnimationTypes";
 import {AnimationDefinition} from "../../animation/MaidAnimationConvertor";
+import { MAID_ENTITY_DEF_BASIC } from "../../../maid_basic";
 
 /**
- * 基础动画定义基础模板，只包含手动转换的东方包
- * 内置包在此基础上生成
+ * 构建基础动画定义基础模板，只包含手动转换的东方包
+ *  内置包在此基础上生成
  */
-export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
+export function buildDefaultTemplate(): AnimationDefinition {
+  // 读取模板包
+  const DESC = MAID_ENTITY_DEF_BASIC["minecraft:client_entity"].description;
+  let res: AnimationDefinition = {
+    scripts: JSON.parse(JSON.stringify(DESC.scripts)),
+    animations: JSON.parse(JSON.stringify(DESC.animations)),
+    animationList: {},
+  }
+  // 补充信息
+  // scale、should_update_bones_and_effects_offscreen、initialize 使用模板值
+  // 追加 scripts.pre_animation 信息
+  res.scripts.pre_animation = [
+    ...res.scripts.pre_animation,
+    ...ANIMATION_DEF_TEMPLATE.scripts.pre_animation,
+  ];
+  // 追加 scripts.animate 信息
+  res.scripts.animate = [
+    ...res.scripts.animate,
+    ...ANIMATION_DEF_TEMPLATE.scripts.animate,
+  ];
+  // 追加 animations 信息
+  res.animations = {
+    ...res.animations,
+    ...ANIMATION_DEF_TEMPLATE.animations,
+  };
+  return res;
+}
+
+/**
+ * 基础动画定义基础模板附加信息
+ */
+const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
   scripts: {
-    scale: "query.property('thlm:scale') * v.scale",
-    /**
-     * 实体加载时执行一次。动态 keep 变量的默认 0 会追加到这里。
-     */
-    initialize: [
-      // 表情：默认 0；坐下等动画 timeline 的 random 只在进入时掷一次，故不在此每帧清零
-      "v.biaoqing=0;",
-    ],
+    // 这三个属性完全使用模板包的值，这里只是占个位
+    "scale": "query.property('thlm:scale') * v.scale",
+    "should_update_bones_and_effects_offscreen": true,
+    "initialize": [],
+    // 这两个属性的数据追加到模板的对应属性之后
     /**
      * 添加变量时，需要同步加进白名单 `src/convertor/molang/v/VariableResolvers.ts`
      */
     pre_animation: [
-      // 特殊行走动画属性
-      "variable.walk_process = Math.min(1, Math.abs(query.modified_move_speed / 0.9));",
-      // 行走式中的除数；原版实体动画通常预置为 1（须在 tcos0 之前）
-      "variable.gliding_speed_value = 1;",
-      // 基础动画
-      "variable.tcos0 = (Math.cos(query.modified_distance_moved * 38.17) * query.modified_move_speed / variable.gliding_speed_value) * 28.65;",
-      "variable.emote_index=Math.mod(query.property('thlm:emote'),1000);",
-      "variable.emote_frame=Math.max(1, Math.mod( Math.floor(query.property('thlm:emote')/1000), 1000) );",
-      "variable.emote_speed=Math.max(1, Math.floor(query.property('thlm:emote')/1000000) );",
-
       ///// 状态变量 /////
       // 眨眼：下次闭眼时刻随机落在当前起 2s~4s，闭眼持续 0.15 秒
       "v.ysm_blink_at = v.ysm_blink_at ?? (query.life_time + math.random(2.5, 4));",
@@ -74,11 +93,7 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       `v.animate_pre_parallel6 = 0;`,
       `v.animate_pre_parallel7 = 0;`,
     ],
-    should_update_bones_and_effects_offscreen: true,
     animate: [
-      "backpack_offset",
-      "wing",
-      "emote",
       { "statue_base": "(q.property('thlm:work') >= -4) && (q.property('thlm:work') <= -2)" },
       { "look_at_target": "!v.tlm_is_hug" },
       { "blink" : "v.animate_blink == 0 && query.property('thlm:work') >= -1" },
@@ -108,14 +123,8 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       { "pre_parallel7_1": `v.animate_pre_parallel7 == ${DEFAULT_ANIMATION_ID}` }
     ],
   },
+  // 追加到模板的 animations 上
   animations: {
-    "backpack_offset": "animation.touhou_little_maid.maid.backpack_offset",
-    "wing": "animation.touhou_little_maid.basic.wing",
-    "emote": "animation.touhou_little_maid.emote",
-    "statue_base": "animation.touhou_little_maid.statue_base",
-    "look_at_target": "animation.touhou_little_maid.maid.look_at_target",
-    "hug": "animation.touhou_little_maid.maid.hug",
-
     "blink": "animation.touhou_little_maid.basic.blink",
     "walk": "animation.touhou_little_maid.basic.walk",
     "beg": "animation.touhou_little_maid.maid.beg",
@@ -140,6 +149,6 @@ export const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
     "pre_parallel6_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.pre_parallel6),
     "pre_parallel7_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.pre_parallel7),
   },
-  // 用到的所有动画
+  // 占位
   animationList: {},
 };

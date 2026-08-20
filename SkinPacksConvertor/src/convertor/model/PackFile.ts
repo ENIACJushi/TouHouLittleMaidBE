@@ -14,7 +14,7 @@ export class PackFile {
   /**
    * 模型信息 entity/maid.entity.json
    */
-  maid_entity: TemplatesBE.EntityDefinition = JSON.parse(JSON.stringify(TemplatesBE.ENTITY_DEF));
+  maid_entity: TemplatesBE.EntityDefinition = TemplatesBE.buildEntityDef();
   /**
    * 实体 description
    */

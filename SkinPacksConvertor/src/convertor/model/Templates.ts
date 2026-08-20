@@ -1,3 +1,4 @@
+import { PROFILE } from "../config";
 
 /**
  * 基岩版数据模板
@@ -65,26 +66,26 @@ export namespace TemplatesBE {
   };
   export type RenderControllerPack = typeof RENDER_CONTROLLER_PACK;
 
-  // 实体定义模板
-  export const ENTITY_DEF: EntityDefinition = {
-    "format_version": "1.10.0",
-    "minecraft:client_entity": {
-      "description": {
-        "identifier": "thlmm:maid",
-        "textures": {
-        },
-        "geometry": {
-        },
-        "render_controllers": [
-          "controller.render.touhou_little_maid.maid.maid_backpack",
-          "controller.render.touhou_little_maid.maid.emote",
-          "controller.render.touhou_little_maid.maid_touhou_little_maid",
-          "controller.render.touhou_little_maid.maid.statue_base"
-          // 在此补充
-        ],
+  /**
+   * 获取实体定义模板，每次都新建一个对象，外部无需复制
+   */
+  export function buildEntityDef(): EntityDefinition {
+    return {
+      "format_version": "1.10.0",
+      "minecraft:client_entity": {
+        "description": {
+          "identifier": "thlmm:maid",
+          "textures": {
+          },
+          "geometry": {
+          },
+          // 从定义模板获取 render_controllers
+          "render_controllers": JSON.parse(JSON.stringify(PROFILE.RENDER_CONTROLLERS)),
+        }
       }
     }
   }
+
   export type EntityDefinition = {
     format_version: string,
     "minecraft:client_entity": {
