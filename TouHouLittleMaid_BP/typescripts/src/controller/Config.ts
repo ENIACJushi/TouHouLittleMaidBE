@@ -2,6 +2,7 @@ import { world, system, Entity, Player, RawText } from "@minecraft/server";
 import { lang } from "../libs/ScarletToolKit"
 import { ActionFormData, MessageFormData, ModalFormData } from "@minecraft/server-ui";
 import { LoggerLevel } from "./Logger";
+import { ManageForm } from "./ManageForm";
 
 // 计分项名称
 const SCORE_NAME = "thlmconfig";
@@ -157,6 +158,9 @@ export class ConfigForm {
    * @param onBack 关闭列表时返回的上层表单，由管理菜单传入
    */
   static mainForm(player: Player, onBack?: () => void) {
+    if (!ManageForm.ensureCreative(player)) {
+      return;
+    }
     let form = new ActionFormData();
     let keys = [];
     form.title('设置');
@@ -191,6 +195,9 @@ export class ConfigForm {
    * @param {*} definition 
    */
   static boolForm(player: Player, key: keyof Config, definition: any, onBack?: () => void) {
+    if (!ManageForm.ensureCreative(player)) {
+      return;
+    }
     let form = new ModalFormData()
       .title(definition.name)
       .toggle(definition.description, {
@@ -210,6 +217,9 @@ export class ConfigForm {
    * 设置整型
    */
   static numberForm(player: Player, key: keyof Config, definition: any, onBack?: () => void) {
+    if (!ManageForm.ensureCreative(player)) {
+      return;
+    }
     let oriValue = config[key].value as number
     let form = new ModalFormData()
       .title(definition.name)
@@ -234,6 +244,9 @@ export class ConfigForm {
     });
   }
   static invalidWarning(player: Player, lastForm: ()=>void) {
+    if (!ManageForm.ensureCreative(player)) {
+      return;
+    }
     let form = new MessageFormData()
       .title('失败')
       .body('无效的数据')

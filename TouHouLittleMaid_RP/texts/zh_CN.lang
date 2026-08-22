@@ -175,6 +175,7 @@ message.tlm.admin.set.kill.out_of_range=§c设置失败, 杀敌数无效。§r
 
 message.tlm.menu.title=管理
 message.tlm.menu.config.name=设置
+message.tlm.menu.creative_only=仅创造模式可使用管理面板
 
 ## 配置信息
 
