@@ -71,6 +71,7 @@ gui.touhou_little_maid:left_panel.title=工作模式
 
 ##### 物品 #####
 item.touhou_little_maid:memorizable_gensokyo=记忆中的幻想乡
+item.touhou_little_maid:memorizable_gensokyo_admin=记忆中的幻想乡（管理）
 item.spawn_egg.entity.thlmm:maid.name=生成 小女仆
 item.spawn_egg.entity.touhou_little_maid:fairy.name=女仆妖精刷怪蛋
 item.spawn_egg.entity.touhou_little_maid:debug_fairy.name=弹幕测试妖精女仆刷怪蛋

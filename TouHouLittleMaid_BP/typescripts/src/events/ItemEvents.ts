@@ -11,6 +11,7 @@ import { altarStructure } from "../altar/AltarStructureHelper";
 import { MaidManager } from "../maid/MaidManager";
 import { GarageKit } from "../blocks/GarageKit";
 import { MemorizableGensokyo } from "../book/MemorizableGensokyoUI";
+import { ConfigForm } from "../controller/Config";
 import {isInteractContainerBlock} from "../../data/BadContainerBlocks";
 
 export class ItemEvents {
@@ -24,6 +25,7 @@ export class ItemEvents {
     if (item.typeId.substring(0, 18) === "touhou_little_maid") {
       switch (item.typeId.substring(19)) {
         case "memorizable_gensokyo": MemorizableGensokyo.onUseEvent(event); break;
+        case "memorizable_gensokyo_admin": ConfigForm.mainForm(event.source); break;
         default: break;
       }
     }

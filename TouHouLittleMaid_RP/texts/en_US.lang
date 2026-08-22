@@ -18,6 +18,7 @@ gui.touhou_little_maid.author.name=Authors:
 
 ##### Items #####
 item.touhou_little_maid:memorizable_gensokyo=Memorizable Gensokyo
+item.touhou_little_maid:memorizable_gensokyo_admin=Memorizable Gensokyo (OP)
 item.spawn_egg.entity.thlmm:maid.name=Spawn Little Maid
 item.spawn_egg.entity.touhou_little_maid:debug_fairy.name=Debug Fairy Maid Spawn Egg
 item.touhou_little_maid:maid_spawn_egg=Maid Spawn Egg
