@@ -145,6 +145,16 @@ export class MaidSkin {
     return MaidSkin.skinPacks.get(packId) ?? 0;
   }
 
+  /**
+   * 判断皮肤是否已注册（皮肤包存在且序号在有效范围内）
+   */
+  static isRegistered(packId: number, index: number): boolean {
+    if (!Number.isInteger(packId) || !Number.isInteger(index) || index < 0) {
+      return false;
+    }
+    return index < MaidSkin.getSkinAmount(packId);
+  }
+
   ///// 展示文本获取 /////
   /**
    * 获取皮肤包的显示名称（translate）

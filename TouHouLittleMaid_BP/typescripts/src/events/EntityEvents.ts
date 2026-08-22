@@ -2,6 +2,7 @@ import {
   DataDrivenEntityTriggerAfterEvent,
   EntityDieAfterEvent,
   EntityHitEntityAfterEvent,
+  EntityLoadAfterEvent,
   ProjectileHitBlockAfterEvent,
   ProjectileHitEntityAfterEvent,
   system,
@@ -109,7 +110,10 @@ export class EntityEvents {
             case "u": GarageKit.scan(event); break; // u statues destroy
             case "v": MaidManager.Interact.onSitEvent(event); break; // v enter sit
             case "w": MaidManager.Interact.onStandEvent(event); break; // v enter sit
-            case "0": MaidManager.Core.onSpawnEvent(event); break; // 0 Spawn
+            case "0":
+              MaidManager.Core.onSpawnEvent(event); // 0 Spawn
+              MaidEvents.lifeCycle.onLoad(event.entity, true); // 首次生成也会走加载逻辑（如魂符放出）
+              break;
             case "1": MaidManager.Interact.onSmartSlabRecycleEvent(event); break;// 1 Smart slab
             default: break;
           }
@@ -165,6 +169,11 @@ export class EntityEvents {
     }
   }
 
+  // 实体加载（区块重载、跨维度）
+  private entityLoad(event: EntityLoadAfterEvent) {
+    MaidEvents.lifeCycle.onLoad(event.entity);
+  }
+
   // 注册事件
   public registerAllEvents() {
     world.afterEvents.dataDrivenEntityTrigger.subscribe(event => {
@@ -182,5 +191,17 @@ export class EntityEvents {
     world.afterEvents.projectileHitEntity.subscribe(event => {
       system.run(() => { this.projectileHitEntity(event); });
     });
+    world.afterEvents.entityLoad.subscribe(event => {
+      try {
+        if (event.entity.typeId !== 'thlmm:maid') {
+          return;
+        }
+      } catch {
+        return;
+      }
+      system.run(() => { this.entityLoad(event); });
+    });
+    // 订阅时世界中已有女仆不会再触发 entityLoad，补一次扫描
+    MaidEvents.lifeCycle.scanLoadedMaids();
   }
 }
