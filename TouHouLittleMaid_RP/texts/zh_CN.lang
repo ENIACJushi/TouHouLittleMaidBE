@@ -1,8 +1,8 @@
 ### VERSION_AUTO_GENERATE_START ###
 pack.name=车万女仆
-pack.description=作者: 体宿一(b站) | 版本 1.13.0 - hotfix 1 (MC 1.21.120+)
+pack.description=作者: 体宿一(b站) | 版本 1.14.0 (MC 1.21.120+)
 message.tlm.mc_version=1.21.120+
-message.tlm.player_join1=§e[TLM] 车万女仆 1.13.0 - hotfix 1
+message.tlm.player_join1=§e[TLM] 车万女仆 1.14.0
 message.tlm.player_join2=§e 访问 mcmod.cn 获取全部教程。
 ### VERSION_AUTO_GENERATE_END ###
 
@@ -803,6 +803,7 @@ tlm.2.9=
 ## 旧书失效信息
 me.chapter1.page1.title= 这本书已经过时了，请用蛋糕和书合成新的指南书。
 me.c2.p1.title= 这本书已经过时了，请用蛋糕和书合成新的指南书。
+
 ##### BUILT_IN_SKINS_START #####
 maid_pack.1.name=作者丨贡献者
 maid_pack.1.desc=作者与贡献者的原创角色
