@@ -9,7 +9,13 @@
 
 #### 测试
 
-使用如下指令快速得到测试包：
+需要先配置环境变量 `MinecraftPath`，用于将生成结果自动覆盖到 `development_resource_packs`，如：
+
+```
+C:\Users\xxx\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang
+```
+
+**使用如下指令快速得到测试包：**
 
 ```
 // 基础构建
@@ -21,6 +27,12 @@ npm run test:convert --move --uuid=你的-uuid
 参数：
 - `--move`/`--m`：自动安装到 development_resource_packs（需要配置环境变量 MinecraftPath）
 - `--uuid=xxx`/`--u=xxx`：指定生成包的 uuid
+
+**使用如下指令执行内置包转换并覆盖到 `development_resource_packs`：**
+
+```
+npm run test:built_in
+```
 
 #### 内置包构建
 
@@ -41,6 +53,7 @@ npm run convert:built-in
 - [x] 完成基础的ysm直转功能，解决一些明显、容易解决且回报高的问题；
 - [x] 为转换器实现两套配置：玩家转换，模板附带所有信息；默认包转换，模板仅附带手动转换的东方包
 - [x] 实现内置包转换脚本，加入酒狐等内置包
+
 - [ ] 行走动画的最低速度没有改全，动作幅度也需要使用0.05作为最低速度，不然从移动到静止的过渡会比较突兀
 - [ ] 一些简单变量还是要转的，比如饥饿值，不能按通用方案设为0
 - [ ] 灵梦的眼睛会闪，看看眨眼动画是不是被改了

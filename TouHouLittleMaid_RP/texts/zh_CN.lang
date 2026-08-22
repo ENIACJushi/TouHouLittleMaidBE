@@ -803,7 +803,6 @@ tlm.2.9=
 ## 旧书失效信息
 me.chapter1.page1.title= 这本书已经过时了，请用蛋糕和书合成新的指南书。
 me.c2.p1.title= 这本书已经过时了，请用蛋糕和书合成新的指南书。
-
 ##### BUILT_IN_SKINS_START #####
 maid_pack.1.name=作者丨贡献者
 maid_pack.1.desc=作者与贡献者的原创角色
