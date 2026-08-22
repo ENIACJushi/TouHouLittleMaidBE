@@ -53,6 +53,11 @@ const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
      * 添加变量时，需要同步加进白名单 `src/convertor/molang/v/VariableResolvers.ts`
      */
     pre_animation: [
+      `variable.tcos0 = (Math.cos(query.modified_distance_moved * 38.17) * Math.max(0, query.modified_move_speed - ${WALK_PROCESS_MOVING_MIN}) / variable.gliding_speed_value) * 28.65;`,
+      // 特殊行走动画属性
+      `variable.walk_process = Math.min(1, Math.max(0, (query.modified_move_speed - ${WALK_PROCESS_MOVING_MIN}) / 0.9));`,
+      // 行走式中的除数；原版实体动画通常预置为 1（须在 tcos0 之前）
+      "variable.gliding_speed_value = 1;",
       ///// 状态变量 /////
       // 眨眼：下次闭眼时刻随机落在当前起 2s~4s，闭眼持续 0.15 秒
       "v.ysm_blink_at = v.ysm_blink_at ?? (query.life_time + math.random(2.5, 4));",

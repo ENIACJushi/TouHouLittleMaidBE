@@ -857,11 +857,11 @@
 					"v.ysm_roaming_wings=0;"
 				],
 				"pre_animation": [
-					"variable.tcos0 = (Math.cos(query.modified_distance_moved * 38.17) * query.modified_move_speed / variable.gliding_speed_value) * 28.65;",
 					"variable.emote_index=Math.mod(query.property('thlm:emote'),1000);",
 					"variable.emote_frame=Math.max(1, Math.mod( Math.floor(query.property('thlm:emote')/1000), 1000) );",
 					"variable.emote_speed=Math.max(1, Math.floor(query.property('thlm:emote')/1000000) );",
-					"variable.walk_process = Math.min(1, Math.abs(query.modified_move_speed / 0.9));",
+					"variable.tcos0 = (Math.cos(query.modified_distance_moved * 38.17) * Math.max(0, query.modified_move_speed - 0.05) / variable.gliding_speed_value) * 28.65;",
+					"variable.walk_process = Math.min(1, Math.max(0, (query.modified_move_speed - 0.05) / 0.9));",
 					"variable.gliding_speed_value = 1;",
 					"v.ysm_blink_at = v.ysm_blink_at ?? (query.life_time + math.random(2.5, 4));",
 					"v.ysm_is_close_eyes = query.life_time >= v.ysm_blink_at && query.life_time < v.ysm_blink_at + 0.15;",

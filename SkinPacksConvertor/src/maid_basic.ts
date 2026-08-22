@@ -323,14 +323,9 @@ export const MAID_ENTITY_DEF_BASIC = {
         // 基础动画运算，动画包的运算在其后添加
         "pre_animation": [
           // 基础动画
-          "variable.tcos0 = (Math.cos(query.modified_distance_moved * 38.17) * query.modified_move_speed / variable.gliding_speed_value) * 28.65;",
           "variable.emote_index=Math.mod(query.property('thlm:emote'),1000);",
           "variable.emote_frame=Math.max(1, Math.mod( Math.floor(query.property('thlm:emote')/1000), 1000) );",
           "variable.emote_speed=Math.max(1, Math.floor(query.property('thlm:emote')/1000000) );",
-          // 特殊行走动画属性
-          "variable.walk_process = Math.min(1, Math.abs(query.modified_move_speed / 0.9));",
-          // 行走式中的除数；原版实体动画通常预置为 1（须在 tcos0 之前）
-          "variable.gliding_speed_value = 1;",
         ],
         // 基础动画，动画包的动画在其后添加
         "animate": [
