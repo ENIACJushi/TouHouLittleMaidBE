@@ -999,7 +999,7 @@
 						"look_at_target": "!v.tlm_is_hug"
 					},
 					{
-						"blink": "v.animate_blink == 0 && query.property('thlm:work') >= -1"
+						"blink": "v.animate_blink == 1 && query.property('thlm:work') >= -1"
 					},
 					{
 						"hug": "v.animate_hug == 0 && !q.is_in_ui && v.tlm_is_hug"

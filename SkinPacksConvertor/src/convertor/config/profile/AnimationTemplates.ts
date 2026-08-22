@@ -74,7 +74,7 @@ const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       ///// 动画变量 /////
       // 默认使用转换器内置兜底动画（id 见 DEFAULT_ANIMATION_ID）
       "v.scale = 1;", // 缩放
-      // 眨眼动画开关；gecko 模型在展示条件中覆写为 0
+      // 眨眼动画开关；gecko 模型没有专门的眨眼动画，在展示条件中均置 0，非gecko动画目前均置1
       `v.animate_blink = 1;`,
       `v.animate_hug = 0;`,
       `v.animate_walk = 0;`,
@@ -101,7 +101,7 @@ const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
     animate: [
       { "statue_base": "(q.property('thlm:work') >= -4) && (q.property('thlm:work') <= -2)" },
       { "look_at_target": "!v.tlm_is_hug" },
-      { "blink" : "v.animate_blink == 0 && query.property('thlm:work') >= -1" },
+      { "blink" : "v.animate_blink == 1 && query.property('thlm:work') >= -1" },
       // 非 gecko 默认动画
       { "hug": "v.animate_hug == 0 && !q.is_in_ui && v.tlm_is_hug" },
       { "walk": `v.animate_walk == 0 && !v.tlm_is_sitting && v.walk_process>${WALK_PROCESS_MOVING_MIN}` },
