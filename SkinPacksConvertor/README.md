@@ -155,7 +155,7 @@ npm run convert:built-in
 
 1、导入资源包并在世界中激活，令附加模型包优先级高于主包。
 
-2、打开游戏设置面板（`/scriptevent thlm:config`），进入「皮肤包」，粘贴网站给出的 JSON 并提交。
+2、打开管理面板（`/scriptevent thlm:manage`），进入「皮肤包」，粘贴网站给出的 JSON 并提交。
    例如：`[{"count":20},{"count":10}]`
    数组每一项对应一个模型包，`count` 为该包中的模型数量。网页会显示该数据，并在资源包中生成 `skin_pack.json`。
 

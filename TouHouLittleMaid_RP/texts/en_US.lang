@@ -97,6 +97,11 @@ message.touhou_little_maid:photo.have_no_nbt_data.name=This damnable photo don't
 message.touhou_little_maid:chisel.hit_block_error.name=Please right click on the clay block
 message.touhou_little_maid:chisel.offhand_not_photo.name=Please have a photo of the maid in your offhand
 
+## Menu
+
+message.tlm.menu.title=Manage
+message.tlm.menu.config.name=Settings
+
 ## Config
 
 message.tlm.config.ui_enable.name=Special UI

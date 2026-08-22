@@ -2,6 +2,7 @@ import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, sy
 import * as Tool from"../libs/ScarletToolKit";
 import { StrMaid } from "../maid/StrMaid";
 import { ConfigForm, ConfigHelper } from "./Config";
+import { ManageForm } from "./ManageForm";
 import { EntityMaid } from '../maid/EntityMaid'
 import { Logger } from "./Logger";
 
@@ -15,6 +16,7 @@ export class CommandManager {
      */
     static scriptEvent(event){
         switch(event.id){
+            case "thlm:manage" : this.manage(event); break;
             case "thlm:config"  : this.config(event) ; break;
             case "thlm:admin"   : this.admin(event)  ; break;
             case "thlm:test"    : this.test(event)   ; break;
@@ -22,6 +24,16 @@ export class CommandManager {
             case "thlm:debug"   : this.debug(event)  ; break;
             default: break;
         }
+    }
+    /**
+     * 打开管理菜单
+     *  scriptevent thlm:manage
+     * @param {ScriptEventCommandMessageAfterEvent} event
+     */
+    static manage(event){
+        let source = event.sourceEntity;
+        if(source === undefined || source.typeId !== "minecraft:player") return;
+        ManageForm.mainForm(event.sourceEntity);
     }
     /**
      * 修改配置项

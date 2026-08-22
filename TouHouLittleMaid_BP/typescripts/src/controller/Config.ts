@@ -2,7 +2,6 @@ import { world, system, Entity, Player, RawText } from "@minecraft/server";
 import { lang } from "../libs/ScarletToolKit"
 import { ActionFormData, MessageFormData, ModalFormData } from "@minecraft/server-ui";
 import { LoggerLevel } from "./Logger";
-import { MaidSkin } from "../maid/skin/MaidSkin";
 
 // 计分项名称
 const SCORE_NAME = "thlmconfig";
@@ -155,8 +154,9 @@ export class ConfigHelper {
 export class ConfigForm {
   /**
    * 设置列表
+   * @param onBack 关闭列表时返回的上层表单，由管理菜单传入
    */
-  static mainForm(player: Player) {
+  static mainForm(player: Player, onBack?: () => void) {
     let form = new ActionFormData();
     let keys = [];
     form.title('设置');
@@ -167,27 +167,20 @@ export class ConfigForm {
         form.button(definition.name);
       }
     }
-    form.button(lang('message.tlm.config.skin_pack.name'));
     // @ts-ignore
     form.show(player).then((response) => {
-      if (response.canceled || response.selection === undefined) {
-        return;
-      }
-      if (response.selection === keys.length) {
-        this.skinPackForm(player);
-        return;
-      }
-      if (response.selection > keys.length) {
+      if (response.canceled || response.selection === undefined || response.selection >= keys.length) {
+        onBack?.();
         return;
       }
       
       let key = keys[response.selection] as keyof Config;
       let definition = config[key];
       if (typeof definition.defaultValue === 'boolean') {
-        this.boolForm(player, key, definition);
+        this.boolForm(player, key, definition, onBack);
       }
       else {
-        this.numberForm(player, key, definition)
+        this.numberForm(player, key, definition, onBack);
       }
     });
   }
@@ -197,7 +190,7 @@ export class ConfigForm {
    * @param {string} key 
    * @param {*} definition 
    */
-  static boolForm(player: Player, key: keyof Config, definition: any) {
+  static boolForm(player: Player, key: keyof Config, definition: any, onBack?: () => void) {
     let form = new ModalFormData()
       .title(definition.name)
       .toggle(definition.description, {
@@ -210,38 +203,13 @@ export class ConfigForm {
       if (!response.canceled && response?.formValues?.[0] !== undefined) {
         config[key].set(response.formValues[0] as boolean);
       }
-      this.mainForm(player);
-    });
-  }
-  /**
-   * 设置附加皮肤包：粘贴转换网站生成的 JSON
-   */
-  static skinPackForm(player: Player) {
-    const current = MaidSkin.stringifyPackConfig();
-    let form = new ModalFormData()
-      .title(lang('message.tlm.config.skin_pack.name'))
-      .textField(lang('message.tlm.config.skin_pack.description'), '[{"count":20},{"count":10}]', {
-        defaultValue: current
-      })
-      .submitButton('提交');
-
-    // @ts-ignore
-    form.show(player).then((response) => {
-      if (!response.canceled && response?.formValues?.[0] !== undefined) {
-        let packs = MaidSkin.parsePackConfig(response.formValues[0] as string);
-        if (packs === undefined) {
-          this.invalidWarning(player, () => { ConfigForm.skinPackForm(player); });
-          return;
-        }
-        MaidSkin.setSkin(packs);
-      }
-      this.mainForm(player);
+      this.mainForm(player, onBack);
     });
   }
   /**
    * 设置整型
    */
-  static numberForm(player: Player, key: keyof Config, definition: any) {
+  static numberForm(player: Player, key: keyof Config, definition: any, onBack?: () => void) {
     let oriValue = config[key].value as number
     let form = new ModalFormData()
       .title(definition.name)
@@ -258,11 +226,11 @@ export class ConfigForm {
           config[key].set(value);
         }
         else {
-          this.invalidWarning(player, () => { ConfigForm.numberForm(player, key, definition) });
+          this.invalidWarning(player, () => { ConfigForm.numberForm(player, key, definition, onBack) });
           return false;
         }
       }
-      this.mainForm(player);
+      this.mainForm(player, onBack);
     });
   }
   static invalidWarning(player: Player, lastForm: ()=>void) {

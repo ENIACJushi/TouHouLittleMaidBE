@@ -171,6 +171,11 @@ message.tlm.admin.set.level.out_of_range=§c设置失败, 等级无效。§r
 message.tlm.admin.set.kill.success=§e设置杀敌数: §r
 message.tlm.admin.set.kill.out_of_range=§c设置失败, 杀敌数无效。§r
 
+## 管理菜单
+
+message.tlm.menu.title=管理
+message.tlm.menu.config.name=设置
+
 ## 配置信息
 
 message.tlm.config.ui_enable.name=特殊UI
