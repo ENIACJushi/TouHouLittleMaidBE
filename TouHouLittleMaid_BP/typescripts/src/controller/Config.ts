@@ -2,6 +2,7 @@ import { world, system, Entity, Player, RawText } from "@minecraft/server";
 import { lang } from "../libs/ScarletToolKit"
 import { ActionFormData, MessageFormData, ModalFormData } from "@minecraft/server-ui";
 import { LoggerLevel } from "./Logger";
+import { MaidSkin } from "../maid/skin/MaidSkin";
 
 // 计分项名称
 const SCORE_NAME = "thlmconfig";
@@ -166,9 +167,17 @@ export class ConfigForm {
         form.button(definition.name);
       }
     }
+    form.button(lang('message.tlm.config.skin_pack.name'));
     // @ts-ignore
     form.show(player).then((response) => {
-      if (response.canceled || response.selection === undefined || response.selection >= keys.length) {
+      if (response.canceled || response.selection === undefined) {
+        return;
+      }
+      if (response.selection === keys.length) {
+        this.skinPackForm(player);
+        return;
+      }
+      if (response.selection > keys.length) {
         return;
       }
       
@@ -200,6 +209,31 @@ export class ConfigForm {
     form.show(player).then((response) => {
       if (!response.canceled && response?.formValues?.[0] !== undefined) {
         config[key].set(response.formValues[0] as boolean);
+      }
+      this.mainForm(player);
+    });
+  }
+  /**
+   * 设置附加皮肤包：粘贴转换网站生成的 JSON
+   */
+  static skinPackForm(player: Player) {
+    const current = MaidSkin.stringifyPackConfig();
+    let form = new ModalFormData()
+      .title(lang('message.tlm.config.skin_pack.name'))
+      .textField(lang('message.tlm.config.skin_pack.description'), '[{"count":20},{"count":10}]', {
+        defaultValue: current
+      })
+      .submitButton('提交');
+
+    // @ts-ignore
+    form.show(player).then((response) => {
+      if (!response.canceled && response?.formValues?.[0] !== undefined) {
+        let packs = MaidSkin.parsePackConfig(response.formValues[0] as string);
+        if (packs === undefined) {
+          this.invalidWarning(player, () => { ConfigForm.skinPackForm(player); });
+          return;
+        }
+        MaidSkin.setSkin(packs);
       }
       this.mainForm(player);
     });

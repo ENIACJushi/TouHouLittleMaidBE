@@ -4,8 +4,13 @@ import { PROFILE } from "../config";
  * 基岩版数据模板
  */
 export namespace TemplatesBE {
-  // 模型包注册命令头
-  export const COMMAND_IMPORT = '/scriptevent thlm:skin_set ';
+  // 模型包注册配置 JSON，写入游戏设置面板
+  export function buildSkinPackConfigStr(modelAmount: number[]): string {
+    const packs = modelAmount
+      .filter(count => typeof count === 'number')
+      .map(count => ({ count }));
+    return JSON.stringify(packs);
+  }
 
   // 资源包 manifest.json 模板
   export const MANIFEST = {

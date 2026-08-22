@@ -8,9 +8,9 @@ import {LangFile} from "./LangFile";
 export class PackFile {
   uuid: string = '';
   /**
-   * 模型包注册命令
+   * 模型包注册配置 JSON，粘贴到游戏设置面板
    */
-  commandStr = TemplatesBE.COMMAND_IMPORT;
+  packConfigStr = '[]';
   /**
    * 模型信息 entity/maid.entity.json
    */
@@ -24,9 +24,9 @@ export class PackFile {
    */
   render_controller = JSON.parse(JSON.stringify(TemplatesBE.RENDER_CONTROLLER_LIST));
   /**
-   * 各模型包定义的模型数量，用于生成指令字符串
+   * 各模型包定义的模型数量，用于生成配置 JSON
    */
-  modelAmount = [];
+  modelAmount: number[] = [];
   /**
    * 翻译数据
    */
@@ -75,9 +75,9 @@ export class PackFile {
     // 写入渲染控制器
     this.resultFile.folder("render_controllers")
       .file("maid.json", JSON.stringify(this.render_controller, null, '\t'));
-    // 生成指令
-    this.commandStr = `${TemplatesBE.COMMAND_IMPORT}${this.modelAmount.join(',')}`;
-    this.resultFile.file("command.txt", this.commandStr);
+    // 生成皮肤包配置 JSON
+    this.packConfigStr = TemplatesBE.buildSkinPackConfigStr(this.modelAmount);
+    this.resultFile.file("skin_pack.json", this.packConfigStr);
     return this;
   }
 

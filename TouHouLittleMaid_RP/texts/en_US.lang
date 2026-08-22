@@ -113,6 +113,8 @@ message.tlm.config.logger_enable.name=Broadcast Log Enable
 message.tlm.config.logger_enable.description=Broadcast debug logs to the world.
 message.tlm.config.logger_level.name=Log Level
 message.tlm.config.logger_level.description=0:NONE 1:ERROR 2:WARN 3: INFO 4: DEBUG
+message.tlm.config.skin_pack.name=Skin Pack
+message.tlm.config.skin_pack.description=Paste the skin pack data from the converter website, e.g. [{"count":20},{"count":10}]
 
 action.interact.camera=Photo
 action.interact.thlm.npc=Turn into NPC

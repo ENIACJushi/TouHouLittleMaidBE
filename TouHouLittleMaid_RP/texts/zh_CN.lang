@@ -187,6 +187,8 @@ message.tlm.config.logger_enable.name=日志输出到聊天栏
 message.tlm.config.logger_enable.description=将调试日志广播到世界
 message.tlm.config.logger_level.name=日志等级
 message.tlm.config.logger_level.description=0:NONE 1:ERROR 2:WARN 3: INFO 4: DEBUG
+message.tlm.config.skin_pack.name=皮肤包
+message.tlm.config.skin_pack.description=粘贴转换网站生成的皮肤包数据，如 [{"count":20},{"count":10}]
 
 ##### 其它 #####
 danmaku.pellet.name=§a点弹

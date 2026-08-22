@@ -123,7 +123,7 @@ async function main() {
   if (!result) {
     throw new Error('转换失败：未返回结果');
   }
-  console.log(`加载指令: ${result.commandStr}`);
+  console.log(`皮肤包配置: ${result.packConfigStr}`);
 
   const zipBuffer = await result.resultFile.generateAsync({
     type: 'nodebuffer',

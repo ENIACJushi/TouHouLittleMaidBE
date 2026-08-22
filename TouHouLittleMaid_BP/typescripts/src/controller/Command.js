@@ -1,7 +1,6 @@
-import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, system, world } from "@minecraft/server";
+import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
 import * as Tool from"../libs/ScarletToolKit";
 import { StrMaid } from "../maid/StrMaid";
-import { MaidSkin } from "../maid/skin/MaidSkin";
 import { ConfigForm, ConfigHelper } from "./Config";
 import { EntityMaid } from '../maid/EntityMaid'
 import { Logger } from "./Logger";
@@ -16,7 +15,6 @@ export class CommandManager {
      */
     static scriptEvent(event){
         switch(event.id){
-            case "thlm:skin_set": this.setSkin(event); break;
             case "thlm:config"  : this.config(event) ; break;
             case "thlm:admin"   : this.admin(event)  ; break;
             case "thlm:test"    : this.test(event)   ; break;
@@ -24,21 +22,6 @@ export class CommandManager {
             case "thlm:debug"   : this.debug(event)  ; break;
             default: break;
         }
-    }
-    /**
-     * 设置皮肤包
-     *  scriptevent thlm:skin_set 6,19,20
-     * @param {ScriptEventCommandMessageAfterEvent} event 
-     */
-    static setSkin(event){
-        let strList = event.message.split(",");
-        let numList = [];
-        for(let str of strList){
-            numList.push(parseInt(str));
-        }
-        MaidSkin.setSkin(numList);
-        
-        world.sendMessage(`Add skin: ${numList}`);
     }
     /**
      * 修改配置项

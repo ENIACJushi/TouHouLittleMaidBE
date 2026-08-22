@@ -1,6 +1,6 @@
 import { world } from "@minecraft/server";
 import { getRandomInteger } from "../../libs/ScarletToolKit";
-import { SkinPackDisplayInfo } from './MaidSkinTypes';
+import { SkinPackConfig, SkinPackDisplayInfo } from './MaidSkinTypes';
 
 export class MaidSkin {
   /* 预置模型包参数 */
@@ -12,64 +12,89 @@ export class MaidSkin {
     [3, 4], // Minecraft
   ];
   /* 通用参数 */
-  static readonly SCOREBOARD_NAME_OLD = 'thlmskin'; // 旧计分板 id，因为在默认模型包的记录上有缺陷，不再使用
-  static readonly SCOREBOARD_NAME = 'thlm_skin'; // 计分板 id
+  static readonly PROPERTY_KEY = 'thlm_skin_packs'; // 附加皮肤包 JSON 动态属性
   static skinPacks: Map<number, number> = new Map(MaidSkin.DEFAULT_PACKS); // 皮肤包列表，记录 id - 皮肤包拥有的皮肤数量
+  static extraPacks: SkinPackConfig[] = []; // 附加皮肤包配置，与网站 JSON 对应
 
   ///// 配置 /////
   /**
    * 初始化，世界初始化时调用
    */
   static init(): void {
-    let scoreboard = world.scoreboard.getObjective(MaidSkin.SCOREBOARD_NAME);
-    if (!scoreboard) {
-      console.log(`MaidSkin init >> Create scoreboard.`);
-      // 计分板未初始化时，创建计分板
-      world.scoreboard.addObjective(MaidSkin.SCOREBOARD_NAME, 'THLMSkin');
-      // 删除旧的计分板
-      let oldScoreboard = world.scoreboard.getObjective(MaidSkin.SCOREBOARD_NAME_OLD);
-      if (oldScoreboard) {
-        world.scoreboard.removeObjective(MaidSkin.SCOREBOARD_NAME_OLD);
-      }
+    const stored = world.getDynamicProperty(MaidSkin.PROPERTY_KEY);
+    if (typeof stored !== 'string') {
       return;
     }
-    // 计分板已初始化，则读取已加载的皮肤包
-    scoreboard.getScores().forEach(info => {
-      console.log(`MaidSkin init >> Add pack: id=${info.participant.displayName}, amount=${info.score}`);
-      this.skinPacks.set(Number(info.participant.displayName), info.score);
-    });
-  }
-
-  /**
-   * 获取皮肤包计分板
-   */
-  static getSkinScoreboard() {
-    let res = world.scoreboard.getObjective(MaidSkin.SCOREBOARD_NAME);
-    if (!res) {
-      res = world.scoreboard.addObjective(MaidSkin.SCOREBOARD_NAME, 'THLMSkin');
+    const packs = MaidSkin.parsePackConfig(stored);
+    if (packs === undefined) {
+      return;
     }
-    return res;
+    MaidSkin.applyExtraPacks(packs);
   }
 
   /**
    * 设置附加皮肤列表
+   * @param packs 网站生成的皮肤包 JSON，如 [{"count":20},{"count":10}]
    */
-  static setSkin(list: number[]): void {
-    // 清空计分板
-    let scoreboard = MaidSkin.getSkinScoreboard();
-    scoreboard.getParticipants().forEach(value => {
-      scoreboard.removeParticipant(value);
-    });
+  static setSkin(packs: SkinPackConfig[]): void {
+    MaidSkin.applyExtraPacks(packs);
+    world.setDynamicProperty(MaidSkin.PROPERTY_KEY, JSON.stringify(packs));
+  }
 
-    // 重置内存表
+  /**
+   * 将附加皮肤包应用到内存表
+   */
+  static applyExtraPacks(packs: SkinPackConfig[]): void {
+    MaidSkin.extraPacks = packs;
     MaidSkin.skinPacks = new Map(MaidSkin.DEFAULT_PACKS);
 
-    // 更新缓存和计分板
-    for (let i = 0; i < list.length; i++) {
+    for (let i = 0; i < packs.length; i++) {
       let id = MaidSkin.PLACEHOLDER + 1 + i;
-      MaidSkin.skinPacks.set(id, list[i]);
-      scoreboard.setScore(id.toString(), list[i]);
+      MaidSkin.skinPacks.set(id, packs[i].count);
+      console.log(`MaidSkin >> Add pack: id=${id}, amount=${packs[i].count}`);
     }
+  }
+
+  /**
+   * 解析网站生成的皮肤包 JSON
+   * @returns 解析失败时返回 undefined
+   */
+  static parsePackConfig(text: string): SkinPackConfig[] | undefined {
+    const trimmed = text.trim();
+    if (trimmed === '') {
+      return [];
+    }
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(trimmed);
+    } catch {
+      return undefined;
+    }
+
+    if (!Array.isArray(parsed)) {
+      return undefined;
+    }
+
+    const result: SkinPackConfig[] = [];
+    for (const item of parsed) {
+      if (item === null || typeof item !== 'object' || Array.isArray(item)) {
+        return undefined;
+      }
+      const count = (item as { count?: unknown }).count;
+      if (typeof count !== 'number' || !Number.isInteger(count) || count < 0) {
+        return undefined;
+      }
+      result.push(item as SkinPackConfig);
+    }
+    return result;
+  }
+
+  /**
+   * 将附加皮肤包配置转为 JSON 字符串
+   */
+  static stringifyPackConfig(packs: SkinPackConfig[] = MaidSkin.extraPacks): string {
+    return JSON.stringify(packs);
   }
 
   /**
