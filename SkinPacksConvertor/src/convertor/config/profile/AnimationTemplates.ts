@@ -63,11 +63,11 @@ const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       "v.ysm_blink_at = v.ysm_blink_at ?? (query.life_time + math.random(2.5, 4));",
       "v.ysm_is_close_eyes = query.life_time >= v.ysm_blink_at && query.life_time < v.ysm_blink_at + 0.15;",
       "v.ysm_blink_at = query.life_time >= v.ysm_blink_at + 0.15 ? (query.life_time + math.random(2, 4)) : v.ysm_blink_at;",
-      // thlm:anim：bit0 坐下 / bit1 抱起 / bit2 躺下 / bit3~7 food_level（Molang 无按位与，用除法取位）
+      // thlm:anim：bit0 坐下 / bit1 抱起 / bit2 睡觉 / bit3~7 food_level（Molang 无按位与，用除法取位）
       "v.tlm_anim = query.property('thlm:anim');",
       "v.tlm_is_sitting = math.mod(math.floor(v.tlm_anim), 2);", // 是否处于坐下状态
       "v.tlm_is_hug = math.mod(math.floor(v.tlm_anim / 2), 2);", // 是否处于抱起状态
-      "v.tlm_is_lying = math.mod(math.floor(v.tlm_anim / 4), 2);", // 是否处于躺下状态
+      "v.tlm_is_sleep = math.mod(math.floor(v.tlm_anim / 4), 2);", // 是否处于睡觉状态（bit2）
       "v.tlm_food_level = math.mod(math.floor(v.tlm_anim / 8), 32);", // 饥饿值 0~20（bit3 起，右移 3 位后取 5 位）
       "v.tlm_is_gecko = 0;", // 是否为 gecko 模型（gecko 模型在展示条件中覆写为 1）
       // sit/idle 自带眨眼关键帧时置 1，抑制 pre_parallel 的 molang 眨眼（对齐 Java main 覆盖）
@@ -84,6 +84,7 @@ const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       `v.animate_walk = 0;`,
       `v.animate_beg = 0;`,
       `v.animate_sit = 0;`,
+      `v.animate_sleep = 0;`,
       `v.animate_idle = 0;`,
       `v.animate_parallel0 = 0;`,
       `v.animate_parallel1 = 0;`,
@@ -111,12 +112,14 @@ const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       { "walk": `v.animate_walk == 0 && !v.tlm_is_sitting && v.walk_process>${WALK_PROCESS_MOVING_MIN}` },
       { "beg": "v.animate_beg == 0 && query.is_interested" },
       { "sit": "v.animate_sit == 0 && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug" },
+      // sleep 无原包基础动画，统一走内置转换动画（sleep_1），故此处不再注册非 gecko 的 v.animate_sleep==0 分支
       // 兜底动画由转换器内置源文件转换生成，命名与皮肤包动画一致
       { "hug_1": `v.animate_hug == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && v.tlm_is_hug` },
       { "gecko_hug_base": `v.animate_hug != 0 && !q.is_in_ui && v.tlm_is_hug` },
       { "walk_1": `v.animate_walk == ${DEFAULT_ANIMATION_ID} && !v.tlm_is_sitting && v.walk_process>${WALK_PROCESS_MOVING_MIN}` },
       { "beg_1": `v.animate_beg == ${DEFAULT_ANIMATION_ID} && query.is_interested` },
       { "sit_1": `v.animate_sit == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug` },
+      { "sleep_1": `v.animate_sleep == ${DEFAULT_ANIMATION_ID} && !q.is_in_ui && v.tlm_is_sleep && !v.tlm_is_hug` },
       { "idle_1": `v.animate_idle == ${DEFAULT_ANIMATION_ID} && !v.tlm_is_sitting && !v.tlm_is_hug && v.walk_process<=${WALK_PROCESS_MOVING_MIN}` },
       { "parallel0_1": `v.animate_parallel0 == ${DEFAULT_ANIMATION_ID}` },
       { "parallel1_1": `v.animate_parallel1 == ${DEFAULT_ANIMATION_ID}` },
@@ -144,6 +147,7 @@ const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
     "walk_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.walk),
     "beg_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.beg),
     "sit_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.sit),
+    "sleep_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.sleep),
     "idle_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.idle),
     "parallel0_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.parallel0),
     "parallel1_1": buildSkinPackAnimationName(DEFAULT_ANIMATION_ID, AnimationTypes.parallel1),

@@ -36,7 +36,7 @@ export const MOLANG_VARIABLE_RESOLVE_RULES: readonly MolangVariableResolveRule[]
   // tlm 适配变量
   {name: 'tlm_is_sitting', type: 'keep'}, // tlm 坐下变量
   {name: 'tlm_is_hug', type: 'keep'}, // tlm 抱起变量
-  {name: 'tlm_is_lying', type: 'keep'}, // tlm 躺下变量
+  {name: 'tlm_is_sleep', type: 'keep'}, // tlm 睡觉变量（thlm:anim bit2）
   {name: 'tlm_food_level', type: 'keep'}, // tlm 饥饿值（thlm:anim bit3~7，0~20）
   {name: 'tlm_anim', type: 'keep'}, // tlm 压缩位标志原值
   {name: 'tlm_is_gecko', type: 'keep'}, // tlm gecko 模型标记
@@ -55,7 +55,6 @@ export const MOLANG_TLM_RESOLVE_RULES: readonly MolangVariableResolveRule[] = [
   {name: 'has_backpack', type: 'replace', value: "(q.property('thlm:backpack_type')!=0)"},
   {name: 'is_sitting', type: 'replace', value: 'v.tlm_is_sitting'},
   {name: 'is_hug', type: 'replace', value: 'v.tlm_is_hug'},
-  {name: 'is_lying', type: 'replace', value: 'v.tlm_is_lying'},
   {name: 'food_level', type: 'replace', value: 'v.tlm_food_level'},
 ];
 
@@ -69,6 +68,7 @@ export const MOLANG_TLM_RESOLVE_RULES: readonly MolangVariableResolveRule[] = [
  */
 export const MOLANG_YSM_RESOLVE_RULES: readonly MolangVariableResolveRule[] = [
   {name: 'food_level', type: 'replace', value: 'v.tlm_food_level'},
+  {name: 'is_sleep', type: 'replace', value: 'v.tlm_is_sleep'},
   {name: 'is_close_eyes', type: 'replace', value: 'v.ysm_is_close_eyes'},
   // YSM 抬头为正；基岩 target_x 抬头为负。括号避免运算符粘连。
   {name: 'head_pitch', type: 'replace', value: '(-query.target_x_rotation)'},

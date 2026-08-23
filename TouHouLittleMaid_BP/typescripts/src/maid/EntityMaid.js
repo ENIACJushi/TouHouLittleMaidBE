@@ -1420,13 +1420,13 @@ export class EntityMaid{
     }
     /**
      * 压缩位标志（thlm:anim）
-     *  bit0 坐下 / bit1 抱起 / bit2 躺下 / bit3~7 food_level（0~20，默认 20，占 5 bit）
+     *  bit0 坐下 / bit1 抱起 / bit2 睡觉 / bit3~7 food_level（0~20，默认 20）
      */
     static Anim = {
         PROPERTY: "thlm:anim",
         BIT_SIT: 1 << 0,
         BIT_HUG: 1 << 1,
-        BIT_LIE: 1 << 2,
+        BIT_SLEEP: 1 << 2,
         FOOD_SHIFT: 3,
         FOOD_MASK: 0x1F,
         FOOD_MAX: 20,
@@ -1507,12 +1507,20 @@ export class EntityMaid{
         this.Anim.setBit(maid, this.Anim.BIT_HUG, value);
     }
     /**
-     * 是否处于躺下状态
+     * 是否处于睡觉状态（bit2）
      * @param {Entity} maid
      * @returns {boolean}
      */
-    static isLying(maid){
-        return this.Anim.has(maid, this.Anim.BIT_LIE);
+    static isSleeping(maid){
+        return this.Anim.has(maid, this.Anim.BIT_SLEEP);
+    }
+    /**
+     * 设置睡觉位
+     * @param {Entity} maid
+     * @param {boolean} value
+     */
+    static setSleeping(maid, value){
+        this.Anim.setBit(maid, this.Anim.BIT_SLEEP, value);
     }
     /**
      * 获取饥饿值（压缩在 thlm:anim 的 bit3~7）

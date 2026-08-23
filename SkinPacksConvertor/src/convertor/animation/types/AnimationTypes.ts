@@ -48,7 +48,7 @@ export enum AnimationTypes {
   // computer = 'computer',
   // keyboard = 'keyboard',
   // bookshelf = 'bookshelf',
-  // sleep = 'sleep',
+  sleep = 'sleep',
   // game_win = 'game_win',
   // game_lost = 'game_lost',
 }

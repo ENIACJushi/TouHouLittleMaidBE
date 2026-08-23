@@ -15,6 +15,7 @@ export const DEFAULT_ANIMATION_TYPES = [
   AnimationTypes.beg,
   AnimationTypes.sit,
   AnimationTypes.idle,
+  AnimationTypes.sleep,
   AnimationTypes.parallel0,
   AnimationTypes.parallel1,
   AnimationTypes.parallel2,

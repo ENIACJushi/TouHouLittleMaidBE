@@ -53,6 +53,8 @@ const ANIMATE_EXTRA_CONDITION: Record<AnimationTypes, string> = {
   [AnimationTypes.walk]: ` && !v.tlm_is_sitting && v.walk_process>${WALK_PROCESS_MOVING_MIN}`,
   [AnimationTypes.beg]: " && query.is_interested",
   [AnimationTypes.sit]: " && !q.is_in_ui && v.tlm_is_sitting && !v.tlm_is_hug", // 被抱起时不可播放坐下动画
+  // 睡眠：睡觉是最优先姿态（可与躺下共存），被抱起时不可睡
+  [AnimationTypes.sleep]: " && !q.is_in_ui && v.tlm_is_sleep && !v.tlm_is_hug",
   [AnimationTypes.parallel0]: "",
   [AnimationTypes.parallel1]: "",
   [AnimationTypes.parallel2]: "",
@@ -468,6 +470,10 @@ export class MaidAnimationConvertor {
         const hasCustomAnims = types !== undefined;
         const needAnimateAssigns = hasCustomAnims || isGecko;
         const fallbackAnimId = (type: AnimationTypes): number => {
+          // sleep 无原包基础动画（sit/idle 有），无论模型是否定义，缺省时一律回退到内置转换动画
+          if (type === AnimationTypes.sleep) {
+            return DEFAULT_ANIMATION_ID;
+          }
           if (hasCustomAnims && isGecko && isParallelAnimationType(type)) {
             return 0;
           }
