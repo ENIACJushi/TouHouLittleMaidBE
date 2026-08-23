@@ -397,7 +397,12 @@ export class EntityMaid{
          * @param {boolean} value
          */
         set(maid, value){
-            maid.triggerEvent(value ? "api:mode_pick" : "api:mode_quit_pick");
+            if (value) {
+                // 坐下时用静止拾物组，站立时用行走拾物组
+                maid.triggerEvent(EntityMaid.isSitting(maid) ? "api:mode_pick_sit" : "api:mode_pick");
+            } else {
+                maid.triggerEvent("api:mode_quit_pick");
+            }
             DP.setBoolean(maid, "pick", value);
         },
         switchMode(maid){
@@ -561,53 +566,47 @@ export class EntityMaid{
             maid.triggerEvent(this.getEventName(maid, this.get(maid), true));
             // 有些工作模式存在相同的组件，延迟修改避免删除
             system.runTimeout(()=>{
-                // 有些类型的工作模式需要由脚本额外判断一些属性
+                // 工作属性由脚本写入；坐下相关组件由脚本按姿态选择事件，不再走 JSON 过滤器
+                maid.setProperty("thlm:work", type);
                 switch (type) {
                     // 弹幕攻击模式
                     case EntityMaid.Work.danmaku_attack: {
                         // 播放声音
                         EntityMaid.Sound.playSound(maid, 'thlmm.maid.attack');
-                        // 设置工作状态
-                        EntityMaid.Work.set(maid, EntityMaid.Work.danmaku_attack);
-                        // 弹幕攻击模式，根据是否坐下触发不同的附加事件
+                        // 根据是否坐下触发不同的附加事件
                         if (EntityMaid.isSitting(maid)) {
                             maid.triggerEvent("api:mode_danmaku_attack_sit");
                         } else {
                             maid.triggerEvent("api:mode_danmaku_attack_stand");
                         }
                     } break;
+                    // 近战：坐下时不添加索敌/攻击组件
+                    case EntityMaid.Work.attack: {
+                        EntityMaid.Sound.playSound(maid, "mob.thlmm.maid.attack");
+                        if (!EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent(this.getEventName(maid, type, false));
+                        }
+                    } break;
                     // 耕地模式
                     case EntityMaid.Work.farm: {
-                        // 设置工作状态
-                        EntityMaid.Work.set(maid, EntityMaid.Work.farm);
-                        // 只有在不处于坐下状态时，才添加组件
                         if (!EntityMaid.isSitting(maid)) {
                             maid.triggerEvent("api:mode_farm");
                         }
                     } break;
                     // 甘蔗模式
                     case EntityMaid.Work.sugar_cane: {
-                        // 设置工作状态
-                        EntityMaid.Work.set(maid, EntityMaid.Work.sugar_cane);
-                        // 只有在不处于坐下状态时，才添加组件
                         if (!EntityMaid.isSitting(maid)) {
                             maid.triggerEvent("api:mode_sugar_cane");
                         }
                     } break;
                     // 瓜类模式
                     case EntityMaid.Work.melon: {
-                        // 设置工作状态
-                        EntityMaid.Work.set(maid, EntityMaid.Work.melon);
-                        // 只有在不处于坐下状态时，才添加组件
                         if (!EntityMaid.isSitting(maid)) {
                             maid.triggerEvent("api:mode_melon");
                         }
                     } break;
                     // 可可
                     case EntityMaid.Work.cocoa: {
-                        // 设置工作状态
-                        EntityMaid.Work.set(maid, EntityMaid.Work.cocoa);
-                        // 只有在不处于坐下状态时，才添加组件
                         if (!EntityMaid.isSitting(maid)) {
                             maid.triggerEvent("api:mode_cocoa");
                         }
@@ -701,7 +700,10 @@ export class EntityMaid{
         switchMode(maid){
             if(this.getMode(maid)===true){
                 // 家模式 → 跟随模式
-                maid.triggerEvent("api:status_follow");
+                maid.setProperty("thlm:home", false);
+                maid.triggerEvent(EntityMaid.isSitting(maid)
+                    ? "api:status_follow_sit"
+                    : "api:status_follow_stand");
             }
             else{
                 // 跟随模式 → 家模式

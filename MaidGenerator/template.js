@@ -1331,18 +1331,11 @@ export let TEMPLATE = {
       //// 初始化成功 ////
       "api:init_success":{ "remove": { "component_groups": [ "init_failed" ] } },
       //// 跟随类型 ////
-      "api:status_follow"  :{
-        "sequence": [
-          { "set_property": {"thlm:home": false} },
-          {
-            "filters": { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },
-            "add"   : {"component_groups": ["status:follow_standard"]}
-          },
-          {
-            "filters": { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": true },
-            "add"   : {"component_groups": ["status:follow_sit"]}
-          }
-        ]
+      "api:status_follow_stand":{
+        "add": {"component_groups": ["status:follow_standard"]}
+      },
+      "api:status_follow_sit":{
+        "add": {"component_groups": ["status:follow_sit"]}
       },
       "api:status_home"    :{
         "set_property": {"thlm:home": true},
@@ -1358,16 +1351,12 @@ export let TEMPLATE = {
       //// 工作模式 ////
       "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}, "set_property":{"thlm:work": 0}}]},
       "api:mode_quit_idle":  {"sequence": [{"remove": {"component_groups": ["mode:idle"]}}]},
-      "api:mode_attack_lv1":{"sequence": [
-          { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false},
-            "add": { "component_groups": [ "mode:searching_melee_attack", "mode:attack_lv1" ] } },
-          { "set_property":{"thlm:work": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]
+      "api:mode_attack_lv1":{
+        "add": { "component_groups": [ "mode:searching_melee_attack", "mode:attack_lv1" ] }
       },
       "api:mode_quit_attack_lv1":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv1", "mode:searching_melee_attack"]}}]},
-      "api:mode_attack_lv2"     :{"sequence": [
-          { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false},
-            "add": { "component_groups": [ "mode:searching_melee_attack", "mode:attack_lv2" ] } },
-          { "set_property":{"thlm:work": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]
+      "api:mode_attack_lv2":{
+        "add": { "component_groups": [ "mode:searching_melee_attack", "mode:attack_lv2" ] }
       },
       "api:mode_quit_attack_lv2":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv2", "mode:searching_melee_attack"]}}]},
       // 弹幕攻击模式：坐下状态的组件
@@ -1383,19 +1372,23 @@ export let TEMPLATE = {
       "api:mode_farm": { "add": {"component_groups": ["mode:farm"]} },
       "api:mode_quit_farm"  :{"sequence": [{"remove": {"component_groups": ["mode:farm"]}}]},
       // 甘蔗模式：站起状态时添加组件
-      "api:mode_sugar_cane": { "add": {"component_groups": ["mode:sugar_cane"]} } },
+      "api:mode_sugar_cane": { "add": {"component_groups": ["mode:sugar_cane"]} },
       "api:mode_quit_sugar_cane": {"sequence": [{"remove": {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 4}}]},
       // 瓜类模式：站起状态时添加组件
-      "api:mode_melon": { "add": {"component_groups": ["mode:melon"] },
+      "api:mode_melon": { "add": {"component_groups": ["mode:melon"]} },
       "api:mode_quit_melon": { "sequence": [{"remove": {"component_groups": ["mode:melon"]}, "set_property":{"thlm:work": 5}}]},
       // 可可模式：站起状态时添加组件
       "api:mode_cocoa": {"add": {"component_groups": ["mode:cocoa"]} },
       "api:mode_quit_cocoa": {"sequence": [{"remove": {"component_groups": ["mode:cocoa"]}, "set_property":{"thlm:work": 6}}]},
 
       //// 拾物模式 ////
-      "api:mode_pick": { "sequence": [
-          { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:pick"] }  , "remove": {"component_groups": ["mode:pick_sit"] } },
-          { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": true}, "add": {"component_groups": ["mode:pick_sit"]}, "remove": {"component_groups": ["mode:pick"] } }]
+      "api:mode_pick": {
+        "add": {"component_groups": ["mode:pick"]},
+        "remove": {"component_groups": ["mode:pick_sit"]}
+      },
+      "api:mode_pick_sit": {
+        "add": {"component_groups": ["mode:pick_sit"]},
+        "remove": {"component_groups": ["mode:pick"]}
       },
       "api:mode_quit_pick":{ "remove" : {"component_groups": ["mode:pick", "mode:pick_sit"] } },
 
