@@ -184,7 +184,7 @@ export class ChairPackConvertor {
     }
     // 在坐垫实体定义添加贴图
     this.res.chair_description["textures"][`${this.packNameSafe}_${idInfo.path}`] =
-      `textures/${this.packName}/entity/${idInfo.path}`;
+      `textures/${this.packName}/chair/${idInfo.path}`;
     // 在坐垫渲染控制器添加贴图
     this.pack_controller["arrays"]["textures"]["Array.skins"]
       .push(`Texture.${this.packNameSafe}_${idInfo.path}`);
@@ -194,10 +194,10 @@ export class ChairPackConvertor {
     if (textureFile) {
       const pathParts = textureKey.split(':');
       const relPath = pathParts.length === 2 ? pathParts[1] : textureKey;
-      // 统一写到 textures/<packName>/entity/<path>.png
+      // 坐垫贴图写入 textures/<packName>/chair/<path>.png，与女仆的 entity 目录平级
       const fileName = relPath.substring(relPath.lastIndexOf('/') + 1);
       const blob = await textureFile.async('blob');
-      this.res.textures.folder(this.packName).folder('entity').file(fileName, blob);
+      this.res.textures.folder(this.packName).folder('chair').file(fileName, blob);
     } else {
       console.warn(TAG, `parseModelTextures >> File not exist: ${textureKey}`);
     }

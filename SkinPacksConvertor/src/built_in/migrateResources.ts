@@ -156,8 +156,17 @@ export async function migrateBuiltInResources(innerPackDir: string, rpDir: strin
       console.log(`已合并贴图: ${dest}`);
       continue;
     }
-    await replaceDirContents(src, dest);
-    console.log(`已迁移贴图: ${dest}`);
+    // 女仆贴图目录（textures/<domain>/entity/）才做精确覆盖（先删后拷）。
+    // 坐垫源包（如 touhou_little_maid）只产出 textures/<domain>/chair/，没有 entity 子目录，
+    // 若对其 replaceDirContents 会先删除 RP 中已有的女仆 entity 贴图目录，故此场景只合并不清空。
+    const srcMaidEntityDir = path.join(src, 'entity');
+    if (await pathExists(srcMaidEntityDir)) {
+      await replaceDirContents(src, dest);
+      console.log(`已迁移贴图: ${dest}`);
+    } else {
+      await mergeDirFiles(src, dest);
+      console.log(`已合并贴图(坐垫源，避免覆盖女仆 entity): ${dest}`);
+    }
   }
 
   // render_controllers/maid.json → render_controllers/maid/built_in_skins.json
