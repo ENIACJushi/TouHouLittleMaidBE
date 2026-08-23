@@ -16,8 +16,8 @@ export let TEMPLATE = {
         // 背包
         "thlm:backpack_type"     :{"type": "int" , "default": 0    , "range":[0,3], "client_sync": true},
         "thlm:backpack_invisible":{"type": "bool", "default": false, "client_sync": true},
-        // 动画姿态位标志：bit0 坐下 / bit1 抱起 / bit2 躺下（脚本与 Molang 按位读写）
-        "thlm:anim": {"type": "int", "default": 0, "range": [0, 7], "client_sync": true},
+        // 压缩位标志：bit0 坐下 / bit1 抱起 / bit2 躺下 / bit3~7 food_level（0~20，默认 20，占 5 bit）
+        "thlm:anim": {"type": "int", "default": 160, "range": [0, 255], "client_sync": true},
         // 表情
         "thlm:emote"             :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
         // 环境

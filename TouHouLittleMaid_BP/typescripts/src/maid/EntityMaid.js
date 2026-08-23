@@ -1419,20 +1419,24 @@ export class EntityMaid{
         return false;
     }
     /**
-     * 动画姿态位标志（thlm:anim）
-     *  bit0 坐下 / bit1 抱起 / bit2 躺下，与 MaidGenerator ANIM_BIT 保持一致
+     * 压缩位标志（thlm:anim）
+     *  bit0 坐下 / bit1 抱起 / bit2 躺下 / bit3~7 food_level（0~20，默认 20，占 5 bit）
      */
     static Anim = {
         PROPERTY: "thlm:anim",
         BIT_SIT: 1 << 0,
         BIT_HUG: 1 << 1,
         BIT_LIE: 1 << 2,
+        FOOD_SHIFT: 3,
+        FOOD_MASK: 0x1F,
+        FOOD_MAX: 20,
+        FOOD_DEFAULT: 20,
         /**
          * @param {Entity} maid
          * @returns {number}
          */
         get(maid){
-            return maid.getProperty(this.PROPERTY) ?? 0;
+            return maid.getProperty(this.PROPERTY) ?? (this.FOOD_DEFAULT << this.FOOD_SHIFT);
         },
         /**
          * @param {Entity} maid
@@ -1450,6 +1454,24 @@ export class EntityMaid{
         setBit(maid, bit, value){
             let cur = this.get(maid);
             maid.setProperty(this.PROPERTY, value ? (cur | bit) : (cur & ~bit));
+        },
+        /**
+         * @param {Entity} maid
+         * @returns {number} 0~20
+         */
+        getFood(maid){
+            // 饥饿值默认为 20，获取不到时按默认值返回
+            return (this.get(maid) >> this.FOOD_SHIFT) & this.FOOD_MASK;
+        },
+        /**
+         * @param {Entity} maid
+         * @param {number} value 实际有效范围 0~20
+         */
+        setFood(maid, value){
+            let food = Math.max(0, Math.min(this.FOOD_MAX, Math.floor(Number(value) || 0)));
+            let cur = this.get(maid);
+            maid.setProperty(this.PROPERTY,
+                (cur & ~(this.FOOD_MASK << this.FOOD_SHIFT)) | (food << this.FOOD_SHIFT));
         }
     };
     /**
@@ -1491,6 +1513,22 @@ export class EntityMaid{
      */
     static isLying(maid){
         return this.Anim.has(maid, this.Anim.BIT_LIE);
+    }
+    /**
+     * 获取饥饿值（压缩在 thlm:anim 的 bit3~7）
+     * @param {Entity} maid
+     * @returns {number} 0~20
+     */
+    static getFoodLevel(maid){
+        return this.Anim.getFood(maid);
+    }
+    /**
+     * 设置饥饿值
+     * @param {Entity} maid
+     * @param {number} value 0~20
+     */
+    static setFoodLevel(maid, value){
+        this.Anim.setFood(maid, value);
     }
     /**
      * 坐下

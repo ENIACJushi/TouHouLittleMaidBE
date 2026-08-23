@@ -870,6 +870,7 @@
 					"v.tlm_is_sitting = math.mod(math.floor(v.tlm_anim), 2);",
 					"v.tlm_is_hug = math.mod(math.floor(v.tlm_anim / 2), 2);",
 					"v.tlm_is_lying = math.mod(math.floor(v.tlm_anim / 4), 2);",
+					"v.tlm_food_level = math.mod(math.floor(v.tlm_anim / 8), 32);",
 					"v.tlm_is_gecko = 0;",
 					"v.tlm_suppress_molang_blink = 0;",
 					"v.exp = 0;",

@@ -63,11 +63,12 @@ const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       "v.ysm_blink_at = v.ysm_blink_at ?? (query.life_time + math.random(2.5, 4));",
       "v.ysm_is_close_eyes = query.life_time >= v.ysm_blink_at && query.life_time < v.ysm_blink_at + 0.15;",
       "v.ysm_blink_at = query.life_time >= v.ysm_blink_at + 0.15 ? (query.life_time + math.random(2, 4)) : v.ysm_blink_at;",
-      // thlm:anim 位标志：bit0 坐下 / bit1 抱起 / bit2 躺下（Molang 无按位与，用除法取位）
+      // thlm:anim：bit0 坐下 / bit1 抱起 / bit2 躺下 / bit3~7 food_level（Molang 无按位与，用除法取位）
       "v.tlm_anim = query.property('thlm:anim');",
       "v.tlm_is_sitting = math.mod(math.floor(v.tlm_anim), 2);", // 是否处于坐下状态
       "v.tlm_is_hug = math.mod(math.floor(v.tlm_anim / 2), 2);", // 是否处于抱起状态
       "v.tlm_is_lying = math.mod(math.floor(v.tlm_anim / 4), 2);", // 是否处于躺下状态
+      "v.tlm_food_level = math.mod(math.floor(v.tlm_anim / 8), 32);", // 饥饿值 0~20（bit3 起，右移 3 位后取 5 位）
       "v.tlm_is_gecko = 0;", // 是否为 gecko 模型（gecko 模型在展示条件中覆写为 1）
       // sit/idle 自带眨眼关键帧时置 1，抑制 pre_parallel 的 molang 眨眼（对齐 Java main 覆盖）
       "v.tlm_suppress_molang_blink = 0;",
