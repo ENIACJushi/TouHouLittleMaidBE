@@ -84,12 +84,110 @@ export namespace TemplatesBE {
           },
           "geometry": {
           },
-          // 从定义模板获取 render_controllers
-          "render_controllers": JSON.parse(JSON.stringify(PROFILE.RENDER_CONTROLLERS)),
+      // 从定义模板获取 render_controllers
+      "render_controllers": JSON.parse(JSON.stringify(PROFILE.RENDER_CONTROLLERS)),
+      }
+    }
+  }
+}
+
+  ///// 坐垫实体渲染定义模板 /////
+
+  /**
+   * 坐垫渲染控制器单包模板
+   *  - `<index>` 由转换器替换为 `packId + CHAIR_BASE_PACK_INDEX`
+   */
+  export const CHAIR_RENDER_CONTROLLER_PACK = {
+    "arrays": {
+      "textures": {
+        "Array.skins": [
+          "Texture.void"
+        ]
+      },
+      "geometries": {
+        "Array.geos": [
+          "Geometry.void"
+        ]
+      }
+    },
+    "geometry": "Array.geos[q.property('thlm:chair_pack')==<index>?q.variant+1:0]",
+    "materials": [
+      { "_*": "Material.emissive" },
+      { "*": "Material.default" }
+    ],
+    "textures": [ "Array.skins[q.property('thlm:chair_pack')==<index>?q.variant+1:0]" ]
+  };
+  export type ChairRenderControllerPack = typeof CHAIR_RENDER_CONTROLLER_PACK;
+
+  /**
+   * 坐垫渲染控制器总表模板
+   */
+  export const CHAIR_RENDER_CONTROLLER_LIST = {
+    "format_version": "1.8.0",
+    "render_controllers": {
+    }
+  };
+
+  /**
+   * 构建坐垫客户端实体定义模板，每次都新建一个对象，外部无需复制
+   */
+  export function buildChairEntityDef(): ChairEntityDefinition {
+    return {
+      "format_version": "1.10.0",
+      "minecraft:client_entity": {
+        "description": {
+          "identifier": "touhou_little_maid:chair",
+          "materials": {
+            "default": "entity_alphatest"
+          },
+          "textures": {
+            "default": "textures/entity/void"
+          },
+          "geometry": {
+            "default": "geometry.touhou_little_maid.void"
+          },
+          "render_controllers": []
         }
       }
     }
   }
+
+  export type ChairEntityDefinition = {
+    format_version: string,
+    "minecraft:client_entity": {
+      description: {
+        identifier: string,
+        materials: Record<string, string>,
+        textures: Record<string, string>,
+        geometry: Record<string, string>,
+        render_controllers: string[],
+        scripts?: ChairScriptsDefinition,
+        animations?: Record<string, string>,
+      }
+    }
+  }
+
+  export type ChairScriptsDefinition = {
+    scale: string,
+    initialize?: string[],
+    pre_animation: string[],
+    should_update_bones_and_effects_offscreen?: true,
+    animate: (string | Record<string, string>)[],
+  }
+
+  ///// 坐垫包配置 /////
+
+  /**
+   * 坐垫包注册配置 JSON，写入游戏设置面板（独立于女仆皮肤包）
+   * 格式示例：[{"count":20},{"count":10}]
+   */
+  export function buildChairPackConfigStr(chairModelAmount: number[]): string {
+    const packs = chairModelAmount
+      .filter(count => typeof count === 'number')
+      .map(count => ({ count }));
+    return JSON.stringify(packs);
+  }
+  export type ChairPackConfig = { count: number; }[];
 
   export type EntityDefinition = {
     format_version: string,

@@ -14,7 +14,7 @@ import { SkinConvertor } from '../convertor/SkinConvertor';
 import { PROFILE } from '../convertor/config';
 import { getErrorLog } from '../../test/node-polyfill';
 import { mergeMaidEntity } from './mergeMaidEntity';
-import { migrateBuiltInResources } from './migrateResources';
+import { migrateBuiltInResources, migrateBuiltInChairResources } from './migrateResources';
 
 const PACK_FOLDER_NAME = 'TLM_MaidSkinPack';
 const BUILTIN_UUID = 'afc1c4e6-3bf4-4344-8dea-77425d8d6435';
@@ -153,6 +153,8 @@ async function main() {
 
   // 资源迁移
   await migrateBuiltInResources(packDir, rpDir);
+  // 坐垫资源迁移
+  await migrateBuiltInChairResources(packDir, rpDir);
   console.log('内置包转换完成');
 }
 

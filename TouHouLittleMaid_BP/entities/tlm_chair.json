@@ -1,0 +1,47 @@
+{
+  "format_version": "1.18.10",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "touhou_little_maid:chair",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "runtime_identifier": "minecraft:arrow",
+      "properties": {
+        "thlm:chair_pack": { "type": "int", "default": -1, "range": [-1, 99999], "client_sync": true }
+      }
+    },
+    "component_groups": {
+      "despawn":{ "minecraft:instant_despawn":{ "remove_child_entities": false } }
+    },
+    "components": {
+      "minecraft:variant": { "value": 0 },
+      "minecraft:movement": { "value": 0 },
+      "minecraft:underwater_movement": { "value": 0 },
+      "minecraft:water_movement": { "drag_factor": 0 },
+      "minecraft:input_ground_controlled": { },
+      "minecraft:rideable": {
+        "controlling_seat": 0,
+        "crouching_skip_interact": true,
+        "family_types": [ "player" ],
+        "pull_in_entities": false,
+        "rider_can_interact": false,
+        "seat_count": 1,
+        "seats":[
+          {
+            "position": [ 0, 0, 0 ]
+          }
+        ],
+        "on_rider_exit_event": "despawn"
+      },
+      "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+      "minecraft:collision_box": { "width": 1, "height": 1 },
+      "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+      "minecraft:persistent": {},
+      "minecraft:knockback_resistance": { "value": 1.0 },
+      "minecraft:physics": { "has_gravity": false, "has_collision": false, "push_towards_closest_space": false }
+    },
+    "events": {
+      "despawn": { "add": { "component_groups": [ "despawn" ] } }
+    }
+  }
+}

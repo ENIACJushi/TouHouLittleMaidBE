@@ -203,3 +203,79 @@ export async function migrateBuiltInResources(innerPackDir: string, rpDir: strin
     console.log(`已合并语言文件: ${destFile}`);
   }
 }
+
+/**
+ * 将中间产物中的坐垫资源迁移到 TouHouLittleMaid_RP
+ * 坐垫模型/贴图沿用与女仆一致的迁移策略：
+ *  - 坐垫几何体目录 → models/entity/built_in_chairs（清空重建）
+ *  - 坐垫 render_controllers/chair.json → render_controllers/chair/chair.json
+ *  - 坐垫 entity/chair.entity.json → entity/chair/chair.entity.json
+ *  - 坐垫 textures/<packName> → textures/<packName>（合并）
+ *  - 坐垫 animations/tlm_pack_chair.animation.json → animations/built_in_chairs/
+ *  - chair_pack.json → 写入 RP 根目录，供游戏读取坐垫包配置
+ */
+export async function migrateBuiltInChairResources(innerPackDir: string, rpDir: string): Promise<void> {
+  // 坐垫动画 → animations/built_in_chairs
+  const srcChairAnim = path.join(innerPackDir, 'animations', 'tlm_pack_chair.animation.json');
+  if (await pathExists(srcChairAnim)) {
+    const destChairAnims = path.join(rpDir, 'animations', 'built_in_chairs');
+    await fs.mkdir(destChairAnims, { recursive: true });
+    await fs.copyFile(srcChairAnim, path.join(destChairAnims, 'tlm_pack_chair.animation.json'));
+    console.log(`已迁移动画: ${destChairAnims}`);
+  }
+
+  // 坐垫几何体 → models/entity/built_in_chairs
+  const srcChairModels = path.join(innerPackDir, 'models', 'entity');
+  const destChairModels = path.join(rpDir, 'models', 'entity', 'built_in_chairs');
+  const srcSubPacks = await listEntries(srcChairModels);
+  if (srcSubPacks.length > 0) {
+    await resetDir(destChairModels);
+    for (const entry of srcSubPacks) {
+      if (!entry.isDirectory()) {
+        continue;
+      }
+      await fs.cp(path.join(srcChairModels, entry.name), path.join(destChairModels, entry.name), {
+        recursive: true,
+      });
+    }
+    console.log(`已迁移坐垫模型: ${destChairModels}`);
+  }
+
+  // 坐垫 render_controllers/chair.json → render_controllers/chair/chair.json
+  const srcChairRender = path.join(innerPackDir, 'render_controllers', 'chair.json');
+  const destChairRender = path.join(rpDir, 'render_controllers', 'chair', 'chair.json');
+  if (await pathExists(srcChairRender)) {
+    await fs.mkdir(path.dirname(destChairRender), { recursive: true });
+    await fs.copyFile(srcChairRender, destChairRender);
+    console.log(`已覆写坐垫渲染控制器: ${destChairRender}`);
+  }
+
+  // 坐垫 entity/chair.entity.json → entity/chair/chair.entity.json
+  const srcChairEntity = path.join(innerPackDir, 'entity', 'chair.entity.json');
+  const destChairEntity = path.join(rpDir, 'entity', 'chair', 'chair.entity.json');
+  if (await pathExists(srcChairEntity)) {
+    await fs.mkdir(path.dirname(destChairEntity), { recursive: true });
+    await fs.copyFile(srcChairEntity, destChairEntity);
+    console.log(`已覆写坐垫实体定义: ${destChairEntity}`);
+  }
+
+  // 坐垫贴图目录 → textures/<同名>（合并覆盖）
+  const srcTextures = path.join(innerPackDir, 'textures');
+  const destTexturesRoot = path.join(rpDir, 'textures');
+  for (const entry of await listEntries(srcTextures)) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    // 只在目标中都是合并目录的前提下合并；这里把坐垫贴图并入同名目录
+    await mergeDirFiles(path.join(srcTextures, entry.name), path.join(destTexturesRoot, entry.name));
+    console.log(`已合并坐垫贴图: ${path.join(destTexturesRoot, entry.name)}`);
+  }
+
+  // chair_pack.json → RP 根目录
+  const srcChairPack = path.join(innerPackDir, 'chair_pack.json');
+  if (await pathExists(srcChairPack)) {
+    const destChairPack = path.join(rpDir, 'chair_pack.json');
+    await fs.copyFile(srcChairPack, destChairPack);
+    console.log(`已写入坐垫包配置: ${destChairPack}`);
+  }
+}

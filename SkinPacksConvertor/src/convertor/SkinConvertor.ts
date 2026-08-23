@@ -5,6 +5,8 @@ import { PackFile } from "./model/PackFile";
 import { ResourceManager } from "./resource_manager/ResourceManager";
 import { AnimationManager } from "./resource_manager/AnimationManager";
 import { MaidAnimationConvertor } from "./animation/MaidAnimationConvertor";
+import { ChairAnimationConvertor } from "./animation/ChairAnimationConvertor";
+import { ChairPackConvertor } from "./ChairPackConvertor";
 import { convertYsmPackRoot, YsmPackLocator } from "./ysm";
 import { clearDynamicMolangRegistrations } from "./molang/v/VariableResolvers";
 
@@ -19,7 +21,8 @@ export class SkinConvertor {
   fileList = []; // java / ysm 模型包列表
   uuid = ''; // uuid
   result: PackFile;
-  animationManager = new AnimationManager(); // 全局动画管理器
+  animationManager = new AnimationManager(); // 全局动画管理器（女仆）
+  chairAnimationManager = new AnimationManager(); // 坐垫动画管理器（与女仆独立）
 
   /**
    * 输入
@@ -50,8 +53,10 @@ export class SkinConvertor {
     this.result = new PackFile(uuid);
     // 处理所有模型包
     await this.handleAllPacks();
-    // 将动画定义挂到实体定义上
+    // 将女仆动画定义挂到实体定义上
     await this.exportAnimation();
+    // 将坐垫动画定义挂到坐垫实体定义上
+    await this.exportChairAnimation();
     // 导出
     return this.result.export();
   }
@@ -75,10 +80,34 @@ export class SkinConvertor {
   }
 
   /**
+   * 将坐垫动画定义挂到坐垫实体定义上
+   */
+  async exportChairAnimation() {
+    let convertor = new ChairAnimationConvertor(
+      this.chairAnimationManager.getAnimationInfos(),
+      this.chairAnimationManager.getModelScaleInfos(),
+      this.chairAnimationManager.getModelIsGeckoInfos(),
+    );
+    let definition = await convertor.exportDefinition();
+    let description = this.result.chair_entity['minecraft:client_entity'].description;
+    description.scripts = definition.scripts;
+    description.animations = definition.animations;
+    // 导出动画内容（有坐垫动画时才写出）
+    if (Object.keys(definition.animationList).length > 0) {
+      let animationFile = {
+        "format_version": "1.8.0",
+        "animations": definition.animationList,
+      };
+      this.result.resultFile.folder('animations').file('tlm_pack_chair.animation.json', JSON.stringify(animationFile));
+    }
+  }
+
+  /**
    * 逐个处理所有输入的模型包：YSM 优先，否则按 TLM 扫描。
    */
   async handleAllPacks() {
     let count = 0;
+    let chairCount = 0;
     for (let i = 0; i < this.fileList.length; i++) {
       try {
         const fileEntry = this.fileList[i];
@@ -120,20 +149,33 @@ export class SkinConvertor {
           console.error(`handlePack >> Move icon ERROR`, e);
         }
         for (const [domain, info] of resource.getSubPacks()) {
-          if (!info.zipFolder.file('maid_model.json')) {
-            console.log(`Skip pack (缺少 maid_model.json): ${domain}`);
-            continue;
+          // 女仆皮肤包：maid_model.json
+          if (info.zipFolder.file('maid_model.json')) {
+            count++;
+            const packConvertor = new SkinPackConvertor({
+              packId: count,
+              domain: domain,
+              input: info.zipFolder,
+              resourceManager: resource,
+              animationManager: this.animationManager,
+              res: this.result,
+            });
+            await packConvertor.handlePack();
           }
-          count++;
-          const packConvertor = new SkinPackConvertor({
-            packId: count,
-            domain: domain,
-            input: info.zipFolder,
-            resourceManager: resource,
-            animationManager: this.animationManager,
-            res: this.result,
-          });
-          await packConvertor.handlePack();
+          // 坐垫模型包：maid_chair.json，与女仆包相对独立
+          if (info.zipFolder.file('maid_chair.json')) {
+            chairCount++;
+            this.chairAnimationManager.setResourceManager(resource, chairCount);
+            const chairPackConvertor = new ChairPackConvertor({
+              packId: chairCount,
+              domain: domain,
+              input: info.zipFolder,
+              resourceManager: resource,
+              chairAnimationManager: this.chairAnimationManager,
+              res: this.result,
+            });
+            await chairPackConvertor.handlePack();
+          }
         }
       } catch (e) {
         writeErrorLog(`Error reading ${this.fileList[i].name}: ${e.message}\n${e.stack}`);

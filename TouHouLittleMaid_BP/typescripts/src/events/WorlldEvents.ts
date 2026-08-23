@@ -11,6 +11,7 @@ import PowerPoint from "../altar/PowerPoint";
 import { ConfigHelper } from "../controller/Config";
 import { MaidManager } from "../maid/MaidManager";
 import { MaidSkin } from "../maid/skin/MaidSkin";
+import { ChairSkin } from "../chair/skin/ChairSkin";
 import { Logger } from "../controller/Logger";
 import { DeprecatedItemHelper } from "../items/deprecated_helper/DeprecatedHelper";
 
@@ -44,6 +45,7 @@ export class WorldEvents {
       ConfigHelper.init();
       PowerPoint.init(e);
       MaidSkin.init();
+      ChairSkin.init();
     });
   }
 

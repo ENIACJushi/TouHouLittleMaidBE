@@ -1,0 +1,75 @@
+{
+  "format_version": "1.8.0",
+  "render_controllers": {
+    "controller.render.touhou_little_maid.chair_built_in": {
+      "arrays": {
+        "textures": {
+          "Array.skins": [
+            "Texture.void",
+            "Texture.touhou_little_maid_alice",
+            "Texture.touhou_little_maid_anti_collision_bucket",
+            "Texture.touhou_little_maid_barbecue_booth",
+            "Texture.touhou_little_maid_beach_chair",
+            "Texture.touhou_little_maid_class_chair",
+            "Texture.touhou_little_maid_class_desk",
+            "Texture.touhou_little_maid_cushion",
+            "Texture.touhou_little_maid_ema",
+            "Texture.touhou_little_maid_kotatsu",
+            "Texture.touhou_little_maid_long_stool",
+            "Texture.touhou_little_maid_low_stool",
+            "Texture.touhou_little_maid_mahjong_table",
+            "Texture.touhou_little_maid_mima",
+            "Texture.touhou_little_maid_moto",
+            "Texture.touhou_little_maid_parasol",
+            "Texture.touhou_little_maid_park_bench",
+            "Texture.touhou_little_maid_play_station",
+            "Texture.touhou_little_maid_rinnosuke_children_toys",
+            "Texture.touhou_little_maid_saisen_bako",
+            "Texture.touhou_little_maid_square_table",
+            "Texture.touhou_little_maid_tall_stool",
+            "Texture.touhou_little_maid_torii",
+            "Texture.touhou_little_maid_water_wheel",
+            "Texture.touhou_little_maid_well",
+            "Texture.touhou_little_maid_yumemi_okazaki"
+          ]
+        },
+        "geometries": {
+          "Array.geos": [
+            "Geometry.void",
+            "Geometry.touhou_little_maid_alice",
+            "Geometry.touhou_little_maid_anti_collision_bucket",
+            "Geometry.touhou_little_maid_barbecue_booth",
+            "Geometry.touhou_little_maid_beach_chair",
+            "Geometry.touhou_little_maid_class_chair",
+            "Geometry.touhou_little_maid_class_desk",
+            "Geometry.touhou_little_maid_cushion",
+            "Geometry.touhou_little_maid_ema",
+            "Geometry.touhou_little_maid_kotatsu",
+            "Geometry.touhou_little_maid_long_stool",
+            "Geometry.touhou_little_maid_low_stool",
+            "Geometry.touhou_little_maid_mahjong_table",
+            "Geometry.touhou_little_maid_mima",
+            "Geometry.touhou_little_maid_moto",
+            "Geometry.touhou_little_maid_parasol",
+            "Geometry.touhou_little_maid_park_bench",
+            "Geometry.touhou_little_maid_play_station",
+            "Geometry.touhou_little_maid_rinnosuke_children_toys",
+            "Geometry.touhou_little_maid_saisen_bako",
+            "Geometry.touhou_little_maid_square_table",
+            "Geometry.touhou_little_maid_tall_stool",
+            "Geometry.touhou_little_maid_torii",
+            "Geometry.touhou_little_maid_water_wheel",
+            "Geometry.touhou_little_maid_well",
+            "Geometry.touhou_little_maid_yumemi_okazaki"
+          ]
+        }
+      },
+      "geometry": "Array.geos[q.property('thlm:chair_pack')==0?q.variant+1:0]",
+      "materials": [
+        { "_*": "Material.emissive" },
+        { "*": "Material.default" }
+      ],
+      "textures": [ "Array.skins[q.property('thlm:chair_pack')==0?q.variant+1:0]" ]
+    }
+  }
+}

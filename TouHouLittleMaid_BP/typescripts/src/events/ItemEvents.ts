@@ -12,6 +12,7 @@ import { MaidManager } from "../maid/MaidManager";
 import { GarageKit } from "../blocks/GarageKit";
 import { MemorizableGensokyo } from "../book/MemorizableGensokyoUI";
 import { ManageForm } from "../controller/ManageForm";
+import { ChairManager } from "../chair/ChairManager";
 import {isInteractContainerBlock} from "../../data/BadContainerBlocks";
 
 export class ItemEvents {
@@ -72,6 +73,11 @@ export class ItemEvents {
             // 魂符释放女仆
             case "smart_slab_has_maid": {
               MaidManager.Interact.smartSlabOnUseEvent(event);
+              break;
+            }
+            // 放置坐垫
+            case "chair": {
+              ChairManager.placeOnUseEvent(event);
               break;
             }
             // 激活雕塑/手办

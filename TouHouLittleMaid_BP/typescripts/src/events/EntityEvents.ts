@@ -16,6 +16,7 @@ import PowerPoint from "../altar/PowerPoint";
 import { GarageKit } from "../blocks/GarageKit";
 import { GoldMicrowaver } from "../blocks/GoldMicrowaver";
 import {MaidEvents} from "../maid/events/MaidEvents";
+import * as ChairUI from "../chair/ChairUI";
 
 export class EntityEvents {
   // 弹射物命中方块
@@ -151,8 +152,21 @@ export class EntityEvents {
   private entityInteractEvent(event: PlayerInteractWithEntityBeforeEvent) {
     switch (event.target.typeId) {
       case 'thlmm:maid': MaidEvents.interact.beforePlayerInteract(event); break; // 女仆交互事件
+      case 'touhou_little_maid:chair': this.chairInteractEvent(event); break;    // 坐垫交互事件
       default: break;
     }
+  }
+
+  // 坐垫交互事件：非潜行由 rideable 组件自动坐上，潜行则打开模型更换表单
+  private chairInteractEvent(event: PlayerInteractWithEntityBeforeEvent) {
+    // 潜行交互 → 打开模型更换表单并取消其他交互（阻止坐上）
+    if (event.player.isSneaking) {
+      event.cancel = true;
+      system.run(() => {
+        ChairUI.SkinMenu(event.player, event.target);
+      });
+    }
+    // 非潜行 → 交给实体的 minecraft:rideable 组件，让玩家坐上坐垫
   }
 
   // 实体死亡事件

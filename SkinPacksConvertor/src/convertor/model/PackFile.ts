@@ -27,6 +27,29 @@ export class PackFile {
    * 各模型包定义的模型数量，用于生成配置 JSON
    */
   modelAmount: number[] = [];
+
+  ///// 坐垫输出 /////
+  /**
+   * 坐垫模型信息 entity/chair.entity.json
+   */
+  chair_entity: TemplatesBE.ChairEntityDefinition = TemplatesBE.buildChairEntityDef();
+  /**
+   * 坐垫实体 description
+   */
+  chair_description = this.chair_entity["minecraft:client_entity"]["description"];
+  /**
+   * 坐垫渲染方案 render_controllers/chair.json
+   */
+  chair_controller = JSON.parse(JSON.stringify(TemplatesBE.CHAIR_RENDER_CONTROLLER_LIST));
+  /**
+   * 各坐垫模型包定义的模型数量，用于生成坐垫配置 JSON
+   */
+  chairModelAmount: number[] = [];
+  /**
+   * 坐垫包注册配置 JSON
+   */
+  chairPackConfigStr = '[]';
+
   /**
    * 翻译数据
    */
@@ -78,6 +101,19 @@ export class PackFile {
     // 生成皮肤包配置 JSON
     this.packConfigStr = TemplatesBE.buildSkinPackConfigStr(this.modelAmount);
     this.resultFile.file("skin_pack.json", this.packConfigStr);
+
+    // 若存在坐垫模型，则写入坐垫相关文件
+    if (this.chairModelAmount.length > 0) {
+      // 写入坐垫实体定义文件
+      this.resultFile.folder("entity")
+        .file("chair.entity.json", JSON.stringify(this.chair_entity, null, '\t'));
+      // 写入坐垫渲染控制器
+      this.resultFile.folder("render_controllers")
+        .file("chair.json", JSON.stringify(this.chair_controller, null, '\t'));
+      // 生成坐垫包配置 JSON
+      this.chairPackConfigStr = TemplatesBE.buildChairPackConfigStr(this.chairModelAmount);
+      this.resultFile.file("chair_pack.json", this.chairPackConfigStr);
+    }
     return this;
   }
 
