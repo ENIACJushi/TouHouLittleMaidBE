@@ -571,6 +571,9 @@ export class MaidManager {
      * @param {DataDrivenEntityTriggerAfterEvent} event
      */
     static startEvent(event) {
+      // 已在抱起中则忽略（交互不再用 thlm:is_hug 过滤）
+      if (EntityMaid.isHug(event.entity)) return;
+
       // 抱起事件是坐下事件的父集（同时也会设置坐下状态）
       MaidManager.Interact.onSitEvent(event);
 
