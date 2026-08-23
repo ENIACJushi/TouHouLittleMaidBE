@@ -61,10 +61,6 @@ export class SkinPackConvertor {
     }
     // 确定模型包安全名称
     this.getPackName();
-    // 移动女仆贴图
-    await this.moveTextures();
-    // 修改格式并移动模型
-    await this.convertModels();
     // 解析全部语言文件
     await this.parseAllLang();
     // 解析模型包信息 maid_model.json
@@ -126,51 +122,36 @@ export class SkinPackConvertor {
     });
   }
 
-  ///// 贴图操作/////
-  async moveTextures() {
-    let pack_textures = this.res.textures.folder(this.packName);
-    let tasks = [];
-    this.input.folder(`textures/`).forEach((path, file) => {
-      if (file.dir || path === "maid_icon.png") {
-        return;
-      }
-      tasks.push(async () => {
-        let content = await file.async("blob");
-        pack_textures.file(path, content);
-      });
-    });
-    for (let task of tasks) {
-      await task();
+  ///// 贴图操作 /////
+  /**
+   * 只复制被 model_list 实际引用到的贴图文件（作为全局约束：仅复制被使用到的模型与贴图）。
+   * @param resourceKey 贴图资源位置，如 `textures/entity/cirno.png`（domain 缺省时使用包名）
+   * @param outPath 输出到 `textures/<packName>/...` 的相对路径
+   */
+  async copyTexture(resourceKey: string, outPath: string) {
+    const textureFile = this.resourceManager.getResource(resourceKey, this.packName);
+    if (!textureFile) {
+      console.warn(TAG, `copyTexture >> File not exist: ${resourceKey}`);
+      return;
     }
+    const content = await textureFile.async("blob");
+    this.res.textures.folder(this.packName).file(outPath, content);
   }
 
   ///// 模型操作 /////
   /**
-   * 转换并移动全部模型
+   * 只转换并复制被 model_list 实际引用到的模型文件（作为全局约束：仅复制被使用到的模型与贴图）。
+   * @param resourceKey 模型资源位置，如 `models/entity/cirno.json`（domain 缺省时使用包名）
+   * @param outName 输出模型文件名（不含 .json）
    */
-  async convertModels() {
-    let tasks = [];
-    this.input.folder(`models/`).forEach((path, file) => {
-      if (file.dir) {
-        return;
-      }
-      tasks.push(this.convertModel(path, file));
-    });
-    for (let task of tasks) {
-      await task;
-    }
-  }
-
-  /**
-   * 转换单个模型
-   */
-  async convertModel(path: string, file: JSZip.JSZipObject): Promise<boolean> {
-    // 确定模型名称
-    let modelName = this.getModelName(path);
-    if (!modelName) {
+  async convertModel(resourceKey: string, outName: string): Promise<boolean> {
+    // 获取被使用到的模型文件
+    const modelFile = this.resourceManager.getResource(resourceKey, this.packName);
+    if (!modelFile) {
+      console.warn(TAG, `convertModel >> File not exist: ${resourceKey}`);
       return false;
     }
-    const content = await file.async("string");
+    const content = await modelFile.async("string");
     // 替换非法字符 NaN
     let modelText = content.replace(/NaN/g, '0');
     let modelJson = JSON.parse(modelText);
@@ -179,11 +160,11 @@ export class SkinPackConvertor {
     let beModelStr: string;
     if (modelJson["format_version"] === "1.10.0") {
       // 1.10.0 替换 geometry.model 为模型名称
-      beModelStr = modelText.replace("geometry.model", `geometry.${this.packNameSafe}.${modelName}`);
+      beModelStr = modelText.replace("geometry.model", `geometry.${this.packNameSafe}.${outName}`);
     } else {
       // 1.12.0+
       for (let model of modelJson["minecraft:geometry"]) {
-        model["description"]["identifier"] = `geometry.${this.packNameSafe}.${modelName}`;
+        model["description"]["identifier"] = `geometry.${this.packNameSafe}.${outName}`;
       }
       beModelStr = JSON.stringify(modelJson, null, '\t');
     }
@@ -203,26 +184,9 @@ export class SkinPackConvertor {
       }
     }
 
-    // 创建文件
-    this.pack_models.file(path, JSON.stringify(beModel));
+    // 创建文件（仅复制被使用到的模型）
+    this.pack_models.file(`${outName}.json`, JSON.stringify(beModel));
     return true;
-  }
-
-  /**
-   * 获取模型名称
-   */
-  getModelName(path: string) {
-    let pathParts = path.split('/');
-    // 必须是 json 文件
-    let res = pathParts[pathParts.length - 1];
-    if (res.substring(res.length - 5, res.length) !== ".json") {
-      return undefined;
-    }
-    res = res.substring(0, res.length - 5);
-    if (res === '') {
-      return undefined; // 该文件为目录
-    }
-    return res;
   }
 
   rootBone = {
@@ -295,10 +259,10 @@ export class SkinPackConvertor {
     this.parseModelName(modelInfo, idInfo, seq);
     // 解析模型描述 desc
     this.parseModelDesc(modelInfo, idInfo, seq);
-    // 解析模型贴图
-    this.parseModelTextures(modelInfo, idInfo, seq);
-    // 解析模型建模 model
-    this.parseModelModel(modelInfo, idInfo, seq);
+    // 解析并复制被使用到的模型贴图
+    await this.parseModelTextures(modelInfo, idInfo, seq);
+    // 解析并复制被使用到的模型建模 model
+    await this.parseModelModel(modelInfo, idInfo, seq);
     // 解析模型缩放 scale
     this.parseModelScale(modelInfo, idInfo, seq);
     // 处理动画 animation
@@ -335,31 +299,54 @@ export class SkinPackConvertor {
       this.parseI18nTextArray(descKey, modelInfo.description);
     }
   }
-  /** 解析模型 - 贴图（暂不支持 extra_textures） */
-  private parseModelTextures(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
+  /** 解析模型 - 贴图（只复制被使用到的贴图文件，暂不展开 extra_textures 为独立条目，但会复制其文件避免丢失） */
+  private async parseModelTextures(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
+    // 确定贴图资源位置：显式指定或按 model_id 推导
+    let textureKey = modelInfo.texture ?? `textures/entity/${idInfo.path}.png`;
     // 在实体定义添加贴图
     this.res.entity_description["textures"][`${this.packNameSafe}_${idInfo.path}`] =
       `textures/${this.packName}/entity/${idInfo.path}`;
     // 在渲染控制器添加贴图
     this.pack_controller["arrays"]["textures"]["Array.skins"]
       .push(`Texture.${this.packNameSafe}_${idInfo.path}`);
+    // 复制被使用到的主贴图文件
+    await this.copyTexture(textureKey, `entity/${idInfo.path}.png`);
+
+    // 复制被使用到的额外贴图文件（extra_textures，当前不派生独立条目，仅保留文件）
+    if (modelInfo.extra_textures) {
+      for (let i = 0; i < modelInfo.extra_textures.length; i++) {
+        const extraKey = modelInfo.extra_textures[i];
+        // 额外贴图文件重名时加序号后缀，避免覆盖
+        const extraOut = `entity/${idInfo.path}_extra_${i}.png`;
+        await this.copyTexture(extraKey, extraOut);
+      }
+    }
   }
-  /** 解析模型 - 模型 model */
-  private parseModelModel(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
+  /** 解析模型 - 模型 model（只复制被使用到的模型文件，并转换格式） */
+  private async parseModelModel(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
+    // 解析被使用到的模型文件信息
+    let modelResourceKey: string;
+    let modelOutName: string;
     if (!modelInfo.model) {
-      // 未指定使用的模型，则使用默认的
+      // 未指定使用的模型，则使用默认的 `<namespace>:models/entity/<path>.json`
+      modelResourceKey = `models/entity/${idInfo.path}.json`;
+      modelOutName = idInfo.path;
       this.res.entity_description["geometry"][`${this.packNameSafe}_${idInfo.path}`] =
         `geometry.${this.packNameSafe}.${idInfo.path}`;
     } else {
       // 指定了使用的模型（如 geckolib:models/entity/winefox.json）
+      modelResourceKey = modelInfo.model;
       let modelPath = modelInfo.model.split('/');
       let model = modelPath[modelPath.length - 1];
       model = model.replace(".json", "");
+      modelOutName = model;
       this.res.entity_description["geometry"][`${this.packNameSafe}_${idInfo.path}`]
         = `geometry.${this.packNameSafe}.${model}`;
     }
     // 在渲染控制器添加模型
     this.pack_controller["arrays"]["geometries"]["Array.geos"].push(`Geometry.${this.packNameSafe}_${idInfo.path}`);
+    // 转换并复制被使用到的模型文件
+    await this.convertModel(modelResourceKey, modelOutName);
   }
   /** 解析模型 - 模型缩放 */
   private parseModelScale(modelInfo: TLMMaidModelInfo, _idInfo: ModelIdInfo, seq: number) {

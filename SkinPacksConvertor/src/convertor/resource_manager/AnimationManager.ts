@@ -86,7 +86,7 @@ export class AnimationManager {
       return animationInfo;
     }
     // 未解析，获取文件
-    let file = this.resource.getResource(animationFile);
+    let file = this.resource?.getResource(animationFile);
     if (!file) {
       // 文件不存在
       console.warn(`getAnimationData >> File not exist: ${animationFile}`)
