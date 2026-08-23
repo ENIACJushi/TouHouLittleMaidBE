@@ -378,6 +378,8 @@ export class MaidManager {
      */
     static onSitEvent(event) {
       let maid = event.entity;
+      // 设置坐下状态
+      EntityMaid.setSitting(maid, true);
 
       // 工作模式
       switch (EntityMaid.Work.get(maid)) {
@@ -399,6 +401,8 @@ export class MaidManager {
      */
     static onStandEvent(event) {
       let maid = event.entity;
+      // 设置站起状态
+      EntityMaid.setSitting(maid, false);
 
       // 工作模式
       switch (EntityMaid.Work.get(maid)) {
@@ -494,7 +498,7 @@ export class MaidManager {
       ///// 取模决定执行任务 /////
       //// 每次
       // 抱起扫描
-      if (maid.getProperty("thlm:is_hug")) MaidManager.Hug.maidScan(maid);
+      if (EntityMaid.isHug(maid)) MaidManager.Hug.maidScan(maid);
 
       let work = EntityMaid.Work.get(maid);
       // 农业扫描
@@ -567,7 +571,7 @@ export class MaidManager {
      * @param {DataDrivenEntityTriggerAfterEvent} event
      */
     static startEvent(event) {
-      // 抱起事件是坐下事件的父集
+      // 抱起事件是坐下事件的父集（同时也会设置坐下状态）
       MaidManager.Interact.onSitEvent(event);
 
       // 开始抱起
@@ -588,7 +592,7 @@ export class MaidManager {
           // 生成交互实体
           this.summonInteractEntity(maid, player);
           // 设置女仆属性
-          maid.setProperty("thlm:is_hug", true);
+          EntityMaid.setHug(maid, true);
           // 玩家动画
           this.startAnimate(player);
         }
@@ -648,7 +652,7 @@ export class MaidManager {
       maid.triggerEvent("api:hug_to_sit");
 
       // 恢复属性
-      maid.setProperty("thlm:is_hug", false);
+      EntityMaid.setHug(maid, false);
 
       // 恢复玩家动画
       let player = EntityMaid.Owner.get(maid);

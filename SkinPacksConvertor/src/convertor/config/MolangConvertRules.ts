@@ -35,6 +35,9 @@ export const MOLANG_VARIABLE_RESOLVE_RULES: readonly MolangVariableResolveRule[]
   {name: 'ysm_roaming_', type: 'keep'}, // YSM 配饰扁平变量（由 v.roaming.xxx 转换）
   // tlm 适配变量
   {name: 'tlm_is_sitting', type: 'keep'}, // tlm 坐下变量
+  {name: 'tlm_is_hug', type: 'keep'}, // tlm 抱起变量
+  {name: 'tlm_is_lying', type: 'keep'}, // tlm 躺下变量
+  {name: 'tlm_anim', type: 'keep'}, // tlm 动画姿态位标志原值
   {name: 'tlm_is_gecko', type: 'keep'}, // tlm gecko 模型标记
   {name: 'tlm_suppress_molang_blink', type: 'keep'}, // sit/idle 自带眨眼时抑制 pre_parallel molang 眨眼
 ];
@@ -50,6 +53,8 @@ export const MOLANG_VARIABLE_RESOLVE_RULES: readonly MolangVariableResolveRule[]
 export const MOLANG_TLM_RESOLVE_RULES: readonly MolangVariableResolveRule[] = [
   {name: 'has_backpack', type: 'replace', value: "(q.property('thlm:backpack_type')!=0)"},
   {name: 'is_sitting', type: 'replace', value: 'v.tlm_is_sitting'},
+  {name: 'is_hug', type: 'replace', value: 'v.tlm_is_hug'},
+  {name: 'is_lying', type: 'replace', value: 'v.tlm_is_lying'},
 ];
 
 /**

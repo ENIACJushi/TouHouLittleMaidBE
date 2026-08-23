@@ -7,10 +7,10 @@
 				"default" : {
 					"transitions" : [
 						{
-							"sitting" : "!q.is_in_ui && query.property('thlm:is_sitting')"
+							"sitting" : "!q.is_in_ui && v.tlm_is_sitting"
 						},
 						{
-							"hug": "!q.is_in_ui && query.property('thlm:is_hug')"
+							"hug": "!q.is_in_ui && v.tlm_is_hug"
 						}
 					],
 					"blend_transition": 0.375
@@ -20,10 +20,10 @@
 					"animations" : [ "sit" ],
 					"transitions" : [
 						{
-							"default" : "!query.property('thlm:is_sitting') || q.is_in_ui"
+							"default" : "!v.tlm_is_sitting || q.is_in_ui"
 						},
 						{
-							"hug": "!q.is_in_ui && query.property('thlm:is_hug')"
+							"hug": "!q.is_in_ui && v.tlm_is_hug"
 						}
 					],
 					"blend_transition": 0.375
@@ -32,7 +32,7 @@
 					"animations": [ "hug" ],
 					"transitions" : [
 						{
-							"default" : "!query.property('thlm:is_hug') || q.is_in_ui"
+							"default" : "!v.tlm_is_hug || q.is_in_ui"
 						}
 					],
 					"blend_transition": 0.375

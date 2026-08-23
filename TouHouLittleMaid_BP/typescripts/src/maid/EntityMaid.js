@@ -561,7 +561,63 @@ export class EntityMaid{
             maid.triggerEvent(this.getEventName(maid, this.get(maid), true));
             // 有些工作模式存在相同的组件，延迟修改避免删除
             system.runTimeout(()=>{
-                maid.triggerEvent(this.getEventName(maid, type, false));
+                // 有些类型的工作模式需要由脚本额外判断一些属性
+                switch (type) {
+                    // 弹幕攻击模式
+                    case EntityMaid.Work.danmaku_attack: {
+                        // 播放声音
+                        EntityMaid.Sound.playSound(maid, 'thlmm.maid.attack');
+                        // 设置工作状态
+                        EntityMaid.Work.set(maid, EntityMaid.Work.danmaku_attack);
+                        // 弹幕攻击模式，根据是否坐下触发不同的附加事件
+                        if (EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent("api:mode_danmaku_attack_sit");
+                        } else {
+                            maid.triggerEvent("api:mode_danmaku_attack_stand");
+                        }
+                    } break;
+                    // 耕地模式
+                    case EntityMaid.Work.farm: {
+                        // 设置工作状态
+                        EntityMaid.Work.set(maid, EntityMaid.Work.farm);
+                        // 只有在不处于坐下状态时，才添加组件
+                        if (!EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent("api:mode_farm");
+                        }
+                    } break;
+                    // 甘蔗模式
+                    case EntityMaid.Work.sugar_cane: {
+                        // 设置工作状态
+                        EntityMaid.Work.set(maid, EntityMaid.Work.sugar_cane);
+                        // 只有在不处于坐下状态时，才添加组件
+                        if (!EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent("api:mode_sugar_cane");
+                        }
+                    } break;
+                    // 瓜类模式
+                    case EntityMaid.Work.melon: {
+                        // 设置工作状态
+                        EntityMaid.Work.set(maid, EntityMaid.Work.melon);
+                        // 只有在不处于坐下状态时，才添加组件
+                        if (!EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent("api:mode_melon");
+                        }
+                    } break;
+                    // 可可
+                    case EntityMaid.Work.cocoa: {
+                        // 设置工作状态
+                        EntityMaid.Work.set(maid, EntityMaid.Work.cocoa);
+                        // 只有在不处于坐下状态时，才添加组件
+                        if (!EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent("api:mode_cocoa");
+                        }
+                    } break;
+                    // 默认
+                    default:
+                        maid.triggerEvent(this.getEventName(maid, type, false));
+                        break;
+                }
+                // 设置工作状态后，立即开始寻找目标
                 MaidTarget.search(maid, 15);
             },1);
         },
@@ -1361,12 +1417,78 @@ export class EntityMaid{
         return false;
     }
     /**
+     * 动画姿态位标志（thlm:anim）
+     *  bit0 坐下 / bit1 抱起 / bit2 躺下，与 MaidGenerator ANIM_BIT 保持一致
+     */
+    static Anim = {
+        PROPERTY: "thlm:anim",
+        BIT_SIT: 1 << 0,
+        BIT_HUG: 1 << 1,
+        BIT_LIE: 1 << 2,
+        /**
+         * @param {Entity} maid
+         * @returns {number}
+         */
+        get(maid){
+            return maid.getProperty(this.PROPERTY) ?? 0;
+        },
+        /**
+         * @param {Entity} maid
+         * @param {number} bit
+         * @returns {boolean}
+         */
+        has(maid, bit){
+            return (this.get(maid) & bit) !== 0;
+        },
+        /**
+         * @param {Entity} maid
+         * @param {number} bit
+         * @param {boolean} value
+         */
+        setBit(maid, bit, value){
+            let cur = this.get(maid);
+            maid.setProperty(this.PROPERTY, value ? (cur | bit) : (cur & ~bit));
+        }
+    };
+    /**
      * 是否处于坐下状态
      * @param {Entity} maid
      * @returns {boolean}
      */
     static isSitting(maid){
-        return maid.getProperty('thlm:is_sitting');
+        return this.Anim.has(maid, this.Anim.BIT_SIT);
+    }
+    /**
+     * 设置坐下位（由实体事件 thlmm:j / thlmm:v 写入）
+     * @param {Entity} maid
+     * @param {boolean} value
+     */
+    static setSitting(maid, value){
+        this.Anim.setBit(maid, this.Anim.BIT_SIT, value);
+    }
+    /**
+     * 是否处于抱起状态
+     * @param {Entity} maid
+     * @returns {boolean}
+     */
+    static isHug(maid){
+        return this.Anim.has(maid, this.Anim.BIT_HUG);
+    }
+    /**
+     * 设置抱起位
+     * @param {Entity} maid
+     * @param {boolean} value
+     */
+    static setHug(maid, value){
+        this.Anim.setBit(maid, this.Anim.BIT_HUG, value);
+    }
+    /**
+     * 是否处于躺下状态
+     * @param {Entity} maid
+     * @returns {boolean}
+     */
+    static isLying(maid){
+        return this.Anim.has(maid, this.Anim.BIT_LIE);
     }
     /**
      * 坐下

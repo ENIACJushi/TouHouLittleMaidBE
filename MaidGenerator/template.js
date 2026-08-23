@@ -16,10 +16,8 @@ export let TEMPLATE = {
         // 背包
         "thlm:backpack_type"     :{"type": "int" , "default": 0    , "range":[0,3], "client_sync": true},
         "thlm:backpack_invisible":{"type": "bool", "default": false, "client_sync": true},
-        // 正在坐下
-        "thlm:is_sitting": {"type": "bool", "default": false, "client_sync": true},
-        // 正在被抱起
-        "thlm:is_hug": {"type": "bool", "default": false, "client_sync": true},
+        // 动画姿态位标志：bit0 坐下 / bit1 抱起 / bit2 躺下（脚本与 Molang 按位读写）
+        "thlm:anim": {"type": "int", "default": 0, "range": [0, 7], "client_sync": true},
         // 表情
         "thlm:emote"             :{"type": "int", "client_sync": true, "default": 0, "range": [0, 2147483647]},
         // 环境
@@ -1197,7 +1195,6 @@ export let TEMPLATE = {
       // 抱起，与坐下完全相同
       "thlmm:j" :{
         "sequence": [
-          { "set_property": { "thlm:is_sitting": true }},
           { // 切换移动属性
             "remove": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]},
             "add": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
@@ -1285,7 +1282,6 @@ export let TEMPLATE = {
       // 坐下
       "thlmm:v":{
         "sequence": [
-          { "set_property": { "thlm:is_sitting": true }},
           { // 切换移动属性
             "remove": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]},
             "add": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
@@ -1306,7 +1302,6 @@ export let TEMPLATE = {
       // 站起
       "thlmm:w":{
         "sequence": [
-          {"set_property": { "thlm:is_sitting": false }},
           { // 切换移动属性
             "add": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]},
             "remove": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
@@ -1375,48 +1370,30 @@ export let TEMPLATE = {
           { "set_property":{"thlm:work": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]} }]
       },
       "api:mode_quit_attack_lv2":{"sequence": [{"remove": {"component_groups": ["mode:attack_lv2", "mode:searching_melee_attack"]}}]},
-      "api:mode_danmaku_attack"       :{"sequence": [
-          {
-            "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false},
-            "add"   : {"component_groups": ["mode:danmaku_attack", "mode:searching_danmaku_attack"]}
-          },
-          {
-            "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": true},
-            "add"   : {"component_groups": ["mode:danmaku_attack_sit", "mode:searching_danmaku_attack"]}
-          },
-          {
-            "set_property":{"thlm:work": 2},
-            "queue_command":{ "command": ["playsound mob.thlmm.maid.attack @a ~~~"]}
-          }
-        ]},
+      // 弹幕攻击模式：坐下状态的组件
+      "api:mode_danmaku_attack_sit": {
+        "add": {"component_groups": ["mode:danmaku_attack_sit", "mode:searching_danmaku_attack"]}
+      },
+      // 弹幕攻击模式：站起状态的组件
+      "api:mode_danmaku_attack_stand": {
+        "add": {"component_groups": ["mode:danmaku_attack", "mode:searching_danmaku_attack"]}
+      },
       "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack", "mode:danmaku_attack_sit", "mode:searching_danmaku_attack"]}}]},
-      // 耕地
-      "api:mode_farm"       :{"sequence": [
-          { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:farm"]} },
-          { "set_property":{"thlm:work": 3}}]
-      },
+      // 耕地模式：站起状态时添加组件
+      "api:mode_farm": { "add": {"component_groups": ["mode:farm"]} },
       "api:mode_quit_farm"  :{"sequence": [{"remove": {"component_groups": ["mode:farm"]}}]},
-      // 甘蔗
-      "api:mode_sugar_cane"          :  {"sequence": [
-          { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:sugar_cane"]} },
-          { "set_property":{"thlm:work": 4}}]
-      },
-      "api:mode_quit_sugar_cane"     :  {"sequence": [{"remove": {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 4}}]},
-      // 瓜类
-      "api:mode_melon"          :  {"sequence": [
-          { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:melon"]} },
-          { "set_property":{"thlm:work": 5}}]
-      },
-      "api:mode_quit_melon"     :  {"sequence": [{"remove": {"component_groups": ["mode:melon"]}, "set_property":{"thlm:work": 5}}]},
-      // 可可
-      "api:mode_cocoa"          :  {"sequence": [
-          { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:cocoa"]} },
-          { "set_property":{"thlm:work": 6}}]
-      },
-      "api:mode_quit_cocoa"     :  {"sequence": [{"remove": {"component_groups": ["mode:cocoa"]}, "set_property":{"thlm:work": 6}}]},
+      // 甘蔗模式：站起状态时添加组件
+      "api:mode_sugar_cane": { "add": {"component_groups": ["mode:sugar_cane"]} } },
+      "api:mode_quit_sugar_cane": {"sequence": [{"remove": {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 4}}]},
+      // 瓜类模式：站起状态时添加组件
+      "api:mode_melon": { "add": {"component_groups": ["mode:melon"] },
+      "api:mode_quit_melon": { "sequence": [{"remove": {"component_groups": ["mode:melon"]}, "set_property":{"thlm:work": 5}}]},
+      // 可可模式：站起状态时添加组件
+      "api:mode_cocoa": {"add": {"component_groups": ["mode:cocoa"]} },
+      "api:mode_quit_cocoa": {"sequence": [{"remove": {"component_groups": ["mode:cocoa"]}, "set_property":{"thlm:work": 6}}]},
 
       //// 拾物模式 ////
-      "api:mode_pick"     :{ "sequence": [
+      "api:mode_pick": { "sequence": [
           { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": false}, "add": {"component_groups": ["mode:pick"] }  , "remove": {"component_groups": ["mode:pick_sit"] } },
           { "filters": {"test": "bool_property", "domain": "thlm:is_sitting", "value": true}, "add": {"component_groups": ["mode:pick_sit"]}, "remove": {"component_groups": ["mode:pick"] } }]
       },
