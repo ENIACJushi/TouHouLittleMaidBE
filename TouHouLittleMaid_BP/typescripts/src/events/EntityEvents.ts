@@ -2,7 +2,7 @@ import {
   DataDrivenEntityTriggerAfterEvent,
   EntityDieAfterEvent,
   EntityHitEntityAfterEvent,
-  EntityLoadAfterEvent,
+  EntityLoadAfterEvent, PlayerInteractWithEntityBeforeEvent,
   ProjectileHitBlockAfterEvent,
   ProjectileHitEntityAfterEvent,
   system,
@@ -147,6 +147,14 @@ export class EntityEvents {
     }
   }
 
+  // 实体交互事件
+  private entityInteractEvent(event: PlayerInteractWithEntityBeforeEvent) {
+    switch (event.target.typeId) {
+      case 'thlmm:maid': MaidEvents.interact.beforePlayerInteract(event); break; // 女仆交互事件
+      default: break;
+    }
+  }
+
   // 实体死亡事件
   private entityDie(event: EntityDieAfterEvent) {
     let killer = event.damageSource.damagingEntity;
@@ -179,8 +187,8 @@ export class EntityEvents {
     world.afterEvents.dataDrivenEntityTrigger.subscribe(event => {
       system.run(() => { this.dataDrivenEntityTrigger(event); });
     });
-    world.afterEvents.entityDie.subscribe(event => {
-      this.entityDie(event);
+    world.beforeEvents.playerInteractWithEntity.subscribe(event => {
+      this.entityInteractEvent(event);
     });
     world.afterEvents.entityHitEntity.subscribe(event => {
       system.run(() => { this.entityHitEntity(event); });

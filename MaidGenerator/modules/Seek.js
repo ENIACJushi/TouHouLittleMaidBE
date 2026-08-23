@@ -42,11 +42,6 @@ export class Seek {
       g.addEvent(`tlm_seek:enter_${i}`, {
         "sequence": [
           {
-            "filters": {
-              "test": "bool_property",
-              "domain": "thlm:is_sitting",
-              "value": false
-            },
             "add": {
               "component_groups": [
                 `seek:${i}`

@@ -251,7 +251,6 @@ export let TEMPLATE = {
               "on_interact": {
                 "filters": {
                   "all_of": [
-                    { "test": "bool_property", "domain": "thlm:is_hug", "value": false},
                     { "test": "has_equipment", "subject": "other", "domain": "hand", "value": "minecraft:saddle"},
                     { "test": "is_family", "subject": "other", "value": "player" },
                     { "test": "is_owner", "subject": "other", "value": true }
@@ -279,46 +278,7 @@ export let TEMPLATE = {
                 "target": "self"
               }
             },
-            // 坐下 站立状态交互
-            {
-              "cooldown": 0.2,
-              "use_item": false,
-              "interact_text": "action.interact.sit",
-              "vibration": "none",
-              "on_interact": {
-                "filters": {
-                  "all_of": [
-                    { "test": "has_equipment", "operator":"not", "subject": "other", "domain": "hand", "value": "minecraft:name_tag"},
-                    { "test": "bool_property", "value": false, "domain": "thlm:is_sitting"},
-                    { "test": "is_family", "subject": "other", "value": "player" },
-                    { "test": "is_owner", "subject": "other", "value": true },
-                    { "test": "is_sneaking", "subject": "other", "value": false }
-                  ]
-                },
-                "event": "thlmm:v",
-                "target": "self"
-              }
-            },
-            // 站起 站立状态交互
-            {
-              "cooldown": 0.2,
-              "use_item": false,
-              "interact_text": "action.interact.stand",
-              "vibration": "none",
-              "on_interact": {
-                "filters": {
-                  "all_of": [
-                    { "test": "has_equipment", "operator":"not", "subject": "other", "domain": "hand", "value": "minecraft:name_tag"},
-                    { "test": "bool_property", "value": true, "domain": "thlm:is_sitting"},
-                    { "test": "is_family", "subject": "other", "value": "player" },
-                    { "test": "is_owner", "subject": "other", "value": true },
-                    { "test": "is_sneaking", "subject": "other", "value": false }
-                  ]
-                },
-                "event": "thlmm:w",
-                "target": "self"
-              }
-            },
+            // 坐下/站起改由脚本 beforeEvents.playerInteractWithEntity 处理
             // 更换背包 无
             {
               "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
@@ -1161,7 +1121,6 @@ export let TEMPLATE = {
           {
             "trigger": "thlmm:h",
             "filters": { "all_of": [
-                { "test": "bool_property", "domain": "thlm:is_sitting", "subject": "self", "value": false },
                 { "test": "bool_property", "domain": "thlm:home", "subject": "self", "value": true }
               ]}
           },
