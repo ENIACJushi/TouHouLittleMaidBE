@@ -1,72 +1,36 @@
 {
-  "format_version": "1.10.0",
-  "minecraft:client_entity": {
-    "description": {
-      "identifier": "touhou_little_maid:chair",
-      "materials": {
-        "default": "entity_alphatest"
-      },
-      "textures": {
-        "void": "textures/entity/void",
-        "default": "textures/touhou_little_maid/others/cushion",
-        "touhou_little_maid_alice": "textures/touhou_little_maid/others/alice",
-        "touhou_little_maid_anti_collision_bucket": "textures/touhou_little_maid/others/anti_collision_bucket",
-        "touhou_little_maid_barbecue_booth": "textures/touhou_little_maid/others/barbecue_booth",
-        "touhou_little_maid_beach_chair": "textures/touhou_little_maid/others/beach_chair",
-        "touhou_little_maid_class_chair": "textures/touhou_little_maid/others/class_chair",
-        "touhou_little_maid_class_desk": "textures/touhou_little_maid/others/class_desk",
-        "touhou_little_maid_cushion": "textures/touhou_little_maid/others/cushion",
-        "touhou_little_maid_ema": "textures/touhou_little_maid/others/ema",
-        "touhou_little_maid_kotatsu": "textures/touhou_little_maid/others/kotatsu",
-        "touhou_little_maid_long_stool": "textures/touhou_little_maid/others/long_stool",
-        "touhou_little_maid_low_stool": "textures/touhou_little_maid/others/low_stool",
-        "touhou_little_maid_mahjong_table": "textures/touhou_little_maid/others/mahjong_table",
-        "touhou_little_maid_mima": "textures/touhou_little_maid/others/mima",
-        "touhou_little_maid_moto": "textures/touhou_little_maid/others/moto",
-        "touhou_little_maid_parasol": "textures/touhou_little_maid/others/parasol",
-        "touhou_little_maid_park_bench": "textures/touhou_little_maid/others/park_bench",
-        "touhou_little_maid_play_station": "textures/touhou_little_maid/others/play_station",
-        "touhou_little_maid_rinnosuke_children_toys": "textures/touhou_little_maid/others/rinnosuke_children_toys",
-        "touhou_little_maid_saisen_bako": "textures/touhou_little_maid/others/saisen_bako",
-        "touhou_little_maid_square_table": "textures/touhou_little_maid/others/square_table",
-        "touhou_little_maid_tall_stool": "textures/touhou_little_maid/others/tall_stool",
-        "touhou_little_maid_torii": "textures/touhou_little_maid/others/torii",
-        "touhou_little_maid_water_wheel": "textures/touhou_little_maid/others/water_wheel",
-        "touhou_little_maid_well": "textures/touhou_little_maid/others/well",
-        "touhou_little_maid_yumemi_okazaki": "textures/touhou_little_maid/others/yumemi_okazaki"
-      },
-      "geometry": {
-        "void": "geometry.touhou_little_maid.void",
-        "default": "geometry.touhou_little_maid.cushion",
-        "touhou_little_maid_alice": "geometry.touhou_little_maid.alice",
-        "touhou_little_maid_anti_collision_bucket": "geometry.touhou_little_maid.anti_collision_bucket",
-        "touhou_little_maid_barbecue_booth": "geometry.touhou_little_maid.barbecue_booth",
-        "touhou_little_maid_beach_chair": "geometry.touhou_little_maid.beach_chair",
-        "touhou_little_maid_class_chair": "geometry.touhou_little_maid.class_chair",
-        "touhou_little_maid_class_desk": "geometry.touhou_little_maid.class_desk",
-        "touhou_little_maid_cushion": "geometry.touhou_little_maid.cushion",
-        "touhou_little_maid_ema": "geometry.touhou_little_maid.ema",
-        "touhou_little_maid_kotatsu": "geometry.touhou_little_maid.kotatsu",
-        "touhou_little_maid_long_stool": "geometry.touhou_little_maid.long_stool",
-        "touhou_little_maid_low_stool": "geometry.touhou_little_maid.low_stool",
-        "touhou_little_maid_mahjong_table": "geometry.touhou_little_maid.mahjong_table",
-        "touhou_little_maid_mima": "geometry.touhou_little_maid.mima",
-        "touhou_little_maid_moto": "geometry.touhou_little_maid.moto",
-        "touhou_little_maid_parasol": "geometry.touhou_little_maid.parasol",
-        "touhou_little_maid_park_bench": "geometry.touhou_little_maid.park_bench",
-        "touhou_little_maid_play_station": "geometry.touhou_little_maid.play_station",
-        "touhou_little_maid_rinnosuke_children_toys": "geometry.touhou_little_maid.rinnosuke_children_toys",
-        "touhou_little_maid_saisen_bako": "geometry.touhou_little_maid.saisen_bako",
-        "touhou_little_maid_square_table": "geometry.touhou_little_maid.square_table",
-        "touhou_little_maid_tall_stool": "geometry.touhou_little_maid.tall_stool",
-        "touhou_little_maid_torii": "geometry.touhou_little_maid.torii",
-        "touhou_little_maid_water_wheel": "geometry.touhou_little_maid.water_wheel",
-        "touhou_little_maid_well": "geometry.touhou_little_maid.well",
-        "touhou_little_maid_yumemi_okazaki": "geometry.touhou_little_maid.yumemi_okazaki"
-      },
-      "render_controllers": [
-        "controller.render.touhou_little_maid.chair_built_in"
-      ]
-    }
-  }
+	"format_version": "1.10.0",
+	"minecraft:client_entity": {
+		"description": {
+			"identifier": "touhou_little_maid:chair",
+			"materials": {
+				"default": "entity_alphatest"
+			},
+			"textures": {
+				"default": "textures/entity/void",
+				"geckolib_qingluka": "textures/geckolib/chair/qingluka"
+			},
+			"geometry": {
+				"default": "geometry.touhou_little_maid.void",
+				"geckolib_qingluka": "geometry.geckolib.qingluka"
+			},
+			"render_controllers": [
+				"controller.render.touhou_little_maid.chair_pack_geckolib"
+			],
+			"scripts": {
+				"scale": "v.chair_scale",
+				"pre_animation": [
+					"temp.chair_pack=q.property('thlm:chair_pack');temp.model=q.variant;(temp.chair_pack == 1001) ? { (temp.model==0) ? { v.chair_scale=0.8;v.tlm_is_gecko=1;v.chair_anim_0_0=1; }; };"
+				],
+				"animate": [
+					{
+						"0_0": "v.chair_anim_0_0>0"
+					}
+				]
+			},
+			"animations": {
+				"0_0": "animation.tlm.chair.100.0"
+			}
+		}
+	}
 }
