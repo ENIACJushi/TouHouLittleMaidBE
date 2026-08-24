@@ -196,7 +196,7 @@ export class ChairSkin {
    * @param index 坐垫皮肤在包内的顺序
    */
   static getSkinDisplayName(id: number, index: number): { translate: string } {
-    return { translate: `model.${id}.${index}.name` };
+    return { translate: `tlm.chair.model.${id}.${index}.name` };
   }
 
   /**

@@ -149,7 +149,8 @@ export class ChairPackConvertor {
 
   /** 解析坐垫模型 - 名称 name */
   private parseModelName(modelInfo: TLMChairModelInfo, idInfo: ModelIdInfo, seq: number) {
-    const nameKey = `model.${this.packId + PROFILE.CHAIR_BASE_PACK_INDEX}.${seq}.name`; // 基岩版文本键
+    // 基岩版文本键，带 `tlm.chair.` 前缀避免与女仆模型键重复
+    const nameKey = `tlm.chair.model.${this.packId + PROFILE.CHAIR_BASE_PACK_INDEX}.${seq}.name`;
     const infoName = modelInfo.name;
     if (infoName === undefined) {
       // 缺省时，使用 `{model.<namespace>.<path>.name}`
@@ -162,7 +163,8 @@ export class ChairPackConvertor {
 
   /** 解析坐垫模型 - 描述 description */
   private parseModelDesc(modelInfo: TLMChairModelInfo, idInfo: ModelIdInfo, seq: number) {
-    const descKey = `model.${this.packId + PROFILE.CHAIR_BASE_PACK_INDEX}.${seq}.desc`; // 基岩版文本键
+    // 基岩版文本键，带 `tlm.chair.` 前缀避免与女仆模型键重复
+    const descKey = `tlm.chair.model.${this.packId + PROFILE.CHAIR_BASE_PACK_INDEX}.${seq}.desc`;
     if (modelInfo.description === undefined) {
       this.res.lang.setLang(descKey, this.langJava.getLang(`model.${idInfo.namespace}.${idInfo.path}.desc`));
     } else {
