@@ -33,10 +33,7 @@ export class EntityChair {
      * @param {number} index 坐垫皮肤编号
      */
     setIndex(chair, index) {
-      let variant = chair.getComponent("minecraft:variant");
-      if (variant !== undefined) {
-        variant.setCurrentValue(index);
-      }
+      chair.triggerEvent(`skin:${index}`);
     },
     /**
      * 获取坐垫皮肤编号

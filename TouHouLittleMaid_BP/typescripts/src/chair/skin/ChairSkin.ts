@@ -1,6 +1,6 @@
 import { world } from "@minecraft/server";
 import { getRandomInteger } from "../../libs/ScarletToolKit";
-import { SkinPackConfig, SkinPackDisplayInfo } from "../maid/skin/MaidSkinTypes";
+import { SkinPackConfig, SkinPackDisplayInfo } from "../../maid/skin/MaidSkinTypes";
 
 /**
  * 坐垫皮肤包配置

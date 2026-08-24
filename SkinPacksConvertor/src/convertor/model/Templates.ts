@@ -138,13 +138,24 @@ export namespace TemplatesBE {
         "description": {
           "identifier": "touhou_little_maid:chair",
           "materials": {
-            "default": "entity_alphatest"
+            "default": "entity_alphatest",
+            "emissive": "entity_emissive_alpha"
+          },
+          "scripts": {
+            "scale": "v.chair_scale",
+            "pre_animation": [
+              "v.chair_anim_0_0 = 0;",
+              "v.chair_scale = 1;",
+            ],
+            "animate": [ ]
           },
           "textures": {
-            "default": "textures/entity/void"
+            "default": "textures/entity/void",
+            "void": "textures/entity/void",
           },
           "geometry": {
-            "default": "geometry.touhou_little_maid.void"
+            "default": "geometry.touhou_little_maid.void",
+            "void": "geometry.touhou_little_maid.void",
           },
           "render_controllers": []
         }
