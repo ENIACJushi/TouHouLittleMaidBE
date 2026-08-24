@@ -218,7 +218,7 @@ export async function migrateBuiltInResources(innerPackDir: string, rpDir: strin
  * 坐垫模型/贴图沿用与女仆一致的迁移策略：
  *  - 坐垫几何体目录 → models/entity/built_in_chairs（清空重建）
  *  - 坐垫 render_controllers/chair.json → render_controllers/chair/chair.json
- *  - 坐垫 entity/chair.entity.json → entity/chair/chair.entity.json
+ *  - 坐垫 entity/chair.entity.json → 见【坐垫生物渲染定义合并】，由 convert.ts 的 mergeChairEntity 处理
  *  - 坐垫 textures/<packName> → textures/<packName>（合并）
  *  - 坐垫 animations/tlm_pack_chair.animation.json → animations/built_in_chairs/
  *  - chair_pack.json → 写入 RP 根目录，供游戏读取坐垫包配置
@@ -260,13 +260,8 @@ export async function migrateBuiltInChairResources(innerPackDir: string, rpDir: 
   }
 
   // 坐垫 entity/chair.entity.json → entity/chair/chair.entity.json
-  const srcChairEntity = path.join(innerPackDir, 'entity', 'chair.entity.json');
-  const destChairEntity = path.join(rpDir, 'entity', 'chair', 'chair.entity.json');
-  if (await pathExists(srcChairEntity)) {
-    await fs.mkdir(path.dirname(destChairEntity), { recursive: true });
-    await fs.copyFile(srcChairEntity, destChairEntity);
-    console.log(`已覆写坐垫实体定义: ${destChairEntity}`);
-  }
+  // 注意：坐垫实体定义由 convert.ts 中的 mergeChairEntity 合并后写入（见【坐垫生物渲染定义合并】），
+  // 这里不再直接拷贝中间产物，避免与女仆 base 合并逻辑冲突。
 
   // 坐垫贴图目录 → textures/<同名>（合并覆盖）
   const srcTextures = path.join(innerPackDir, 'textures');

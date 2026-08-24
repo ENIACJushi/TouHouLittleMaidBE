@@ -14,6 +14,7 @@ import { SkinConvertor } from '../convertor/SkinConvertor';
 import { PROFILE } from '../convertor/config';
 import { getErrorLog } from '../../test/node-polyfill';
 import { mergeMaidEntity } from './mergeMaidEntity';
+import { mergeChairEntity } from './mergeChairEntity';
 import { migrateBuiltInResources, migrateBuiltInChairResources } from './migrateResources';
 
 const PACK_FOLDER_NAME = 'TLM_MaidSkinPack';
@@ -97,6 +98,15 @@ async function main() {
     'profile',
     'maid.entity.json',
   );
+  const chairRpEntityPath = path.join(rpDir, 'entity', 'chair', 'chair.entity.json');
+  const chairProfileEntityPath = path.join(
+    projectRoot,
+    'src',
+    'convertor',
+    'config',
+    'profile',
+    'chair.entity.json',
+  );
 
   const sourceStat = await fs.stat(sourceDir).catch(() => undefined);
   if (!sourceStat?.isDirectory()) {
@@ -150,6 +160,17 @@ async function main() {
   await writeJson(profileEntityPath, mergedEntity);
   console.log(`已覆写实体定义: ${rpEntityPath}`);
   console.log(`已覆写实体定义: ${profileEntityPath}`);
+
+  // 坐垫生物渲染定义合并
+  const innerChairEntityPath = path.join(packDir, 'entity', 'chair.entity.json');
+  if (await pathExists(innerChairEntityPath)) {
+    const innerChairEntity = JSON.parse(await fs.readFile(innerChairEntityPath, 'utf8'));
+    const mergedChairEntity = mergeChairEntity(innerChairEntity);
+    await writeJson(chairRpEntityPath, mergedChairEntity);
+    await writeJson(chairProfileEntityPath, mergedChairEntity);
+    console.log(`已覆写坐垫实体定义: ${chairRpEntityPath}`);
+    console.log(`已覆写坐垫实体定义: ${chairProfileEntityPath}`);
+  }
 
   // 资源迁移
   await migrateBuiltInResources(packDir, rpDir);

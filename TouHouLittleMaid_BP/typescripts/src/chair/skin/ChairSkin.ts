@@ -13,7 +13,8 @@ export class ChairSkin {
   /* 预置模型包参数 */
   static readonly PLACEHOLDER: number = 1000; // 最大预置模型包预留序号（与转换器 CHAIR_BASE_PACK_INDEX 一致）
   static readonly DEFAULT_PACKS: [number, number][] = [
-    [0, 25], // 内置坐垫
+    [1, 1], // 内置坐垫
+    [2, 32], // 内置坐垫
   ];
   /* 通用参数 */
   static readonly PROPERTY_KEY = 'thlm_chair_packs'; // 附加坐垫包 JSON 动态属性
@@ -204,6 +205,7 @@ export class ChairSkin {
   static getAllPackInfos(): SkinPackDisplayInfo[] {
     const ids = Array.from(ChairSkin.skinPacks.keys());
     ids.sort((a, b) => a - b);
+    console.log('huh ChairSkin', ChairSkin.skinPacks.size)
     return ids.map(id => ({
       id: id,
       name: ChairSkin.getPackDisplayName(id),

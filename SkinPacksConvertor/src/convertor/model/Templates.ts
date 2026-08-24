@@ -137,27 +137,12 @@ export namespace TemplatesBE {
       "minecraft:client_entity": {
         "description": {
           "identifier": "touhou_little_maid:chair",
-          "materials": {
-            "default": "entity_alphatest",
-            "emissive": "entity_emissive_alpha"
-          },
-          "scripts": {
-            "scale": "v.chair_scale",
-            "pre_animation": [
-              "v.chair_anim_0_0 = 0;",
-              "v.chair_scale = 1;",
-            ],
-            "animate": [ ]
-          },
           "textures": {
-            "default": "textures/entity/void",
-            "void": "textures/entity/void",
           },
           "geometry": {
-            "default": "geometry.touhou_little_maid.void",
-            "void": "geometry.touhou_little_maid.void",
           },
-          "render_controllers": []
+          // 从定义模板获取 render_controllers
+          "render_controllers": JSON.parse(JSON.stringify(PROFILE.CHAIR_RENDER_CONTROLLERS)),
         }
       }
     }
@@ -168,7 +153,7 @@ export namespace TemplatesBE {
     "minecraft:client_entity": {
       description: {
         identifier: string,
-        materials: Record<string, string>,
+        materials?: Record<string, string>,
         textures: Record<string, string>,
         geometry: Record<string, string>,
         render_controllers: string[],

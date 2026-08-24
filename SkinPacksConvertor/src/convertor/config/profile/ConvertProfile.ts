@@ -1,7 +1,10 @@
 import { buildDefaultTemplate } from "./AnimationTemplates";
 import MAID_ENTITY_DEF from "./maid.entity.json";
+import CHAIR_ENTITY_DEF from "./chair.entity.json";
 import {AnimationDefinition, AnimationScriptsDefinition} from "../../animation/MaidAnimationConvertor";
+import {ChairAnimationDefinition} from "../../animation/ChairAnimationConvertor";
 import {MAID_ENTITY_DEF_BASIC} from "../../../maid_basic";
+import {CHAIR_ENTITY_DEF_BASIC} from "../../../chair_basic";
 
 /** 是否启用内置模型包转换档案 */
 const USE_INNER_PACK_PROFILE = false;
@@ -44,6 +47,20 @@ export class ConvertProfile {
    */
   RENDER_CONTROLLERS: string[];
 
+  /**
+   * 坐垫动画定义基础模板，导出的定义在此基础上生成
+   *  内置包转换时，仅附带手动转换的坐垫基础
+   *  常态附带包含内置坐垫包在内的所有信息
+   */
+  CHAIR_ANIMATION_DEF_TEMPLATE: ChairAnimationDefinition;
+
+  /**
+   * 坐垫基础渲染控制器，导出的坐垫实体定义在此基础上生成
+   *  内置包转换时，使用chair_basic.ts的列表（空）
+   *  常态附带内置坐垫在内的所有渲染控制器
+   */
+  CHAIR_RENDER_CONTROLLERS: string[];
+
   constructor() {
     if (USE_INNER_PACK_PROFILE) {
       this.loadInternalPackProfile();
@@ -60,11 +77,27 @@ export class ConvertProfile {
     this.CONVERTED_ANIMATION_ID_START = 100;
     // 皮肤包id起始位置设为0（手动转换的东方包）
     this.BASE_PACK_INDEX = 0;
+    // 坐垫皮肤包id起始位置设为0（手动转换的坐垫包）
+    this.CHAIR_BASE_PACK_INDEX = 0;
     // ANIMATION_DEF_TEMPLATE由maid_basic.ts构建
     this.ANIMATION_DEF_TEMPLATE = buildDefaultTemplate();
     // RENDER_CONTROLLERS取maid_basic.ts值
     this.RENDER_CONTROLLERS = JSON.parse(JSON.stringify(
       MAID_ENTITY_DEF_BASIC["minecraft:client_entity"].description.render_controllers
+    ));
+    // 坐垫 CHAIR_ANIMATION_DEF_TEMPLATE 由 chair_basic.ts 构建
+    this.CHAIR_ANIMATION_DEF_TEMPLATE = {
+      scripts: JSON.parse(JSON.stringify(
+        CHAIR_ENTITY_DEF_BASIC["minecraft:client_entity"].description.scripts
+      )),
+      animations: JSON.parse(JSON.stringify(
+        CHAIR_ENTITY_DEF_BASIC["minecraft:client_entity"].description.animations ?? {}
+      )),
+      animationList: {},
+    };
+    // 坐垫 CHAIR_RENDER_CONTROLLERS 取 chair_basic.ts 值
+    this.CHAIR_RENDER_CONTROLLERS = JSON.parse(JSON.stringify(
+      CHAIR_ENTITY_DEF_BASIC["minecraft:client_entity"].description.render_controllers ?? []
     ));
   }
 
@@ -76,6 +109,8 @@ export class ConvertProfile {
     this.CONVERTED_ANIMATION_ID_START = 3000;
     // 皮肤包id起始位置设为1000
     this.BASE_PACK_INDEX = 1000;
+    // 坐垫皮肤包id起始位置设为1000
+    this.CHAIR_BASE_PACK_INDEX = 1000;
     // 读取全量定义
     const DESC = MAID_ENTITY_DEF["minecraft:client_entity"].description;
     // ANIMATION_DEF_TEMPLATE取全量定义值
@@ -86,6 +121,16 @@ export class ConvertProfile {
     };
     // RENDER_CONTROLLERS取全量定义值
     this.RENDER_CONTROLLERS = JSON.parse(JSON.stringify(DESC.render_controllers));
+    // 读取坐垫全量定义
+    const CHAIR_DESC = CHAIR_ENTITY_DEF["minecraft:client_entity"].description;
+    // 坐垫 CHAIR_ANIMATION_DEF_TEMPLATE 取全量定义值
+    this.CHAIR_ANIMATION_DEF_TEMPLATE = {
+      scripts: JSON.parse(JSON.stringify(CHAIR_DESC.scripts)),
+      animations: JSON.parse(JSON.stringify(CHAIR_DESC.animations ?? {})),
+      animationList: {},
+    };
+    // 坐垫 CHAIR_RENDER_CONTROLLERS 取全量定义值
+    this.CHAIR_RENDER_CONTROLLERS = JSON.parse(JSON.stringify(CHAIR_DESC.render_controllers ?? []));
   }
 }
 

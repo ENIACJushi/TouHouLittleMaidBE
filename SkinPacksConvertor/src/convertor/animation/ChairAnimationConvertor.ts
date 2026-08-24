@@ -38,15 +38,8 @@ export class ChairAnimationConvertor {
    *  - animate 按 `v.chair_anim_<modelId>_<index>` 控制
    */
   async exportDefinition(): Promise<ChairAnimationDefinition> {
-    // 以坐垫实体定义模板中的 scripts 为基础（含预置的动画变量默认值），避免重复定义 scale/初始化逻辑
-    const templateScripts = TemplatesBE.buildChairEntityDef()["minecraft:client_entity"].description.scripts;
-    const res: ChairAnimationDefinition = {
-      scripts: templateScripts
-        ? JSON.parse(JSON.stringify(templateScripts))
-        : { scale: "v.chair_scale", pre_animation: [], animate: [] },
-      animations: {},
-      animationList: {},
-    };
+    // 从坐垫动画定义模板创建基础动画定义（含预置的动画变量默认值）
+    const res: ChairAnimationDefinition = JSON.parse(JSON.stringify(PROFILE.CHAIR_ANIMATION_DEF_TEMPLATE));
 
     // 记录已注册 shortKey，避免一个动画文件重复注册
     const registered = new Set<string>();

@@ -64,7 +64,13 @@ npm run convert:built-in
   - 躺下`ysm.is_sleep`，同上
 
 - [ ] 都完成后，再加个坐垫包转换，应该比较容易
+  - 坐垫模型的名称形如 `model.touhou_little_maid.cushion.name`，在解析里使用它，并修改BP/typescript使用的名称
+  - 坐垫的built_in转换模式也要参照女仆的built_in模式，转换后将生物定义作为普通转换的模板，并且模型包的起始编号不同
+  - 坐垫实体继承了之前的离开就自动清空，这次不需要这个了
+  - 模型位置偏高，不知道是不是生成的位置高了
+  - 实体不要随玩家转动
 - [ ] 修复刷物品bug
+- [ ] 支持解析单模型对应多贴图
 
 - [ ] 实现一些简单动画，如 swing，
   其实最关键的是要让脚本能调用，因为农作的破坏方块实际上是没有女仆参与的，不能用普通的mc自带变量。
@@ -93,6 +99,7 @@ npm run convert:built-in
   - 将动画注册到 animations，生成唯一编号;
   - 将动画注册到 scripts - animate，使用动画变量 `v.animate_xxx = n` 控制展示;
   - 汇总所有的动画展示条件，输出到 scripts - pre_animation
+  - 解析 tameable_can_ride，决定是否可坐
 
 #### 目录对应
 
