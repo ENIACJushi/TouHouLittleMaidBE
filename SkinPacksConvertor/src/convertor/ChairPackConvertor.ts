@@ -174,7 +174,8 @@ export class ChairPackConvertor {
 
   /**
    * 解析坐垫模型 - 贴图，并复制被使用到的贴图文件。
-   * 贴图路径缺失时根据 model_id 推导为 `<namespace>:textures/entity/<path>.png`。
+   * `texture` 属性非空时使用指定的贴图；否则根据 model_id 推导为 `<namespace>:textures/entity/<path>.png`。
+   * 无论源贴图文件名如何，输出统一命名为 `<path>.png`，与实体定义/渲染控制器引用的 `idInfo.path` 保持一致。
    */
   private async parseModelTextures(modelInfo: TLMChairModelInfo, idInfo: ModelIdInfo, seq: number) {
     // 确定贴图资源位置
@@ -191,18 +192,23 @@ export class ChairPackConvertor {
     this.pack_controller["arrays"]["textures"]["Array.skins"]
       .push(`Texture.${this.packNameSafe}_${idInfo.path}`);
 
-    // 复制被使用到的贴图文件到坐垫输出贴图目录
-    const textureFile = this.resourceManager.getResource(textureKey);
-    if (textureFile) {
-      const pathParts = textureKey.split(':');
-      const relPath = pathParts.length === 2 ? pathParts[1] : textureKey;
-      // 坐垫贴图写入 textures/<packName>/chair/<path>.png，与女仆的 entity 目录平级
-      const fileName = relPath.substring(relPath.lastIndexOf('/') + 1);
-      const blob = await textureFile.async('blob');
-      this.res.textures.folder(this.packName).folder('chair').file(fileName, blob);
-    } else {
-      console.warn(TAG, `parseModelTextures >> File not exist: ${textureKey}`);
+    // 复制被使用到的贴图文件到坐垫输出贴图目录（输出名统一为 idInfo.path，源文件由 texture 指定）
+    await this.copyChairTexture(textureKey, `${idInfo.path}.png`);
+  }
+
+  /**
+   * 复制指定贴图资源到坐垫输出贴图目录 `textures/<packName>/chair/`
+   * @param resourceKey 贴图资源位置，如 `touhou_little_maid:textures/entity/torii.png`（含 domain）
+   * @param outFileName 输出文件名（不含前缀路径），如 `torii_2.png`
+   */
+  private async copyChairTexture(resourceKey: string, outFileName: string) {
+    const textureFile = this.resourceManager.getResource(resourceKey);
+    if (!textureFile) {
+      console.warn(TAG, `parseModelTextures >> File not exist: ${resourceKey}`);
+      return;
     }
+    const blob = await textureFile.async('blob');
+    this.res.textures.folder(this.packName).folder('chair').file(outFileName, blob);
   }
 
   /**

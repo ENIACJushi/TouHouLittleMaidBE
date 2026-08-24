@@ -14,7 +14,7 @@ export class ChairSkin {
   static readonly PLACEHOLDER: number = 1000; // 最大预置模型包预留序号（与转换器 CHAIR_BASE_PACK_INDEX 一致）
   static readonly DEFAULT_PACKS: [number, number][] = [
     [1, 1], // 内置坐垫
-    [2, 32], // 内置坐垫
+    [2, 33], // 内置坐垫
   ];
   /* 通用参数 */
   static readonly PROPERTY_KEY = 'thlm_chair_packs'; // 附加坐垫包 JSON 动态属性
