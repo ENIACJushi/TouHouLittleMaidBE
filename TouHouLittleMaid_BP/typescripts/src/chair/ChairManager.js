@@ -1,4 +1,4 @@
-import { system } from "@minecraft/server";
+import { Direction, system } from "@minecraft/server";
 import { CHAIR_IDENTIFIER, EntityChair } from "./EntityChair";
 import * as Tool from "../libs/ScarletToolKit";
 
@@ -8,6 +8,14 @@ import * as Tool from "../libs/ScarletToolKit";
  * - 玩家使用 `touhou_little_maid:chair` 物品点击方块 → 在点击位置生成坐垫实体；
  * - 玩家潜行与非潜行交互坐垫 → 非潜行由坐垫实体的 `minecraft:rideable` 组件自动坐上，
  *  潜行则由实体交互事件打开模型更换表单（见 EntityEvents）。
+ *
+ * 放置规则：
+ * - 潜行放置：实体精准生成在玩家点击的位置，并面向玩家；
+ * - 非潜行放置：
+ *   - 朝向仅取八个方向（x+、x-、z+、z- 及其 45° 角），由玩家朝向确定；
+ *   - 点击方块上表面 → 生成在方块上表面中央；
+ *   - 点击方块侧面 → 生成在该侧面紧贴方块的底面中央；
+ *   - 点击方块下表面 → 生成在点击方块之下的方块底面中央。
  */
 export class ChairManager {
   /**
@@ -22,25 +30,41 @@ export class ChairManager {
       const player = event.player;
       const dimension = player.dimension;
 
-      // 获取放置位置
-      let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
+      // 潜行：精准生成在玩家点击的位置，并面向玩家
+      if (player.isSneaking) {
+        // faceLocation 是相对被点击方块底部西北角的偏移，需加上方块坐标得到世界坐标
+        const faceLocation = event.faceLocation;
+        if (faceLocation === undefined) {
+          Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
+          return;
+        }
+        const blockLocation = event.block.location;
+        const location = {
+          x: blockLocation.x + faceLocation.x,
+          y: blockLocation.y + faceLocation.y,
+          z: blockLocation.z + faceLocation.z,
+        };
+        // 面向玩家：把实体朝向对准玩家所在位置
+        const facing = ChairManager.getFacingYaw(player, location);
+        const chair = dimension.spawnEntity(CHAIR_IDENTIFIER, location, {
+          initialRotation: facing,
+        });
+        ChairManager.consumeMainHandItem(player);
+        return;
+      }
+
+      // 非潜行：按点击面计算放置位置
+      let location = this.getPlaceLocation(event.block.location, event.blockFace);
       if (location === undefined) {
         Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
         return;
       }
-      location.x += 0.5;
-      location.y += 0.25;
-      location.z += 0.5;
 
-      // 生成坐垫实体
-      let chair = dimension.spawnEntity(CHAIR_IDENTIFIER, location);
-
-      // 随机设置一个坐垫皮肤
-      system.runTimeout(() => {
-        EntityChair.Skin.setRandom(chair);
-      }, 1);
-
-      // 消耗物品（坐垫可堆叠，每次放置消耗 1 个）
+      // 八方向朝向（根据玩家朝向 yaw）
+      const rot = ChairManager.get8DirectionYaw(player.getRotation().y);
+      const chair = dimension.spawnEntity(CHAIR_IDENTIFIER, location, {
+        initialRotation: rot + 180,
+      });
       ChairManager.consumeMainHandItem(player);
     });
   }
@@ -61,21 +85,65 @@ export class ChairManager {
   }
 
   /**
-   * 获取可放置的坐垫位置（坐垫只需一格空间）
-   * @param {import("@minecraft/server").Dimension} dimension
+   * 获取非潜行放置的坐垫位置（坐垫只需一格空间）
    * @param {import("@minecraft/server").Vector3} blockLocation 被点击方块位置
    * @param {import("@minecraft/server").Direction} blockFace 点击面
    * @returns {import("@minecraft/server").Vector3 | undefined}
    */
-  static getSafeLocation(dimension, blockLocation, blockFace) {
+  static getPlaceLocation(blockLocation, blockFace) {
     let location = { x: blockLocation.x, y: blockLocation.y, z: blockLocation.z };
-    // 根据点击面计算放置位置
-    if (blockFace === 1 || blockFace === "Up") { location.y += 1; }
-    else if (blockFace === 0 || blockFace === "Down") { location.y -= 1; }
-    else if (blockFace === 3 || blockFace === "North") { location.z -= 1; }
-    else if (blockFace === 2 || blockFace === "South") { location.z += 1; }
-    else if (blockFace === 4 || blockFace === "West") { location.x -= 1; }
-    else if (blockFace === 5 || blockFace === "East") { location.x += 1; }
+    // 根据点击面计算放置位置：
+    //  - 上表面 → 方块上表面中央（y + 1）
+    //  - 侧面 → 该侧面紧贴的方块底面中央（向对应方向偏移一格）
+    //  - 下表面 → 点击方块之下方块底面中央（y - 1）
+    switch (blockFace) {
+      case Direction.Up: location.y += 1; break;
+      case Direction.Down: location.y -= 1; break;
+      case Direction.East: location.x += 1; break;
+      case Direction.West: location.x -= 1; break;
+      case Direction.South: location.z += 1; break;
+      case Direction.North: location.z -= 1; break;
+      default: return undefined;
+    }
+    // 居中到方块中心（y 不加偏移，坐垫底面贴地）
+    location.x += 0.5;
+    location.z += 0.5;
     return location;
+  }
+
+  /**
+   * 根据玩家朝向 yaw 映射为八方向 yaw
+   *
+   * Minecraft yaw：0 = 北(z-)，90 = 东(x+)，180/-180 = 南(z+)，-90 = 西(x-)
+   * 每 45° 一个方向，返回符合八方向的 yaw 值。
+   * @param {number} yaw 玩家朝向 yaw，范围 [-180, 180]
+   * @returns {number} 八方向 yaw
+   */
+  static get8DirectionYaw(yaw) {
+    // 规范化到 [0, 360)
+    let normalized = ((yaw % 360) + 360) % 360;
+    // 每个八方向区间宽 45°，取区间中心作为落点
+    // 0: 北(z-)，45: 东北，90: 东(x+)，135: 东南，180: 南(z+)，225: 西南，270: 西(x-)，315: 西北
+    const sectors = [0, 45, 90, 135, 180, 225, 270, 315];
+    let idx = Math.round(normalized / 45) % 8;
+    let result = sectors[idx];
+    // 转为 [-180, 180] 以符合 Minecraft 惯例
+    if (result > 180) result -= 360;
+    return result;
+  }
+
+  /**
+   * 获取实体朝向对准目标位置的 yaw
+   * 用于潜行放置时让坐垫面向玩家。
+   * @param {import("@minecraft/server").Player} player 面向的玩家
+   * @param {import("@minecraft/server").Vector3} location 实体位置
+   * @returns {number} yaw（朝向玩家）
+   */
+  static getFacingYaw(player, location) {
+    const dx = player.location.x - location.x;
+    const dz = player.location.z - location.z;
+    // atan2(z, x) 得到的是以 x+ 为 0 的弧度，Minecraft yaw 以 z- 为 0 且顺时针增大
+    let yaw = Math.atan2(dx, -dz) * (180 / Math.PI);
+    return yaw;
   }
 }
