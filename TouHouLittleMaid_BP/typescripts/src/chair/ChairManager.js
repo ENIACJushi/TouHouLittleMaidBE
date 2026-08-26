@@ -1,6 +1,7 @@
-import { Direction, system } from "@minecraft/server";
-import { CHAIR_IDENTIFIER, EntityChair } from "./EntityChair";
+import {Direction, system} from "@minecraft/server";
+import {CHAIR_IDENTIFIER, EntityChair} from "./EntityChair";
 import * as Tool from "../libs/ScarletToolKit";
+import {ChairSkin} from "./skin/ChairSkin";
 
 /**
  * 坐垫放置与交互管理
@@ -25,30 +26,27 @@ export class ChairManager {
   static placeOnUseEvent(event) {
     // 默认取消方块交互
     event.cancel = true;
-
     system.run(() => {
       const player = event.player;
       const dimension = player.dimension;
-
       // 潜行：精准生成在玩家点击的位置，并面向玩家
       if (player.isSneaking) {
-        // faceLocation 是相对被点击方块底部西北角的偏移，需加上方块坐标得到世界坐标
         const faceLocation = event.faceLocation;
         if (faceLocation === undefined) {
           Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
           return;
         }
-        const blockLocation = event.block.location;
-        const location = {
-          x: blockLocation.x + faceLocation.x,
-          y: blockLocation.y + faceLocation.y,
-          z: blockLocation.z + faceLocation.z,
-        };
+        const location = ChairManager.faceLocationToWorld(
+          event.block.location,
+          event.blockFace,
+          faceLocation
+        );
         // 面向玩家：把实体朝向对准玩家所在位置
         const facing = ChairManager.getFacingYaw(player, location);
         const chair = dimension.spawnEntity(CHAIR_IDENTIFIER, location, {
-          initialRotation: facing,
+          initialRotation: facing + 180,
         });
+        EntityChair.Skin.recoverChairSkin(chair);
         ChairManager.consumeMainHandItem(player);
         return;
       }
@@ -65,12 +63,55 @@ export class ChairManager {
       const chair = dimension.spawnEntity(CHAIR_IDENTIFIER, location, {
         initialRotation: rot + 180,
       });
+      EntityChair.Skin.recoverChairSkin(chair);
       ChairManager.consumeMainHandItem(player);
     });
   }
 
   /**
-   * 消耗玩家主手一个物品
+   * 将 faceLocation 转为世界坐标
+   *
+   * 世界轴向：东=+x，南=+z，上=+y。
+   * faceLocation 实际原点/正方向随方块 y 变化（非文档所述西北底角）：
+   * - location.y >= 0：东北底角为原点，正方向为西、上、南
+   * - location.y < 0：东北顶角为原点，正方向为西、下、南
+   * 西/南/顶(或底)面上偶发把远侧坐标报成 0，需按交互面修正为 1。
+   *
+   * @param {import("@minecraft/server").Vector3} blockLocation 方块坐标
+   * @param {import("@minecraft/server").Direction} blockFace 交互面
+   * @param {import("@minecraft/server").Vector3} faceLocation 交互坐标
+   * @returns {import("@minecraft/server").Vector3}
+   */
+  static faceLocationToWorld(blockLocation, blockFace, faceLocation) {
+    let x = faceLocation.x;
+    let y = faceLocation.y;
+    let z = faceLocation.z;
+
+    // 西面/南面远侧x/z不可能为0，修正为 1
+    if (blockFace === Direction.West && x === 0) x = 1;
+    if (blockFace === Direction.South && z === 0) z = 1;
+
+    if (blockLocation.y >= 0) {
+      // 东北底角；正方向：西(-x)、上(+y)、南(+z)
+      if (blockFace === Direction.Up && y === 0) y = 1;
+      return {
+        x: blockLocation.x + 1 - x,
+        y: blockLocation.y + y,
+        z: blockLocation.z + z,
+      };
+    }
+
+    // 东北顶角；正方向：西(-x)、下(-y)、南(+z)
+    if (blockFace === Direction.Down && y === 0) y = 1;
+    return {
+      x: blockLocation.x + 1 - x,
+      y: blockLocation.y + 1 - y,
+      z: blockLocation.z + z,
+    };
+  }
+
+  /**
+   * 消耗玩家主手一个物品 todo 主手可能会有快速切物品栏问题，需要验证可靠性
    * @param {import("@minecraft/server").Player} player
    */
   static consumeMainHandItem(player) {
@@ -147,3 +188,4 @@ export class ChairManager {
     return yaw;
   }
 }
+

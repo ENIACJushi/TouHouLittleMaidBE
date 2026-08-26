@@ -12,6 +12,13 @@ export const CHAIR_PACK_PROPERTY = "thlm:chair_pack";
 export class EntityChair {
   static Skin = {
     /**
+     * 恢复坐垫模型
+     */
+    recoverChairSkin(chair, pack, index) {
+      EntityChair.Skin.setPack(chair, pack ?? 2);
+      EntityChair.Skin.setIndex(chair, index ?? 0);
+    },
+    /**
      * 设置坐垫皮肤包编号
      * @param {Entity} chair 坐垫实体
      * @param {number} chair_pack 坐垫皮肤包编号

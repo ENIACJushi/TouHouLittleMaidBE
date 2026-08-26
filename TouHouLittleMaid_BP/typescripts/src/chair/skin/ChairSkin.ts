@@ -205,7 +205,6 @@ export class ChairSkin {
   static getAllPackInfos(): SkinPackDisplayInfo[] {
     const ids = Array.from(ChairSkin.skinPacks.keys());
     ids.sort((a, b) => a - b);
-    console.log('huh ChairSkin', ChairSkin.skinPacks.size)
     return ids.map(id => ({
       id: id,
       name: ChairSkin.getPackDisplayName(id),
