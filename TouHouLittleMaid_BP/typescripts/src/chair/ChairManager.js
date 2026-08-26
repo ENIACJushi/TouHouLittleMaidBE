@@ -31,8 +31,8 @@ export class ChairManager {
       const player = event.player;
       const dimension = player.dimension;
       const handItem = Tool.ItemTool.getPlayerMainHand(player);
-      // 潜行：精准生成在玩家点击的位置，并面向玩家
-      if (player.isSneaking) {
+      // 非潜行：精准生成在玩家点击的位置，并面向玩家
+      if (!player.isSneaking) {
         const faceLocation = event.faceLocation;
         if (faceLocation === undefined) {
           Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
@@ -50,7 +50,7 @@ export class ChairManager {
         return;
       }
 
-      // 非潜行：按点击面计算放置位置
+      // 潜行：按点击面计算放置位置
       let location = this.getPlaceLocation(event.block.location, event.blockFace);
       if (location === undefined) {
         Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
