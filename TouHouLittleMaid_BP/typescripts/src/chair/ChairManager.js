@@ -8,7 +8,8 @@ import {ChairSkin} from "./skin/ChairSkin";
  *
  * - 玩家使用 `touhou_little_maid:chair` 物品点击方块 → 在点击位置生成坐垫实体；
  * - 玩家潜行与非潜行交互坐垫 → 非潜行由坐垫实体的 `minecraft:rideable` 组件自动坐上，
- *  潜行则由实体交互事件打开模型更换表单（见 EntityEvents）。
+ *  潜行则由实体交互事件打开模型更换表单（见 EntityEvents）；
+ * - 玩家潜行攻击坐垫 → 收回为物品，并记录当前模型包与皮肤序号到物品 lore。
  *
  * 放置规则：
  * - 潜行放置：实体精准生成在玩家点击的位置，并面向玩家；
@@ -29,6 +30,7 @@ export class ChairManager {
     system.run(() => {
       const player = event.player;
       const dimension = player.dimension;
+      const handItem = Tool.ItemTool.getPlayerMainHand(player);
       // 潜行：精准生成在玩家点击的位置，并面向玩家
       if (player.isSneaking) {
         const faceLocation = event.faceLocation;
@@ -43,10 +45,7 @@ export class ChairManager {
         );
         // 面向玩家：把实体朝向对准玩家所在位置
         const facing = ChairManager.getFacingYaw(player, location);
-        const chair = dimension.spawnEntity(CHAIR_IDENTIFIER, location, {
-          initialRotation: facing + 180,
-        });
-        EntityChair.Skin.recoverChairSkin(chair);
+        ChairManager.spawnChairByItem(dimension, location, facing + 180, handItem);
         ChairManager.consumeMainHandItem(player);
         return;
       }
@@ -60,12 +59,53 @@ export class ChairManager {
 
       // 八方向朝向（根据玩家朝向 yaw）
       const rot = ChairManager.get8DirectionYaw(player.getRotation().y);
-      const chair = dimension.spawnEntity(CHAIR_IDENTIFIER, location, {
-        initialRotation: rot + 180,
-      });
-      EntityChair.Skin.recoverChairSkin(chair);
+      ChairManager.spawnChairByItem(dimension, location, rot + 180, handItem);
       ChairManager.consumeMainHandItem(player);
     });
+  }
+
+  /**
+   * 恢复坐垫模型；优先从放置用物品的 lore 读取，无记录时使用默认包
+   * @param  dimension
+   * @param {number} location
+   * @param {number} rotation
+   * @param {import("@minecraft/server").ItemStack} [item] 放置时手持的坐垫物品
+   */
+  static spawnChairByItem(dimension, location, rotation, item) {
+    // 确定模型
+    let pack = 2;
+    let index = 0;
+    if (item !== undefined) {
+      const skin = EntityChair.Item.parseSkin(item);
+      if (skin !== undefined && ChairSkin.isRegistered(skin.pack, skin.index)) {
+        pack = skin.pack;
+        index = skin.index;
+      }
+    }
+    // 生成实体，模型编号以生成时事件设置
+    const chair = dimension.spawnEntity(CHAIR_IDENTIFIER, location, {
+      initialRotation: rotation,
+      spawnEvent: `skin:${index}`
+    });
+    EntityChair.Skin.setPack(chair, pack);
+  }
+  /**
+   * 潜行攻击收回坐垫
+   * @param {import("@minecraft/server").Entity} player
+   * @param {import("@minecraft/server").Entity} chair
+   */
+  static recycleOnAttackEvent(player, chair) {
+    const item = EntityChair.Item.createFromChair(chair);
+    const container = player.getComponent("inventory")?.container;
+    if (container !== undefined) {
+      const leftover = container.addItem(item);
+      if (leftover !== undefined) {
+        player.dimension.spawnItem(leftover, player.location);
+      }
+    } else {
+      player.dimension.spawnItem(item, player.location);
+    }
+    chair.triggerEvent("despawn");
   }
 
   /**

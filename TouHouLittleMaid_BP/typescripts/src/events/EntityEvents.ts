@@ -17,6 +17,8 @@ import { GarageKit } from "../blocks/GarageKit";
 import { GoldMicrowaver } from "../blocks/GoldMicrowaver";
 import {MaidEvents} from "../maid/events/MaidEvents";
 import * as ChairUI from "../chair/ChairUI";
+import { ChairManager } from "../chair/ChairManager";
+import { CHAIR_IDENTIFIER } from "../chair/EntityChair";
 
 export class EntityEvents {
   // 弹射物命中方块
@@ -181,7 +183,16 @@ export class EntityEvents {
   
   // 实体攻击实体事件
   entityHitEntity(event: EntityHitEntityAfterEvent) {
-    let hurtId = event.hitEntity.typeId;
+    const hitEntity = event.hitEntity;
+    if (hitEntity.typeId === CHAIR_IDENTIFIER) {
+      const attacker = event.damagingEntity;
+      if (attacker?.typeId === "minecraft:player" && attacker.isSneaking) {
+        ChairManager.recycleOnAttackEvent(attacker, hitEntity);
+      }
+      return;
+    }
+
+    let hurtId = hitEntity.typeId;
     if (hurtId.substring(0, 4) === 'thlm') {
       switch (hurtId.charAt(4)) {
         // 女仆攻击标志实体

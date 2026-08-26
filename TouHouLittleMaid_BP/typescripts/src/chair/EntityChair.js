@@ -1,7 +1,8 @@
-import { Entity } from "@minecraft/server";
+import { Entity, ItemStack } from "@minecraft/server";
 import { ChairSkin } from "./skin/ChairSkin";
 
 export const CHAIR_IDENTIFIER = "touhou_little_maid:chair";
+export const CHAIR_ITEM_IDENTIFIER = "touhou_little_maid:chair";
 export const CHAIR_PACK_PROPERTY = "thlm:chair_pack";
 
 /**
@@ -10,14 +11,43 @@ export const CHAIR_PACK_PROPERTY = "thlm:chair_pack";
  * 皮肤索引通过 `minecraft:variant` 组件记录。
  */
 export class EntityChair {
-  static Skin = {
+  static Item = {
     /**
-     * 恢复坐垫模型
+     * 从物品 lore 解析坐垫皮肤（格式：`pack,index`）
+     * @param {import("@minecraft/server").ItemStack} item
+     * @returns {{ pack: number, index: number } | undefined}
      */
-    recoverChairSkin(chair, pack, index) {
-      EntityChair.Skin.setPack(chair, pack ?? 2);
-      EntityChair.Skin.setIndex(chair, index ?? 0);
+    parseSkin(item) {
+      const lore = item.getLore();
+      if (lore === undefined || lore.length === 0) {
+        return undefined;
+      }
+      const parts = lore[0].split(",");
+      if (parts.length < 2) {
+        return undefined;
+      }
+      const pack = Number(parts[0]);
+      const index = Number(parts[1]);
+      if (!Number.isInteger(pack) || !Number.isInteger(index)) {
+        return undefined;
+      }
+      return { pack, index };
     },
+    /**
+     * 根据坐垫实体当前模型创建物品
+     * @param {Entity} chair
+     * @returns {ItemStack}
+     */
+    createFromChair(chair) {
+      const item = new ItemStack(CHAIR_ITEM_IDENTIFIER, 1);
+      const pack = EntityChair.Skin.getPack(chair);
+      const index = EntityChair.Skin.getIndex(chair);
+      item.setLore([`${pack},${index}`]);
+      return item;
+    },
+  };
+
+  static Skin = {
     /**
      * 设置坐垫皮肤包编号
      * @param {Entity} chair 坐垫实体
