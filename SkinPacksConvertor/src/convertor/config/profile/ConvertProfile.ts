@@ -5,6 +5,7 @@ import {AnimationDefinition, AnimationScriptsDefinition} from "../../animation/M
 import {ChairAnimationDefinition} from "../../animation/ChairAnimationConvertor";
 import {MAID_ENTITY_DEF_BASIC} from "../../../maid_basic";
 import {CHAIR_ENTITY_DEF_BASIC} from "../../../chair_basic";
+import { BUILTIN_PACK_DOMAIN_ORDER } from "../../../built_in/packOrder";
 
 /** 是否启用内置模型包转换档案 */
 const USE_INNER_PACK_PROFILE = false;
@@ -25,6 +26,13 @@ export class ConvertProfile {
    *  例：设为1000，则产生的第一个坐垫模型包编号为 1001
    */
   CHAIR_BASE_PACK_INDEX = 1000;
+
+  /**
+   * 同一压缩包内子模型包（assets/<domain>）的解析优先顺序。
+   *  有配置的 domain 按数组顺序排在最前；未配置的排在其后。
+   *  空数组表示不干预顺序（保持发现顺序）。
+   */
+  PACK_DOMAIN_ORDER: string[] = [];
 
   /**
    * 转换得到的 gecko 动画 id 起始值
@@ -79,6 +87,8 @@ export class ConvertProfile {
     this.BASE_PACK_INDEX = 0;
     // 坐垫皮肤包id起始位置设为0（手动转换的坐垫包）
     this.CHAIR_BASE_PACK_INDEX = 0;
+    // 内置包 domain 解析顺序（见 built_in/packOrder.ts）
+    this.PACK_DOMAIN_ORDER = [...BUILTIN_PACK_DOMAIN_ORDER];
     // ANIMATION_DEF_TEMPLATE由maid_basic.ts构建
     this.ANIMATION_DEF_TEMPLATE = buildDefaultTemplate();
     // RENDER_CONTROLLERS取maid_basic.ts值
@@ -111,6 +121,8 @@ export class ConvertProfile {
     this.BASE_PACK_INDEX = 1000;
     // 坐垫皮肤包id起始位置设为1000
     this.CHAIR_BASE_PACK_INDEX = 1000;
+    // 网页/附加包转换不干预子包顺序
+    this.PACK_DOMAIN_ORDER = [];
     // 读取全量定义
     const DESC = MAID_ENTITY_DEF["minecraft:client_entity"].description;
     // ANIMATION_DEF_TEMPLATE取全量定义值

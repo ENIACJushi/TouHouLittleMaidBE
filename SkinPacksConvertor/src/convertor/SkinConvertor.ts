@@ -9,6 +9,8 @@ import { ChairAnimationConvertor } from "./animation/ChairAnimationConvertor";
 import { ChairPackConvertor } from "./ChairPackConvertor";
 import { convertYsmPackRoot, YsmPackLocator } from "./ysm";
 import { clearDynamicMolangRegistrations } from "./molang/v/VariableResolvers";
+import { PROFILE } from "./config";
+import { sortDomainsByPackOrder } from "../built_in/packOrder";
 
 /**
  * 转换器总入口
@@ -148,7 +150,14 @@ export class SkinConvertor {
         } catch (e) {
           console.error(`handlePack >> Move icon ERROR`, e);
         }
-        for (const [domain, info] of resource.getSubPacks()) {
+        // 按档案中的 PACK_DOMAIN_ORDER 排序：有配置的优先，其余保持相对顺序排在后面
+        const subPacks = resource.getSubPacks();
+        const orderedDomains = sortDomainsByPackOrder(subPacks.keys(), PROFILE.PACK_DOMAIN_ORDER);
+        for (const domain of orderedDomains) {
+          const info = subPacks.get(domain);
+          if (!info) {
+            continue;
+          }
           // 女仆皮肤包：maid_model.json
           if (info.zipFolder.file('maid_model.json')) {
             count++;

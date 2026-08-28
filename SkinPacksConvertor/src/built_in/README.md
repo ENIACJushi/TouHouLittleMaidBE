@@ -44,3 +44,14 @@ npm run convert:built-in
 - `TLM_MaidSkinPack/texts`：
   - 对于 `xxx.lang` 文件，将其内容全部追加到 `TouHouLittleMaid_RP/texts` 的同名文件上。首尾用 `##### BUILT_IN_SKINS_START #####` 和 `##### BUILT_IN_SKINS_END #####` 两行标签标记，如果在追加前找到了这两个标记，则先删除这两个标记之间的内容，然后在这两个标记之间追加。
   - 对于 `languages.json`，将 `TouHouLittleMaid_RP/texts/languages.json` 没有的值追加上去
+
+#### 子包解析顺序
+
+配置文件：`src/built_in/packOrder.ts` 中的 `BUILTIN_PACK_DOMAIN_ORDER`。
+
+规则：
+- 数组中的 domain（`assets/<domain>`）按声明顺序优先分配女仆 / 坐垫 packId
+- 未出现在配置中的子包排在所有已配置包之后，并保持彼此相对顺序
+- 网页附加包转换不使用此配置（`PACK_DOMAIN_ORDER` 为空）
+
+调整顺序后需同步核对 BP 侧 `MaidSkin.DEFAULT_PACKS` / `ChairSkin.DEFAULT_PACKS`。

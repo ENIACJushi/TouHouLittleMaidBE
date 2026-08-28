@@ -117,6 +117,9 @@ async function main() {
   }
 
   console.log('档案: 内置包转换（USE_INNER_PACK_PROFILE=true）');
+  if (PROFILE.PACK_DOMAIN_ORDER.length > 0) {
+    console.log(`子包顺序配置: ${PROFILE.PACK_DOMAIN_ORDER.join(' → ')}`);
+  }
   console.log(`源目录: ${sourceDir}`);
   console.log(`中间产物: ${packDir}`);
   console.log(`合并目标: ${rpDir}`);
