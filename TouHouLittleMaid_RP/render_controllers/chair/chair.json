@@ -1,34 +1,6 @@
 {
 	"format_version": "1.8.0",
 	"render_controllers": {
-		"controller.render.touhou_little_maid.chair_pack_geckolib": {
-			"arrays": {
-				"textures": {
-					"Array.skins": [
-						"Texture.void",
-						"Texture.geckolib_qingluka"
-					]
-				},
-				"geometries": {
-					"Array.geos": [
-						"Geometry.void",
-						"Geometry.geckolib_qingluka"
-					]
-				}
-			},
-			"geometry": "Array.geos[q.property('thlm:chair_pack')==1?q.variant+1:0]",
-			"materials": [
-				{
-					"_*": "Material.emissive"
-				},
-				{
-					"*": "Material.default"
-				}
-			],
-			"textures": [
-				"Array.skins[q.property('thlm:chair_pack')==1?q.variant+1:0]"
-			]
-		},
 		"controller.render.touhou_little_maid.chair_pack_touhou_little_maid": {
 			"arrays": {
 				"textures": {
@@ -105,6 +77,34 @@
 						"Geometry.touhou_little_maid_head_of_academycraft",
 						"Geometry.touhou_little_maid_fogg05",
 						"Geometry.touhou_little_maid_native_drum"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:chair_pack')==1?q.variant+1:0]",
+			"materials": [
+				{
+					"_*": "Material.emissive"
+				},
+				{
+					"*": "Material.default"
+				}
+			],
+			"textures": [
+				"Array.skins[q.property('thlm:chair_pack')==1?q.variant+1:0]"
+			]
+		},
+		"controller.render.touhou_little_maid.chair_pack_geckolib": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.geckolib_qingluka"
+					]
+				},
+				"geometries": {
+					"Array.geos": [
+						"Geometry.void",
+						"Geometry.geckolib_qingluka"
 					]
 				}
 			},

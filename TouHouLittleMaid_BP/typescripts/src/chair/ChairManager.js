@@ -73,7 +73,7 @@ export class ChairManager {
    */
   static spawnChairByItem(dimension, location, rotation, item) {
     // 确定模型
-    let pack = 2;
+    let pack = 1;
     let index = 0;
     if (item !== undefined) {
       const skin = EntityChair.Item.parseSkin(item);
