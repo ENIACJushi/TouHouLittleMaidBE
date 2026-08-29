@@ -848,9 +848,13 @@
     let convertor = new SkinConvertor(fileList);
     let res = await convertor.startConvert(uuid);
     if (res) {
-      // 更新皮肤包配置 JSON
+      // 更新皮肤包 / 坐垫包配置 JSON（二者放在一起，供管理面板粘贴）
       const commandBlock = document.getElementById("command");
-      commandBlock.textContent = res.packConfigStr;
+      let skinPacks = [];
+      let chairPacks = [];
+      try { skinPacks = JSON.parse(res.packConfigStr || '[]'); } catch (_) {}
+      try { chairPacks = JSON.parse(res.chairPackConfigStr || '[]'); } catch (_) {}
+      commandBlock.textContent = JSON.stringify({ skin: skinPacks, chair: chairPacks });
       commandBlock.dataset.generated = 'true';
       // 导出文件
       res.resultFile.generateAsync({type:"blob"})

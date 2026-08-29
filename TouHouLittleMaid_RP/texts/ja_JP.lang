@@ -1,5 +1,4 @@
 action.hint.exit.touhou_little_maid:chair=ジャンプをタップして椅子から出る
-
 ##### BUILT_IN_SKINS_START #####
 chair_pack.1.name=デフォルトの椅子モデル
 tlm.chair.model.1.0.name=クッション

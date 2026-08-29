@@ -46,6 +46,10 @@ export class PackFile {
    */
   chairModelAmount: number[] = [];
   /**
+   * 各坐垫包 domain 名（与 chairModelAmount 下标对齐），供内置构建同步 BP 注释
+   */
+  chairPackDomains: string[] = [];
+  /**
    * 坐垫包注册配置 JSON
    */
   chairPackConfigStr = '[]';

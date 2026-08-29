@@ -195,7 +195,7 @@ message.tlm.config.logger_enable.description=将调试日志广播到世界
 message.tlm.config.logger_level.name=日志等级
 message.tlm.config.logger_level.description=0:NONE 1:ERROR 2:WARN 3: INFO 4: DEBUG
 message.tlm.config.skin_pack.name=皮肤包
-message.tlm.config.skin_pack.description=粘贴转换网站生成的皮肤包数据，如 [{"count":20},{"count":10}]
+message.tlm.config.skin_pack.description=粘贴转换网站生成的数据，如 {"skin":[{"count":20}],"chair":[{"count":10}]}
 
 ##### 其它 #####
 danmaku.pellet.name=§a点弹
@@ -814,7 +814,7 @@ tlm.2.9=
 me.chapter1.page1.title= 这本书已经过时了，请用蛋糕和书合成新的指南书。
 me.c2.p1.title= 这本书已经过时了，请用蛋糕和书合成新的指南书。
 ##### BUILT_IN_SKINS_START #####
-chair_pack.1.name=默认坐垫模型
+chair_pack.1.name=默认椅子模型
 tlm.chair.model.1.0.name=坐垫
 tlm.chair.model.1.1.name=课桌
 tlm.chair.model.1.2.name=课椅

@@ -1,22 +1,24 @@
 import { world } from "@minecraft/server";
 import { getRandomInteger } from "../../libs/ScarletToolKit";
 import { SkinPackConfig, SkinPackDisplayInfo } from "../../maid/skin/MaidSkinTypes";
-
+// ##### BUILT_IN_CHAIR_PACKS_START #####
+const BUILT_IN_CHAIR_DEFAULT_PACKS: [number, number][] = [
+  [1, 33], // touhou_little_maid
+  [2, 1], // geckolib
+  [3, 29], // next_update_model
+];
+// ##### BUILT_IN_CHAIR_PACKS_END #####
 /**
  * 坐垫皮肤包配置
  *
  * 与女仆皮肤包（MaidSkin）相互独立，拥有自己的动态属性 `thlm_chair_packs` 与包序号空间。
- * 坐垫 0 号包为内置包（25 个内置坐垫模型），附加包使用 `PLACEHOLDER + 1 + i`（与转换器
- * CHAIR_BASE_PACK_INDEX 保持一致，即附加包序号 >= 1000）。
+ * 内置坐垫包列表见 `BUILT_IN_CHAIR_DEFAULT_PACKS`（由 `npm run convert:built-in` 按标签块自动同步）；
+ * 附加包使用 `PLACEHOLDER + 1 + i`（与转换器 CHAIR_BASE_PACK_INDEX 保持一致，即附加包序号 >= 1000）。
  */
 export class ChairSkin {
   /* 预置模型包参数 */
   static readonly PLACEHOLDER: number = 1000; // 最大预置模型包预留序号（与转换器 CHAIR_BASE_PACK_INDEX 一致）
-  static readonly DEFAULT_PACKS: [number, number][] = [
-    [1, 33], // 东方project
-    [2, 1], // gecko lib
-    [3, 29],
-  ];
+  static readonly DEFAULT_PACKS: [number, number][] = BUILT_IN_CHAIR_DEFAULT_PACKS;
   /* 通用参数 */
   static readonly PROPERTY_KEY = 'thlm_chair_packs'; // 附加坐垫包 JSON 动态属性
   static skinPacks: Map<number, number> = new Map(ChairSkin.DEFAULT_PACKS); // 坐垫皮肤包列表，记录 id - 皮肤包拥有的皮肤数量

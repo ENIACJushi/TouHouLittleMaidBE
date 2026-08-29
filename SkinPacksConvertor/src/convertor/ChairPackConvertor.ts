@@ -101,6 +101,7 @@ export class ChairPackConvertor {
 
     // 解析模型列表 model_list
     this.res.chairModelAmount[this.packId - 1] = inputJson.model_list.length; // 确定坐垫模型数量
+    this.res.chairPackDomains[this.packId - 1] = this.packName; // 记录 domain，供内置构建同步 BP
     for (let i = 0; i < inputJson.model_list.length; i++) {
       await this.parseChairModelInfo(inputJson.model_list[i], i);
     }

@@ -45,6 +45,16 @@ npm run convert:built-in
   - 对于 `xxx.lang` 文件，将其内容全部追加到 `TouHouLittleMaid_RP/texts` 的同名文件上。首尾用 `##### BUILT_IN_SKINS_START #####` 和 `##### BUILT_IN_SKINS_END #####` 两行标签标记，如果在追加前找到了这两个标记，则先删除这两个标记之间的内容，然后在这两个标记之间追加。
   - 对于 `languages.json`，将 `TouHouLittleMaid_RP/texts/languages.json` 没有的值追加上去
 
+#### BP 内置坐垫包数据同步
+
+转换与资源迁移完成后，按 lang 合并同样的标签块方式，覆写：
+
+`TouHouLittleMaid_BP/typescripts/src/chair/skin/ChairSkin.ts` 中
+`// ##### BUILT_IN_CHAIR_PACKS_START #####` … `// ##### BUILT_IN_CHAIR_PACKS_END #####`
+之间的 `BUILT_IN_CHAIR_DEFAULT_PACKS` 常量。
+
+仅改源码，**不会**自动编译 BP。实现见 `src/built_in/syncChairDefaultPacks.ts`。
+
 #### 子包解析顺序
 
 配置文件：`src/built_in/packOrder.ts` 中的 `BUILTIN_PACK_DOMAIN_ORDER`。
@@ -54,4 +64,4 @@ npm run convert:built-in
 - 未出现在配置中的子包排在所有已配置包之后，并保持彼此相对顺序
 - 网页附加包转换不使用此配置（`PACK_DOMAIN_ORDER` 为空）
 
-调整顺序后需同步核对 BP 侧 `MaidSkin.DEFAULT_PACKS` / `ChairSkin.DEFAULT_PACKS`。
+调整顺序后，执行 `npm run convert:built-in` 会自动覆写 BP 侧 `ChairSkin.DEFAULT_PACKS`（不触发 typescript 编译）；女仆 `MaidSkin.DEFAULT_PACKS` 仍需手动核对。

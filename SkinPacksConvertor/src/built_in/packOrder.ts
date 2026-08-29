@@ -7,7 +7,8 @@
  * 注意：
  * - 女仆包与坐垫包共用同一份 domain 遍历顺序，但各自独立计数（packId / chairPackId）
  * - 包 0（东方 Project）来自 maid_basic，不由本转换产生
- * - 调整顺序后需同步核对 BP 侧 MaidSkin / ChairSkin 的 DEFAULT_PACKS
+ * - 调整顺序后，执行 `npm run convert:built-in` 会自动同步 BP 侧 `ChairSkin.DEFAULT_PACKS`；
+ *   女仆 `MaidSkin.DEFAULT_PACKS` 仍需手动核对
  */
 export const BUILTIN_PACK_DOMAIN_ORDER: string[] = [
   'touhou_little_maid', // 东方 Project 模型

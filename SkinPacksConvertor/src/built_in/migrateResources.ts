@@ -64,23 +64,28 @@ function normalizeToEol(text: string, eol: string): string {
 }
 
 /**
- * 将内置包 lang 内容写入目标 lang 文件的标记块中。
- * 若已有标记则替换中间内容；否则追加到文件末尾。
+ * 将内容写入起止标签之间：已有标记则替换中间；否则追加到末尾。
+ * （lang / ChairSkin DEFAULT_PACKS 等共用）
  */
-export function mergeLangFileContent(existing: string | undefined, innerContent: string): string {
+export function mergeTaggedBlock(
+  existing: string | undefined,
+  innerContent: string,
+  startTag: string,
+  endTag: string,
+): string {
   const eol = existing ? detectEol(existing) : '\n';
   const inner = normalizeToEol(innerContent.replace(/\s+$/, ''), eol);
-  const block = `${LANG_BLOCK_START}${eol}${inner}${eol}${LANG_BLOCK_END}`;
+  const block = `${startTag}${eol}${inner}${eol}${endTag}`;
 
   if (!existing || existing.length === 0) {
     return block + eol;
   }
 
-  const start = existing.indexOf(LANG_BLOCK_START);
-  const end = existing.indexOf(LANG_BLOCK_END);
+  const start = existing.indexOf(startTag);
+  const end = existing.indexOf(endTag);
   if (start >= 0 && end > start) {
     const before = existing.slice(0, start);
-    const after = existing.slice(end + LANG_BLOCK_END.length);
+    const after = existing.slice(end + endTag.length);
     const trimmedBefore = before.replace(/\s+$/, '');
     const trimmedAfter = after.replace(/^\s+/, '');
     const parts = [trimmedBefore, block];
@@ -92,6 +97,14 @@ export function mergeLangFileContent(existing: string | undefined, innerContent:
 
   const trimmed = existing.replace(/\s+$/, '');
   return `${trimmed}${eol}${block}${eol}`;
+}
+
+/**
+ * 将内置包 lang 内容写入目标 lang 文件的标记块中。
+ * 若已有标记则替换中间内容；否则追加到文件末尾。
+ */
+export function mergeLangFileContent(existing: string | undefined, innerContent: string): string {
+  return mergeTaggedBlock(existing, innerContent, LANG_BLOCK_START, LANG_BLOCK_END);
 }
 
 /**
