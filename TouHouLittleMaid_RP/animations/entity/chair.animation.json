@@ -1,0 +1,16 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.touhou_little_maid.chair.yaw": {
+			"loop": true,
+			"bones": {
+				"Root": {
+					"rotation": [0, "q.property('thlm:yaw')", 0]
+				},
+				"MRoot": {
+					"rotation": [0, "q.property('thlm:yaw')", 0]
+				}
+			}
+		}
+	}
+}

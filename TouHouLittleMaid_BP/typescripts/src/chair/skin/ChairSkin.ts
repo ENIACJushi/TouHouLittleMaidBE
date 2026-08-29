@@ -15,6 +15,7 @@ export class ChairSkin {
   static readonly DEFAULT_PACKS: [number, number][] = [
     [1, 33], // 东方project
     [2, 1], // gecko lib
+    [3, 29],
   ];
   /* 通用参数 */
   static readonly PROPERTY_KEY = 'thlm_chair_packs'; // 附加坐垫包 JSON 动态属性

@@ -27,6 +27,7 @@ export const CHAIR_ENTITY_DEF_BASIC = {
 
       // 内置坐垫模型包的动画包转换使用，会附加上一些动画信息
       "scripts": {
+        "should_update_bones_and_effects_offscreen": true,
         // 完全保留
         "scale": "v.chair_scale",
         // 完全保留（每帧默认值，动画开关在此基础上赋值）
@@ -34,11 +35,16 @@ export const CHAIR_ENTITY_DEF_BASIC = {
           "v.chair_anim_0_0 = 0;",
           "v.chair_scale = 1;",
         ],
-        // 内置坐垫模型包的动画在其后添加
-        "animate": []
+        // 朝向动画始终播放；内置坐垫模型包的其它动画在其后添加
+        "animate": [
+          "yaw"
+        ]
       },
       // 内置坐垫模型包的动画包转换使用，会附加上一些动画信息
-      "animations": {},
+      "animations": {
+        // 末影水晶 runtime 无实体角度，用属性驱动 Root/MRoot 旋转
+        "yaw": "animation.touhou_little_maid.chair.yaw"
+      },
 
       // 内置坐垫模型包的实体定义使用，在此基础上增加额外的内置坐垫模型包渲染控制器
       "render_controllers": []

@@ -83,11 +83,12 @@ export class ChairManager {
       }
     }
     // 生成实体，模型编号以生成时事件设置
+    // 末影水晶 runtime 无实体角度，initialRotation 无效；朝向写入 thlm:yaw 由客户端动画旋转
     const chair = dimension.spawnEntity(CHAIR_IDENTIFIER, location, {
-      initialRotation: rotation,
       spawnEvent: `skin:${index}`
     });
     EntityChair.Skin.setPack(chair, pack);
+    EntityChair.Rotation.setYaw(chair, rotation);
   }
   /**
    * 潜行攻击收回坐垫

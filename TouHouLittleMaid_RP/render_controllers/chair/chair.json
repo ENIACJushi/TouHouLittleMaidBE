@@ -120,6 +120,90 @@
 			"textures": [
 				"Array.skins[q.property('thlm:chair_pack')==2?q.variant+1:0]"
 			]
+		},
+		"controller.render.touhou_little_maid.chair_pack_next_update_model": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.next_update_model_stage",
+						"Texture.next_update_model_japanese_lottery_machine",
+						"Texture.next_update_model_fishpond",
+						"Texture.next_update_model_mine",
+						"Texture.next_update_model_logging_hut",
+						"Texture.next_update_model_kitchen",
+						"Texture.next_update_model_dining_table_default",
+						"Texture.next_update_model_dining_table_spring",
+						"Texture.next_update_model_dining_table_summer",
+						"Texture.next_update_model_dining_table_autumn",
+						"Texture.next_update_model_dining_table_winter",
+						"Texture.next_update_model_cumin_lamb_chop",
+						"Texture.next_update_model_hot_spring",
+						"Texture.next_update_model_picnic_cloth",
+						"Texture.next_update_model_elite_slime",
+						"Texture.next_update_model_slime",
+						"Texture.next_update_model_flip_phone",
+						"Texture.next_update_model_fox_demon_statue",
+						"Texture.next_update_model_fox_demon_statue_1",
+						"Texture.next_update_model_bathroom",
+						"Texture.next_update_model_backpack",
+						"Texture.next_update_model_cabinet",
+						"Texture.next_update_model_single_bed",
+						"Texture.next_update_model_double_bed",
+						"Texture.next_update_model_shrine",
+						"Texture.next_update_model_3d_printer",
+						"Texture.next_update_model_doorbell_ground",
+						"Texture.next_update_model_doorbell_wall",
+						"Texture.next_update_model_exchange_machine"
+					]
+				},
+				"geometries": {
+					"Array.geos": [
+						"Geometry.void",
+						"Geometry.next_update_model_stage",
+						"Geometry.next_update_model_japanese_lottery_machine",
+						"Geometry.next_update_model_fishpond",
+						"Geometry.next_update_model_mine",
+						"Geometry.next_update_model_logging_hut",
+						"Geometry.next_update_model_kitchen",
+						"Geometry.next_update_model_dining_table_default",
+						"Geometry.next_update_model_dining_table_spring",
+						"Geometry.next_update_model_dining_table_summer",
+						"Geometry.next_update_model_dining_table_autumn",
+						"Geometry.next_update_model_dining_table_winter",
+						"Geometry.next_update_model_cumin_lamb_chop",
+						"Geometry.next_update_model_hot_spring",
+						"Geometry.next_update_model_picnic_cloth",
+						"Geometry.next_update_model_elite_slime",
+						"Geometry.next_update_model_slime",
+						"Geometry.next_update_model_flip_phone",
+						"Geometry.next_update_model_fox_demon_statue",
+						"Geometry.next_update_model_fox_demon_statue_1",
+						"Geometry.next_update_model_bathroom",
+						"Geometry.next_update_model_backpack",
+						"Geometry.next_update_model_cabinet",
+						"Geometry.next_update_model_single_bed",
+						"Geometry.next_update_model_double_bed",
+						"Geometry.next_update_model_shrine",
+						"Geometry.next_update_model_3d_printer",
+						"Geometry.next_update_model_doorbell_ground",
+						"Geometry.next_update_model_doorbell_wall",
+						"Geometry.next_update_model_exchange_machine"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:chair_pack')==3?q.variant+1:0]",
+			"materials": [
+				{
+					"_*": "Material.emissive"
+				},
+				{
+					"*": "Material.default"
+				}
+			],
+			"textures": [
+				"Array.skins[q.property('thlm:chair_pack')==3?q.variant+1:0]"
+			]
 		}
 	}
 }

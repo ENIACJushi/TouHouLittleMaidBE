@@ -7,7 +7,8 @@
       "is_summonable": true,
       "runtime_identifier": "minecraft:ender_crystal",
       "properties": {
-        "thlm:chair_pack": { "type": "int", "default": 0, "range": [0, 99999], "client_sync": true }
+        "thlm:chair_pack": { "type": "int", "default": 0, "range": [0, 99999], "client_sync": true },
+        "thlm:yaw": { "type": "float", "default": 0.01, "range": [-360.1, 360.1], "client_sync": true }
       }
     },
     "component_groups": {

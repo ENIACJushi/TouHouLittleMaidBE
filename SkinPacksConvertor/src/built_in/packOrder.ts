@@ -16,6 +16,7 @@ export const BUILTIN_PACK_DOMAIN_ORDER: string[] = [
   'geckolib', // GeckoLib 模型
   'authors_and_credits', // 作者|贡献者
   'minecraft_15th', // Minecraft 模型包
+  'next_update_model', // 下次更新模型
 ];
 
 /**
