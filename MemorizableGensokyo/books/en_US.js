@@ -203,7 +203,9 @@ export const book3 = [
 Memorizable Gensokyo..1
 Gohei............................................2
 Lighting......................................3
-Gold Microwave Oven.....4`
+Gold Microwave Oven.....4
+Custom Cushion......................8
+Chair Hitbox Displayer......10`
 },
 { type: "craft", recipe: "memorizable_gensokyo.json", content:
 `§lMemorizable Gensokyo§r
@@ -250,6 +252,24 @@ $recipe$`
 { type: "craft", recipe: "dragon_skull.json", content:
 `§lDragon skull§r
    Lapis lazis, lightning rod, amethyst, dragon skull, chorus flower.
+
+$recipe$`
+},
+{ type: "craft", recipe: "chair.json", content:
+`§lCustom Cushion§r
+  A decorative seat. Right-click a block to place it. Crouch left-click to pick it up. Right-click to sit, crouch right-click to open the model switch GUI.
+
+$recipe$`
+},
+{ type: "text", content:
+`
+  The cushion model can be fully customized, and you can also add custom models quickly through resource packs.
+`
+},
+{ type: "craft", recipe: "chair_show.json", content:
+`§lChair Hitbox Displayer§r
+  Crouch while holding this item to show nearby chairs' collision boxes.
+
 
 $recipe$`
 }

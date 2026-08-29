@@ -72,7 +72,14 @@ const itemFont = {
     // 雕刻刀
     "minecraft:yellow_dye": 0x3E,
     "minecraft:red_dye": 0x3F,
-    "touhou_little_maid:chisel": 0x40
+    "touhou_little_maid:chisel": 0x40,
+
+    // 坐垫 / 坐垫显示器
+    "minecraft:wool": 0x19, // 复用粉色羊毛图标
+    "minecraft:planks": 0x41,
+    "touhou_little_maid:chair": 0x42,
+    "tlmsi:chair_show": 0x43,
+    "touhou_little_maid:chair_show": 0x43
 };
 
 /**

@@ -28,7 +28,7 @@ const key = ["book1", "book2", "book3"];
 const TEXT_PATH = "../TouHouLittleMaid_RP/texts/";
 const TEXT_STARTER = "### MG_AUTO_GENERATE_START ###";
 const TEXT_ENDER = "### MG_AUTO_GENERATE_END ###";
-const SCRIPT_PATH = "../TouHouLittleMaid_BP/scripts/src/book/MemorizableGensokyoUI.js"
+const SCRIPT_PATH = "../TouHouLittleMaid_BP/typescripts/src/book/MemorizableGensokyoUI.js"
 const SCRIPT_STARTER = "// MG_AUTO_GENERATE_START";
 const SCRIPT_ENDER = "// MG_AUTO_GENERATE_END";
 
@@ -65,17 +65,22 @@ function writeLang(name, str){
  */
 function writeScript(pages){
     let res = fs.readFileSync(SCRIPT_PATH, "utf-8");
-    let str = `const BOOK = [${pages.toString()}];\n`
-
-    let starter = res.indexOf(SCRIPT_STARTER);
-    let ender = res.indexOf(SCRIPT_ENDER);
-    if(starter >= 0 && ender >= 0){
-        res = res.substring(0, starter) + SCRIPT_STARTER + '\n' + str + res.substring(ender);
+    // 仅更新 BOOK 数组，保留同区域内的其它常量（如 BOOK_OP）
+    if(/const BOOK = \[[^\]]*\]/.test(res)){
+        res = res.replace(/const BOOK = \[[^\]]*\]/, `const BOOK = [${pages.toString()}]`);
     }
     else{
-        res += SCRIPT_STARTER + "\n";
-        res += str + "\n";
-        res += SCRIPT_ENDER + "\n";
+        let str = `const BOOK = [${pages.toString()}];\n`
+        let starter = res.indexOf(SCRIPT_STARTER);
+        let ender = res.indexOf(SCRIPT_ENDER);
+        if(starter >= 0 && ender >= 0){
+            res = res.substring(0, starter) + SCRIPT_STARTER + '\n' + str + res.substring(ender);
+        }
+        else{
+            res += SCRIPT_STARTER + "\n";
+            res += str + "\n";
+            res += SCRIPT_ENDER + "\n";
+        }
     }
     
     fs.writeFile(SCRIPT_PATH, res, 'utf8', (err) => {

@@ -817,7 +817,7 @@ tlm.1.14=%1%1     %1  %1          %1%1            §c
 tlm.1.15=§lPrincess Hug§r%1   Hold the saddle, interact with the maid, you can pick her up, interact again, you can put her down.%1%1%1%1       
 
 tlm.2.0=%1           §lOthers§r%1            §7(3/3)§r%1  Introduce some miscellaneous content.
-tlm.2.1=%1        §lCatalogue§r%1%1Memorizable Gensokyo..1%1Gohei............................................2%1Lighting......................................3%1Gold Microwave Oven.....4
+tlm.2.1=%1        §lCatalogue§r%1%1Memorizable Gensokyo..1%1Gohei............................................2%1Lighting......................................3%1Gold Microwave Oven.....4%1Custom Cushion......................8%1Chair Hitbox Displayer......10
 tlm.2.2=§lMemorizable Gensokyo§r%1   Book, cake.%1%1%1%1     %1             %1       %1%1     
 tlm.2.3=§lGohei (Crafting)§r%1   Gohei can be made at the altar at a much lower cost.%1%1%1   %1     %1  %1          r%1%1            §cP:0.15§r
 tlm.2.4=§lGohei (repairing)§r%1   Gohei cannot be repaired by mending, but here's a better way without repair punishment.%1%1%1     %1  %1          %1%1            §cP:0.10§r
@@ -825,7 +825,9 @@ tlm.2.5=§lSakura gohei§r%1   Gohei, sakura saplings, buckets, dirt.%1%1%1%1%1 
 tlm.2.6=§lLighting§r%1    Summon a lightning bolt.%1%1%1%1     %1  %1          %1%1            §cP:0.20§r
 tlm.2.7=§lGold microwave oven§r%1   Bell, blaze powder, yellow glass, gold ingot, Ender crystal.%1%1%1%1     %1             %1       %1%1     
 tlm.2.8=§lDragon skull§r%1   Lapis lazis, lightning rod, amethyst, dragon skull, chorus flower.%1%1%1     %1             %1       %1%1     
-tlm.2.9= 
+tlm.2.9=§lCustom Cushion§r%1  A decorative seat. Right-click a block to place it. Crouch left-click to pick it up. Right-click to sit, crouch right-click to open the model switch GUI.%1%1%1     %1             %1       %1%1     
+tlm.2.10=%1  The cushion model can be fully customized, and you can also add custom models quickly through resource packs.
+tlm.2.11=§lChair Hitbox Displayer§r%1  Crouch while holding this item to show nearby chairs' collision boxes.%1%1%1%1     %1             %1       %1%1     
 
 ### MG_AUTO_GENERATE_END ###
 

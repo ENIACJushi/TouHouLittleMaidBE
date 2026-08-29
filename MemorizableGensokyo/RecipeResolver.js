@@ -20,10 +20,13 @@ export function resolveRecipe(recipe){
     // 有序合成
     if(recipe["minecraft:recipe_shaped"] !== undefined){
         let info = recipe["minecraft:recipe_shaped"];
-        // 解析九宫格
-        let res = Array.from(info["pattern"][0]);
-        res = res.concat(Array.from(info["pattern"][1]));
-        res = res.concat(Array.from(info["pattern"][2]));
+        // 解析九宫格（不足 3 行时在下方补空行，行宽不足 3 时右侧补空格）
+        let res = [];
+        for(let row = 0; row < 3; row++){
+            let line = info["pattern"][row] ?? "   ";
+            while(line.length < 3) line += " ";
+            res = res.concat(Array.from(line.substring(0, 3)));
+        }
 
         // 解析物品，得到标识符
         let names = {};
