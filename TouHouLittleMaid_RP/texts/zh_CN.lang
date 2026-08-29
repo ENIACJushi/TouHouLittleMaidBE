@@ -102,7 +102,7 @@ item.touhou_little_maid:warden_skull=循声守卫头颅
 item.touhou_little_maid:fairy_headwear=妖精女仆头套
 
 ##### 实体 #####
-entity.touhou_little_maid:chair.name=椅子
+entity.touhou_little_maid:chair.name=坐垫
 entity.touhou_little_maid:maid.name=小女仆
 entity.thlmm:maid.name=小女仆
 entity.touhou_little_maid:maid_backpack.name=背包
@@ -474,7 +474,7 @@ model.0.117.desc=§7最凶最恶的双子之姐
 model.0.117.name=依神紫苑
 model.0.23.desc=§7境界的妖怪
 model.0.23.name=八云紫
-pack.touhou_little_maid.chair.name=默认椅子模型
+pack.touhou_little_maid.chair.name=默认坐垫模型
 maid_pack.touhou_little_maid.maid.desc=默认模型
 model.0.1.desc=§7乐园的巫女
 model.0.1.name=博丽灵梦 (蓝)
@@ -492,7 +492,7 @@ action.interact.maid_backpack_carry=背包
 item_group.touhou_little_maid:main.name=车万女仆丨主体
 item_group.touhou_little_maid:chair.name=车万女仆丨坐垫
 item_group.touhou_little_maid:garage_kit.name=车万女仆丨手办
-item.touhou_little_maid:chair=椅子
+item.touhou_little_maid:chair=坐垫
 item.touhou_little_maid:extinguisher=灭火器
 item.touhou_little_maid:ultramarine_orb_elixir=§6绀珠之药
 item.touhou_little_maid:explosion_protect_bauble=§6爆炸保护饰品
@@ -813,7 +813,7 @@ tlm.2.9=
 me.chapter1.page1.title= 这本书已经过时了，请用蛋糕和书合成新的指南书。
 me.c2.p1.title= 这本书已经过时了，请用蛋糕和书合成新的指南书。
 ##### BUILT_IN_SKINS_START #####
-chair_pack.1.name=默认椅子模型
+chair_pack.1.name=默认坐垫模型
 tlm.chair.model.1.0.name=坐垫
 tlm.chair.model.1.1.name=课桌
 tlm.chair.model.1.2.name=课椅
