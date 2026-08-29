@@ -12,13 +12,13 @@
     ],
     "key": {
       "W": {
-        "item": "minecraft:white_wool"
+        "tag": "minecraft:wool"
       },
       "I": {
         "item": "minecraft:iron_ingot"
       },
       "P": {
-        "item": "minecraft:oak_planks"
+        "tag": "minecraft:planks"
       },
       "R": {
         "item": "minecraft:redstone"
