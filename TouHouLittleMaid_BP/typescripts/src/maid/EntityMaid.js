@@ -840,7 +840,11 @@ export class EntityMaid{
          * @returns {boolean}
          */
         static quitCheckMode(maid){
-            maid.nameTag = maid.getDynamicProperty("name");
+            // 未进入查包模式时 name 可能为 undefined，原生 nameTag 不允许赋 null/undefined
+            let name = maid.getDynamicProperty("name");
+            if (typeof name === "string") {
+                maid.nameTag = name;
+            }
 
             maid.setDynamicProperty("name");
             maid.setDynamicProperty("inv_check", false);
