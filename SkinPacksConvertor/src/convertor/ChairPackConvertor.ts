@@ -36,9 +36,7 @@ export class ChairPackConvertor {
   langJava = new LangFile();
   /** 输出信息 */
   res: PackFile;
-  /** 此坐垫模型包的模型文件夹 */
-  pack_models: JSZip;
-  /** 此坐垫模型包的输出文件夹（坐垫几何体） */
+  /** 此坐垫模型包的输出文件夹（坐垫几何体：models/entity/chair/<packName>/） */
   chair_models: JSZip;
   /** 此坐垫模型包的渲染控制器 */
   pack_controller: TemplatesBE.ChairRenderControllerPack;
@@ -51,8 +49,8 @@ export class ChairPackConvertor {
     this.chairAnimationManager = params.chairAnimationManager;
     this.res = params.res;
 
-    // 坐垫几何体与女仆几何体分目录存放，避免与女仆模型覆盖冲突
-    this.chair_models = this.res.resultFile.folder("models").folder("entity").folder(this.packName);
+    // 坐垫几何体落到 models/entity/chair/<packName>/，与女仆 models/entity/<packName>/ 分离
+    this.chair_models = this.res.chair_models.folder(this.packName);
     this.pack_controller = JSON.parse(JSON.stringify(TemplatesBE.CHAIR_RENDER_CONTROLLER_PACK));
   }
 

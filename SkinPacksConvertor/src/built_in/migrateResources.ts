@@ -140,12 +140,12 @@ export async function migrateBuiltInResources(innerPackDir: string, rpDir: strin
     console.log(`已迁移动画: ${destAnimations}`);
   }
 
-  // models/entity 下的文件夹 → models/entity/built_in_skins
+  // models/entity 下的文件夹 → models/entity/built_in_skins（跳过坐垫专用子目录 chair）
   const srcModels = path.join(innerPackDir, 'models', 'entity');
   const destModels = path.join(rpDir, 'models', 'entity', 'built_in_skins');
   await resetDir(destModels);
   for (const entry of await listEntries(srcModels)) {
-    if (!entry.isDirectory()) {
+    if (!entry.isDirectory() || entry.name === 'chair') {
       continue;
     }
     await fs.cp(path.join(srcModels, entry.name), path.join(destModels, entry.name), {
@@ -229,7 +229,7 @@ export async function migrateBuiltInResources(innerPackDir: string, rpDir: strin
 /**
  * 将中间产物中的坐垫资源迁移到 TouHouLittleMaid_RP
  * 坐垫模型/贴图沿用与女仆一致的迁移策略：
- *  - 坐垫几何体目录 → models/entity/built_in_chairs（清空重建）
+ *  - 坐垫几何体 models/entity/chair/<pack>/ → models/entity/built_in_chairs/<pack>/（清空重建）
  *  - 坐垫 render_controllers/chair.json → render_controllers/chair/chair.json
  *  - 坐垫 entity/chair.entity.json → 见【坐垫生物渲染定义合并】，由 convert.ts 的 mergeChairEntity 处理
  *  - 坐垫 textures/<packName> → textures/<packName>（合并）
@@ -246,8 +246,8 @@ export async function migrateBuiltInChairResources(innerPackDir: string, rpDir: 
     console.log(`已迁移动画: ${destChairAnims}`);
   }
 
-  // 坐垫几何体 → models/entity/built_in_chairs
-  const srcChairModels = path.join(innerPackDir, 'models', 'entity');
+  // 坐垫几何体 models/entity/chair/<pack>/ → models/entity/built_in_chairs/<pack>/
+  const srcChairModels = path.join(innerPackDir, 'models', 'entity', 'chair');
   const destChairModels = path.join(rpDir, 'models', 'entity', 'built_in_chairs');
   const srcSubPacks = await listEntries(srcChairModels);
   if (srcSubPacks.length > 0) {

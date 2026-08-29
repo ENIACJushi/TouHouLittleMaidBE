@@ -69,6 +69,11 @@ export class PackFile {
    */
   models = this.resultFile.folder("models").folder("entity");
   /**
+   * 坐垫模型文件夹 models/entity/chair/xxx/
+   * 与女仆模型分目录，避免迁移时坐垫几何体被拷进 built_in_skins（反之亦然）
+   */
+  chair_models = this.models.folder("chair");
+  /**
    * 贴图文件夹
    */
   textures = this.resultFile.folder("textures");
