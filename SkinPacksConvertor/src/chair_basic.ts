@@ -18,11 +18,13 @@ export const CHAIR_ENTITY_DEF_BASIC = {
       "textures": {
         "default": "textures/entity/void",
         "void": "textures/entity/void",
+        "hitbox": "textures/entity/chair_hitbox",
       },
       // 和需要转换的内置坐垫模型包合并后写入模组资源包 TouHouLittleMaid_RP
       "geometry": {
         "default": "geometry.touhou_little_maid.void",
         "void": "geometry.touhou_little_maid.void",
+        "hitbox": "geometry.touhou_little_maid.chair_hitbox",
       },
 
       // 内置坐垫模型包的动画包转换使用，会附加上一些动画信息

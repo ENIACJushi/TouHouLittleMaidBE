@@ -6,7 +6,8 @@
       "is_spawnable": false,
       "is_summonable": true,
       "properties": {
-        "thlm:chair_pack": { "type": "int", "default": 0, "range": [0, 99999], "client_sync": true }
+        "thlm:chair_pack": { "type": "int", "default": 0, "range": [0, 99999], "client_sync": true },
+        "thlm:show_hitbox": { "type": "bool", "default": false, "client_sync": true }
       }
     },
     "component_groups": {
