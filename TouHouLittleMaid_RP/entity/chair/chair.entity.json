@@ -84,6 +84,7 @@
 				"geckolib_qingluka": "geometry.geckolib.qingluka"
 			},
 			"scripts": {
+				"should_update_bones_and_effects_offscreen": true,
 				"scale": "v.chair_scale",
 				"pre_animation": [
 					"v.chair_anim_0_0 = 0;",
