@@ -140,6 +140,7 @@ action.interact.thlm.npc=变为 NPC
 action.interact.thlm.npc_remove=清除 NPC
 action.interact.tlm.hug=抱起
 action.interact.tlm.hug_stop=放下
+action.hint.exit.touhou_little_maid:chair=点击“跳跃”离开坐垫
 
 ## 管理命令
 message.tlm.command.must_player=这个指令必须由玩家执行

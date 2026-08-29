@@ -22,6 +22,7 @@
       "minecraft:water_movement": { "drag_factor": 0 },
       "minecraft:input_ground_controlled": { },
       "minecraft:rideable": {
+        "interact_text": "action.interact.ride.boat",
         "controlling_seat": 0,
         "crouching_skip_interact": true,
         "family_types": [ "player" ],
