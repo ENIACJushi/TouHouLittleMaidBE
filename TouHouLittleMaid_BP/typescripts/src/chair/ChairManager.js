@@ -2,6 +2,7 @@ import {Direction, system} from "@minecraft/server";
 import {CHAIR_IDENTIFIER, EntityChair} from "./EntityChair";
 import * as Tool from "../libs/ScarletToolKit";
 import {ChairSkin} from "./skin/ChairSkin";
+import {VO} from "../libs/VectorMC";
 
 /**
  * 坐垫放置与交互管理
@@ -31,13 +32,12 @@ export class ChairManager {
       const player = event.player;
       const dimension = player.dimension;
       const handItem = Tool.ItemTool.getPlayerMainHand(player);
-      // 非潜行：精准生成在玩家点击的位置，并面向玩家
-      if (!player.isSneaking) {
-        const faceLocation = event.faceLocation;
-        if (faceLocation === undefined) {
-          Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
-          return;
-        }
+      const faceLocation = event.faceLocation;
+      if (faceLocation === undefined) {
+        return;
+      }
+      // 精准放置：精准生成在玩家点击的位置，并面向玩家
+      if (player.isSneaking) {
         const location = ChairManager.faceLocationToWorld(
           event.block.location,
           event.blockFace,
@@ -50,16 +50,24 @@ export class ChairManager {
         return;
       }
 
-      // 潜行：按点击面计算放置位置
-      let location = this.getPlaceLocation(event.block.location, event.blockFace);
-      if (location === undefined) {
-        Tool.title_player_actionbar_translate(player.name, "message.touhou_little_maid:photo.not_suitable_for_place_maid.name");
+      // 取整放置：按点击面计算放置位置
+      let placeLocation = this.getPlaceLocation(event.block.location, event.blockFace);
+      if (placeLocation === undefined) {
         return;
+      }
+      // 点击上/下表面时，取点击位置高度
+      if (event.blockFace === Direction.Up || event.blockFace === Direction.Down) {
+        const interactLocation = ChairManager.faceLocationToWorld(
+          event.block.location,
+          event.blockFace,
+          faceLocation
+        );
+        placeLocation.y = interactLocation.y;
       }
 
       // 八方向朝向（根据玩家朝向 yaw）
       const rot = ChairManager.get8DirectionYaw(player.getRotation().y);
-      ChairManager.spawnChairByItem(dimension, location, rot + 180, handItem);
+      ChairManager.spawnChairByItem(dimension, placeLocation, rot + 180, handItem);
       ChairManager.consumeMainHandItem(player);
     });
   }
@@ -167,7 +175,7 @@ export class ChairManager {
   }
 
   /**
-   * 获取非潜行放置的坐垫位置（坐垫只需一格空间）
+   * 获取精准放置的坐垫位置（坐垫只需一格空间）
    * @param {import("@minecraft/server").Vector3} blockLocation 被点击方块位置
    * @param {import("@minecraft/server").Direction} blockFace 点击面
    * @returns {import("@minecraft/server").Vector3 | undefined}
