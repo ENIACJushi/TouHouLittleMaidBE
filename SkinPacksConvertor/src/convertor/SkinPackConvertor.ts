@@ -3,6 +3,7 @@ import {PackFile} from './model/PackFile';
 import {TemplatesBE} from "./model/Templates";
 import {MaidModelJava, TLMMaidModelInfo} from "./model/MaidModelJava";
 import {LangFile, LangFileType, LangType} from "./model/LangFile";
+import {normalizeTextureSize} from "./model/ModelNormalize";
 import {ResourceManager} from "./resource_manager/ResourceManager";
 import {AnimationManager} from "./resource_manager/AnimationManager";
 import {PROFILE} from "./config";
@@ -183,6 +184,9 @@ export class SkinPackConvertor {
         this.processBones(geo["bones"]);
       }
     }
+
+    // texturewidth/textureheight 若为字符串则转为数字
+    normalizeTextureSize(beModel);
 
     // 创建文件（仅复制被使用到的模型）
     this.pack_models.file(`${outName}.json`, JSON.stringify(beModel));

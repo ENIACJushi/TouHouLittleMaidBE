@@ -2,6 +2,7 @@ import JSZip from 'jszip';
 import {PackFile} from '../model/PackFile';
 import {TemplatesBE} from '../model/Templates';
 import {LangFile, LangFileType, LangType} from '../model/LangFile';
+import {normalizeTextureSize} from '../model/ModelNormalize';
 import {YsmJson, YsmTextureEntry} from './YsmJson';
 import {ResourceManager} from '../resource_manager/ResourceManager';
 import {AnimationManager} from '../resource_manager/AnimationManager';
@@ -265,6 +266,9 @@ export class YsmPackConvertor {
     if (hidden > 0) {
       console.log(TAG, `已在几何体隐藏 ${hidden} 个配饰骨骼`);
     }
+
+    // texturewidth/textureheight 若为字符串则转为数字
+    normalizeTextureSize(beModel);
 
     // 输出路径统一落到 models/entity/<pack>/main.json 等形式
     const outName = `${modelName}.json`;
