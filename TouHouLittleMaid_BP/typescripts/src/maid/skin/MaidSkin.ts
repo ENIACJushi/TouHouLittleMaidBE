@@ -2,14 +2,32 @@ import { world } from "@minecraft/server";
 import { getRandomInteger } from "../../libs/ScarletToolKit";
 import { SkinPackConfig, SkinPackDisplayInfo } from './MaidSkinTypes';
 
+/**
+ * 手动转换的内置女仆包（东方 Project，来自 maid_basic），不由 `npm run convert:built-in` 覆写。
+ */
+const MANUAL_BUILT_IN_MAID_DEFAULT_PACKS: [number, number][] = [
+  [0, 120], // 东方
+];
+// ##### BUILT_IN_MAID_PACKS_START #####
+const BUILT_IN_MAID_DEFAULT_PACKS: [number, number][] = [
+  [1, 41], // geckolib
+  [2, 11], // authors_and_credits
+  [3, 4], // minecraft_15th
+];
+// ##### BUILT_IN_MAID_PACKS_END #####
+/**
+ * 女仆皮肤包配置
+ *
+ * 内置自动转换包列表见 `BUILT_IN_MAID_DEFAULT_PACKS`（由 `npm run convert:built-in` 按标签块自动同步）；
+ * 手动东方包见 `MANUAL_BUILT_IN_MAID_DEFAULT_PACKS`；
+ * 附加包使用 `PLACEHOLDER + 1 + i`（与转换器 BASE_PACK_INDEX 保持一致，即附加包序号 >= 1000）。
+ */
 export class MaidSkin {
   /* 预置模型包参数 */
   static readonly PLACEHOLDER: number = 1000; // 最大预置模型包预留序号（不可更改此常量，否则皮肤包会出问题）
   static readonly DEFAULT_PACKS: [number, number][] = [
-    [0, 120], // 东方
-    [1, 10], // 作者、贡献者
-    [2, 27], // 酒狐
-    [3, 4], // Minecraft
+    ...MANUAL_BUILT_IN_MAID_DEFAULT_PACKS,
+    ...BUILT_IN_MAID_DEFAULT_PACKS,
   ];
   /* 通用参数 */
   static readonly PROPERTY_KEY = 'thlm_skin_packs'; // 附加皮肤包 JSON 动态属性

@@ -240,6 +240,7 @@ export class SkinPackConvertor {
     // 解析模型列表 model_list（先 decorate 并展开 extra_textures，对齐 Java CustomModelPack）
     const modelList = expandMaidModelList(inputJson.model_list);
     this.res.modelAmount[this.packId - 1] = modelList.length; // 确定模型数量（含多贴图派生）
+    this.res.maidPackDomains[this.packId - 1] = this.packName; // 记录 domain，供内置构建同步 BP
     for (let i = 0; i < modelList.length; i++) {
       await this.parseMMModelInfo(modelList[i], i);
     }

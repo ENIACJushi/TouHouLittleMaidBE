@@ -65,7 +65,7 @@ function normalizeToEol(text: string, eol: string): string {
 
 /**
  * 将内容写入起止标签之间：已有标记则替换中间；否则追加到末尾。
- * （lang / ChairSkin DEFAULT_PACKS 等共用）
+ * （lang / MaidSkin / ChairSkin DEFAULT_PACKS 等共用）
  */
 export function mergeTaggedBlock(
   existing: string | undefined,

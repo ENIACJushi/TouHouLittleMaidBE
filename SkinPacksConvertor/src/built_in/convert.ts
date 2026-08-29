@@ -17,6 +17,7 @@ import { mergeMaidEntity } from './mergeMaidEntity';
 import { mergeChairEntity } from './mergeChairEntity';
 import { migrateBuiltInResources, migrateBuiltInChairResources } from './migrateResources';
 import { syncChairDefaultPacks } from './syncChairDefaultPacks';
+import { syncMaidDefaultPacks } from './syncMaidDefaultPacks';
 
 const PACK_FOLDER_NAME = 'TLM_MaidSkinPack';
 const BUILTIN_UUID = 'afc1c4e6-3bf4-4344-8dea-77425d8d6435';
@@ -180,6 +181,27 @@ async function main() {
   await migrateBuiltInResources(packDir, rpDir);
   // 坐垫资源迁移
   await migrateBuiltInChairResources(packDir, rpDir);
+
+  // 同步 BP/typescript 内置女仆包常量（标签块替换，不编译 typescript；手动东方包不动）
+  const maidSkinTsPath = path.join(
+    repoRoot,
+    'TouHouLittleMaid_BP',
+    'typescripts',
+    'src',
+    'maid',
+    'skin',
+    'MaidSkin.ts',
+  );
+  if (await pathExists(maidSkinTsPath)) {
+    await syncMaidDefaultPacks(
+      maidSkinTsPath,
+      result.modelAmount,
+      result.maidPackDomains,
+      PROFILE.BASE_PACK_INDEX,
+    );
+  } else {
+    console.warn(`未找到 MaidSkin.ts，跳过内置女仆包同步: ${maidSkinTsPath}`);
+  }
 
   // 同步 BP/typescript 内置坐垫包常量（标签块替换，不编译 typescript）
   const chairSkinTsPath = path.join(

@@ -310,6 +310,7 @@ export class YsmPackConvertor {
     const packTextures = this.res.textures.folder(this.packNameSafe).folder('entity');
 
     this.res.modelAmount[this.packId - 1] = ordered.length;
+    this.res.maidPackDomains[this.packId - 1] = this.packNameSafe; // 记录 domain，供内置构建同步 BP
 
     const scale = clampScale(this.manifest.properties?.height_scale ?? 0.7);
     const mainModelName = getJsonBaseName(this.manifest.files.player.model.main) ?? 'main';

@@ -31,6 +31,10 @@ export class PackFile {
    * 各模型包定义的模型数量，用于生成配置 JSON
    */
   modelAmount: number[] = [];
+  /**
+   * 各女仆包 domain 名（与 modelAmount 下标对齐），供内置构建同步 BP 注释
+   */
+  maidPackDomains: string[] = [];
 
   ///// 坐垫输出 /////
   /**
