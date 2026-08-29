@@ -911,13 +911,9 @@
     let convertor = new SkinConvertor(fileList);
     let res = await convertor.startConvert(uuid);
     if (res) {
-      // 更新皮肤包 / 坐垫包配置 JSON（二者放在一起，供管理面板粘贴）
+      // 更新管理面板粘贴数据（与资源包内 command.txt 一致）
       const commandBlock = document.getElementById("command");
-      let skinPacks = [];
-      let chairPacks = [];
-      try { skinPacks = JSON.parse(res.packConfigStr || '[]'); } catch (_) {}
-      try { chairPacks = JSON.parse(res.chairPackConfigStr || '[]'); } catch (_) {}
-      commandBlock.textContent = JSON.stringify({ skin: skinPacks, chair: chairPacks });
+      commandBlock.textContent = res.commandConfigStr || '{"skin":[],"chair":[]}';
       commandBlock.dataset.generated = 'true';
       const copyBtn = document.getElementById('command_copy');
       if (copyBtn) {

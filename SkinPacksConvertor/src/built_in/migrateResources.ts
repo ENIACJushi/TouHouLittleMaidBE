@@ -234,7 +234,7 @@ export async function migrateBuiltInResources(innerPackDir: string, rpDir: strin
  *  - 坐垫 entity/chair.entity.json → 见【坐垫生物渲染定义合并】，由 convert.ts 的 mergeChairEntity 处理
  *  - 坐垫 textures/<packName> → textures/<packName>（合并）
  *  - 坐垫 animations/tlm_pack_chair.animation.json → animations/built_in_chairs/
- *  - chair_pack.json → 写入 RP 根目录，供游戏读取坐垫包配置
+ *  - command.txt → 写入 RP 根目录（与网站展示一致的管理面板数据）
  */
 export async function migrateBuiltInChairResources(innerPackDir: string, rpDir: string): Promise<void> {
   // 坐垫动画 → animations/built_in_chairs
@@ -288,11 +288,11 @@ export async function migrateBuiltInChairResources(innerPackDir: string, rpDir: 
     console.log(`已合并坐垫贴图: ${path.join(destTexturesRoot, entry.name)}`);
   }
 
-  // chair_pack.json → RP 根目录
-  const srcChairPack = path.join(innerPackDir, 'chair_pack.json');
-  if (await pathExists(srcChairPack)) {
-    const destChairPack = path.join(rpDir, 'chair_pack.json');
-    await fs.copyFile(srcChairPack, destChairPack);
-    console.log(`已写入坐垫包配置: ${destChairPack}`);
+  // command.txt → RP 根目录（皮肤包 + 坐垫包合并配置）
+  const srcCommand = path.join(innerPackDir, 'command.txt');
+  if (await pathExists(srcCommand)) {
+    const destCommand = path.join(rpDir, 'command.txt');
+    await fs.copyFile(srcCommand, destCommand);
+    console.log(`已写入管理面板数据: ${destCommand}`);
   }
 }

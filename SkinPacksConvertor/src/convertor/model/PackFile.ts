@@ -8,9 +8,13 @@ import {LangFile} from "./LangFile";
 export class PackFile {
   uuid: string = '';
   /**
-   * 模型包注册配置 JSON，粘贴到游戏设置面板
+   * 女仆皮肤包注册配置 JSON（数组），用于组装 command.txt
    */
   packConfigStr = '[]';
+  /**
+   * 与网站展示一致的管理面板粘贴数据：{"skin":[...],"chair":[...]}
+   */
+  commandConfigStr = '{"skin":[],"chair":[]}';
   /**
    * 模型信息 entity/maid.entity.json
    */
@@ -107,9 +111,6 @@ export class PackFile {
     // 写入渲染控制器
     this.resultFile.folder("render_controllers")
       .file("maid.json", JSON.stringify(this.render_controller, null, '\t'));
-    // 生成皮肤包配置 JSON
-    this.packConfigStr = TemplatesBE.buildSkinPackConfigStr(this.modelAmount);
-    this.resultFile.file("skin_pack.json", this.packConfigStr);
 
     // 若存在坐垫模型，则写入坐垫相关文件
     if (this.chairModelAmount.length > 0) {
@@ -119,10 +120,13 @@ export class PackFile {
       // 写入坐垫渲染控制器
       this.resultFile.folder("render_controllers")
         .file("chair.json", JSON.stringify(this.chair_controller, null, '\t'));
-      // 生成坐垫包配置 JSON
-      this.chairPackConfigStr = TemplatesBE.buildChairPackConfigStr(this.chairModelAmount);
-      this.resultFile.file("chair_pack.json", this.chairPackConfigStr);
     }
+
+    // 生成与网站展示一致的单个 command.txt（皮肤包 + 坐垫包）
+    this.packConfigStr = TemplatesBE.buildSkinPackConfigStr(this.modelAmount);
+    this.chairPackConfigStr = TemplatesBE.buildChairPackConfigStr(this.chairModelAmount);
+    this.commandConfigStr = TemplatesBE.buildCommandConfigStr(this.modelAmount, this.chairModelAmount);
+    this.resultFile.file("command.txt", this.commandConfigStr);
     return this;
   }
 

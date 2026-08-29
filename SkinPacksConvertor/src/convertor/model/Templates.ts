@@ -4,12 +4,23 @@ import { PROFILE } from "../config";
  * 基岩版数据模板
  */
 export namespace TemplatesBE {
-  // 模型包注册配置 JSON，写入游戏设置面板
+  // 女仆皮肤包注册配置 JSON（数组）
   export function buildSkinPackConfigStr(modelAmount: number[]): string {
     const packs = modelAmount
       .filter(count => typeof count === 'number')
       .map(count => ({ count }));
     return JSON.stringify(packs);
+  }
+
+  /**
+   * 管理面板粘贴数据 / command.txt 内容，与网站展示一致
+   * 格式：{"skin":[{"count":20}],"chair":[{"count":10}]}
+   */
+  export function buildCommandConfigStr(modelAmount: number[], chairModelAmount: number[]): string {
+    return JSON.stringify({
+      skin: JSON.parse(buildSkinPackConfigStr(modelAmount)),
+      chair: JSON.parse(buildChairPackConfigStr(chairModelAmount)),
+    });
   }
 
   // 资源包 manifest.json 模板

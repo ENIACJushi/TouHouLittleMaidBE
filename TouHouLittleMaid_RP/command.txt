@@ -1,0 +1,1 @@
+{"skin":[{"count":27},{"count":10},{"count":4}],"chair":[{"count":33},{"count":1},{"count":29}]}
