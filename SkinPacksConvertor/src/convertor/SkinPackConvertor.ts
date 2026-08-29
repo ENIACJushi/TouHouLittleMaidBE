@@ -287,7 +287,7 @@ export class SkinPackConvertor {
   }
   /** 解析模型 - 名称 name */
   private parseModelName(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
-    const nameKey = `model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.name`; // 基岩版文本键
+    const nameKey = `tlm.maid.model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.name`; // 基岩版文本键，对齐坐垫 tlm.chair.model
     const infoName = modelInfo.name;
     if (infoName === undefined) {
       // 缺省时，使用 `{model.<namespace>.<path>.name}`，其中 `<namespace>` 和 `<path>` 来自 `model_id`
@@ -299,7 +299,7 @@ export class SkinPackConvertor {
   }
   /** 解析模型 - 描述 description */
   private parseModelDesc(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
-    const descKey = `model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.desc`; // 基岩版文本键
+    const descKey = `tlm.maid.model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.desc`; // 基岩版文本键，对齐坐垫 tlm.chair.model
     if (modelInfo.description === undefined) {
       this.res.lang.setLang(descKey, this.langJava.getLang(`model.${idInfo.namespace}.${idInfo.path}.desc`));
     } else {

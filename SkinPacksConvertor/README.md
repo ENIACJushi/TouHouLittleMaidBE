@@ -103,7 +103,7 @@ npm run convert:built-in
 
 - [x] 网站的数据栏增加一个复制按钮，并调整UI，使其可以自动换行和滚动查看
 - [x] 支持解析单模型对应多贴图
-- [ ] 调整女仆模型包的 lang key 格式，需要同步修改手动修改的东方包
+- [x] 调整女仆模型包的 lang key 格式，并同步修改手动修改的东方包
 - [ ] 加载有点慢，看看是不是报错多了
 - [ ] 修复刷物品bug
 - [ ] 塞点私货（作者模型（？））
@@ -187,10 +187,17 @@ npm run convert:built-in
 
 - `maid_pack.<pack_id>.name=xxx`
 - `maid_pack.<pack_id>.desc=xxx`
-- `model.<name>.<model_id>.name=xxx`
+- `maid_pack.<pack_id>.authors=xxx`
+- `tlm.maid.model.<pack_id>.<model_seq>.name=xxx`
+- `tlm.maid.model.<pack_id>.<model_seq>.desc=xxx`
 
-> `<pack_id>` 是网页上显示的序号；
-> `<model_id>` 由 maid_model.json 中的先后顺序决定
+坐垫对齐格式：
+
+- `chair_pack.<pack_id>.*`
+- `tlm.chair.model.<pack_id>.<model_seq>.*`
+
+> `<pack_id>` 是网页上显示的序号（内置包从手动东方包 0 起）；
+> `<model_seq>` 由 maid_model.json 展开（含 extra_textures）后的先后顺序决定。
 
 
 #### 导入方法

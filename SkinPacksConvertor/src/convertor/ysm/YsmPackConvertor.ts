@@ -333,9 +333,9 @@ export class YsmPackConvertor {
       const displayName = this.manifest.metadata?.name
         ? (ordered.length > 1 ? `${this.manifest.metadata.name} (${texBase})` : this.manifest.metadata.name)
         : `${this.modelId}_${texBase}`;
-      this.res.lang.setLang(`model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.name`, displayName);
+      this.res.lang.setLang(`tlm.maid.model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.name`, displayName);
       this.res.lang.setLang(
-        `model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.desc`,
+        `tlm.maid.model.${this.packId + PROFILE.BASE_PACK_INDEX}.${seq}.desc`,
         this.manifest.metadata?.tips ?? '',
       );
 

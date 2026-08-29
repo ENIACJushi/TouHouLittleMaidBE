@@ -209,7 +209,7 @@ export class MaidSkin {
    * @param index 皮肤在皮肤包内的顺序
    */
   static getSkinDisplayName(id: number, index: number): { translate: string } {
-    return { translate: `model.${id}.${index}.name` };
+    return { translate: `tlm.maid.model.${id}.${index}.name` };
   }
 
   /**
