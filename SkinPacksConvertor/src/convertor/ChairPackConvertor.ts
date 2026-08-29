@@ -7,6 +7,7 @@ import {normalizeTextureSize} from "./model/ModelNormalize";
 import {ResourceManager} from "./resource_manager/ResourceManager";
 import {AnimationManager} from "./resource_manager/AnimationManager";
 import {PROFILE} from "./config";
+import {normalizeMountedHeightPixel} from "./model/ChairMountedHeight";
 
 const TAG = 'ChairPackConvertor';
 
@@ -101,6 +102,7 @@ export class ChairPackConvertor {
     // 解析模型列表 model_list
     this.res.chairModelAmount[this.packId - 1] = inputJson.model_list.length; // 确定坐垫模型数量
     this.res.chairPackDomains[this.packId - 1] = this.packName; // 记录 domain，供内置构建同步 BP
+    this.res.chairModelHeights[this.packId - 1] = []; // 骑乘高度像素列表
     for (let i = 0; i < inputJson.model_list.length; i++) {
       await this.parseChairModelInfo(inputJson.model_list[i], i);
     }
@@ -132,6 +134,8 @@ export class ChairPackConvertor {
     await this.parseModelModel(modelInfo, idInfo, seq);
     // 解析坐垫模型缩放 scale
     this.parseModelScale(modelInfo, seq);
+    // 解析坐垫骑乘高度 mounted_height
+    this.parseModelMountedHeight(modelInfo, seq);
     // 处理动画 animation（走坐垫独立的动画管理器）
     await this.parseModelAnimation(modelInfo, idInfo, seq);
 
@@ -318,6 +322,20 @@ export class ChairPackConvertor {
     const scale = Math.max(0.2, Math.min(2, rawScale));
     this.chairAnimationManager.bindModelScale(this.packId, seq, scale);
     this.chairAnimationManager.bindModelIsGecko(this.packId, seq, !!modelInfo.is_gecko);
+  }
+
+  /**
+   * 解析坐垫模型 - 骑乘高度 mounted_height（像素）
+   * 写入 pack 配置，供 BP 切换 rideable 座位 Y
+   */
+  private parseModelMountedHeight(modelInfo: TLMChairModelInfo, seq: number) {
+    const pixel = normalizeMountedHeightPixel(modelInfo.mounted_height);
+    const packHeights = this.res.chairModelHeights[this.packId - 1];
+    if (!packHeights) {
+      this.res.chairModelHeights[this.packId - 1] = [pixel];
+      return;
+    }
+    packHeights[seq] = pixel;
   }
 
   /** 解析坐垫模型 - 动画 animation */

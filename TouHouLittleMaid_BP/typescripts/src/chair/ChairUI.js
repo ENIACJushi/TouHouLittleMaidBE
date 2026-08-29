@@ -68,6 +68,7 @@ class ChairMenu {
       if (response.selection !== undefined) {
         EntityChair.Skin.setPack(this.chair, packId);
         EntityChair.Skin.setIndex(this.chair, response.selection);
+        // setIndex 内会按 pack+index 应用 mounted_height
       }
     });
   }

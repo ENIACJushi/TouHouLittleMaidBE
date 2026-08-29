@@ -96,8 +96,8 @@ npm run convert:built-in
   - [x] 更换坐垫贴图
   - [x] 添加坐垫合成表
   - [x] 不要分两个文件导出皮肤包和坐垫的数据，导出单个command.txt就行，和网站展示的一致
+  - [x] 添加坐垫高度解析 mounted_height
   - [ ] 添加坐垫无重力解析 no_gravity
-  - [ ] 添加坐垫高度解析 mounted_height
   - [ ] 记忆中的幻想乡补充坐垫相关信息
 
 - [x] 网站的数据栏增加一个复制按钮，并调整UI，使其可以自动换行和滚动查看

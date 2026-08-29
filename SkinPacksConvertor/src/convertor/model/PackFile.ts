@@ -54,6 +54,10 @@ export class PackFile {
    */
   chairPackDomains: string[] = [];
   /**
+   * 各坐垫包内模型的 mounted_height 像素值（与 chairModelAmount 下标对齐）
+   */
+  chairModelHeights: number[][] = [];
+  /**
    * 坐垫包注册配置 JSON
    */
   chairPackConfigStr = '[]';
@@ -124,8 +128,12 @@ export class PackFile {
 
     // 生成与网站展示一致的单个 command.txt（皮肤包 + 坐垫包）
     this.packConfigStr = TemplatesBE.buildSkinPackConfigStr(this.modelAmount);
-    this.chairPackConfigStr = TemplatesBE.buildChairPackConfigStr(this.chairModelAmount);
-    this.commandConfigStr = TemplatesBE.buildCommandConfigStr(this.modelAmount, this.chairModelAmount);
+    this.chairPackConfigStr = TemplatesBE.buildChairPackConfigStr(this.chairModelAmount, this.chairModelHeights);
+    this.commandConfigStr = TemplatesBE.buildCommandConfigStr(
+      this.modelAmount,
+      this.chairModelAmount,
+      this.chairModelHeights,
+    );
     this.resultFile.file("command.txt", this.commandConfigStr);
     return this;
   }

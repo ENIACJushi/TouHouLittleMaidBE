@@ -14,12 +14,16 @@ export namespace TemplatesBE {
 
   /**
    * 管理面板粘贴数据 / command.txt 内容，与网站展示一致
-   * 格式：{"skin":[{"count":20}],"chair":[{"count":10}]}
+   * 格式：{"skin":[{"count":20}],"chair":[{"count":10,"heights":[3,15]}]}
    */
-  export function buildCommandConfigStr(modelAmount: number[], chairModelAmount: number[]): string {
+  export function buildCommandConfigStr(
+    modelAmount: number[],
+    chairModelAmount: number[],
+    chairModelHeights: number[][] = [],
+  ): string {
     return JSON.stringify({
       skin: JSON.parse(buildSkinPackConfigStr(modelAmount)),
-      chair: JSON.parse(buildChairPackConfigStr(chairModelAmount)),
+      chair: JSON.parse(buildChairPackConfigStr(chairModelAmount, chairModelHeights)),
     });
   }
 
@@ -186,15 +190,30 @@ export namespace TemplatesBE {
 
   /**
    * 坐垫包注册配置 JSON，写入游戏设置面板（独立于女仆皮肤包）
-   * 格式示例：[{"count":20},{"count":10}]
+   * 格式示例：[{"count":20,"heights":[3,15,...]},{"count":10,"heights":[0,...]}]
+   * `heights` 为各模型 mounted_height 像素值（与 Java 字段一致，缺省按 0 填充）
    */
-  export function buildChairPackConfigStr(chairModelAmount: number[]): string {
-    const packs = chairModelAmount
-      .filter(count => typeof count === 'number')
-      .map(count => ({ count }));
+  export function buildChairPackConfigStr(
+    chairModelAmount: number[],
+    chairModelHeights: number[][] = [],
+  ): string {
+    const packs: ChairPackConfig = [];
+    for (let i = 0; i < chairModelAmount.length; i++) {
+      const count = chairModelAmount[i];
+      if (typeof count !== 'number') {
+        continue;
+      }
+      const rawHeights = chairModelHeights[i];
+      const heights: number[] = [];
+      for (let j = 0; j < count; j++) {
+        const h = rawHeights?.[j];
+        heights.push(typeof h === 'number' && Number.isFinite(h) ? h : 0);
+      }
+      packs.push({ count, heights });
+    }
     return JSON.stringify(packs);
   }
-  export type ChairPackConfig = { count: number; }[];
+  export type ChairPackConfig = { count: number; heights?: number[]; }[];
 
   export type EntityDefinition = {
     format_version: string,

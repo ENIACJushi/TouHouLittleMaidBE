@@ -51,7 +51,8 @@ npm run convert:built-in
 
 `TouHouLittleMaid_BP/typescripts/src/chair/skin/ChairSkin.ts` 中
 `// ##### BUILT_IN_CHAIR_PACKS_START #####` … `// ##### BUILT_IN_CHAIR_PACKS_END #####`
-之间的 `BUILT_IN_CHAIR_DEFAULT_PACKS` 常量。
+之间的 `BUILT_IN_CHAIR_DEFAULT_PACKS` / `BUILT_IN_CHAIR_DEFAULT_HEIGHTS` 常量
+（包数量与各模型 `mounted_height` 像素列表）。
 
 仅改源码，**不会**自动编译 BP。实现见 `src/built_in/syncChairDefaultPacks.ts`。
 
@@ -64,4 +65,4 @@ npm run convert:built-in
 - 未出现在配置中的子包排在所有已配置包之后，并保持彼此相对顺序
 - 网页附加包转换不使用此配置（`PACK_DOMAIN_ORDER` 为空）
 
-调整顺序后，执行 `npm run convert:built-in` 会自动覆写 BP 侧 `ChairSkin.DEFAULT_PACKS`（不触发 typescript 编译）；女仆 `MaidSkin.DEFAULT_PACKS` 仍需手动核对。
+调整顺序后，执行 `npm run convert:built-in` 会自动覆写 BP 侧 `ChairSkin.DEFAULT_PACKS` / `DEFAULT_HEIGHTS`（不触发 typescript 编译）；女仆 `MaidSkin.DEFAULT_PACKS` 仍需手动核对。

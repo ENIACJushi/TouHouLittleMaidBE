@@ -196,6 +196,7 @@ async function main() {
       chairSkinTsPath,
       result.chairModelAmount,
       result.chairPackDomains,
+      result.chairModelHeights,
     );
   } else {
     console.warn(`未找到 ChairSkin.ts，跳过内置坐垫包同步: ${chairSkinTsPath}`);

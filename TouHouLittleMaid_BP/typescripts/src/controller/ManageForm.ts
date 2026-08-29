@@ -133,7 +133,7 @@ export class ManageForm {
     const current = ManageForm.stringifyCombinedPackConfig();
     let form = new ModalFormData()
       .title(lang('message.tlm.config.skin_pack.name'))
-      .textField(lang('message.tlm.config.skin_pack.description'), '{"skin":[{"count":20}],"chair":[{"count":10}]}', {
+      .textField(lang('message.tlm.config.skin_pack.description'), '{"skin":[{"count":20}],"chair":[{"count":10,"heights":[3,15]}]}', {
         defaultValue: current
       })
       .submitButton('提交');

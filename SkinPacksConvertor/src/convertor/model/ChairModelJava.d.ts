@@ -68,7 +68,10 @@ export interface TLMChairModelInfo {
   animation?: TLMResourceLocation[];
   /** 坐垫实体在世界渲染中的整体缩放倍率。缺失默认 `1.0`；解析时会被限制在 `[0.2, 2.0]` 范围内。 */
   render_entity_scale?: number;
-  /** 骑乘高度（坐上坐垫后的世界高度）。 */
+  /**
+   * 骑乘高度（像素）。缺失默认 `0`。
+   * Java / 基岩均换算为：`clamp((mounted_height - 3) * 0.0625, -0.5, 2.5)`，写入坐垫 `rideable` 座位 Y。
+   */
   mounted_height?: number;
   /** 是否按 GeckoLib 模型/动画加载。`false` 为普通 Bedrock 模型；`true` 为 Gecko geo 模型与 JSON 动画。 */
   is_gecko?: boolean;
