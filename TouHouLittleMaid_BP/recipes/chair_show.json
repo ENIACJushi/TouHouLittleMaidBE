@@ -2,7 +2,7 @@
   "format_version": "1.12.10",
   "minecraft:recipe_shaped": {
     "description": {
-      "identifier": "touhou_little_maid:chair_show"
+      "identifier": "tlmsi:chair_show"
     },
     "tags": [ "crafting_table" ],
     "pattern": [
@@ -25,7 +25,7 @@
       }
     },
     "result": {
-      "item": "touhou_little_maid:chair_show",
+      "item": "tlmsi:chair_show",
       "count": 1
     }
   }

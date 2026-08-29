@@ -4,21 +4,27 @@
 
 import { EquipmentSlot, GameMode, system, world } from "@minecraft/server";
 import PowerPoint from "../altar/PowerPoint";
+import { ChairShow, CHAIR_SHOW_ITEM_IDENTIFIER } from "../chair/ChairShow";
 
 export class ScheduleEvents {
 
   // 注册所有事件
   public startAllEvents() {
 
-    // 玩家主手物品检测
+    // 玩家主手物品检测（tlmsi：御币 / 坐垫显示器）
     system.runInterval(() => {
       for (let pl of world.getAllPlayers()) {
         let item = pl.getComponent("equippable")?.getEquipment(EquipmentSlot.Mainhand);
-        if (item !== undefined) {
-          if (item.typeId.startsWith("tlmsi")) {
-            PowerPoint.show(pl);
-          }
+        if (item === undefined || !item.typeId.startsWith("tlmsi")) {
+          continue;
         }
+        // 坐垫显示器：激活附近坐垫碰撞箱展示
+        if (item.typeId === CHAIR_SHOW_ITEM_IDENTIFIER) {
+          ChairShow.activateNearby(pl);
+          continue;
+        }
+        // 御币等其它 tlmsi 物品：显示 P 点
+        PowerPoint.show(pl);
       }
     }, 15);
 

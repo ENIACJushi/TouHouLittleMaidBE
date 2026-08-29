@@ -171,7 +171,9 @@
 				{
 					"controller.render.touhou_little_maid.chair_pack_next_update_model": "!q.property('thlm:show_hitbox')"
 				},
-				"controller.render.touhou_little_maid.chair_hitbox"
+				{
+					"controller.render.touhou_little_maid.chair_hitbox": "q.property('thlm:show_hitbox')"
+				}
 			]
 		}
 	}

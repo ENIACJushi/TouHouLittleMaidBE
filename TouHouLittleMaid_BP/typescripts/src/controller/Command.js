@@ -250,7 +250,7 @@ export class CommandManager {
             "touhou_little_maid:camera",
             "touhou_little_maid:chisel",
             "touhou_little_maid:chair",
-            "touhou_little_maid:chair_show",
+            "tlmsi:chair_show",
             "minecraft:clay",
             "minecraft:flint_and_steel",
             "minecraft:netherrack",
