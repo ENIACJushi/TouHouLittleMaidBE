@@ -67,7 +67,12 @@
           <li id="tips_server">若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。</li>
         </ul>
         <p id="tips_command">2、创造模式下使用物品「记忆中的幻想乡（管理）」打开管理面板（也可执行 <code>/scriptevent thlm:manage</code>），将如下数据粘贴到「皮肤包」中：</p>
-        <p id="command">待生成...</p>
+        <div class="command-box">
+          <div class="command-toolbar">
+            <button type="button" id="command_copy" class="command-copy" disabled>复制</button>
+          </div>
+          <pre id="command" class="command-data" aria-live="polite">待生成...</pre>
+        </div>
         </div>
       </div>
       <button type="button" onclick="startConvert()" id="b_convert">开始转换</button>
@@ -452,15 +457,57 @@
     padding-left: 20px;
   }
 
-  #command {
-    margin: 0;
-    padding: 10px 12px;
+  .command-box {
+    margin-top: 8px;
     border-radius: 10px;
     border: 1px solid var(--command-border);
     background: var(--command-bg);
+    overflow: hidden;
+  }
+
+  .command-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--command-border);
+  }
+
+  .command-copy {
+    border: none;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--control-btn-bg);
+    color: var(--control-btn-text);
+    transition: opacity .12s ease, transform .12s ease, background-color .12s ease;
+  }
+
+  .command-copy:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  .command-copy:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+
+  .command-data,
+  #command {
+    margin: 0;
+    padding: 10px 12px;
+    max-height: 180px;
+    overflow: auto;
     color: var(--command-text);
     font-family: "Consolas", "Courier New", monospace;
-    word-break: break-all;
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .error-log {
@@ -531,6 +578,9 @@
       tipsServer: '若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。',
       tipsCommand: '2、创造模式下使用物品「记忆中的幻想乡（管理）」打开管理面板（也可执行 <code>/scriptevent thlm:manage</code>），将如下数据粘贴到「皮肤包」中：',
       commandPending: '待生成...',
+      copyCommand: '复制',
+      copySuccess: '已复制',
+      copyFailed: '复制失败',
       moveUp: '上移',
       moveDown: '下移',
       remove: '删除',
@@ -568,6 +618,9 @@
       tipsServer: 'For servers, edit <code>world_resource_packs.json</code> in the world folder and place the add-on skin pack above the main pack.',
       tipsCommand: '2. In Creative mode, use the item Memorizable Gensokyo (OP) to open the manage panel (or run <code>/scriptevent thlm:manage</code>), then paste the following data into Skin Pack:',
       commandPending: 'Pending...',
+      copyCommand: 'Copy',
+      copySuccess: 'Copied',
+      copyFailed: 'Copy failed',
       moveUp: 'Move up',
       moveDown: 'Move down',
       remove: 'Remove',
@@ -623,8 +676,18 @@
     document.getElementById('tips_command').innerHTML = t('tipsCommand');
 
     const commandBlock = document.getElementById('command');
+    const copyBtn = document.getElementById('command_copy');
     if (!commandBlock.dataset.generated || commandBlock.textContent === '' || commandBlock.textContent === I18N['zh-CN'].commandPending || commandBlock.textContent === I18N['en-US'].commandPending) {
       commandBlock.textContent = t('commandPending');
+      if (copyBtn) {
+        copyBtn.disabled = true;
+      }
+    }
+    if (copyBtn) {
+      // 已生成时保留「已复制」短暂状态文案，否则同步当前语言的「复制」
+      if (!copyBtn.dataset.flash) {
+        copyBtn.textContent = t('copyCommand');
+      }
     }
 
     const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
@@ -856,6 +919,12 @@
       try { chairPacks = JSON.parse(res.chairPackConfigStr || '[]'); } catch (_) {}
       commandBlock.textContent = JSON.stringify({ skin: skinPacks, chair: chairPacks });
       commandBlock.dataset.generated = 'true';
+      const copyBtn = document.getElementById('command_copy');
+      if (copyBtn) {
+        copyBtn.disabled = false;
+        copyBtn.dataset.flash = '';
+        copyBtn.textContent = t('copyCommand');
+      }
       // 导出文件
       res.resultFile.generateAsync({type:"blob"})
         .then(function(content) {
@@ -873,6 +942,51 @@
       dropZone.removeAttribute('aria-disabled');
     }
   }
+
+  /** 复制数据栏内容到剪贴板 */
+  async function copyCommandData() {
+    const commandBlock = document.getElementById('command');
+    const copyBtn = document.getElementById('command_copy');
+    if (!commandBlock || !copyBtn || copyBtn.disabled || !commandBlock.dataset.generated) {
+      return;
+    }
+    const text = commandBlock.textContent || '';
+    let ok = false;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        ok = true;
+      }
+    } catch (_) {}
+    if (!ok) {
+      // 回退：选中文本 + execCommand
+      try {
+        const range = document.createRange();
+        range.selectNodeContents(commandBlock);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        ok = document.execCommand('copy');
+        selection.removeAllRanges();
+      } catch (_) {
+        ok = false;
+      }
+    }
+    copyBtn.dataset.flash = '1';
+    copyBtn.textContent = ok ? t('copySuccess') : t('copyFailed');
+    setTimeout(function() {
+      copyBtn.dataset.flash = '';
+      copyBtn.textContent = t('copyCommand');
+    }, 1500);
+  }
+
+  // 绑定复制按钮
+  (function initCommandCopy() {
+    const copyBtn = document.getElementById('command_copy');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', copyCommandData);
+    }
+  })();
 
 </script>
 
