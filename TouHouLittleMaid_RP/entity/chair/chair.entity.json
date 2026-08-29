@@ -150,14 +150,12 @@
 					"temp.chair_pack=q.property('thlm:chair_pack');temp.model=q.variant;(temp.chair_pack == 2) ? { (temp.model==0) ? { v.chair_scale=0.8;v.tlm_is_gecko=1;v.chair_anim_0_0=1; }; };(temp.chair_pack == 1) ? { (temp.model==0) ? { v.chair_scale=1; };(temp.model==1) ? { v.chair_scale=1; };(temp.model==2) ? { v.chair_scale=1; };(temp.model==3) ? { v.chair_scale=1; };(temp.model==4) ? { v.chair_scale=1; };(temp.model==5) ? { v.chair_scale=1; };(temp.model==6) ? { v.chair_scale=1; };(temp.model==7) ? { v.chair_scale=1; };(temp.model==8) ? { v.chair_scale=1; };(temp.model==9) ? { v.chair_scale=1; };(temp.model==10) ? { v.chair_scale=1; };(temp.model==11) ? { v.chair_scale=1; };(temp.model==12) ? { v.chair_scale=1; };(temp.model==13) ? { v.chair_scale=1; };(temp.model==14) ? { v.chair_scale=1; };(temp.model==15) ? { v.chair_scale=1; };(temp.model==16) ? { v.chair_scale=1; };(temp.model==17) ? { v.chair_scale=1; };(temp.model==18) ? { v.chair_scale=1; };(temp.model==19) ? { v.chair_scale=1; };(temp.model==20) ? { v.chair_scale=1; };(temp.model==21) ? { v.chair_scale=1; };(temp.model==22) ? { v.chair_scale=1; };(temp.model==23) ? { v.chair_scale=1; };(temp.model==24) ? { v.chair_scale=1; };(temp.model==25) ? { v.chair_scale=1; };(temp.model==26) ? { v.chair_scale=1; };(temp.model==27) ? { v.chair_scale=1; };(temp.model==28) ? { v.chair_scale=1; };(temp.model==29) ? { v.chair_scale=1; };(temp.model==30) ? { v.chair_scale=1; };(temp.model==31) ? { v.chair_scale=1; };(temp.model==32) ? { v.chair_scale=1; }; };(temp.chair_pack == 3) ? { (temp.model==0) ? { v.chair_scale=1; };(temp.model==1) ? { v.chair_scale=1; };(temp.model==2) ? { v.chair_scale=1; };(temp.model==3) ? { v.chair_scale=1; };(temp.model==4) ? { v.chair_scale=1; };(temp.model==5) ? { v.chair_scale=1; };(temp.model==6) ? { v.chair_scale=1; };(temp.model==7) ? { v.chair_scale=1; };(temp.model==8) ? { v.chair_scale=1; };(temp.model==9) ? { v.chair_scale=1; };(temp.model==10) ? { v.chair_scale=1; };(temp.model==11) ? { v.chair_scale=1; };(temp.model==12) ? { v.chair_scale=1; };(temp.model==13) ? { v.chair_scale=1; };(temp.model==14) ? { v.chair_scale=1; };(temp.model==15) ? { v.chair_scale=1; };(temp.model==16) ? { v.chair_scale=1; };(temp.model==17) ? { v.chair_scale=1; };(temp.model==18) ? { v.chair_scale=1; };(temp.model==19) ? { v.chair_scale=1.25; };(temp.model==20) ? { v.chair_scale=1; };(temp.model==21) ? { v.chair_scale=1; };(temp.model==22) ? { v.chair_scale=1; };(temp.model==23) ? { v.chair_scale=1; };(temp.model==24) ? { v.chair_scale=1; };(temp.model==25) ? { v.chair_scale=1; };(temp.model==26) ? { v.chair_scale=1; };(temp.model==27) ? { v.chair_scale=1; };(temp.model==28) ? { v.chair_scale=1; }; };"
 				],
 				"animate": [
-					"yaw",
 					{
 						"0_0": "v.chair_anim_0_0>0"
 					}
 				]
 			},
 			"animations": {
-				"yaw": "animation.touhou_little_maid.chair.yaw",
 				"0_0": "animation.tlm.chair.100.0"
 			},
 			"render_controllers": [

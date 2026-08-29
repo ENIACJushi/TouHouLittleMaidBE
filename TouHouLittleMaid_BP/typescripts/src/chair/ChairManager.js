@@ -2,7 +2,6 @@ import {Direction, system} from "@minecraft/server";
 import {CHAIR_IDENTIFIER, EntityChair} from "./EntityChair";
 import * as Tool from "../libs/ScarletToolKit";
 import {ChairSkin} from "./skin/ChairSkin";
-import {VO} from "../libs/VectorMC";
 
 /**
  * 坐垫放置与交互管理
@@ -90,13 +89,12 @@ export class ChairManager {
         index = skin.index;
       }
     }
-    // 生成实体，模型编号以生成时事件设置
-    // 末影水晶 runtime 无实体角度，initialRotation 无效；朝向写入 thlm:yaw 由客户端动画旋转
+    // 生成实体，模型编号以生成时事件设置；朝向用实体自身 yaw
     const chair = dimension.spawnEntity(CHAIR_IDENTIFIER, location, {
+      initialRotation: rotation,
       spawnEvent: `skin:${index}`
     });
     EntityChair.Skin.setPack(chair, pack);
-    EntityChair.Rotation.setYaw(chair, rotation);
   }
   /**
    * 潜行攻击收回坐垫

@@ -63,7 +63,7 @@ npm run convert:built-in
   - 饥饿值`ysm.food_level`由脚本传入，默认为20不变，以后就不用改了（可以使用小酒狐验证）
   - 躺下`ysm.is_sleep`，同上
 
-- [ ] 都完成后，再加个坐垫包转换，应该比较容易
+- [ ] 支持坐垫包
   - [x] 坐垫模型的名称形如 `model.touhou_little_maid.cushion.name`，在解析里使用它，并修改BP/typescript使用的名称
   - [x] 坐垫的built_in转换模式也要参照女仆的built_in模式，转换后将生物定义作为普通转换的模板，并且模型包的起始编号不同
   - [x] 鸟居2和鸟居3没贴图: 解析 texture 属性，
@@ -87,10 +87,12 @@ npm run convert:built-in
   - [x] 名字改成坐垫
   - [x] 补充骑乘文本
   - [x] 执行built_in构建时，自动修改BP/typescript的内置椅子包数据（不需要自动编译BP/typescript）
-  - [ ] 我去，现在用的模型包好像不对劲，少了很多模型，还多了一些模型，需要确认java版是怎么加载的
+  - [x] 取消坐垫的末影水晶标识符，使用一般实现
+  - [ ] 添加坐垫无重力解析 no_gravity
+  - [ ] 添加坐垫高度解析 mounted_height
   - [ ] 塞钱箱渲染错误
-  - [ ] 添加坐垫高度解析
   - [ ] 添加合成表
+  - [ ] 更换坐垫贴图
 
 - [ ] 支持解析单模型对应多贴图
 - [ ] 调整女仆模型包的lang key 格式，需要同步修改手动修改的东方包
