@@ -36,7 +36,7 @@
     "touhou_little_maid:fairy_headwear_1": {"textures":"textures/items/fairy_headwear_1"},
     "touhou_little_maid:fairy_headwear_2": {"textures":"textures/items/fairy_headwear_2"},
 
-    "touhou_little_maid:chair": { "textures": "textures/items/tlm/chair" },
+    "touhou_little_maid:chair": { "textures": "textures/thlm/chair_pack_pack_3" },
     "touhou_little_maid:chair_show": { "textures": "textures/items/tlm/chair_show" }
   }
 }
