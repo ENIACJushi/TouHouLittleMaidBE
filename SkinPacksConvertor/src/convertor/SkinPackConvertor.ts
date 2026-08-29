@@ -2,6 +2,7 @@ import JSZip from 'jszip';
 import {PackFile} from './model/PackFile';
 import {TemplatesBE} from "./model/Templates";
 import {MaidModelJava, TLMMaidModelInfo} from "./model/MaidModelJava";
+import {expandMaidModelList} from "./model/MaidModelDecorate";
 import {LangFile, LangFileType, LangType} from "./model/LangFile";
 import {normalizeTextureSize} from "./model/ModelNormalize";
 import {ResourceManager} from "./resource_manager/ResourceManager";
@@ -236,10 +237,11 @@ export class SkinPackConvertor {
     // 解析包描述 description，使用通用 I18n 文本数组解析方案
     this.parseI18nTextArray(`maid_pack.${this.packId + PROFILE.BASE_PACK_INDEX}.desc`, inputJson.description);
 
-    // 解析模型列表 model_list
-    this.res.modelAmount[this.packId - 1] = inputJson.model_list.length; // 确定模型数量
-    for (let i = 0; i < inputJson.model_list.length; i++) {
-      await this.parseMMModelInfo(inputJson.model_list[i], i);
+    // 解析模型列表 model_list（先 decorate 并展开 extra_textures，对齐 Java CustomModelPack）
+    const modelList = expandMaidModelList(inputJson.model_list);
+    this.res.modelAmount[this.packId - 1] = modelList.length; // 确定模型数量（含多贴图派生）
+    for (let i = 0; i < modelList.length; i++) {
+      await this.parseMMModelInfo(modelList[i], i);
     }
 
     // 在包渲染控制器定义 variant 对应的皮肤和模型
@@ -303,9 +305,13 @@ export class SkinPackConvertor {
       this.parseI18nTextArray(descKey, modelInfo.description);
     }
   }
-  /** 解析模型 - 贴图（只复制被使用到的贴图文件，暂不展开 extra_textures 为独立条目，但会复制其文件避免丢失） */
+  /**
+   * 解析模型 - 贴图。
+   * extra_textures 已在 expandMaidModelList 中拆成独立条目，此处每个条目只处理自身 texture。
+   */
   private async parseModelTextures(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
-    // 确定贴图资源位置：显式指定或按 model_id 推导
+    void seq;
+    // 确定贴图资源位置：显式指定或按 model_id 推导（decorate 后通常已有 texture）
     let textureKey = modelInfo.texture ?? `textures/entity/${idInfo.path}.png`;
     // 在实体定义添加贴图
     this.res.entity_description["textures"][`${this.packNameSafe}_${idInfo.path}`] =
@@ -313,32 +319,27 @@ export class SkinPackConvertor {
     // 在渲染控制器添加贴图
     this.pack_controller["arrays"]["textures"]["Array.skins"]
       .push(`Texture.${this.packNameSafe}_${idInfo.path}`);
-    // 复制被使用到的主贴图文件
+    // 复制被使用到的贴图文件（多贴图派生条目的 path 含 md5 后缀，互不覆盖）
     await this.copyTexture(textureKey, `entity/${idInfo.path}.png`);
-
-    // 复制被使用到的额外贴图文件（extra_textures，当前不派生独立条目，仅保留文件）
-    if (modelInfo.extra_textures) {
-      for (let i = 0; i < modelInfo.extra_textures.length; i++) {
-        const extraKey = modelInfo.extra_textures[i];
-        // 额外贴图文件重名时加序号后缀，避免覆盖
-        const extraOut = `entity/${idInfo.path}_extra_${i}.png`;
-        await this.copyTexture(extraKey, extraOut);
-      }
-    }
   }
+  /** 已转换过的模型输出名，避免同模型多贴图重复写文件 */
+  private convertedModelOutNames = new Set<string>();
+
   /** 解析模型 - 模型 model（只复制被使用到的模型文件，并转换格式） */
   private async parseModelModel(modelInfo: TLMMaidModelInfo, idInfo: ModelIdInfo, seq: number) {
+    void seq;
     // 解析被使用到的模型文件信息
     let modelResourceKey: string;
     let modelOutName: string;
     if (!modelInfo.model) {
       // 未指定使用的模型，则使用默认的 `<namespace>:models/entity/<path>.json`
+      // decorate 后通常已有 model；缺省时仍按 model_id.path 推导（多贴图派生条目勿走此分支）
       modelResourceKey = `models/entity/${idInfo.path}.json`;
       modelOutName = idInfo.path;
       this.res.entity_description["geometry"][`${this.packNameSafe}_${idInfo.path}`] =
         `geometry.${this.packNameSafe}.${idInfo.path}`;
     } else {
-      // 指定了使用的模型（如 geckolib:models/entity/winefox.json）
+      // 指定了使用的模型（如 geckolib:models/entity/winefox.json）；多贴图条目共用同一 geometry
       modelResourceKey = modelInfo.model;
       let modelPath = modelInfo.model.split('/');
       let model = modelPath[modelPath.length - 1];
@@ -347,10 +348,15 @@ export class SkinPackConvertor {
       this.res.entity_description["geometry"][`${this.packNameSafe}_${idInfo.path}`]
         = `geometry.${this.packNameSafe}.${model}`;
     }
-    // 在渲染控制器添加模型
+    // 在渲染控制器添加模型（每个贴图变体各占一格，geometry 标识符可相同）
     this.pack_controller["arrays"]["geometries"]["Array.geos"].push(`Geometry.${this.packNameSafe}_${idInfo.path}`);
-    // 转换并复制被使用到的模型文件
-    await this.convertModel(modelResourceKey, modelOutName);
+    // 转换并复制被使用到的模型文件（同模型多贴图只转换一次）
+    if (!this.convertedModelOutNames.has(modelOutName)) {
+      const ok = await this.convertModel(modelResourceKey, modelOutName);
+      if (ok) {
+        this.convertedModelOutNames.add(modelOutName);
+      }
+    }
   }
   /** 解析模型 - 模型缩放 */
   private parseModelScale(modelInfo: TLMMaidModelInfo, _idInfo: ModelIdInfo, seq: number) {

@@ -101,7 +101,7 @@ npm run convert:built-in
   - [x] 记忆中的幻想乡补充坐垫相关信息
 
 - [x] 网站的数据栏增加一个复制按钮，并调整UI，使其可以自动换行和滚动查看
-- [ ] 支持解析单模型对应多贴图
+- [x] 支持解析单模型对应多贴图
 - [ ] 调整女仆模型包的lang key 格式，需要同步修改手动修改的东方包
 - [ ] 加载有点慢，看看是不是报错多了
 - [ ] 修复刷物品bug
@@ -122,6 +122,7 @@ npm run convert:built-in
 
 参考 Java 版 TouhouLittleMaid 1.20 资源加载流程：
 - `CustomPackLoader.loadMaidModelPack()`：读取 maid_model.json 并 decorate
+- `CustomModelPack.decorate()`：补全缺省字段后，将 `extra_textures` 拆成同模型多贴图条目（派生 `model_id` 后缀为贴图 path 的 MD5）
 - `CustomPackLoader.loadGeckoMaidModelElement()`：解析 model/texture/animation 路径并加载文件
 - `GeckoModelLoader.mergeAnimationFile()`：按顺序合并动画 JSON
   参考位置：`TouhouLittleMaid-1.20/.../CustomPackLoader.java`、`GeckoModelLoader.java`
