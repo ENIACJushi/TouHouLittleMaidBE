@@ -101,7 +101,7 @@ message.touhou_little_maid:chisel.offhand_not_photo.name=Please have a photo of 
 
 message.tlm.menu.title=Manage
 message.tlm.menu.config.name=Settings
-message.tlm.menu.creative_only=The manage panel can only be used in Creative mode
+message.tlm.menu.op_only=The manage panel can only be used by operators
 
 ## Config
 

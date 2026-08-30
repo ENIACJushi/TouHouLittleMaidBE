@@ -1,4 +1,4 @@
-import { GameMode, Player } from "@minecraft/server";
+import { Player, PlayerPermissionLevel } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { lang } from "../libs/ScarletToolKit";
 import { MaidSkin } from "../maid/skin/MaidSkin";
@@ -22,13 +22,13 @@ type CombinedPackConfig = {
  */
 export class ManageForm {
   /**
-   * 打开表单前检查：仅创造模式玩家可进入
+   * 打开表单前检查：仅 OP 玩家可进入
    */
-  static ensureCreative(player: Player): boolean {
-    if (player.getGameMode() === GameMode.Creative) {
+  static ensureOp(player: Player): boolean {
+    if (player.playerPermissionLevel === PlayerPermissionLevel.Operator) {
       return true;
     }
-    player.sendMessage(lang('message.tlm.menu.creative_only'));
+    player.sendMessage(lang('message.tlm.menu.op_only'));
     return false;
   }
 
@@ -36,7 +36,7 @@ export class ManageForm {
    * 管理主菜单
    */
   static mainForm(player: Player) {
-    if (!ManageForm.ensureCreative(player)) {
+    if (!ManageForm.ensureOp(player)) {
       return;
     }
     let form = new ActionFormData()
@@ -127,7 +127,7 @@ export class ManageForm {
    * 设置附加皮肤包 / 坐垫包：粘贴转换网站生成的 JSON
    */
   static skinPackForm(player: Player) {
-    if (!ManageForm.ensureCreative(player)) {
+    if (!ManageForm.ensureOp(player)) {
       return;
     }
     const current = ManageForm.stringifyCombinedPackConfig();

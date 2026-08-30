@@ -158,7 +158,7 @@ export class ConfigForm {
    * @param onBack 关闭列表时返回的上层表单，由管理菜单传入
    */
   static mainForm(player: Player, onBack?: () => void) {
-    if (!ManageForm.ensureCreative(player)) {
+    if (!ManageForm.ensureOp(player)) {
       return;
     }
     let form = new ActionFormData();
@@ -195,7 +195,7 @@ export class ConfigForm {
    * @param {*} definition 
    */
   static boolForm(player: Player, key: keyof Config, definition: any, onBack?: () => void) {
-    if (!ManageForm.ensureCreative(player)) {
+    if (!ManageForm.ensureOp(player)) {
       return;
     }
     let form = new ModalFormData()
@@ -217,7 +217,7 @@ export class ConfigForm {
    * 设置整型
    */
   static numberForm(player: Player, key: keyof Config, definition: any, onBack?: () => void) {
-    if (!ManageForm.ensureCreative(player)) {
+    if (!ManageForm.ensureOp(player)) {
       return;
     }
     let oriValue = config[key].value as number
@@ -244,7 +244,7 @@ export class ConfigForm {
     });
   }
   static invalidWarning(player: Player, lastForm: ()=>void) {
-    if (!ManageForm.ensureCreative(player)) {
+    if (!ManageForm.ensureOp(player)) {
       return;
     }
     let form = new MessageFormData()
