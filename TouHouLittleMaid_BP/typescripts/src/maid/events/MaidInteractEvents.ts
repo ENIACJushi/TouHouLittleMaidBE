@@ -87,7 +87,10 @@ export class MaidInteractEvents {
           return;
         }
         if (sitting) {
-          EntityMaid.standUp(maid);
+          // 站起需要延迟执行，不然移动属性会修改失败
+          system.runTimeout(() => {
+            EntityMaid.standUp(maid);
+          }, 1);
         } else {
           EntityMaid.sitDown(maid);
         }

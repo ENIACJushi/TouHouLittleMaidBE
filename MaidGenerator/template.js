@@ -79,7 +79,8 @@ export let TEMPLATE = {
         "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
         "minecraft:loot"         : { "table": "loot_tables/empty.json" },
         "minecraft:on_death"     : { "event": "thlmm:d", "target": "self" },
-        "minecraft:movement"     : { "value": 0.25 },
+        // 移速数值由脚本 EntityMaid.Movement / Level.properties.movement 写入，此处仅注册组件
+        "minecraft:movement"     : { "value": 0 },
         "minecraft:physics"      : { },
         "minecraft:pushable"     : { "is_pushable": true, "is_pushable_by_piston": true },
         "minecraft:attack"       : { "damage": 6 },
@@ -396,7 +397,7 @@ export let TEMPLATE = {
         }
       },
       "thlmm:lv1_basic":{
-        "minecraft:movement": { "value": 0.25 },
+        // 移速改由脚本按 Level.properties.movement 设置，避免与坐下锁定冲突
         "minecraft:attack": {"damage": 12 },
         "minecraft:health": {"value": 64, "max": 64 },
         "minecraft:knockback_resistance": { "value": 0.1 }
@@ -414,7 +415,7 @@ export let TEMPLATE = {
         }
       },
       "thlmm:lv2_basic":{
-        "minecraft:movement": { "value": 0.3 },
+        // 移速改由脚本按 Level.properties.movement 设置，避免与坐下锁定冲突
         "minecraft:attack": { "damage"  : 16 },
         "minecraft:health": { "value": 70, "max": 70 },
         "minecraft:knockback_resistance": { "value": 0.2 }

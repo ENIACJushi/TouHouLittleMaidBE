@@ -74,16 +74,19 @@ export class EntityMaid{
         max:2,
         properties:[
             {// lv.1
-                "danmaku": 15,    // 弹幕伤害
-                "heal"   : [3, 6] // 单次回血量（3秒一次）
+                "danmaku": 15,// 弹幕伤害
+                "heal": [3, 6], // 单次回血量（3秒一次）
+                "movement": 0.25, // 移速（脚本写入，JSON 不定义）
             },
             {// lv.2
-                "danmaku": 24,    // 弹幕伤害
-                "heal"   : [5, 8] // 单次回血量（3秒一次）
+                "danmaku": 24,
+                "heal": [5, 8],
+                "movement": 0.3,
             },
-            {// lv.3
-                "danmaku": 24,    // 弹幕伤害
-                "heal"   : [5, 8] // 单次回血量（3秒一次）
+            {// lv.3（预留，暂与 lv.2 同速）
+                "danmaku": 24,
+                "heal": [5, 8],
+                "movement": 0.3,
             }
         ],
         str:[
@@ -129,6 +132,13 @@ export class EntityMaid{
                 if(maid.getComponent("minecraft:is_tamed") !== undefined){
                     this.eventTamed(maid, level);
                 }
+                // JSON 不再写等级移速，此处按姿态写入/锁定
+                if (EntityMaid.isSitting(maid)) {
+                    EntityMaid.Movement.lock(maid);
+                }
+                else {
+                    EntityMaid.Movement.unlock(maid);
+                }
             },1);
             DP.setInt(maid, "level", level);
         },
@@ -151,11 +161,54 @@ export class EntityMaid{
         /**
          * 属性值获取
          * @param {Entity} maid 
-         * @param {string} key danmaku | heal
+         * @param {string} key danmaku | heal | movement
          * @returns {number | Array}
          */
         getProperty(maid, key){
             return this.properties[this.get(maid)-1][key];
+        }
+    }
+    /**
+     * 移速锁定（坐下）/ 按等级恢复（站起）
+     * 移速唯一来源：Level.properties.movement（实体 JSON 仅注册 minecraft:movement 组件）
+     */
+    static Movement = {
+        /**
+         * 坐下时锁死移速并清除当前速度，避免仍被 AI 推走
+         * @param {Entity} maid
+         */
+        lock(maid){
+            try {
+                let movement = maid.getComponent("minecraft:movement");
+                if (movement !== undefined) {
+                    movement.setCurrentValue(0);
+                }
+                maid.clearVelocity();
+            }
+            catch { }
+        },
+        /**
+         * 站起时按当前等级恢复移速
+         * @param {Entity} maid
+         */
+        unlock(maid){
+            try {
+                let movement = maid.getComponent("minecraft:movement");
+                if (movement === undefined) return;
+
+                let level = EntityMaid.Level.get(maid);
+                let speed = (typeof level === "number" && level >= 1)
+                  ? EntityMaid.Level.properties[level - 1]?.movement
+                  : undefined;
+
+                if (typeof speed === "number") {
+                    movement.setCurrentValue(speed);
+                }
+                else {
+                    // 等级未初始化时使用 lv1 默认移速
+                    movement.setCurrentValue(EntityMaid.Level.properties[0].movement);
+                }
+            } catch { }
         }
     }
     // 主人
@@ -1226,6 +1279,8 @@ export class EntityMaid{
             EntityMaid.initDynamicProperties(maid);
             system.runTimeout(()=>{
                 if(EntityMaid.Work.get(maid)<0) return;
+                // JSON 仅注册 movement 组件，按等级写入实际移速
+                EntityMaid.Movement.unlock(maid);
                 // 选择随机皮肤
                 if(!EntityMaid.Owner.has(maid)){
                     EntityMaid.Skin.setRandom(maid);
@@ -1488,11 +1543,18 @@ export class EntityMaid{
     }
     /**
      * 设置坐下位（由实体事件 thlmm:j / thlmm:v 写入）
+     * 同步锁定/恢复 minecraft:movement，避免坐下后仍寻路移动
      * @param {Entity} maid
      * @param {boolean} value
      */
     static setSitting(maid, value){
         this.Anim.setBit(maid, this.Anim.BIT_SIT, value);
+        if (value) {
+            this.Movement.lock(maid);
+        }
+        else {
+            this.Movement.unlock(maid);
+        }
     }
     /**
      * 是否处于抱起状态
