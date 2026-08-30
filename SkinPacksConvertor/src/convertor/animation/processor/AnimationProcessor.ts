@@ -6,6 +6,7 @@ import { data as dataHug } from "./APHug";
 import { data as dataMolang } from "./APMolang";
 import { data as dataPreParallelEyeGuard } from "./APPreParallelEyeGuard";
 import { data as dataCatmullRomScaleHold } from "./APCatmullRomScaleHold";
+import { data as dataCatmullRomBake } from "./APCatmullRomBake";
 import { data as dataYsmAccessoryHide } from "../../ysm/accessory/APYsmAccessoryHide";
 import { APContext, APFunc } from "./APTypes";
 
@@ -43,6 +44,8 @@ export class AnimationProcessor {
     registerFunc(dataPreParallelEyeGuard);
     // 须在 EyeGuard 之后：同时处理原动画与 extractedEyeAnimation 的 scale hold
     registerFunc(dataCatmullRomScaleHold);
+    // 须在 ScaleHold 之后：去掉全部 catmullrom（含 hold 帧），避免与 Molang 混用触发预计算报错
+    registerFunc(dataCatmullRomBake);
   }
 
   /**
