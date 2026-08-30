@@ -20,8 +20,7 @@
       "minecraft:hand_equipped": true,
       "minecraft:wearable": {
         "slot": "slot.armor.head",
-        "protection": 2,
-        "dispensable": true
+        "protection": 2
       },
       "minecraft:max_stack_size": 64
     }
