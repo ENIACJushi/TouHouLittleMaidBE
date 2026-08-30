@@ -17,7 +17,6 @@
         "slot": "crossbow",
         "value": 10
       },
-      "minecraft:custom_components": ["tlm:hakurei_gohei"],
       "minecraft:shooter": {
         "ammunition": [
           {
