@@ -50,7 +50,7 @@ export class ItemEvents {
           //// 祭坛平台交互 ////
           case "altar_platform_block": {
             if (!player.isSneaking) {
-              system.run(() => { altarStructure.placeItemEvent(event.block.location, player); });
+              system.run(() => { altarStructure.placeItemEvent(event.block.location, player, itemStack); });
               event.cancel = true;
               return;
             }

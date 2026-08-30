@@ -29,6 +29,11 @@ export class ChairManager {
     event.cancel = true;
     system.run(() => {
       const player = event.player;
+      const expected = event.itemStack;
+      // 物品已丢出或切换：中止，避免复制
+      if (!Tool.ItemTool.isMainHandStillItem(player, expected)) {
+        return;
+      }
       const dimension = player.dimension;
       const handItem = Tool.ItemTool.getPlayerMainHand(player);
       const faceLocation = event.faceLocation;
@@ -45,7 +50,7 @@ export class ChairManager {
         // 面向玩家：把实体朝向对准玩家所在位置
         const facing = ChairManager.getFacingYaw(player, location);
         ChairManager.spawnChairByItem(dimension, location, facing + 180, handItem);
-        ChairManager.consumeMainHandItem(player);
+        Tool.ItemTool.consumeMainHandIfMatch(player, expected);
         return;
       }
 
@@ -67,7 +72,7 @@ export class ChairManager {
       // 八方向朝向（根据玩家朝向 yaw）
       const rot = ChairManager.get8DirectionYaw(player.getRotation().y);
       ChairManager.spawnChairByItem(dimension, placeLocation, rot + 180, handItem);
-      ChairManager.consumeMainHandItem(player);
+      Tool.ItemTool.consumeMainHandIfMatch(player, expected);
     });
   }
 
@@ -157,21 +162,6 @@ export class ChairManager {
       y: blockLocation.y + 1 - y,
       z: blockLocation.z + z,
     };
-  }
-
-  /**
-   * 消耗玩家主手一个物品 todo 主手可能会有快速切物品栏问题，需要验证可靠性
-   * @param {import("@minecraft/server").Player} player
-   */
-  static consumeMainHandItem(player) {
-    let item = Tool.ItemTool.getPlayerMainHand(player);
-    if (item === undefined) return;
-    if (item.amount > 1) {
-      item.amount -= 1;
-      Tool.ItemTool.setPlayerMainHand(player, item);
-    } else {
-      Tool.ItemTool.setPlayerMainHand(player);
-    }
   }
 
   /**

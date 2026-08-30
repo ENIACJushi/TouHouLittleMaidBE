@@ -294,6 +294,11 @@ export class GoldMicrowaver {
     if (!event.itemStack) {
       return;
     }
+    let player = event.player;
+    // 物品已丢出或切换：中止，避免复制
+    if (!ItemTool.isMainHandStillItem(player, event.itemStack)) {
+      return;
+    }
     // 决定位置  PS: faceLocation 是交互面上被点的坐标
     let location = event.block.location;
     switch (event.blockFace) {
@@ -307,7 +312,6 @@ export class GoldMicrowaver {
     }
 
     // 可放置判断
-    let player = event.player;
     let dimension = player.dimension;
     const block = dimension.getBlock(location);
     if (!block?.isAir) {
@@ -338,21 +342,7 @@ export class GoldMicrowaver {
     entity.triggerEvent(direction);
 
     // 消耗物品
-    let container = player.getComponent("inventory")?.container;
-    if (!container) {
-      return;
-    }
-
-    let slot = player.selectedSlotIndex;
-    if (event.itemStack.amount === 1) {
-      container.setItem(slot);
-    } else {
-      let itemStack = container.getItem(slot);
-      if (itemStack) {
-        itemStack.amount--;
-        container.setItem(slot, itemStack);
-      }
-    }
+    ItemTool.consumeMainHandIfMatch(player, event.itemStack);
     // 取消交互 避免物品再次被其它事件使用
     event.cancel = true;
   }
@@ -441,12 +431,13 @@ export class GoldMicrowaver {
                 let currentAmount = this.Entity.getAmount(waver);
                 let recipe = this.recipes[recipeIndex]!;
                 if (currentAmount < recipe["max"]) {
-                  success = true;
                   let inputAmount = Math.min(recipe["max"] - currentAmount, item.amount);
                   // 消耗物品
-                  ItemTool.setPlayerMainHand(player, item.amount - inputAmount === 0 ? undefined : (item.amount -= inputAmount, item));
-                  // 设置数量
-                  this.Entity.setAmount(waver, currentAmount + inputAmount);
+                  if (ItemTool.consumeMainHandIfMatch(player, item, inputAmount)) {
+                    success = true;
+                    // 设置数量
+                    this.Entity.setAmount(waver, currentAmount + inputAmount);
+                  }
                 }
               }
             }
@@ -507,7 +498,10 @@ export class GoldMicrowaver {
           // 消耗物品
           let recipe = this.recipes[recipeIndex];
           let inputAmount = Math.min(item.amount, recipe!.max)
-          ItemTool.setPlayerMainHand(player, item.amount - inputAmount === 0 ? undefined : (item.amount -= inputAmount, item));
+          if (!ItemTool.consumeMainHandIfMatch(player, item, inputAmount)) {
+            this.Entity.setItem(waver, 0);
+            return;
+          }
           // 设置数量
           this.Entity.setAmount(waver, inputAmount);
         }

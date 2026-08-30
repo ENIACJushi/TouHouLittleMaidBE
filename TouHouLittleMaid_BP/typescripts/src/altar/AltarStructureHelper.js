@@ -135,9 +135,9 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
      * 
      * @param {Vector} blockLocation 
      * @param {Player} player 
-     * @param {ItemStack} item 
+     * @param {ItemStack} [expectedItem] 交互时的物品快照，用于防丢出/切换复制
      */
-    placeItemEvent(blockLocation, player){
+    placeItemEvent(blockLocation, player, expectedItem = undefined){
         let dimension = player.dimension;
         // Search for item entity.
         let itemEntity = this.searchAltarItemEntity(dimension, {x: blockLocation.x, y: blockLocation.y + 1, z: blockLocation.z});
@@ -150,6 +150,10 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
         if(itemEntity == null){
             // There are some items on player main hand.
             if(itemStack && itemStack.typeId != ""){
+                // 有快照时校验主手仍是交互物品，防止丢出/切换后误放或复制
+                if (expectedItem !== undefined && !Tool.ItemTool.isMainHandStillItem(player, expectedItem)) {
+                    return;
+                }
                 if(itemStack.amount == 1){
                     // Place item on the platform.
                     let temp = player.dimension.spawnItem(itemStack.clone(), {x: blockLocation.x + 0.5, y: blockLocation.y + 1, z: blockLocation.z + 0.5});
@@ -157,7 +161,11 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
                     temp.addTag("touhou_little_maid:altar_item");
                     
                     // Clear main hand
-                    container.setItem(slot);
+                    if (expectedItem !== undefined) {
+                        Tool.ItemTool.consumeMainHandIfMatch(player, expectedItem);
+                    } else {
+                        container.setItem(slot);
+                    }
                     system.runTimeout(() =>{ this.craftEvent(blockLocation, player); }, 1);
                 }
                 else{
@@ -169,8 +177,12 @@ export class AltarStructureHelper extends MultiBlockStructrueManager{
                     temp.addTag("touhou_little_maid:altar_item");
 
                     // amount--
-                    itemStack.amount --;
-                    container.setItem(slot, itemStack);
+                    if (expectedItem !== undefined) {
+                        Tool.ItemTool.consumeMainHandIfMatch(player, expectedItem, 1);
+                    } else {
+                        itemStack.amount --;
+                        container.setItem(slot, itemStack);
+                    }
                     system.runTimeout(() =>{ this.craftEvent(blockLocation, player); }, 1);
                 }
             }

@@ -77,6 +77,10 @@ export class GarageKit {
   static activate(event: PlayerInteractWithBlockBeforeEvent) {
     let player = event.player;
     let block = event.block;
+    // 主手物品已丢出或切换：中止
+    if (!ItemTool.isMainHandStillItem(player, event.itemStack)) {
+      return;
+    }
     // 必须对黏土使用
     if (!isClay(block)) {
       ActionbarMessage.translate(player, "message.touhou_little_maid:chisel.hit_block_error.name"); // 请右击粘土块
@@ -201,7 +205,10 @@ export class GarageKit {
           dimension.fillBlocks(new BlockVolume(event.block.location, endLocation), blockStatues);
         }
 
-        ItemTool.damageMainHandStack(player);
+        // 仅当主手仍是刻刀时损耗耐久，避免过程中切物品误伤其它装备
+        if (ItemTool.isMainHandStillItem(player, event.itemStack)) {
+          ItemTool.damageMainHandStack(player);
+        }
 
         // 播放音效
         player.playSound("land.anvil");
@@ -317,6 +324,13 @@ export class GarageKit {
       return;
     }
 
+    // 可放置判断
+    let player = event.player;
+    // 物品已丢出或切换：中止，避免复制
+    if (!ItemTool.isMainHandStillItem(player, item)) {
+      return;
+    }
+
     // 决定位置  PS: faceLocation 是交互面上被点的坐标
     let location = event.block.location;
     switch (event.blockFace) {
@@ -329,8 +343,6 @@ export class GarageKit {
       default: return;
     }
 
-    // 可放置判断
-    let player = event.player;
     let dimension = player.dimension;
     const block = dimension.getBlock(location);
     if (!block?.isAir) {
@@ -387,19 +399,7 @@ export class GarageKit {
     maid.triggerEvent("become_garage_kit_solid");
 
     // 消耗物品
-    let container = player.getComponent("inventory")!.container;
-    
-    let slot = player.selectedSlotIndex;
-    if (item.amount === 1) {
-      container.setItem(slot);
-    }
-    else {
-      let itemStack = container.getItem(slot);
-      if (itemStack) {
-        itemStack.amount--;
-        container.setItem(slot, itemStack);
-      }
-    }
+    ItemTool.consumeMainHandIfMatch(player, item);
     // 取消交互 避免物品再次被其它事件使用
     event.cancel = true;
   }

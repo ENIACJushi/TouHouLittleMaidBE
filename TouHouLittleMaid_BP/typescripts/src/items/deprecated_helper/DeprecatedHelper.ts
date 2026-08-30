@@ -43,7 +43,7 @@ export namespace DeprecatedItemHelper {
     }
     let newItem = CHANGE_MAP[oldItem.typeId];
     if (newItem) {
-      ItemTool.setPlayerMainHand(player, new ItemStack(newItem));
+      ItemTool.replaceMainHandIfMatch(player, oldItem, new ItemStack(newItem));
     }
   }
 }

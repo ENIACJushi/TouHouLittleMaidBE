@@ -14,6 +14,10 @@ export default class PowerPoint {
     event.itemComponentRegistry.registerCustomComponent('tlm:power_point', {
       onUse(useEvent) {
         let pl = useEvent.source;
+        // 主手物品已丢出或切换：中止，避免复制
+        if (!Tool.ItemTool.isMainHandStillItem(pl, useEvent.itemStack)) {
+          return;
+        }
         // 发射物品
         let projectile = pl.dimension.spawnEntity("touhou_little_maid:power_point" as any, pl.getHeadLocation());
         let component = projectile.getComponent("projectile");
@@ -21,7 +25,7 @@ export default class PowerPoint {
           Logger.error(TAG, 'Failed to shoot power point: Projectile Component Not Found.');
           return;
         }
-        Tool.ItemTool.decrementMainHandStack(pl);
+        Tool.ItemTool.consumeMainHandIfMatch(pl, useEvent.itemStack);
         component.owner = pl;
         component.shoot(pl.getViewDirection());
       }

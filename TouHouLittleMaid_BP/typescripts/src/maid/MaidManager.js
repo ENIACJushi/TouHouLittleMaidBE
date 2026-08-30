@@ -243,8 +243,13 @@ export class MaidManager {
 
       // 执行释放女仆逻辑
       system.run(() => {
-        //// 检测放置位置是否有两格空间 ////
         const player = event.player;
+        // 物品已丢出或切换：中止，避免复制
+        if (!Tool.ItemTool.isMainHandStillItem(player, event.itemStack)) {
+          return;
+        }
+
+        //// 检测放置位置是否有两格空间 ////
         const dimension = player.dimension;
         let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
         if (location === undefined) {
@@ -264,7 +269,7 @@ export class MaidManager {
         let maid = EntityMaid.fromStr(strPure, dimension, location, true);
 
         // 消耗照片
-        Tool.ItemTool.setPlayerMainHand(player);
+        Tool.ItemTool.replaceMainHandIfMatch(player, event.itemStack);
       })
     }
     /**
@@ -282,11 +287,16 @@ export class MaidManager {
       }
 
       system.run(() => {
+        const player = event.player;
+        // 物品已丢出或切换：中止，避免「地面魂符 + 空魂符/女仆」复制
+        if (!Tool.ItemTool.isMainHandStillItem(player, event.itemStack)) {
+          return;
+        }
+
         let itemStack = event.itemStack;
         let lore = itemStack.getLore();
 
         //// 检测放置位置是否有两格空间 ////
-        const player = event.player;
         const dimension = player.dimension;
         let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
         if (location === undefined) {
@@ -332,7 +342,7 @@ export class MaidManager {
           emptyItem.nameTag = itemName;
         }
 
-        Tool.ItemTool.setPlayerMainHand(player, emptyItem);
+        Tool.ItemTool.replaceMainHandIfMatch(player, event.itemStack, emptyItem);
       })
     }
     /**

@@ -104,10 +104,12 @@ npm run convert:built-in
 - [x] 网站的数据栏增加一个复制按钮，并调整UI，使其可以自动换行和滚动查看
 - [x] 支持解析单模型对应多贴图
 - [x] 调整女仆模型包的 lang key 格式，并同步修改手动修改的东方包
-- [ ] 加载有点慢，看看是不是报错多了
-- [ ] 修复刷物品bug
-- [ ] 塞点私货（作者模型（？））
+- [x] 加载有点慢，看看是不是报错多了--解决大部分报错，有一个问题无法确定原因：`Locator: Error: model already has a locator armor_offset.default_neck that doesn't exactly match the one wanting to be added`
+- [x] 修复刷物品bug：拿魂符点箱子的同时丢出去会复制
+- [x] 修复刷物品bug：好像之前还有人提过基岩版传统异能使用的时候快速切物品
+- [ ] 女仆坐下时会去捡物品
 
+- [ ] 塞点私货（作者模型（？））
 - [ ] 实现一些简单动画，如 swing，
   其实最关键的是要让脚本能调用，因为农作的破坏方块实际上是没有女仆参与的，不能用普通的mc自带变量。
 
