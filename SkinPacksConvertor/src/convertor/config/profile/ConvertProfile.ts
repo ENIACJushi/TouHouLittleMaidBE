@@ -1,5 +1,6 @@
 import { buildDefaultTemplate } from "./AnimationTemplates";
 import MAID_ENTITY_DEF from "./maid.entity.json";
+import MAID_ENTITY_DEF_SIMPLE from "./maid.entity.simple.json";
 import CHAIR_ENTITY_DEF from "./chair.entity.json";
 import {AnimationDefinition, AnimationScriptsDefinition} from "../../animation/MaidAnimationConvertor";
 import {ChairAnimationDefinition} from "../../animation/ChairAnimationConvertor";
@@ -9,6 +10,9 @@ import { BUILTIN_PACK_DOMAIN_ORDER } from "../../../built_in/packOrder";
 
 /** 是否启用内置模型包转换档案 */
 const USE_INNER_PACK_PROFILE = false;
+
+/** 网页附加包转换底板：完整 / 精简（对齐主 RP 的 subpacks） */
+export type WebConvertBase = 'full' | 'lite';
 
 /**
  * 转换配置档案
@@ -73,7 +77,7 @@ export class ConvertProfile {
     if (USE_INNER_PACK_PROFILE) {
       this.loadInternalPackProfile();
     } else {
-      this.loadSimpleProfile();
+      this.loadWebAddonProfile('full');
     }
   }
 
@@ -112,37 +116,37 @@ export class ConvertProfile {
   }
 
   /**
-   * 加载常态转换配置
+   * 网页附加包转换档案（pack 序号从 1001 起）。
+   * @param base `full`：以完整内置实体为底板；`lite`：以精简子包实体为底板
    */
-  loadSimpleProfile() {
-    // 动画id起始设为3000
+  loadWebAddonProfile(base: WebConvertBase = 'full') {
     this.CONVERTED_ANIMATION_ID_START = 3000;
-    // 皮肤包id起始位置设为1000
     this.BASE_PACK_INDEX = 1000;
-    // 坐垫皮肤包id起始位置设为1000
     this.CHAIR_BASE_PACK_INDEX = 1000;
-    // 网页/附加包转换不干预子包顺序
     this.PACK_DOMAIN_ORDER = [];
-    // 读取全量定义
-    const DESC = MAID_ENTITY_DEF["minecraft:client_entity"].description;
-    // ANIMATION_DEF_TEMPLATE取全量定义值
+
+    const maidDef = base === 'lite' ? MAID_ENTITY_DEF_SIMPLE : MAID_ENTITY_DEF;
+    const DESC = maidDef["minecraft:client_entity"].description;
     this.ANIMATION_DEF_TEMPLATE = {
       scripts: JSON.parse(JSON.stringify(DESC.scripts)) as AnimationScriptsDefinition,
       animations: JSON.parse(JSON.stringify(DESC.animations)),
       animationList: {},
     };
-    // RENDER_CONTROLLERS取全量定义值
     this.RENDER_CONTROLLERS = JSON.parse(JSON.stringify(DESC.render_controllers));
-    // 读取坐垫全量定义
+
+    // 坐垫无精简子包，始终用全量定义
     const CHAIR_DESC = CHAIR_ENTITY_DEF["minecraft:client_entity"].description;
-    // 坐垫 CHAIR_ANIMATION_DEF_TEMPLATE 取全量定义值
     this.CHAIR_ANIMATION_DEF_TEMPLATE = {
       scripts: JSON.parse(JSON.stringify(CHAIR_DESC.scripts)),
       animations: JSON.parse(JSON.stringify(CHAIR_DESC.animations ?? {})),
       animationList: {},
     };
-    // 坐垫 CHAIR_RENDER_CONTROLLERS 取全量定义值
     this.CHAIR_RENDER_CONTROLLERS = JSON.parse(JSON.stringify(CHAIR_DESC.render_controllers ?? []));
+  }
+
+  /** @deprecated 使用 {@link loadWebAddonProfile}('full') */
+  loadSimpleProfile() {
+    this.loadWebAddonProfile('full');
   }
 }
 

@@ -42,6 +42,8 @@ npm run convert:built-in
 - 内置包（A）：`TLM_MaidSkinPack/entity/maid.entity.json`;
 - 基础模板文件（B）：`SkinPacksConvertor/src/maid_basic.ts`;
 - 目标文件：`TouhouLittleMaid_RP/entity/maid/maid.entity.json`、`SkinPacksConvertor/src/convertor/config/profile/maid.entity.json`;
+- 精简转换另写：`TouHouLittleMaid_RP/subpacks/simple/...`，以及网页/附加包底板 `profile/maid.entity.simple.json`。
+- 网页转换产物同样带 `subpacks/simple`（精简实体）与 `subpacks/full`（空占位），与主包切换方式一致。
 
 将内置包文件（A）和基础模板包文件（B）合并，然后覆写目标文件，json属性合并规则如下：
 - 使用基础模板包文件（B）：identifier、materials、spawn_egg

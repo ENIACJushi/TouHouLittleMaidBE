@@ -7,6 +7,11 @@
 
 ```npm run build:single```
 
+附加包产物与主包一致，自带 `subpacks`：
+- 根目录：完整内置底板 + 本次模型
+- `subpacks/simple`：精简内置底板 + 本次模型（对齐主包「精简」子包）
+- `subpacks/full`：空占位，默认选用根目录完整定义
+
 #### 测试
 
 需要先配置环境变量 `MinecraftPath`，用于将生成结果自动覆盖到 `development_resource_packs`，如：

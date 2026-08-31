@@ -20,6 +20,10 @@ export class PackFile {
    */
   maid_entity: TemplatesBE.EntityDefinition = TemplatesBE.buildEntityDef();
   /**
+   * 精简子包实体（附加包产物 subpacks/simple/entity/maid.entity.json）
+   */
+  maid_entity_simple: TemplatesBE.EntityDefinition | null = null;
+  /**
    * 实体 description
    */
   entity_description = this.maid_entity["minecraft:client_entity"]["description"];
@@ -120,6 +124,17 @@ export class PackFile {
     this.resultFile.folder("render_controllers")
       .file("maid.json", JSON.stringify(this.render_controller, null, '\t'));
 
+    // 附加包：写出与主包类似的精简/完整子资源包
+    if (this.maid_entity_simple) {
+      this.resultFile
+        .folder("subpacks")
+        .folder("simple")
+        .folder("entity")
+        .file("maid.entity.json", JSON.stringify(this.maid_entity_simple, null, '\t'));
+      // full 档空占位（较高 memory_tier，默认选用 → 用根目录完整实体）
+      this.resultFile.folder("subpacks").folder("full").file(".gitkeep", "");
+    }
+
     // 若存在坐垫模型，则写入坐垫相关文件
     if (this.chairModelAmount.length > 0) {
       // 写入坐垫实体定义文件
@@ -144,11 +159,28 @@ export class PackFile {
 
   /**
    * 生成 manifest.json
+   *  subpack 的 name 仅支持字面量，不能用 lang 键
    */
   async createManifest() {
-    let manifest = JSON.stringify(TemplatesBE.MANIFEST, null, '\t');
-    manifest = manifest.replace("<uuid>", this.uuid);
-    this.resultFile.file("manifest.json", manifest);
+    const manifestObj = JSON.parse(JSON.stringify(TemplatesBE.MANIFEST));
+    manifestObj.header.uuid = this.uuid;
+    if (this.maid_entity_simple) {
+      manifestObj.subpacks = [
+        {
+          folder_name: "simple",
+          name: "Simple",
+          memory_tier: 0,
+        },
+        {
+          folder_name: "full",
+          name: "Full models",
+          memory_tier: 1,
+        },
+      ];
+    } else {
+      manifestObj.subpacks = [];
+    }
+    this.resultFile.file("manifest.json", JSON.stringify(manifestObj, null, '\t'));
   }
 
 

@@ -11,6 +11,7 @@ import { convertYsmPackRoot, YsmPackLocator } from "./ysm";
 import { clearDynamicMolangRegistrations } from "./molang/v/VariableResolvers";
 import { PROFILE } from "./config";
 import { sortDomainsByPackOrder } from "../built_in/packOrder";
+import { buildLiteMaidEntityFromFull } from "./buildLiteMaidEntity";
 
 /**
  * 转换器总入口
@@ -64,21 +65,40 @@ export class SkinConvertor {
   }
 
   async exportAnimation() {
-    let convertor = new MaidAnimationConvertor(
-      this.animationManager.getAnimationInfos(),
-      this.animationManager.getModelScaleInfos(),
-      this.animationManager.getModelIsGeckoInfos(),
-    );
-    let definition = await convertor.exportDefinition();
-    let description = this.result.maid_entity['minecraft:client_entity'].description;
-    description.scripts = definition.scripts;
-    description.animations = definition.animations;
-    // 导出动画内容
-    let animationFile = {
+    const animInfos = this.animationManager.getAnimationInfos();
+    const scaleInfos = this.animationManager.getModelScaleInfos();
+    const geckoInfos = this.animationManager.getModelIsGeckoInfos();
+
+    // 完整底板（根目录实体）
+    const fullConvertor = new MaidAnimationConvertor(animInfos, scaleInfos, geckoInfos);
+    const fullDefinition = await fullConvertor.exportDefinition();
+    const description = this.result.maid_entity['minecraft:client_entity'].description;
+    description.scripts = fullDefinition.scripts;
+    description.animations = fullDefinition.animations;
+    const animationFile = {
       "format_version": "1.8.0",
-      "animations": definition.animationList,
+      "animations": fullDefinition.animationList,
     };
-    this.result.resultFile.folder('animations').file('tlm_pack_maid.animation.json', JSON.stringify(animationFile));
+    this.result.resultFile.folder('animations').file(
+      'tlm_pack_maid.animation.json',
+      JSON.stringify(animationFile),
+    );
+
+    // 附加包（pack≥1001）：再导出精简底板实体，写入产物 subpacks/simple
+    // 内置包转换（BASE_PACK_INDEX=0）由 built_in 流程单独处理，此处跳过
+    if (PROFILE.BASE_PACK_INDEX >= 1000) {
+      PROFILE.loadWebAddonProfile('lite');
+      try {
+        const liteConvertor = new MaidAnimationConvertor(animInfos, scaleInfos, geckoInfos);
+        const liteDefinition = await liteConvertor.exportDefinition();
+        this.result.maid_entity_simple = buildLiteMaidEntityFromFull(
+          this.result.maid_entity,
+          liteDefinition,
+        );
+      } finally {
+        PROFILE.loadWebAddonProfile('full');
+      }
+    }
   }
 
   /**

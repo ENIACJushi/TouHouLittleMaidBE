@@ -164,6 +164,14 @@ async function main() {
     'profile',
     'maid.entity.json',
   );
+  const profileSimpleEntityPath = path.join(
+    projectRoot,
+    'src',
+    'convertor',
+    'config',
+    'profile',
+    'maid.entity.simple.json',
+  );
   const chairRpEntityPath = path.join(rpDir, 'entity', 'chair', 'chair.entity.json');
   const chairProfileEntityPath = path.join(
     projectRoot,
@@ -297,6 +305,9 @@ async function main() {
   const simpleInnerEntity = JSON.parse(await fs.readFile(simpleEntityPath, 'utf8'));
   const simpleMergedEntity = mergeMaidEntity(simpleInnerEntity);
   await migrateSimpleSubpackResources(simplePackDir, rpDir, simpleMergedEntity);
+  // 同步网页转换器用的精简底板（与 subpacks/simple 实体一致）
+  await writeJson(profileSimpleEntityPath, simpleMergedEntity);
+  console.log(`已覆写精简实体定义: ${profileSimpleEntityPath}`);
   console.log(
     `精简子资源包已写入: subpacks/${SIMPLE_SUBPACK_FOLDER}/ （默认档: subpacks/${FULL_SUBPACK_FOLDER}/）`,
   );
