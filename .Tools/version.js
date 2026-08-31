@@ -40,6 +40,12 @@ const LANG_TEMPLATE = {
     }
 }
 
+/** 资源包描述前附加：引导选用 Simple 子包（仅 RP） */
+const RP_DESC_PREFIX = {
+    zh_CN: '如果您遇到加载缓慢的问题，请尝试在右侧的设置中选中“Simple”。',
+    en_US: 'If loading is slow, try selecting "Simple" in the settings on the right. ',
+}
+
 /**
  * @param {Boolean} BP 是行为包 
  */
@@ -74,9 +80,14 @@ function editManifest(BP){
 // RP-lang
 function editLang(packPath = BP_PATH){
     const path = packPath + "/texts/"
+    const isRP = packPath === RP_PATH;
     for(let language in LANG_TEMPLATE){
         let langPath = path + language + ".lang";
-        let str = getLangStr(LANG_TEMPLATE[language]) 
+        const template = { ...LANG_TEMPLATE[language] };
+        if (isRP && RP_DESC_PREFIX[language]) {
+            template["pack.description"] = `${template["pack.description"]} | ${RP_DESC_PREFIX[language]}`;
+        }
+        let str = getLangStr(template)
         let res = fs.readFileSync(langPath, "utf-8");
         
         let starter = res.indexOf(TEXT_STARTER);
