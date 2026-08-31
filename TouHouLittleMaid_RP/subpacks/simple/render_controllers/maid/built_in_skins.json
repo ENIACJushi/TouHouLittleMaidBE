@@ -1,0 +1,148 @@
+{
+	"format_version": "1.8.0",
+	"render_controllers": {
+		"controller.render.touhou_little_maid.pack_geckolib": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.geckolib_winefox"
+					]
+				},
+				"geometries": {
+					"Array.geos": [
+						"Geometry.void",
+						"Geometry.geckolib_winefox"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:skin_pack')==1?q.variant+1:0]",
+			"materials": [
+				{
+					"*": "Material.default"
+				},
+				{
+					"wingLeft": "Material.wing"
+				},
+				{
+					"wingRight": "Material.wing"
+				},
+				{
+					"_*": "Material.emissive"
+				}
+			],
+			"part_visibility": [
+				{
+					"blink": "!q.is_in_ui && q.property('thlm:work')>=-1"
+				}
+			],
+			"textures": [
+				"Array.skins[q.property('thlm:skin_pack')==1?q.variant+1:0]"
+			]
+		},
+		"controller.render.touhou_little_maid.pack_authors_and_credits": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.authors_and_credits_wine_fox_maid",
+						"Texture.authors_and_credits_wine_fox_taisho",
+						"Texture.authors_and_credits_sazuki",
+						"Texture.authors_and_credits_pajinyi",
+						"Texture.authors_and_credits_fledge",
+						"Texture.authors_and_credits_clocklalier",
+						"Texture.authors_and_credits_cyra",
+						"Texture.authors_and_credits_cyra_b2eb6fe570df68d353aa9d07b127b902",
+						"Texture.authors_and_credits_cyra_pow_wow",
+						"Texture.authors_and_credits_mory_chan",
+						"Texture.authors_and_credits_flower_candy"
+					]
+				},
+				"geometries": {
+					"Array.geos": [
+						"Geometry.void",
+						"Geometry.authors_and_credits_wine_fox_maid",
+						"Geometry.authors_and_credits_wine_fox_taisho",
+						"Geometry.authors_and_credits_sazuki",
+						"Geometry.authors_and_credits_pajinyi",
+						"Geometry.authors_and_credits_fledge",
+						"Geometry.authors_and_credits_clocklalier",
+						"Geometry.authors_and_credits_cyra",
+						"Geometry.authors_and_credits_cyra_b2eb6fe570df68d353aa9d07b127b902",
+						"Geometry.authors_and_credits_cyra_pow_wow",
+						"Geometry.authors_and_credits_mory_chan",
+						"Geometry.authors_and_credits_flower_candy"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:skin_pack')==2?q.variant+1:0]",
+			"materials": [
+				{
+					"*": "Material.default"
+				},
+				{
+					"wingLeft": "Material.wing"
+				},
+				{
+					"wingRight": "Material.wing"
+				},
+				{
+					"_*": "Material.emissive"
+				}
+			],
+			"part_visibility": [
+				{
+					"blink": "!q.is_in_ui && q.property('thlm:work')>=-1"
+				}
+			],
+			"textures": [
+				"Array.skins[q.property('thlm:skin_pack')==2?q.variant+1:0]"
+			]
+		},
+		"controller.render.touhou_little_maid.pack_minecraft_15th": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.minecraft_15th_alex",
+						"Texture.minecraft_15th_rana",
+						"Texture.minecraft_15th_natalie",
+						"Texture.minecraft_15th_dawn"
+					]
+				},
+				"geometries": {
+					"Array.geos": [
+						"Geometry.void",
+						"Geometry.minecraft_15th_alex",
+						"Geometry.minecraft_15th_rana",
+						"Geometry.minecraft_15th_natalie",
+						"Geometry.minecraft_15th_dawn"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:skin_pack')==3?q.variant+1:0]",
+			"materials": [
+				{
+					"*": "Material.default"
+				},
+				{
+					"wingLeft": "Material.wing"
+				},
+				{
+					"wingRight": "Material.wing"
+				},
+				{
+					"_*": "Material.emissive"
+				}
+			],
+			"part_visibility": [
+				{
+					"blink": "!q.is_in_ui && q.property('thlm:work')>=-1"
+				}
+			],
+			"textures": [
+				"Array.skins[q.property('thlm:skin_pack')==3?q.variant+1:0]"
+			]
+		}
+	}
+}

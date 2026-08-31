@@ -19,6 +19,24 @@ npm run convert:built-in
 
 以内置包转换档案（USE_INNER_PACK_PROFILE=true），对 `tools/touhou_little_maid-1.0.0-bedrock` 执行转换，得到中间产物【内置包】。
 
+#### 精简子资源包（Bedrock `subpacks`）
+
+在完整转换之后，再用 `src/built_in/subpack_simple/geckolib_maid_model.json`
+（geckolib 仅保留 `model_list` 第一个模型）覆盖源包中的
+`assets/geckolib/maid_model.json`，做第二次转换。
+
+产物写入 `TouHouLittleMaid_RP/subpacks/`（由 `manifest.json` 的 `subpacks` 声明，可在游戏资源包齿轮里切换）：
+
+| folder_name | memory_tier | 内容 |
+|-------------|-------------|------|
+| `simple` | 0 | 精简女仆实体定义 + 配套 `tlm_pack_maid.animation.json` + `built_in_skins` 渲染控制器 |
+| `full` | 1 | 空占位；默认选用此档时无覆盖 → 使用根目录完整定义 |
+
+说明：
+- 精简转换的动画编号与完整包不同，故子包内必须自带动画/RC，不能只覆写实体。
+- 模型与贴图仍用根目录完整资源（精简实体只引用其中子集）。
+- 参考：[Building Sub-Packs](https://learn.microsoft.com/minecraft/creator/documents/buildingsubpacks)、[Bedrock Wiki · Subpacks](https://wiki.bedrock.dev/concepts/subpacks)
+
 #### 生物渲染定义合并
 
 - 内置包（A）：`TLM_MaidSkinPack/entity/maid.entity.json`;

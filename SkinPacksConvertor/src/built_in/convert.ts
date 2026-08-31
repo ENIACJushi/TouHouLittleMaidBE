@@ -2,6 +2,8 @@
  * 内置包转换脚本
  *  对 tools/touhou_little_maid-1.0.0-bedrock 执行内置包转换，
  *  再将中间产物合并进 TouHouLittleMaid_RP。
+ *  另用修改过的 geckolib maid_model.json 做一次精简转换，
+ *  将生物渲染定义（及配套动画/RC）写入 RP 子资源包 subpacks/simple。
  *
  * 运行：npm run convert:built-in
  */
@@ -16,11 +18,19 @@ import { getErrorLog } from '../../test/node-polyfill';
 import { mergeMaidEntity } from './mergeMaidEntity';
 import { mergeChairEntity } from './mergeChairEntity';
 import { migrateBuiltInResources, migrateBuiltInChairResources } from './migrateResources';
+import {
+  FULL_SUBPACK_FOLDER,
+  migrateSimpleSubpackResources,
+  SIMPLE_SUBPACK_FOLDER,
+} from './migrateSimpleSubpack';
 import { syncChairDefaultPacks } from './syncChairDefaultPacks';
 import { syncMaidDefaultPacks } from './syncMaidDefaultPacks';
 
 const PACK_FOLDER_NAME = 'TLM_MaidSkinPack';
+const SIMPLE_PACK_FOLDER_NAME = 'TLM_MaidSkinPack_simple';
 const BUILTIN_UUID = 'afc1c4e6-3bf4-4344-8dea-77425d8d6435';
+/** zip 内覆盖路径：精简 geckolib 模型定义 */
+const GECKOLIB_MAID_MODEL_ZIP_PATH = 'assets/geckolib/maid_model.json';
 
 const srcDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(srcDir, '../..');
@@ -36,25 +46,41 @@ async function pathExists(target: string): Promise<boolean> {
 }
 
 /**
- * 将目录打成 zip buffer，供 SkinConvertor 使用
+ * 将目录打成 zip buffer，供 SkinConvertor 使用。
+ * @param overrides zip 相对路径 → 内容（覆盖磁盘文件，用于精简 maid_model）
  */
-async function zipFolder(folder: string): Promise<Buffer> {
+async function zipFolder(
+  folder: string,
+  overrides?: Map<string, string | Buffer>,
+): Promise<Buffer> {
   const zip = new JSZip();
+  const overrideKeys = new Set(
+    [...(overrides?.keys() ?? [])].map((k) => k.replace(/\\/g, '/')),
+  );
 
   async function walk(dir: string, zipPrefix: string) {
     const entries = await fs.readdir(dir, { withFileTypes: true });
     for (const entry of entries) {
       const full = path.join(dir, entry.name);
       const rel = zipPrefix ? `${zipPrefix}/${entry.name}` : entry.name;
+      const relPosix = rel.replace(/\\/g, '/');
       if (entry.isDirectory()) {
         await walk(full, rel);
-      } else {
-        zip.file(rel, await fs.readFile(full));
+        continue;
       }
+      if (overrideKeys.has(relPosix)) {
+        continue;
+      }
+      zip.file(relPosix, await fs.readFile(full));
     }
   }
 
   await walk(folder, '');
+  if (overrides) {
+    for (const [rel, content] of overrides) {
+      zip.file(rel.replace(/\\/g, '/'), content);
+    }
+  }
   return zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
 }
 
@@ -80,6 +106,43 @@ async function writeJson(filePath: string, data: unknown): Promise<void> {
   await fs.writeFile(filePath, `${JSON.stringify(data, null, '\t')}\n`, 'utf8');
 }
 
+/**
+ * 执行一次内置档案转换并解压到 outDir。
+ */
+async function runBuiltinConvert(
+  sourceDir: string,
+  zipName: string,
+  outDir: string,
+  overrides?: Map<string, string | Buffer>,
+): Promise<NonNullable<Awaited<ReturnType<SkinConvertor['startConvert']>>>> {
+  console.log('正在打包源模型包...');
+  const packBuffer = await zipFolder(sourceDir, overrides);
+  const packFile = Object.assign(packBuffer, { name: zipName });
+
+  console.log('开始转换...');
+  const convertor = new SkinConvertor([packFile]);
+  const result = await convertor.startConvert(BUILTIN_UUID);
+  if (!result) {
+    throw new Error('转换失败：未返回结果');
+  }
+  console.log(`管理面板数据: ${result.commandConfigStr}`);
+
+  const zipBuffer = await result.resultFile.generateAsync({
+    type: 'nodebuffer',
+    compression: 'DEFLATE',
+  });
+  await fs.mkdir(path.dirname(outDir), { recursive: true });
+  await writeZipToDir(zipBuffer, outDir);
+
+  const err = getErrorLog();
+  if (err.trim()) {
+    console.warn('转换过程中的错误日志:');
+    console.warn(err);
+  }
+  console.log(`已写出中间产物: ${outDir}`);
+  return result;
+}
+
 async function main() {
   // 无论当前 ConvertProfile 开关如何，内置包转换都必须使用内置档案
   PROFILE.loadInternalPackProfile();
@@ -90,6 +153,7 @@ async function main() {
   const sourceDir = path.join(projectRoot, 'tools', 'touhou_little_maid-1.0.0-bedrock');
   const outputRoot = path.join(projectRoot, 'test', 'output');
   const packDir = path.join(outputRoot, PACK_FOLDER_NAME);
+  const simplePackDir = path.join(outputRoot, SIMPLE_PACK_FOLDER_NAME);
   const rpDir = path.join(repoRoot, 'TouHouLittleMaid_RP');
   const rpEntityPath = path.join(rpDir, 'entity', 'maid', 'maid.entity.json');
   const profileEntityPath = path.join(
@@ -109,6 +173,11 @@ async function main() {
     'profile',
     'chair.entity.json',
   );
+  const slimGeckoMaidModelPath = path.join(
+    srcDir,
+    'subpack_simple',
+    'geckolib_maid_model.json',
+  );
 
   const sourceStat = await fs.stat(sourceDir).catch(() => undefined);
   if (!sourceStat?.isDirectory()) {
@@ -117,6 +186,9 @@ async function main() {
   if (!(await pathExists(rpDir))) {
     throw new Error(`资源包目录不存在: ${rpDir}`);
   }
+  if (!(await pathExists(slimGeckoMaidModelPath))) {
+    throw new Error(`精简 geckolib maid_model 不存在: ${slimGeckoMaidModelPath}`);
+  }
 
   console.log('档案: 内置包转换（USE_INNER_PACK_PROFILE=true）');
   if (PROFILE.PACK_DOMAIN_ORDER.length > 0) {
@@ -124,35 +196,16 @@ async function main() {
   }
   console.log(`源目录: ${sourceDir}`);
   console.log(`中间产物: ${packDir}`);
+  console.log(`精简中间产物: ${simplePackDir}`);
   console.log(`合并目标: ${rpDir}`);
 
-  console.log('正在打包源模型包...');
-  const packBuffer = await zipFolder(sourceDir);
-  const packFile = Object.assign(packBuffer, {
-    name: 'touhou_little_maid-1.0.0-bedrock.zip',
-  });
-
-  console.log('开始转换内置包...');
-  const convertor = new SkinConvertor([packFile]);
-  const result = await convertor.startConvert(BUILTIN_UUID);
-  if (!result) {
-    throw new Error('转换失败：未返回结果');
-  }
-  console.log(`管理面板数据: ${result.commandConfigStr}`);
-
-  const zipBuffer = await result.resultFile.generateAsync({
-    type: 'nodebuffer',
-    compression: 'DEFLATE',
-  });
-  await fs.mkdir(outputRoot, { recursive: true });
-  await writeZipToDir(zipBuffer, packDir);
-
-  const err = getErrorLog();
-  if (err.trim()) {
-    console.warn('转换过程中的错误日志:');
-    console.warn(err);
-  }
-  console.log(`已写出中间产物: ${packDir}`);
+  ///// 1) 完整内置转换 → 根目录 /////
+  console.log('\n===== 完整内置转换 =====');
+  const result = await runBuiltinConvert(
+    sourceDir,
+    'touhou_little_maid-1.0.0-bedrock.zip',
+    packDir,
+  );
 
   // 生物渲染定义合并
   const innerEntityPath = path.join(packDir, 'entity', 'maid.entity.json');
@@ -224,7 +277,31 @@ async function main() {
     console.warn(`未找到 ChairSkin.ts，跳过内置坐垫包同步: ${chairSkinTsPath}`);
   }
 
-  console.log('内置包转换完成');
+  ///// 2) 精简转换（覆盖 geckolib maid_model）→ subpacks/simple /////
+  console.log('\n===== 精简子资源包转换（geckolib 仅第一个模型）=====');
+  const slimMaidModel = await fs.readFile(slimGeckoMaidModelPath);
+  const overrides = new Map<string, Buffer>([
+    [GECKOLIB_MAID_MODEL_ZIP_PATH, slimMaidModel],
+  ]);
+  await runBuiltinConvert(
+    sourceDir,
+    'touhou_little_maid-1.0.0-bedrock-simple.zip',
+    simplePackDir,
+    overrides,
+  );
+
+  const simpleEntityPath = path.join(simplePackDir, 'entity', 'maid.entity.json');
+  if (!(await pathExists(simpleEntityPath))) {
+    throw new Error(`精简中间产物缺少实体定义: ${simpleEntityPath}`);
+  }
+  const simpleInnerEntity = JSON.parse(await fs.readFile(simpleEntityPath, 'utf8'));
+  const simpleMergedEntity = mergeMaidEntity(simpleInnerEntity);
+  await migrateSimpleSubpackResources(simplePackDir, rpDir, simpleMergedEntity);
+  console.log(
+    `精简子资源包已写入: subpacks/${SIMPLE_SUBPACK_FOLDER}/ （默认档: subpacks/${FULL_SUBPACK_FOLDER}/）`,
+  );
+
+  console.log('\n内置包转换完成');
 }
 
 main().catch((error) => {

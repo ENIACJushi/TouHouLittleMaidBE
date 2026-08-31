@@ -1,0 +1,23 @@
+{
+	"pack_name": "{maid_pack.geckolib.name}",
+	"version": "1.0.0",
+	"author": ["Very Many Authors"],
+	"description": [
+		"{maid_pack.geckolib.desc}",
+		"（精简子资源包：仅保留 model_list 第一个模型）"
+	],
+	"date": "2023-10-10",
+	"icon": "geckolib:textures/maid_icon.png",
+	"model_list": [
+		{
+			"model_id": "geckolib:winefox",
+			"is_gecko": true,
+			"animation": [
+				"geckolib:animation/winefox.animation.json",
+				"geckolib:animation/foxmaid.tac.animation.json"
+			],
+			"render_entity_scale": 0.65,
+			"description": ["{model.geckolib.winefox.desc}"]
+		}
+	]
+}

@@ -26,6 +26,18 @@
       ]
     }
   ],
+  "subpacks": [
+    {
+      "folder_name": "simple",
+      "name": "Simple",
+      "memory_tier": 0
+    },
+    {
+      "folder_name": "full",
+      "name": "Full models",
+      "memory_tier": 1
+    }
+  ],
   "dependencies": [
     {
       "uuid": "fed26523-2c16-4560-9076-aff6ad49a1e3",
