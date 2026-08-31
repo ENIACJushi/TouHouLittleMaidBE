@@ -245,11 +245,12 @@ export class SkinPackConvertor {
       await this.parseMMModelInfo(modelList[i], i);
     }
 
-    // 在包渲染控制器定义 variant 对应的皮肤和模型
-    this.pack_controller["geometry"] = this.pack_controller["geometry"]
-      .replace("<index>", `${this.packId + PROFILE.BASE_PACK_INDEX}`);
-    this.pack_controller["textures"][0] = this.pack_controller["textures"][0]
-      .replace("<index>", `${this.packId + PROFILE.BASE_PACK_INDEX}`);
+    // 在包渲染控制器定义 variant 对应的皮肤和模型（越界落到最后一个）
+    TemplatesBE.applyMaidPackRenderIndex(
+      this.pack_controller,
+      this.packId + PROFILE.BASE_PACK_INDEX,
+      modelList.length - 1,
+    );
     // 将包渲染控制器添加到总渲染控制器
     this.res.render_controller["render_controllers"][`controller.render.touhou_little_maid.pack_${this.packNameSafe}`] =
       this.pack_controller;

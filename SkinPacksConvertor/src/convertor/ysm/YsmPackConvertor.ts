@@ -414,10 +414,14 @@ export class YsmPackConvertor {
   }
 
   private finalizeRenderController() {
-    this.pack_controller['geometry'] = this.pack_controller['geometry']
-      .replace('<index>', `${this.packId + PROFILE.BASE_PACK_INDEX}`);
-    this.pack_controller['textures'][0] = this.pack_controller['textures'][0]
-      .replace('<index>', `${this.packId + PROFILE.BASE_PACK_INDEX}`);
+    // Array.geos[0]=void，其余为模型；越界 variant 落到最后一个模型
+    const geoLen = this.pack_controller.arrays.geometries['Array.geos'].length;
+    const maxVariant = Math.max(0, geoLen - 2);
+    TemplatesBE.applyMaidPackRenderIndex(
+      this.pack_controller,
+      this.packId + PROFILE.BASE_PACK_INDEX,
+      maxVariant,
+    );
 
     this.res.render_controller['render_controllers'][
       `controller.render.touhou_little_maid.pack_${this.packNameSafe}`

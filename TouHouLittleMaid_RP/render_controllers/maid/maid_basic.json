@@ -56,7 +56,7 @@
 			"part_visibility": [
 				{ "blink": "!q.is_in_ui && q.property('thlm:work')>=-1" }
 			],
-			"geometry": "Array.geos[q.property('thlm:skin_pack')==0?q.variant+1:0]",
+			"geometry": "Array.geos[q.property('thlm:skin_pack')==0?(math.min(q.variant,0)+1):0]",
 			"materials": [
 				{"*": "Material.default"},
 				{"wingLeft": "Material.wing"},
@@ -65,7 +65,7 @@
 				{"_wingLeft": "Material.blending"},
 				{"_wingRight": "Material.blending"}
 			],
-			"textures": [ "Array.skins[q.property('thlm:skin_pack')==0?q.variant+1:0]" ]
+			"textures": [ "Array.skins[q.property('thlm:skin_pack')==0?(math.min(q.variant,0)+1):0]" ]
 		},
 
 

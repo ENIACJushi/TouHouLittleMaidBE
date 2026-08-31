@@ -96,7 +96,7 @@
 					]
 				}
 			},
-			"geometry": "Array.geos[q.property('thlm:skin_pack')==1?q.variant+1:0]",
+			"geometry": "Array.geos[q.property('thlm:skin_pack')==1?(math.min(q.variant,40)+1):0]",
 			"materials": [
 				{
 					"*": "Material.default"
@@ -117,7 +117,7 @@
 				}
 			],
 			"textures": [
-				"Array.skins[q.property('thlm:skin_pack')==1?q.variant+1:0]"
+				"Array.skins[q.property('thlm:skin_pack')==1?(math.min(q.variant,40)+1):0]"
 			]
 		},
 		"controller.render.touhou_little_maid.pack_authors_and_credits": {
@@ -155,7 +155,7 @@
 					]
 				}
 			},
-			"geometry": "Array.geos[q.property('thlm:skin_pack')==2?q.variant+1:0]",
+			"geometry": "Array.geos[q.property('thlm:skin_pack')==2?(math.min(q.variant,10)+1):0]",
 			"materials": [
 				{
 					"*": "Material.default"
@@ -176,7 +176,7 @@
 				}
 			],
 			"textures": [
-				"Array.skins[q.property('thlm:skin_pack')==2?q.variant+1:0]"
+				"Array.skins[q.property('thlm:skin_pack')==2?(math.min(q.variant,10)+1):0]"
 			]
 		},
 		"controller.render.touhou_little_maid.pack_minecraft_15th": {
@@ -200,7 +200,7 @@
 					]
 				}
 			},
-			"geometry": "Array.geos[q.property('thlm:skin_pack')==3?q.variant+1:0]",
+			"geometry": "Array.geos[q.property('thlm:skin_pack')==3?(math.min(q.variant,3)+1):0]",
 			"materials": [
 				{
 					"*": "Material.default"
@@ -221,7 +221,7 @@
 				}
 			],
 			"textures": [
-				"Array.skins[q.property('thlm:skin_pack')==3?q.variant+1:0]"
+				"Array.skins[q.property('thlm:skin_pack')==3?(math.min(q.variant,3)+1):0]"
 			]
 		}
 	}

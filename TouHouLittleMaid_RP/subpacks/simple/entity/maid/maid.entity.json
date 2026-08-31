@@ -365,7 +365,7 @@
 					"v.animate_pre_parallel7 = 0;",
 					"v.pack=q.property('thlm:skin_pack');",
 					"v.model=q.variant;",
-					"(v.pack == 1) ? { (v.model==0) ? { v.scale=0.65;v.animate_hug=100;v.animate_walk=100;v.animate_beg=100;v.animate_sit=100;v.animate_parallel0=0;v.animate_parallel1=100;v.animate_parallel2=100;v.animate_parallel3=100;v.animate_parallel4=0;v.animate_parallel5=0;v.animate_parallel6=0;v.animate_parallel7=0;v.animate_pre_parallel0=100;v.animate_pre_parallel1=100;v.animate_pre_parallel2=0;v.animate_pre_parallel3=0;v.animate_pre_parallel4=0;v.animate_pre_parallel5=0;v.animate_pre_parallel6=0;v.animate_pre_parallel7=0;v.animate_idle=100;v.animate_sleep=100;v.animate_blink=0;v.tlm_is_gecko=1; }; };",
+					"(v.pack == 1) ? { (v.model>=0) ? { v.scale=0.65;v.animate_hug=100;v.animate_walk=100;v.animate_beg=100;v.animate_sit=100;v.animate_parallel0=0;v.animate_parallel1=100;v.animate_parallel2=100;v.animate_parallel3=100;v.animate_parallel4=0;v.animate_parallel5=0;v.animate_parallel6=0;v.animate_parallel7=0;v.animate_pre_parallel0=100;v.animate_pre_parallel1=100;v.animate_pre_parallel2=0;v.animate_pre_parallel3=0;v.animate_pre_parallel4=0;v.animate_pre_parallel5=0;v.animate_pre_parallel6=0;v.animate_pre_parallel7=0;v.animate_idle=100;v.animate_sleep=100;v.animate_blink=0;v.tlm_is_gecko=1; }; };",
 					"(v.pack == 2) ? { (v.model==0) ? { v.scale=1; }; };",
 					"(v.pack == 2) ? { (v.model==1) ? { v.scale=1; }; };",
 					"(v.pack == 2) ? { (v.model==2) ? { v.scale=1; }; };",
@@ -376,11 +376,11 @@
 					"(v.pack == 2) ? { (v.model==7) ? { v.scale=0.8; }; };",
 					"(v.pack == 2) ? { (v.model==8) ? { v.scale=1; }; };",
 					"(v.pack == 2) ? { (v.model==9) ? { v.scale=0.8; }; };",
-					"(v.pack == 2) ? { (v.model==10) ? { v.scale=1; }; };",
+					"(v.pack == 2) ? { (v.model>=10) ? { v.scale=1; }; };",
 					"(v.pack == 3) ? { (v.model==0) ? { v.scale=1; }; };",
 					"(v.pack == 3) ? { (v.model==1) ? { v.scale=1; }; };",
 					"(v.pack == 3) ? { (v.model==2) ? { v.scale=1; }; };",
-					"(v.pack == 3) ? { (v.model==3) ? { v.scale=1; }; };",
+					"(v.pack == 3) ? { (v.model>=3) ? { v.scale=1; }; };",
 					"((v.animate_idle==100 && !v.tlm_is_sitting && !v.tlm_is_hug && v.walk_process<=0.05)) ? { v.tlm_suppress_molang_blink=1; };"
 				],
 				"animate": [

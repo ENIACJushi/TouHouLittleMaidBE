@@ -59,6 +59,7 @@ export namespace TemplatesBE {
   };
 
   // 渲染控制器单包模板
+  // Array 下标：0=void，1..=模型；variant 越界时 math.min 落到最后一个模型
   export const RENDER_CONTROLLER_PACK = {
     "arrays": {
       "textures": {
@@ -72,7 +73,7 @@ export namespace TemplatesBE {
         ]
       }
     },
-    "geometry": "Array.geos[q.property('thlm:skin_pack')==<index>?q.variant+1:0]",
+    "geometry": "Array.geos[q.property('thlm:skin_pack')==<index>?(math.min(q.variant,<max_variant>)+1):0]",
     "materials": [
       {"*": "Material.default"},
       {"wingLeft": "Material.wing"},
@@ -82,9 +83,27 @@ export namespace TemplatesBE {
     "part_visibility": [
       { "blink": "!q.is_in_ui && q.property('thlm:work')>=-1" }
     ],
-    "textures": [ "Array.skins[q.property('thlm:skin_pack')==<index>?q.variant+1:0]" ]
+    "textures": [ "Array.skins[q.property('thlm:skin_pack')==<index>?(math.min(q.variant,<max_variant>)+1):0]" ]
   };
   export type RenderControllerPack = typeof RENDER_CONTROLLER_PACK;
+
+  /**
+   * 将包渲染控制器中的 `<index>` / `<max_variant>` 占位符换成实际值。
+   * @param maxVariant 合法 variant 最大值（模型数 - 1），越界时落到最后一个模型
+   */
+  export function applyMaidPackRenderIndex(
+    controller: RenderControllerPack,
+    packIndex: number,
+    maxVariant: number,
+  ): void {
+    const max = Math.max(0, maxVariant);
+    controller.geometry = controller.geometry
+      .replace('<index>', `${packIndex}`)
+      .replace('<max_variant>', `${max}`);
+    controller.textures[0] = controller.textures[0]
+      .replace('<index>', `${packIndex}`)
+      .replace('<max_variant>', `${max}`);
+  }
 
   /**
    * 获取实体定义模板，每次都新建一个对象，外部无需复制

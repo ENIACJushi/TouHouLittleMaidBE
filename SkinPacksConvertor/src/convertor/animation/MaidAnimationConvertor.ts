@@ -470,6 +470,7 @@ export class MaidAnimationConvertor {
    *  形如：
    *    v.pack=...;v.model=...;
    *    (v.pack == 1001) ? { (v.model==0) ? { v.animate_sit=1; }; };
+   *  每个包的最后一个模型用 v.model>=id，使越界 id 落到该模型。
    */
   private buildShowConditionMolang(
     showConditions: Map<number, Map<number, Partial<Record<AnimationTypes, number>>>>,
@@ -500,6 +501,7 @@ export class MaidAnimationConvertor {
         ...(scales?.keys() ?? []),
         ...(geckoFlags?.keys() ?? []),
       ]);
+      const maxVariant = allModelIds.size > 0 ? Math.max(...allModelIds) : -1;
 
       for (const modelId of allModelIds) {
         const types = models?.get(modelId);
@@ -540,9 +542,12 @@ export class MaidAnimationConvertor {
         if (assignStmts.length === 0) {
           continue;
         }
+        // 末模型用 >=，越界 variant 落到最后一个
+        const modelCond =
+          modelId === maxVariant ? `v.model>=${modelId}` : `v.model==${modelId}`;
         lines.push(
           ...chunkGatedMolangStatements(
-            `(v.pack == ${skinPack}) ? { (v.model==${modelId}) ? { `,
+            `(v.pack == ${skinPack}) ? { (${modelCond}) ? { `,
             ` }; };`,
             assignStmts,
             PRE_ANIMATION_MOLANG_MAX_LENGTH,
