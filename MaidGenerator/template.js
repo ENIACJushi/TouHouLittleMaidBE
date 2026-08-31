@@ -757,6 +757,7 @@ export let TEMPLATE = {
           "speed_multiplier": 1.25,
           "search_height": 2,
           "can_pickup_any_item": true,
+          "track_target": true,
           "can_pickup_to_hand_or_equipment": false
         },
         "minecraft:shareables": {
@@ -773,6 +774,7 @@ export let TEMPLATE = {
           "max_dist": 8,
           "goal_radius": 2,
           "speed_multiplier": 0,
+          "track_target": true,
           "search_height": 2,
           "can_pickup_any_item": true,
           "can_pickup_to_hand_or_equipment": false

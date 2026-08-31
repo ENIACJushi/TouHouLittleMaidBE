@@ -426,7 +426,9 @@ export class MaidManager {
 
       // 拾物模式
       if (EntityMaid.Pick.get(maid)) {
-        EntityMaid.Pick.set(maid, true);
+        system.runTimeout(() => {
+          EntityMaid.Pick.set(maid, true);
+        }, 1)
       }
     }
     /**
