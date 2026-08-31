@@ -10,10 +10,13 @@ import {
 import {
   DEFAULT_ANIMATION_ID,
   WALK_PROCESS_MOVING_MIN,
+  PRE_ANIMATION_MOLANG_MAX_LENGTH,
   PROFILE,
 } from "../config";
 import {getDynamicMolangKeepFields, getDynamicMolangVariableDefaults} from "../molang/v/VariableResolvers";
 import {
+  chunkGatedMolangStatements,
+  chunkMolangStatements,
   parseVariableAssignLhs,
   toVariableAssignKey,
 } from "../molang/MolangAssign";
@@ -239,9 +242,9 @@ export class MaidAnimationConvertor {
     deferredGatedScripts.sort((a, b) => gatedScriptOrder(a) - gatedScriptOrder(b));
     res.scripts.pre_animation.push(...deferredGatedScripts);
     // 须在 animate_* 赋值之后：sit/idle 自带眨眼时抑制 molang 眨眼
-    const suppressMolang = this.buildSuppressMolangBlinkMolang(mainAnimHasEyeBones);
-    if (suppressMolang) {
-      res.scripts.pre_animation.push(suppressMolang);
+    const suppressMolangs = this.buildSuppressMolangBlinkMolang(mainAnimHasEyeBones);
+    if (suppressMolangs.length > 0) {
+      res.scripts.pre_animation.push(...suppressMolangs);
     }
     // 汇总动画到 animationList
     res.animationList = animationList;
@@ -323,7 +326,12 @@ export class MaidAnimationConvertor {
       }
       if (everyFrameScripts.length > 0) {
         deferredGatedScripts.push(
-          `(v.animate_${type}==${exportId}) ? { ${everyFrameScripts.join('')} };`,
+          ...chunkGatedMolangStatements(
+            `(v.animate_${type}==${exportId}) ? { `,
+            ` };`,
+            everyFrameScripts,
+            PRE_ANIMATION_MOLANG_MAX_LENGTH,
+          ),
         );
       }
       if (onceScripts.length > 0) {
@@ -335,9 +343,22 @@ export class MaidAnimationConvertor {
         }
         const extra = ANIMATE_EXTRA_CONDITION[type] ?? '';
         const active = `v.animate_${type}==${exportId}${extra}`;
-        deferredGatedScripts.push(
-          `(${active}) ? { (${flagVar}==0) ? { ${onceScripts.join('')}${flagVar}=1; }; } : { ${flagVar}=0; };`,
+        const open = `(${active}) ? { (${flagVar}==0) ? { `;
+        // 末段需写入 flag=1，并带上未激活时的复位；按末段额外开销收紧 body 预算
+        const lastClose = `${flagVar}=1; }; } : { ${flagVar}=0; };`;
+        const midClose = ` }; };`;
+        const bodies = chunkMolangStatements(
+          onceScripts,
+          PRE_ANIMATION_MOLANG_MAX_LENGTH - open.length - Math.max(midClose.length, lastClose.length),
         );
+        for (let i = 0; i < bodies.length; i++) {
+          const isLast = i === bodies.length - 1;
+          deferredGatedScripts.push(
+            isLast
+              ? `${open}${bodies[i]}${lastClose}`
+              : `${open}${bodies[i]}${midClose}`,
+          );
+        }
       }
       delete processed.extractedScripts;
     }
@@ -412,21 +433,36 @@ export class MaidAnimationConvertor {
    */
   private buildSuppressMolangBlinkMolang(
     mainAnimHasEyeBones: Map<AnimationTypes, Set<number>>,
-  ): string {
-    const clauses: string[] = [];
+  ): string[] {
+    const lines: string[] = [];
     for (const type of MAIN_ANIM_EYE_GUARD_TYPES) {
       const ids = mainAnimHasEyeBones.get(type);
       if (!ids || ids.size === 0) {
         continue;
       }
       const extra = ANIMATE_EXTRA_CONDITION[type] ?? '';
-      const idCheck = [...ids]
+      // id 列表过长时拆成多条，避免单条条件超限
+      const idTerms = [...ids]
         .sort((a, b) => a - b)
-        .map((id) => `(v.animate_${type}==${id}${extra})`)
-        .join('||');
-      clauses.push(`(${idCheck}) ? { v.tlm_suppress_molang_blink=1; };`);
+        .map((id) => `(v.animate_${type}==${id}${extra})`);
+      const open = `(`;
+      const close = `) ? { v.tlm_suppress_molang_blink=1; };`;
+      const budget = PRE_ANIMATION_MOLANG_MAX_LENGTH - open.length - close.length;
+      let batch = '';
+      for (const term of idTerms) {
+        const next = batch ? `${batch}||${term}` : term;
+        if (batch && next.length > budget) {
+          lines.push(`${open}${batch}${close}`);
+          batch = term;
+        } else {
+          batch = next;
+        }
+      }
+      if (batch) {
+        lines.push(`${open}${batch}${close}`);
+      }
     }
-    return clauses.join('');
+    return lines;
   }
 
   /**
@@ -484,23 +520,33 @@ export class MaidAnimationConvertor {
           }
           return defaultAnimId;
         };
-        const animateAssigns = needAnimateAssigns
-          ? (Object.values(AnimationTypes) as AnimationTypes[])
-            .map((type) => `v.animate_${type}=${types?.[type] ?? fallbackAnimId(type)};`)
-            .join("")
-          : "";
-
+        const assignStmts: string[] = [];
         const scale = scales?.get(modelId);
-        const scaleAssign = scale !== undefined ? `v.scale=${scale};` : "";
+        if (scale !== undefined) {
+          assignStmts.push(`v.scale=${scale};`);
+        }
+        if (needAnimateAssigns) {
+          for (const type of Object.values(AnimationTypes) as AnimationTypes[]) {
+            assignStmts.push(
+              `v.animate_${type}=${types?.[type] ?? fallbackAnimId(type)};`,
+            );
+          }
+        }
         // gecko：animate_blink 置 0，并标记 tlm_is_gecko
-        const geckoAssign = isGecko ? "v.animate_blink=0;v.tlm_is_gecko=1;" : "";
-        const assigns = `${scaleAssign}${animateAssigns}${geckoAssign}`;
-
-        if (!assigns) {
+        if (isGecko) {
+          assignStmts.push("v.animate_blink=0;");
+          assignStmts.push("v.tlm_is_gecko=1;");
+        }
+        if (assignStmts.length === 0) {
           continue;
         }
         lines.push(
-          `(v.pack == ${skinPack}) ? { (v.model==${modelId}) ? { ${assigns} }; };`,
+          ...chunkGatedMolangStatements(
+            `(v.pack == ${skinPack}) ? { (v.model==${modelId}) ? { `,
+            ` }; };`,
+            assignStmts,
+            PRE_ANIMATION_MOLANG_MAX_LENGTH,
+          ),
         );
       }
     }

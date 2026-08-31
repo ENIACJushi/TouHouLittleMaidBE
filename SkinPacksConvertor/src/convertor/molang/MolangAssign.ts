@@ -43,3 +43,49 @@ export const toVariableAssignKey = (varName: string): string => {
 export const fieldFromVariableLhs = (varName: string): string => {
   return varName.replace(/^(?:v|variable)\./i, '');
 };
+
+/**
+ * 将多条语句按 body 长度上限拆成若干段（保持顺序）。
+ * 单条语句本身超限时仍单独成段（无法再拆）。
+ */
+export const chunkMolangStatements = (
+  statements: readonly string[],
+  maxBodyLen: number,
+): string[] => {
+  if (statements.length === 0) {
+    return [];
+  }
+  const budget = Math.max(64, maxBodyLen);
+  const bodies: string[] = [];
+  let batch = '';
+  for (const stmt of statements) {
+    if (batch.length > 0 && batch.length + stmt.length > budget) {
+      bodies.push(batch);
+      batch = '';
+    }
+    if (batch.length === 0 && stmt.length > budget) {
+      bodies.push(stmt);
+      continue;
+    }
+    batch += stmt;
+  }
+  if (batch.length > 0) {
+    bodies.push(batch);
+  }
+  return bodies;
+};
+
+/**
+ * 将语句包进门控壳 `open + body + close`，并按整行长度上限拆成多条。
+ */
+export const chunkGatedMolangStatements = (
+  open: string,
+  close: string,
+  statements: readonly string[],
+  maxLineLen: number,
+): string[] => {
+  const maxBodyLen = maxLineLen - open.length - close.length;
+  return chunkMolangStatements(statements, maxBodyLen).map(
+    (body) => `${open}${body}${close}`,
+  );
+};
