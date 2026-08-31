@@ -226,13 +226,14 @@ export class MaidAnimationConvertor {
     // 配饰隐藏值每帧再写一次，避免基岩嵌套/状态重置后重新露出来（实现见 ysm/accessory）
     appendForcedYsmAccessoryDefaultsToPreAnimation(res.scripts.pre_animation);
     // 汇总展示条件：写入 v.animate_*（门控脚本依赖这些值）
-    const conditionMolang = this.buildShowConditionMolang(
+    // 按模型拆成多条，避免单条 molang 过长被基岩截断
+    const conditionMolangs = this.buildShowConditionMolang(
       showConditions,
       this.modelScale,
       this.modelIsGecko,
     );
-    if (conditionMolang) {
-      res.scripts.pre_animation.push(conditionMolang);
+    if (conditionMolangs.length > 0) {
+      res.scripts.pre_animation.push(...conditionMolangs);
     }
     // pre_parallel 目标赋值优先于 parallel 弹簧积分（同帧内先更新 tail* 再积 L13）
     deferredGatedScripts.sort((a, b) => gatedScriptOrder(a) - gatedScriptOrder(b));
@@ -429,18 +430,23 @@ export class MaidAnimationConvertor {
   }
 
   /**
-   * 汇总 pack/model 到动画变量的切换条件
-   *  形如：temp.pack=...;temp.model=...;(temp.pack == 1001) ? { (temp.model==0) ? { v.animate_sit=1; }; };
+   * 汇总 pack/model 到动画变量的切换条件（按模型拆成多条，避免单条过长）
+   *  形如：
+   *    v.pack=...;v.model=...;
+   *    (v.pack == 1001) ? { (v.model==0) ? { v.animate_sit=1; }; };
    */
   private buildShowConditionMolang(
     showConditions: Map<number, Map<number, Partial<Record<AnimationTypes, number>>>>,
     modelScale: Map<number, Map<number, number>>,
     modelIsGecko: Map<number, Map<number, boolean>>,
-  ): string {
+  ): string[] {
     if (showConditions.size === 0 && modelScale.size === 0 && modelIsGecko.size === 0) {
-      return "";
+      return [];
     }
-    let molang = `temp.pack=q.property('thlm:skin_pack');temp.model=q.variant;`;
+    const lines: string[] = [
+      "v.pack=q.property('thlm:skin_pack');",
+      "v.model=q.variant;",
+    ];
 
     const allPackIds = new Set<number>([
       ...showConditions.keys(),
@@ -459,7 +465,6 @@ export class MaidAnimationConvertor {
         ...(geckoFlags?.keys() ?? []),
       ]);
 
-      let modelBlocks = "";
       for (const modelId of allModelIds) {
         const types = models?.get(modelId);
         const isGecko = geckoFlags?.get(modelId) ?? false;
@@ -494,15 +499,13 @@ export class MaidAnimationConvertor {
         if (!assigns) {
           continue;
         }
-        modelBlocks += `(temp.model==${modelId}) ? { ${assigns} };`;
+        lines.push(
+          `(v.pack == ${skinPack}) ? { (v.model==${modelId}) ? { ${assigns} }; };`,
+        );
       }
-
-      if (!modelBlocks) {
-        continue;
-      }
-      molang += `(temp.pack == ${skinPack}) ? { ${modelBlocks} };`;
     }
-    return molang;
+    // 仅有赋值头、没有任何模型条件时视为空
+    return lines.length > 2 ? lines : [];
   }
 }
 
