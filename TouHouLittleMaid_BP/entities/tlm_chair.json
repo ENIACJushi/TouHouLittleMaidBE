@@ -33,7 +33,6 @@
         ]
       },
       "minecraft:movement": { "value": 0 },
-      "minecraft:rideable": {"interact_text":"action.interact.ride.boat","controlling_seat":0,"crouching_skip_interact":true,"family_types":["player"],"pull_in_entities":false,"rider_can_interact":false,"seat_count":1,"on_rider_exit_event":"tlm:char_exit","seats":[{"position":[0,-0.1875,0]}]},
       "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": "no" } ] },
       "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
       "minecraft:persistent": {},

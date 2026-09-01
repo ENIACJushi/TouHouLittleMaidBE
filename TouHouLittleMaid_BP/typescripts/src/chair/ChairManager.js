@@ -100,8 +100,13 @@ export class ChairManager {
       spawnEvent: `skin:${index}`
     });
     EntityChair.Skin.setPack(chair, pack);
-    // spawnEvent 已设 variant，此处按 pack+index 应用 mounted_height
-    EntityChair.Skin.applyMountedHeight(chair);
+    // spawnEvent 已设 variant；延后一 tick 再应用 mounted_height，确保实体事件就绪
+    system.run(() => {
+      if (!chair.isValid) {
+        return;
+      }
+      EntityChair.Skin.applyMountedHeight(chair);
+    });
   }
   /**
    * 潜行攻击收回坐垫
