@@ -177,13 +177,14 @@ export let TEMPLATE = {
       },
       // 正常跟随（坐下）
       "status:follow_sit":{
-        "minecraft:behavior.follow_owner": {
-          "priority": 6,
-          "speed_multiplier": 0.0,
-          "start_distance": 10,
-          "stop_distance": 3,
-          "can_teleport": false
-        }
+        // 新版本使用这个组件会在跨维度时进门，即使can_teleport为false。所以删了，测试没有问题
+        // "minecraft:behavior.follow_owner": {
+        //   "priority": 6,
+        //   "speed_multiplier": 0.0,
+        //   "start_distance": 2,
+        //   "stop_distance": 2,
+        //   "can_teleport": false
+        // }
       },
 
       "thlmm:maid_wild": {
