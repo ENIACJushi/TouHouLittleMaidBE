@@ -532,7 +532,7 @@ export class Farm{
                         let mature = true;
                         for(let key in corpInfo.state){
                             if(block.permutation.getState(key) !== corpInfo.state[key]){
-                                console.info('not mature, exit')
+                                // console.info('not mature, exit')
                                 mature = false;
                                 break;
                             }
