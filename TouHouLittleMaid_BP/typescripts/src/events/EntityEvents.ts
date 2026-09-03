@@ -212,6 +212,9 @@ export class EntityEvents {
     world.afterEvents.dataDrivenEntityTrigger.subscribe(event => {
       system.run(() => { this.dataDrivenEntityTrigger(event); });
     });
+    world.afterEvents.entityDie.subscribe(event => {
+      this.entityDie(event);
+    });
     world.beforeEvents.playerInteractWithEntity.subscribe(event => {
       this.entityInteractEvent(event);
     });
