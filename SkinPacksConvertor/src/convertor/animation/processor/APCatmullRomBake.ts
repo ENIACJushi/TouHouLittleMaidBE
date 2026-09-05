@@ -11,18 +11,26 @@ import {
 type AnimationChannel = PositionChannel | RotationChannel | ScaleChannel | undefined;
 type Vec3 = [Molang, Molang, Molang];
 type NumVec3 = [number, number, number];
+type ChannelEntry = {time: string; numTime: number; value: Vec3KeyframeValue};
 
-const EPSILON_TIME = 1e-4;
-
-/** 烘焙选项：force 时即使全常量也烘焙（walk 注入 Molang 前必须先去样条） */
+/** 烘焙选项 */
 export type BakeCatmullRomOptions = {
+  /** 即使全常量也烘焙（walk 注入 Molang 前必须先去样条） */
   force?: boolean;
+  /**
+   * 是否循环动画。未传时由 animation.loop===true 推断。
+   * 基岩循环 catmullrom 接缝不环绕，每圈会卡一下，故循环纯常量也需烘焙。
+   */
+  loop?: boolean;
 };
 
 /**
  * 不指定 types：注册到全部 AnimationTypes。
- * 须在 APCatmullRomScaleHold 之后：先补 scale 末帧，再处理 catmullrom。
- * 仅当通道混有 Molang 时烘焙/降级，纯常量通道保留原生样条（避免 idle 稀疏关键帧变卡顿）。
+ * 须在 APCatmullRomScaleHold 之后：先补 catmullrom 末帧 hold，再处理样条。
+ *
+ * - 含 Molang：去掉 catmullrom，避免预计算报错
+ * - 循环纯常量：环绕烘焙为线性（修接缝卡顿，且保留原关键帧峰值）
+ * - 非循环纯常量：保留原生样条（眨眼等短关键帧靠 Hold 稳住）
  */
 export const data = {
   types: undefined, // 对所有动画均执行
@@ -40,9 +48,7 @@ export const data = {
  * 基岩对 catmullrom（cubic）会做预计算，要求通道内关键帧均为常量；
  * 一旦同通道混入 Molang（如雨天分支），会报：
  * 「Precomputed cubic interpolation requires keyframes have constant data」。
- *
- * 策略：默认只处理「含 Molang」的通道；纯数值 catmullrom（常见于 idle 摇晃）保留，
- * 以免稀疏样条被压成线性平台导致一卡一卡。walk 等需先注入 Molang 的路径请传 force。
+ * 另：`loop:true` 时样条邻域不环绕，接缝易每圈卡一下。
  */
 export function bakeCatmullRomBones(
   animation: AnimationDefinition180,
@@ -51,10 +57,14 @@ export function bakeCatmullRomBones(
   if (!animation.bones) {
     return;
   }
+  const resolved: BakeCatmullRomOptions = {
+    ...options,
+    loop: options?.loop ?? animation.loop === true,
+  };
   for (const bone of Object.values(animation.bones)) {
-    bakeCatmullRomChannelToLinear(bone.position, options);
-    bakeCatmullRomChannelToLinear(bone.rotation, options);
-    bakeCatmullRomChannelToLinear(bone.scale, options);
+    bakeCatmullRomChannelToLinear(bone.position, resolved);
+    bakeCatmullRomChannelToLinear(bone.rotation, resolved);
+    bakeCatmullRomChannelToLinear(bone.scale, resolved);
   }
 }
 
@@ -67,6 +77,7 @@ export function bakeCatmullRomChannelToLinear(
     normalizeKeyframeChannel(
       data as Record<string, Vec3KeyframeValue>,
       options?.force === true,
+      options?.loop === true,
     );
   }
 }
@@ -74,6 +85,7 @@ export function bakeCatmullRomChannelToLinear(
 function normalizeKeyframeChannel(
   channel: Record<string, Vec3KeyframeValue>,
   force: boolean,
+  loop: boolean,
 ) {
   const entries = Object.entries(channel)
     .map(([time, value]) => ({time, numTime: Number(time), value}))
@@ -92,76 +104,115 @@ function normalizeKeyframeChannel(
     return;
   }
 
-  // 纯常量样条可安全交给基岩预计算；勿烘焙，保留 idle 等平滑摇晃
-  if (!force && !entries.some((e) => keyframeHasMolang(e.value))) {
+  const hasMolang = entries.some((e) => keyframeHasMolang(e.value));
+
+  // 非循环纯常量：保留原生样条（眨眼短轨 + Hold 已够用）
+  if (!force && !hasMolang && !loop) {
     return;
   }
 
+  // 全通道可数值化时走环绕友好烘焙；否则降级去掉 lerp_mode
+  if (!hasMolang && canBakeAllNumeric(entries)) {
+    bakeNumericCatmullRomChannel(channel, entries, loop);
+    return;
+  }
+
+  stripCatmullRomToLinear(channel, entries);
+}
+
+/** 是否所有关键帧都能取出数值 vec3（可做样条采样） */
+function canBakeAllNumeric(entries: ChannelEntry[]): boolean {
+  return entries.every((entry) => {
+    const base = Array.isArray(entry.value)
+      ? entry.value as Vec3
+      : pickObjectVec3(entry.value as Vec3KeyframeObject);
+    return !!base && !!toNumVec3(base);
+  });
+}
+
+/**
+ * 数值 catmullrom → 线性：保留原关键帧值，段内按样条插密点。
+ * loop 时邻域环绕（首尾同值则按闭合轨处理），避免接缝切线断裂。
+ */
+function bakeNumericCatmullRomChannel(
+  channel: Record<string, Vec3KeyframeValue>,
+  entries: ChannelEntry[],
+  loop: boolean,
+) {
+  const bases = entries.map((entry) => {
+    const base = Array.isArray(entry.value)
+      ? entry.value as Vec3
+      : pickObjectVec3(entry.value as Vec3KeyframeObject)!;
+    return toNumVec3(base)!;
+  });
+
+  const closed = loop && isClosedDuplicate(bases);
   const normalized: Record<string, Vec3KeyframeValue> = {};
 
-  entries.forEach((entry, index) => {
-    const {time, numTime, value} = entry;
+  for (let i = 0; i < entries.length; i++) {
+    // 必须保留原关键帧峰值，旧实现用中点均值覆盖会导致中段平台、摇晃变卡
+    normalized[entries[i].time] = [...bases[i]] as Vec3;
 
-    // 普通 vec3 关键帧
+    if (i >= entries.length - 1) {
+      continue;
+    }
+
+    const p0 = sampleBase(bases, i - 1, loop, closed);
+    const p1 = bases[i];
+    const p2 = bases[i + 1];
+    const p3 = sampleBase(bases, i + 2, loop, closed);
+    const t0 = entries[i].numTime;
+    const t1 = entries[i + 1].numTime;
+
+    // 段内 1/4、1/2、3/4 采样，比单中点更接近原样条
+    for (const u of [0.25, 0.5, 0.75]) {
+      putIfAbsent(normalized, t0 + (t1 - t0) * u, catmullRom(p0, p1, p2, p3, u));
+    }
+  }
+
+  writeChannel(channel, normalized);
+}
+
+/** 含 Molang 或无法数值化：去掉 catmullrom，尽量保留 vec3 */
+function stripCatmullRomToLinear(
+  channel: Record<string, Vec3KeyframeValue>,
+  entries: ChannelEntry[],
+) {
+  const normalized: Record<string, Vec3KeyframeValue> = {};
+
+  for (const entry of entries) {
+    const {time, value} = entry;
     if (Array.isArray(value)) {
       normalized[time] = [...value] as Vec3;
-      return;
+      continue;
     }
 
     const mode = value.lerp_mode ?? 'linear';
-
     if (mode === 'linear') {
       const linearValue = pickPostVec3(value) ?? pickObjectVec3(value);
       if (linearValue) {
         normalized[time] = [...linearValue] as Vec3;
       }
-      return;
+      continue;
     }
 
-    // catmullrom：能数值化则烘焙平滑点；含 Molang 则降为线性 vec3（去掉 lerp_mode）
     const currentBase = pickObjectVec3(value);
-    if (!currentBase) {
-      // 无法取到 pre/post 时保留原对象但去掉 catmullrom，避免引擎预计算失败
-      const {lerp_mode: _removed, ...rest} = value;
-      normalized[time] = Object.keys(rest).length ? rest : value;
-      return;
-    }
-
-    const prevBase = getNeighborBase(entries, index - 1) ?? currentBase;
-    const nextBase = getNeighborBase(entries, index + 1) ?? currentBase;
-
-    const prevNum = toNumVec3(prevBase);
-    const currNum = toNumVec3(currentBase);
-    const nextNum = toNumVec3(nextBase);
-
-    if (!prevNum || !currNum || !nextNum) {
+    if (currentBase) {
       normalized[time] = [...currentBase] as Vec3;
-      return;
+      continue;
     }
 
-    const prev2Base = getNeighborBase(entries, index - 2) ?? prevBase;
-    const next2Base = getNeighborBase(entries, index + 2) ?? nextBase;
-    const prev2Num = toNumVec3(prev2Base) ?? prevNum;
-    const next2Num = toNumVec3(next2Base) ?? nextNum;
+    const {lerp_mode: _removed, ...rest} = value;
+    normalized[time] = Object.keys(rest).length ? rest : value;
+  }
 
-    const beforeValue = catmullRom(prev2Num, prevNum, currNum, nextNum, 0.5);
-    const afterValue = catmullRom(prevNum, currNum, nextNum, next2Num, 0.5);
-    normalized[time] = [
-      (beforeValue[0] + afterValue[0]) / 2,
-      (beforeValue[1] + afterValue[1]) / 2,
-      (beforeValue[2] + afterValue[2]) / 2,
-    ];
+  writeChannel(channel, normalized);
+}
 
-    const prevTime = index > 0 ? entries[index - 1].numTime : undefined;
-    const nextTime = index < entries.length - 1 ? entries[index + 1].numTime : undefined;
-
-    const beforeTime = prevTime !== undefined ? (prevTime + numTime) / 2 : Math.max(0, numTime - EPSILON_TIME);
-    const afterTime = nextTime !== undefined ? (numTime + nextTime) / 2 : numTime + EPSILON_TIME;
-
-    putIfAbsent(normalized, beforeTime, beforeValue);
-    putIfAbsent(normalized, Math.max(0, afterTime), afterValue);
-  });
-
+function writeChannel(
+  channel: Record<string, Vec3KeyframeValue>,
+  normalized: Record<string, Vec3KeyframeValue>,
+) {
   // 保留无法解析时间键的原始条目
   Object.entries(channel).forEach(([time, value]) => {
     if (!Number.isFinite(Number(time))) {
@@ -191,18 +242,42 @@ function normalizeKeyframeChannel(
     });
 }
 
-function getNeighborBase(
-  entries: Array<{time: string; numTime: number; value: Vec3KeyframeValue}>,
+function isClosedDuplicate(bases: NumVec3[]): boolean {
+  if (bases.length < 2) {
+    return false;
+  }
+  const a = bases[0];
+  const b = bases[bases.length - 1];
+  return (
+    Math.abs(a[0] - b[0]) < 1e-4
+    && Math.abs(a[1] - b[1]) < 1e-4
+    && Math.abs(a[2] - b[2]) < 1e-4
+  );
+}
+
+/** 取邻域控制点；loop+闭合轨时在「去重末帧」的周期内环绕 */
+function sampleBase(
+  bases: NumVec3[],
   index: number,
-): Vec3 | undefined {
-  if (index < 0 || index >= entries.length) {
-    return undefined;
+  loop: boolean,
+  closed: boolean,
+): NumVec3 {
+  const n = bases.length;
+  if (!loop) {
+    const clamped = Math.max(0, Math.min(n - 1, index));
+    return bases[clamped];
   }
-  const value = entries[index].value;
-  if (Array.isArray(value)) {
-    return value as Vec3;
+  if (closed && n >= 2) {
+    const period = n - 1;
+    let i = index;
+    // 末帧与首帧同值，读值时映射到 0
+    if (i === n - 1) {
+      i = 0;
+    }
+    i = ((i % period) + period) % period;
+    return bases[i];
   }
-  return pickObjectVec3(value);
+  return bases[((index % n) + n) % n];
 }
 
 /** 关键帧是否含非数值 Molang（字符串表达式） */

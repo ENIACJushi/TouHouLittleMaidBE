@@ -48,9 +48,9 @@ export class AnimationProcessor {
     registerFunc(dataPreParallelEyeGuard);
     // 须在 ScaleHold / Bake 之前：Gecko 标量关键帧简写展开为基岩要求的 vec3
     registerFunc(dataScalarVec3Expand);
-    // 须在 EyeGuard + 标量展开之后：同时处理原动画与 extractedEyeAnimation 的 scale hold
+    // 须在 EyeGuard + 标量展开之后：catmullrom 通道在 animation_length 补 hold（scale/position/rotation）
     registerFunc(dataCatmullRomScaleHold);
-    // 须在 ScaleHold 之后：仅对含 Molang 的通道去掉 catmullrom，纯常量样条保留
+    // 须在 ScaleHold 之后：Molang 通道去样条；循环纯常量环绕烘焙；非循环纯常量保留
     registerFunc(dataCatmullRomBake);
   }
 

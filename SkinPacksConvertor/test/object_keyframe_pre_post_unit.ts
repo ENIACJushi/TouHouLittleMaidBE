@@ -35,6 +35,28 @@ function deepEqual(a: unknown, b: unknown): boolean {
   assert(hold.post.every((x: unknown) => x !== null && x !== undefined), 'no null');
 }
 
+// Hold：短眨眼 position + 长 animation_length → 在末尾补 position hold，避免样条漂移上抬
+{
+  const anim: AnimationDefinition180 = {
+    animation_length: 4,
+    bones: {
+      LeftEyelid: {
+        position: {
+          '0.0': {post: [0, 0, 0], lerp_mode: 'catmullrom'},
+          '0.0833': [0, 0.7, 0],
+          '0.2083': {post: [0, 0.7, 0], pre: [0, 0.7, 0], lerp_mode: 'catmullrom'},
+          '0.2917': {post: [0, 0, 0], lerp_mode: 'catmullrom'},
+        },
+      },
+    },
+  };
+  padCatmullRomScaleHold(anim);
+  const ch = anim.bones!.LeftEyelid.position as Record<string, any>;
+  const hold = ch['4'];
+  assert(hold && hold.lerp_mode === 'catmullrom', 'position hold at animation_length');
+  assert(deepEqual(hold.post, [0, 0, 0]), 'position hold clones open-eye value');
+}
+
 // Bake：未先展开时也能吃掉 {post:0} 标量 catmullrom
 {
   const anim: AnimationDefinition180 = {
