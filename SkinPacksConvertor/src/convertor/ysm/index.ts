@@ -5,6 +5,7 @@
  * - `YsmJson.d.ts` / `YsmPackLocator`：清单类型与 zip 内定位
  * - `YsmPackConvertor` / `convertYsmPackRoot`：单包转换入口
  * - `YsmLocomotionResolver`：空桩 walk/idle 等用控制器/启发式填充
+ * - `adaptYsmSitAnimation`：坐下动画贴地补足（Root/AllBody Y + sitheight 默认）
  * - `roaming/`：`v.roaming.*` 展平字段名与简易求值
  * - `accessory/`：默认隐藏登记、几何体删骨、动画 scale 烘焙、pre_animation 兜底
  *
@@ -12,9 +13,9 @@
  * 1. 解析 `ysm.json`（spec=2，需 `files.player.model.main`）
  * 2. 语言 / 元数据 / 图标
  * 3. 读 animation_controllers → locomotion 提示
- * 4. {@link registerYsmAccessoryDefaults}（轮盘 + 动画文本）
+ * 4. {@link registerYsmAccessoryDefaults}（轮盘 + 动画文本；sitheight 负向默认）
  * 5. {@link collectYsmHideBoneNames} → 几何体永久隐藏
- * 6. 贴图变体、绑定 main/tlm 动画、{@link fillEmptyCanonicalClips}
+ * 6. 贴图变体、绑定 main/tlm 动画、{@link fillEmptyCanonicalClips}、{@link adaptYsmSitClips}
  * 7. 渲染控制器 / 实体 geometry+textures
  *
  * ## 与总入口的关系
@@ -42,6 +43,15 @@ export {
   resolveLocomotionSourceKey,
   extractStateAnimationNames,
 } from './YsmLocomotionResolver';
+export {
+  adaptYsmSitAnimation,
+  adaptYsmSitClips,
+  estimateSitDownwardY,
+  sitheightDefaultFromForm,
+  isSitheightField,
+  YSM_SIT_TARGET_LOWER_Y,
+  YSM_SITHEIGHT_DEFAULT,
+} from './adaptYsmSitAnimation';
 export type {
   ControllerClipHints,
   YsmAnimationControllerFile,

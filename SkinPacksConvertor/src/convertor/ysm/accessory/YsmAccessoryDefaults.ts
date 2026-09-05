@@ -4,6 +4,11 @@ import {
   registerMolangVariableKeep,
 } from '../../molang/v/VariableResolvers';
 import {toYsmRoamingKeepField} from '../roaming/YsmRoamingFields';
+import {
+  isSitheightField,
+  sitheightDefaultFromForm,
+  YSM_SITHEIGHT_DEFAULT,
+} from '../adaptYsmSitAnimation';
 
 const TAG = 'YsmAccessoryDefaults';
 
@@ -45,6 +50,9 @@ export function registerYsmAccessoryDefaults(
     }
   }
 
+  // 坐下高度：动画引用了 sitheight 但尚未得到负向默认时补上（基岩无轮盘可调）
+  ensureSitheightDefaultsFromAnimation(combined, defaults);
+
   // 3) 登记到全局 keep + 默认值表（导出 initialize / pre_animation 时使用）
   for (const [field, value] of defaults) {
     registerMolangVariableDefault(field, value);
@@ -61,7 +69,8 @@ export function registerYsmAccessoryDefaults(
  *
  * - 仅处理 `value` 为 `v.roaming.xxx` / `variable.roaming.xxx` 的项
  * - checkbox：标题/描述命中「消失」等关键词 → 1，否则 → 0
- * - range / radio：未登记时默认 0（保留常服/默认表情）
+ * - **坐下高度** range：默认取负向 min（贴地），见 {@link sitheightDefaultFromForm}
+ * - 其它 range / radio：未登记时默认 0（保留常服/默认表情）
  */
 function applyConfigFormDefault(form: YsmConfigForm, defaults: Map<string, number>): void {
   const field = roamingFieldFromValue(form.value);
@@ -77,9 +86,34 @@ function applyConfigFormDefault(form: YsmConfigForm, defaults: Map<string, numbe
     return;
   }
 
+  // 坐下高度：Java 靠轮盘调负值贴地；基岩无 UI，必须给负向默认
+  const leaf = field.replace(/^ysm_roaming_/, '');
+  if (form.type === 'range' && isSitheightField(leaf, form.title, form.description)) {
+    defaults.set(field, sitheightDefaultFromForm(form.min, form.max));
+    return;
+  }
+
   // range / radio：服装与表情保持 0（默认款）
   if (!defaults.has(field)) {
     defaults.set(field, 0);
+  }
+}
+
+/**
+ * 动画里出现 `v.roaming.sitheight` 等、但轮盘未给出负向默认时，登记贴地缺省。
+ */
+function ensureSitheightDefaultsFromAnimation(
+  animationText: string,
+  defaults: Map<string, number>,
+): void {
+  for (const m of animationText.matchAll(
+    /(?:v|variable)\.roaming\.(sitheight|sit_height)/gi,
+  )) {
+    const field = toYsmRoamingKeepField(m[1]);
+    const cur = defaults.get(field);
+    if (cur === undefined || cur === 0) {
+      defaults.set(field, YSM_SITHEIGHT_DEFAULT);
+    }
   }
 }
 

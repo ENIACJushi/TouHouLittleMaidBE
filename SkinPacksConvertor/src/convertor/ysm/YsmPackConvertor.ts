@@ -13,6 +13,7 @@ import {
   fillEmptyCanonicalClips,
   YsmAnimationControllerFile,
 } from './YsmLocomotionResolver';
+import {adaptYsmSitClips} from './adaptYsmSitAnimation';
 import {registerYsmAccessoryDefaults} from './accessory/YsmAccessoryDefaults';
 import {
   applyHideBonesToGeometry,
@@ -388,6 +389,10 @@ export class YsmPackConvertor {
       // main 角色常把 walk/idle 留作空桩，真实 clip 在 pre_main 控制器里
       if (info?.animation?.animations && role === 'main') {
         fillEmptyCanonicalClips(info.animation.animations, hints);
+      }
+      // YSM sit 下压不足 / 依赖 sitheight：补足贴地（须在空桩填充之后）
+      if (info?.animation?.animations) {
+        adaptYsmSitClips(info.animation.animations);
       }
     }
   }
