@@ -28,14 +28,14 @@
   ],
   "subpacks": [
     {
-      "folder_name": "simple",
-      "name": "Simple",
+      "folder_name": "full",
+      "name": "Full models",
       "memory_tier": 0
     },
     {
-      "folder_name": "full",
-      "name": "Full models",
-      "memory_tier": 1
+      "folder_name": "simple",
+      "name": "Simple",
+      "memory_tier": 0
     }
   ],
   "dependencies": [

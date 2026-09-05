@@ -572,6 +572,7 @@ gui.touhou_little_maid:skin.text.version.name=版本：%s
 gui.touhou_little_maid:skin.text.date.name=日期：%s
 gui.touhou_little_maid:skin.button.close.name=关闭
 gui.touhou_little_maid:skin.tooltips.show_details.name=Shift 点击打开详情界面
+gui.touhou_little_maid:skin.gecko.simple_tip=§7使用精简模型包时 gecko 模型仅加载一个，可在“编辑世界”的资源包设置加载全部
 
 gui.touhou_little_maid:button.pickup.desc.name=§7点击此按钮可以设置女仆是否主动拾取掉落物
 gui.touhou_little_maid:button.maid_riding_set.true.name=女仆骑乘已开启

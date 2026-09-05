@@ -518,6 +518,7 @@ gui.touhou_little_maid:skin.text.version.name=Version: %s
 gui.touhou_little_maid:skin.text.date.name=Date: %s
 gui.touhou_little_maid:skin.button.close.name=Close
 gui.touhou_little_maid:skin.tooltips.show_details.name=Shift Click To Open The Details GUI
+gui.touhou_little_maid:skin.gecko.simple_tip=§7With the Simple subpack, only one Gecko model is loaded. Switch to Full in Edit World → Resource Packs to load all.
 gui.touhou_little_maid:button.home.true.name=Home Mode Is Enable
 gui.touhou_little_maid:button.home.false.name=Home Mode Is Disable
 gui.touhou_little_maid:button.home.desc.name=§7Click this button to set whether the maid will follow the player.

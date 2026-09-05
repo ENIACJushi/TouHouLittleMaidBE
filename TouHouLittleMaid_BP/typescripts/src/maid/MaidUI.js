@@ -173,12 +173,18 @@ class MaidMenuSimple {
      * @param packId 皮肤包 id
      */
     skinSelection(packId){
+        // 描述：作者；Geckolib 包额外提示精简子包仅加载一个模型
+        const bodyRawtext = [
+            {"translate":"gui.touhou_little_maid.author.name"},
+            MaidSkin.getAuthors(packId),
+        ];
+        if (packId === 1) {
+            bodyRawtext.push({"text": "\n"});
+            bodyRawtext.push({"translate": "gui.touhou_little_maid:skin.gecko.simple_tip"});
+        }
         const form = new mcui.ActionFormData()
             .title(MaidSkin.getPackDisplayName(packId)) // 皮肤包名称
-            .body({"rawtext":[
-                {"translate":"gui.touhou_little_maid.author.name"},
-                MaidSkin.getAuthors(packId),
-            ]}); // 描述文案（目前只有作者）
+            .body({"rawtext": bodyRawtext});
 
         const amount = MaidSkin.getSkinAmount(packId);
         for (let i = 0; i < amount; i++) {
@@ -300,12 +306,18 @@ class MaidMenuUI {
      * @param packId 皮肤包 id
      */
     skinSelection(packId){
+        // 描述：作者；Geckolib 包额外提示精简子包仅加载一个模型
+        const bodyRawtext = [
+            {"translate":"gui.touhou_little_maid.author.name"},
+            MaidSkin.getAuthors(packId),
+        ];
+        if (packId === 1) {
+            bodyRawtext.push({"text": "\n"});
+            bodyRawtext.push({"translate": "gui.touhou_little_maid:skin.gecko.simple_tip"});
+        }
         const form = new mcui.ActionFormData()
           .title(MaidSkin.getPackDisplayName(packId)) // 皮肤包名称
-          .body({"rawtext":[
-                  {"translate":"gui.touhou_little_maid.author.name"},
-                  MaidSkin.getAuthors(packId),
-              ]}); // 描述文案（目前只有作者）
+          .body({"rawtext": bodyRawtext});
 
         const amount = MaidSkin.getSkinAmount(packId);
         for (let i = 0; i < amount; i++) {
