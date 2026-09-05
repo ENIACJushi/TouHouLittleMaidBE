@@ -61,7 +61,7 @@ const MESSAGES: Record<UiLang, Record<I18nKey, string>> = {
     authors: '作者',
     version: '版本',
     heroPacksTitle: '模型包浏览',
-    heroPacksDesc: '浏览并下载 TLM 官方模型包（列表随网站打包更新，下载仍走官方源）。',
+    heroPacksDesc: '浏览并下载 TLM 官方模型包。',
   },
   'en-US': {
     navConvert: 'Converter',
@@ -92,8 +92,7 @@ const MESSAGES: Record<UiLang, Record<I18nKey, string>> = {
     authors: 'Authors',
     version: 'Version',
     heroPacksTitle: 'Model Pack Browser',
-    heroPacksDesc:
-      'Browse and download official TLM packs (list ships with the site build; downloads still use the official host).',
+    heroPacksDesc: 'Browse and download official TLM model packs.',
   },
 };
 
