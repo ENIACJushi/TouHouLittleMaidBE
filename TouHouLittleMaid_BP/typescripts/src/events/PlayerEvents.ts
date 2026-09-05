@@ -1,4 +1,5 @@
 import {
+  PlayerPermissionLevel,
   PlayerPlaceBlockAfterEvent,
   PlayerSpawnAfterEvent,
   system,
@@ -7,6 +8,10 @@ import {
 import { altarStructure } from '../altar/AltarStructureHelper';
 import PowerPoint from "../altar/PowerPoint";
 import { playerCMDName } from "../libs/ScarletToolKit";
+
+const ADMIN_BOOK_ID = "touhou_little_maid:memorizable_gensokyo_admin";
+/** 是否已发放过 OP 书（玩家动态属性） */
+const ADMIN_BOOK_GIVEN_PROP = "tlm:admin_book_given";
 
 export class PlayerEvents {
   // 玩家放置方块
@@ -50,6 +55,13 @@ export class PlayerEvents {
         player.dimension.runCommand(`give ${playerName} touhou_little_maid:smart_slab_has_maid 1`);
         // say something
         // event.player.sendMessage({translate: ""})
+      }
+      // 管理员进服：仅首次给予《记忆中的幻想乡》（OP）
+      if (player.playerPermissionLevel === PlayerPermissionLevel.Operator
+        && player.getDynamicProperty(ADMIN_BOOK_GIVEN_PROP) !== true) {
+        let playerName = playerCMDName(player.name);
+        player.dimension.runCommand(`give ${playerName} ${ADMIN_BOOK_ID} 1`);
+        player.setDynamicProperty(ADMIN_BOOK_GIVEN_PROP, true);
       }
     }
   }
