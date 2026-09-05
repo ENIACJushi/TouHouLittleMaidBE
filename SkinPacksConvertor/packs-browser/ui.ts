@@ -153,7 +153,7 @@ function showStatus(refs: PacksUiRefs, className: string, message: string, showE
   refs.statusEl.replaceChildren();
 
   const msg = document.createElement('p');
-  msg.className = showErrorActions ? 'packs-error-message' : undefined;
+  msg.className = showErrorActions ? 'packs-error-message' : '';
   msg.textContent = message;
   refs.statusEl.append(msg);
 
