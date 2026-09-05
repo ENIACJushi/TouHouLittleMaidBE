@@ -1,6 +1,7 @@
 import cssText from './styles.css';
+import embeddedInfo from './data/info.json';
 import { filterAndSortPacks } from './filter';
-import { INFO_JSON_URL, packsT } from './i18n';
+import { packsT } from './i18n';
 import type { PackCategory, PackInfo, PackSortKey, UiLang } from './types';
 import {
   mountPacksChrome,
@@ -35,8 +36,6 @@ let state: State = {
 let refs: PacksUiRefs | null = null;
 let visible = false;
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
-/** 用于忽略过期的 fetch 回调 */
-let fetchSeq = 0;
 
 function injectStylesOnce(): void {
   if (document.getElementById(STYLE_ID)) return;
@@ -55,30 +54,6 @@ function filterOpts() {
   };
 }
 
-/** 将 fetch 异常映射为可读的主文案；可选附带短 detail */
-function formatFetchError(err: unknown): string {
-  const detail = err instanceof Error ? err.message : String(err);
-  const lower = detail.toLowerCase();
-  const isFailedToFetch = /failed to fetch|load failed|networkerror|network request failed/.test(
-    lower,
-  );
-  const isTypeError = err instanceof TypeError;
-
-  let primary: string;
-  if (isFailedToFetch || isTypeError) {
-    // 浏览器跨域失败通常表现为 TypeError / Failed to fetch
-    primary = packsT(state.lang, 'errorCors');
-  } else if (/network|offline|timeout|abort/.test(lower)) {
-    primary = packsT(state.lang, 'errorNetwork');
-  } else {
-    primary = packsT(state.lang, 'error');
-  }
-
-  const short =
-    detail && detail !== primary && detail.length <= 80 ? detail.trim() : '';
-  return short ? `${primary} (${short})` : primary;
-}
-
 function listStateFor(filteredLen: number): PacksListState {
   if (state.loading) return 'loading';
   if (state.error) return 'error';
@@ -91,7 +66,6 @@ function rerender(): void {
   if (!refs) return;
   const opts = filterOpts();
   const total = state.packs?.length ?? 0;
-  // 每个 rerender 只过滤排序一次
   const packs =
     state.packs && !state.loading && !state.error
       ? filterAndSortPacks(state.packs, opts)
@@ -106,47 +80,42 @@ function rerender(): void {
   });
 }
 
-/** 仅允许请求 INFO_JSON_URL；禁止自动拉取其它资源 */
-async function fetchInfoJson(force: boolean): Promise<void> {
-  // 非强制刷新：已有数据则复用；进行中则不重复发起
-  if (!force) {
-    if (state.loading) return;
-    if (state.packs !== null) {
-      rerender();
-      return;
-    }
+/**
+ * 从构建时内嵌的 info.json 载入列表（无运行时网络请求，避免 CORS）。
+ * force：刷新按钮重新应用内嵌数据并清空筛选。
+ */
+function loadEmbeddedPacks(force: boolean): void {
+  if (!force && state.packs !== null) {
+    rerender();
+    return;
   }
 
-  const seq = ++fetchSeq;
   state.loading = true;
   state.error = null;
-  if (force) {
-    state.packs = null;
-  }
   rerender();
 
   try {
-    const res = await fetch(INFO_JSON_URL);
-    if (seq !== fetchSeq) return;
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status} ${res.statusText}`.trim());
+    if (!Array.isArray(embeddedInfo)) {
+      throw new Error('embedded info.json is not an array');
     }
-    const data: unknown = await res.json();
-    if (seq !== fetchSeq) return;
-    if (!Array.isArray(data)) {
-      throw new Error('Invalid info.json: expected array');
-    }
-    state.packs = data as PackInfo[];
+    state.packs = embeddedInfo as PackInfo[];
     state.error = null;
-  } catch (err) {
-    if (seq !== fetchSeq) return;
-    state.packs = null;
-    state.error = formatFetchError(err);
-  } finally {
-    if (seq === fetchSeq) {
-      state.loading = false;
-      rerender();
+    if (force) {
+      state.category = 'all';
+      state.query = '';
+      state.sort = 'time_desc';
+      if (refs) {
+        refs.searchInput.value = '';
+        refs.sortSelect.value = 'time_desc';
+      }
     }
+  } catch (err) {
+    state.packs = null;
+    const detail = err instanceof Error ? err.message : String(err);
+    state.error = `${packsT(state.lang, 'errorEmbedded')}${detail ? ` (${detail})` : ''}`;
+  } finally {
+    state.loading = false;
+    rerender();
   }
 }
 
@@ -174,12 +143,13 @@ function bindEvents(ui: PacksUiRefs): void {
     rerender();
   });
 
+  // 「刷新」：重新应用打包时内嵌的列表并重置筛选（不发起网络请求）
   ui.refreshBtn.addEventListener('click', () => {
-    void fetchInfoJson(true);
+    loadEmbeddedPacks(true);
   });
 
   ui.retryBtn.addEventListener('click', () => {
-    void fetchInfoJson(true);
+    loadEmbeddedPacks(true);
   });
 }
 
@@ -187,16 +157,14 @@ function init(root: HTMLElement): void {
   injectStylesOnce();
   refs = mountPacksChrome(root);
   bindEvents(refs);
-  // 仅挂载 UI，不立即请求
+  // 仅挂载 UI，进入「模型包」视图后再载入内嵌数据
   rerender();
 }
 
 function show(): void {
   visible = true;
-  // 首次加载进行中：勿再开一条 fetch（刷新/重试用 force）
-  if (state.loading && state.packs === null) return;
   if (state.packs === null) {
-    void fetchInfoJson(false);
+    loadEmbeddedPacks(false);
   } else {
     rerender();
   }
@@ -208,7 +176,6 @@ function hide(): void {
 
 function setLang(lang: UiLang): void {
   state.lang = lang;
-  // 隐藏时只更新状态；下次 show 会带新语言重绘
   if (visible) rerender();
 }
 

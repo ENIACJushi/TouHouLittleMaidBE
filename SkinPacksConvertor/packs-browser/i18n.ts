@@ -22,6 +22,7 @@ type I18nKey =
   | 'error'
   | 'errorCors'
   | 'errorNetwork'
+  | 'errorEmbedded'
   | 'retry'
   | 'openOfficial'
   | 'download'
@@ -44,7 +45,7 @@ const MESSAGES: Record<UiLang, Record<I18nKey, string>> = {
     sortTimeAsc: '上传时间 ↑',
     sortSizeDesc: '文件大小 ↓',
     sortSizeAsc: '文件大小 ↑',
-    refresh: '刷新',
+    refresh: '重置筛选',
     loading: '加载中…',
     empty: '没有匹配的模型包，请尝试其他关键词或分类。',
     error: '无法加载模型包列表',
@@ -52,6 +53,7 @@ const MESSAGES: Record<UiLang, Record<I18nKey, string>> = {
       '无法加载模型包列表：浏览器跨域（CORS）限制或网络失败。可重试，或打开官方目录。',
     errorNetwork:
       '无法加载模型包列表：网络请求失败。请检查连接后重试，或打开官方目录。',
+    errorEmbedded: '无法读取打包时内嵌的模型包列表。请重新执行构建以更新 info.json。',
     retry: '重试',
     openOfficial: '打开官方目录',
     download: '下载',
@@ -59,7 +61,7 @@ const MESSAGES: Record<UiLang, Record<I18nKey, string>> = {
     authors: '作者',
     version: '版本',
     heroPacksTitle: '模型包浏览',
-    heroPacksDesc: '浏览并下载 TLM 官方模型包。',
+    heroPacksDesc: '浏览并下载 TLM 官方模型包（列表随网站打包更新，下载仍走官方源）。',
   },
   'en-US': {
     navConvert: 'Converter',
@@ -73,7 +75,7 @@ const MESSAGES: Record<UiLang, Record<I18nKey, string>> = {
     sortTimeAsc: 'Upload time ↑',
     sortSizeDesc: 'File size ↓',
     sortSizeAsc: 'File size ↑',
-    refresh: 'Refresh',
+    refresh: 'Reset filters',
     loading: 'Loading…',
     empty: 'No matching packs. Try another keyword or category.',
     error: 'Failed to load pack list',
@@ -81,6 +83,8 @@ const MESSAGES: Record<UiLang, Record<I18nKey, string>> = {
       'Failed to load pack list: blocked by CORS or network. Retry, or open the official directory.',
     errorNetwork:
       'Failed to load pack list: network request failed. Check your connection, retry, or open the official directory.',
+    errorEmbedded:
+      'Failed to read the pack list embedded at build time. Rebuild the site to refresh info.json.',
     retry: 'Retry',
     openOfficial: 'Open official directory',
     download: 'Download',
@@ -88,7 +92,8 @@ const MESSAGES: Record<UiLang, Record<I18nKey, string>> = {
     authors: 'Authors',
     version: 'Version',
     heroPacksTitle: 'Model Pack Browser',
-    heroPacksDesc: 'Browse and download official TLM model packs.',
+    heroPacksDesc:
+      'Browse and download official TLM packs (list ships with the site build; downloads still use the official host).',
   },
 };
 

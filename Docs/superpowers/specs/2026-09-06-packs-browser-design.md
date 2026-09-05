@@ -10,7 +10,7 @@
 
 ## 非目标
 
-- 不自动下载 zip、图标或其它资源（进入浏览页后、用户主动操作前仅允许请求 `info.json`）
+- 不自动下载 zip、图标或其它资源（运行时不请求 `info.json`；列表由构建时下载并内嵌）
 - 不引入后端代理
 - 不修改转换器核心转换逻辑
 - 不强制与转换器深浅主题系统绑定
@@ -27,12 +27,14 @@
 SkinPacksConvertor/
   src/                    # 现有转换器（尽量不动）
   packs-browser/          # 新建：模型包浏览（与转换器隔离）
-    index.ts              # 入口：挂载、拉 info.json、绑定 UI
+    data/info.json        # 构建时从 tlmdl 下载，打包进网页
+    index.ts              # 入口：挂载、载入内嵌列表、绑定 UI
     types.ts              # info.json 类型
     filter.ts             # 分类 / 搜索 / 排序（纯函数）
     ui.ts                 # 渲染列表与控件
     i18n.ts               # 中英文本
     styles.css            # 浏览页独立轻量样式
+  scripts/fetch-info-json.js  # 构建前拉取 info.json
   src/index.html          # 顶栏切换 + 浏览视图容器
   webpack / build:single  # 额外打包 packs-browser 并内联
 ```
@@ -52,15 +54,15 @@ SkinPacksConvertor/
 
 ### 浏览页数据流
 
-1. **首次进入**「模型包」视图时才请求 `https://tlmdl.cfpa.team/info.json`；离开再回来不重复请求，除非用户点「刷新」。
-2. 解析为数组，存于内存。
-3. UI 状态：`category`（`all` / `maid` / `chair` / `sound`）+ `query` + `sort`（默认上传时间降序）。
-4. `filter.ts` 纯函数产出列表 → `ui.ts` 渲染。
-5. 下载：`https://tlmdl.cfpa.team` + `item.url`，仅用户点击时由浏览器导航/打开；不预拉图标、不预加载 zip。
+1. **首次进入**「模型包」视图时，从**构建时内嵌**的 `info.json` 载入内存（同步，无网络）。
+2. UI 状态：`category`（`all` / `maid` / `chair` / `sound`）+ `query` + `sort`（默认上传时间降序）。
+3. `filter.ts` 纯函数产出列表 → `ui.ts` 渲染。
+4. 下载：`https://tlmdl.cfpa.team` + `item.url`，仅用户点击时由浏览器导航/打开；不预拉图标、不预加载 zip。
+5. 「重置筛选」：重新应用内嵌数据并清空筛选；**不**在运行时重新请求远端。
 
 ### 失败与回退
 
-- `info.json` 失败：显示错误 +「重试」；可附「打开官方目录」外链兜底。
+- 内嵌数据缺失/损坏：显示错误 +「重试」+「打开官方目录」外链。
 - 单条缺 `zh_cn` / `en_us`：回退另一语言，再回退 `name` / `desc` key 本身。
 
 ## 列表 UI、搜索与排序
@@ -71,7 +73,7 @@ SkinPacksConvertor/
 - 搜索框：防抖约 200ms；匹配当前语言下的 name、desc、author 数组、`keyword`（大小写不敏感）
 - 排序：上传时间 ↓/↑、文件大小 ↓/↑；默认「上传时间 ↓」
 - 结果计数：如「共 169 / 显示 12」
-- 「刷新」：强制重拉 `info.json`
+- 「重置筛选」：重新应用内嵌列表并清空筛选
 
 ### 列表项
 
@@ -105,23 +107,23 @@ SkinPacksConvertor/
 
 ## 构建
 
-- webpack 增加 `packs-browser` entry → `dist/PacksBrowser.bundle.js`
+- `npm run fetch:info`：下载 `https://tlmdl.cfpa.team/info.json` → `packs-browser/data/info.json`（失败则回退已有本地文件）
+- `npm run build`：先 `fetch:info`，再 webpack（`packs-browser` entry 将 JSON 打进 bundle）
 - `build:single` 同时内联转换器与浏览模块进 `SkinPacksConvertor.html`
-- 开发可用双 script 引用 `../dist/*.bundle.js`
 
 ## CORS / 网络约束
 
-- 浏览器直连 `info.json`；若 CORS 不允许，错误态说明原因并提供官方目录外链；**不在本站代理**。
+- **运行时不 fetch `info.json`**，避免跨域。列表数据来自构建产物。
 - 用户点击下载为导航到文件 URL，通常不受 CORS 限制。
-- **硬性约束**：用户操作前仅允许下载 `info.json`，不得自动请求其它资源。
+- **硬性约束**：运行时除用户点击下载外，不自动请求 tlmdl 其它资源。
 
 ## 验收标准
 
-1. 打开站点默认是转换器；切到「模型包」才请求 `info.json`，Network 中无其它自动资源请求。
+1. 打开站点默认是转换器；切到「模型包」才载入内嵌列表，Network 中无对 `info.json` 的请求。
 2. 分类 / 搜索 / 排序可用；下载仅在点击后出现。
 3. 中英切换浏览页文案正确；转换器原功能不受影响。
-4. `npm run build:single` 仍产出可用单文件。
+4. `npm run build:single` 仍产出可用单文件，且构建过程会更新 `packs-browser/data/info.json`。
 
 ## 参考实现
 
-Java 官网 [`docs/js/index.js`](https://github.com/TartaricAcid/MaidCustomPack/blob/main/docs/js/index.js)：axios 拉列表、按 `type` 分桶、展示本地化名称/描述/作者/大小/时间。本设计在此基础上增加搜索、排序、同站双视图，并改数据源为 `tlmdl.cfpa.team`。
+Java 官网 [`docs/js/index.js`](https://github.com/TartaricAcid/MaidCustomPack/blob/main/docs/js/index.js)：axios 拉列表、按 `type` 分桶、展示本地化名称/描述/作者/大小/时间。本设计在此基础上增加搜索、排序、同站双视图；数据源在**构建时**从 `tlmdl.cfpa.team` 拉取并内嵌。

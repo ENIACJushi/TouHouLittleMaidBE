@@ -7,6 +7,8 @@
 
 ```npm run build:single```
 
+构建前会从 `https://tlmdl.cfpa.team/info.json` 下载模型包列表到 `packs-browser/data/info.json`，并打包进网页（避免运行时跨域）。仅更新列表可执行 `npm run fetch:info`。
+
 附加包产物与主包一致，自带 `subpacks`：
 - 根目录：完整内置底板 + 本次模型
 - `subpacks/simple`：精简内置底板 + 本次模型（对齐主包「精简」子包）
