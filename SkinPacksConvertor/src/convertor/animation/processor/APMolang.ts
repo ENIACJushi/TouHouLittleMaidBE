@@ -20,6 +20,7 @@ import {resolveTlmExpression} from "../../molang/tlm/TlmResolvers";
 import {convertJavaItemNameAnyQueries} from "../../molang/query/ItemQueryResolvers";
 import {convertJavaWaterBooleanQueries} from "../../molang/query/WaterQueryResolvers";
 import {convertJavaHeadRotationQueries} from "../../molang/query/HeadRotationQueryResolvers";
+import {insertExplicitMultiply} from "../../molang/ImplicitMultiplyFix";
 import {APUtils} from "./APUtils";
 
 
@@ -191,6 +192,8 @@ let processMolang = (_molang: Molang, channel: AnimationBoneChannel) => {
         molang = rightValue || molang;
       }
     }
+    // 隐式乘法 → 显式 `*`（须尽早，避免后续解析/替换踩到非法 `1(`）
+    molang = insertExplicitMultiply(molang);
     // 前缀字段链适配；候选前缀由 DEFAULT_EXPRESSION_PREFIXES 统一维护
     molang = replacePrefixedExpressions(molang, (expression, prefix, ctx) =>
       handlePrefixedExpression(expression, prefix, ctx, channel),
