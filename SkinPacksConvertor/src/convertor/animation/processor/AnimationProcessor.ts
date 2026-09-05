@@ -4,6 +4,7 @@ import { AnimationDefinition180 } from "../types/AnimationSchema180";
 import { data as dataWalk } from "./APWalk";
 import { data as dataHug } from "./APHug";
 import { data as dataMolang } from "./APMolang";
+import { data as dataHeadLookDedup } from "./APHeadLookDedup";
 import { data as dataPreParallelEyeGuard } from "./APPreParallelEyeGuard";
 import { data as dataScalarVec3Expand } from "./APScalarVec3Expand";
 import { data as dataCatmullRomScaleHold } from "./APCatmullRomScaleHold";
@@ -37,6 +38,8 @@ export class AnimationProcessor {
       this.registerAP(data.func, data.types);
     };
     registerFunc(dataMolang);
+    // 须在 APMolang 之后：Head 上的注视 molang 与 look_at_target 去重
+    registerFunc(dataHeadLookDedup);
     // 须在 APMolang 之后：把配饰 scale 烘焙为 0，不再依赖运行时 roaming 变量
     registerFunc(dataYsmAccessoryHide);
     registerFunc(dataWalk);

@@ -3,6 +3,10 @@ import {MolangLexer, Token, TokenKind} from '../engin';
 /**
  * Java 版无参、基岩版必须带参的头部旋转 query。
  * 基岩要求：非马/凋灵等特殊实体时参数固定为 `0`。
+ *
+ * 注意：YSM/TLM GeckoLib 中 `head_x_rotation=yaw`、`head_y_rotation=pitch`，
+ * 与基岩语义对调；但此处**只补 (0)、不对调轴名**，以保持既有内置包转换结果稳定。
+ * Head 骨上的注视叠乘由 {@link APHeadLookDedup} 处理；发丝/枪械等非 Head 通道沿用历史映射。
  */
 const HEAD_ROTATION_QUERIES_NEED_ARG: ReadonlySet<string> = new Set([
   'head_x_rotation',
