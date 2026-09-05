@@ -65,6 +65,15 @@ function expandKeyframeValue(value: Vec3KeyframeValue | Molang): Vec3KeyframeVal
     return value as Vec3KeyframeValue;
   }
 
+  // 对象关键帧：`{post:0}` / `{pre:1,post:1}` → pre/post 各展开为三元组
+  return expandObjectKeyframePrePost(value);
+}
+
+/**
+ * 将对象关键帧内标量形式的 `pre` / `post` 展开为 `[v,v,v]`。
+ * 已是数组的字段保持不变；`lerp_mode` 等其它字段原样保留。
+ */
+function expandObjectKeyframePrePost(value: Vec3KeyframeObject): Vec3KeyframeObject {
   const obj = value as Vec3KeyframeObject & {
     pre?: Molang | [Molang, Molang, Molang];
     post?: Molang | [Molang, Molang, Molang];

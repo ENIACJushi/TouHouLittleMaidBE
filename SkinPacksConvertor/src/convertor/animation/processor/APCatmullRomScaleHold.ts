@@ -98,24 +98,33 @@ function getNumericKeyframeTimes(
 function cloneAsCatmullRomHold(last: Vec3KeyframeValue): Vec3KeyframeValue {
   if (Array.isArray(last)) {
     return {
-      post: cloneVec3(last),
+      post: cloneAsVec3(last),
       lerp_mode: 'catmullrom',
     };
   }
   const source = last.post ?? last.pre;
-  if (!source) {
+  if (source === undefined || source === null) {
     return {
       post: [1, 1, 1],
       lerp_mode: 'catmullrom',
     };
   }
   return {
-    post: cloneVec3(source),
+    // 防御：即便上游未展开，标量 pre/post 也写成三元组，避免 [null,null,null]
+    post: cloneAsVec3(source as Molang | [Molang, Molang, Molang] | Molang[]),
     lerp_mode: 'catmullrom',
   };
 }
 
-function cloneVec3(vec: [Molang, Molang, Molang] | Molang[]): [Molang, Molang, Molang] {
+/**
+ * 克隆为基岩 vec3；若为 Gecko 标量简写则广播为 `[v,v,v]`。
+ */
+function cloneAsVec3(
+  vec: Molang | [Molang, Molang, Molang] | Molang[],
+): [Molang, Molang, Molang] {
+  if (typeof vec === 'number' || typeof vec === 'string') {
+    return [vec, vec, vec];
+  }
   return [vec[0], vec[1], vec[2]];
 }
 

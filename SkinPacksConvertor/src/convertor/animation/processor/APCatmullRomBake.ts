@@ -182,15 +182,26 @@ function getNeighborBase(
 }
 
 function pickPostVec3(value: Vec3KeyframeObject): Vec3 | undefined {
-  if (value.post && Array.isArray(value.post) && value.post.length === 3) {
-    return value.post;
-  }
-  return undefined;
+  return coerceToVec3((value as Vec3KeyframeObject & {post?: Molang | Vec3}).post);
 }
 
 function pickObjectVec3(value: Vec3KeyframeObject): Vec3 | undefined {
   return pickPostVec3(value)
-    ?? ((value.pre && Array.isArray(value.pre) && value.pre.length === 3) ? value.pre : undefined);
+    ?? coerceToVec3((value as Vec3KeyframeObject & {pre?: Molang | Vec3}).pre);
+}
+
+/** 数组三元组原样返回；Gecko 标量简写广播为 `[v,v,v]` */
+function coerceToVec3(value: Molang | Vec3 | undefined): Vec3 | undefined {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  if (typeof value === 'number' || typeof value === 'string') {
+    return [value, value, value];
+  }
+  if (Array.isArray(value) && value.length === 3) {
+    return value;
+  }
+  return undefined;
 }
 
 function toNumVec3(value: Vec3): NumVec3 | undefined {
