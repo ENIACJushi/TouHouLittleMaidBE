@@ -50,7 +50,7 @@ export class AnimationProcessor {
     registerFunc(dataScalarVec3Expand);
     // 须在 EyeGuard + 标量展开之后：同时处理原动画与 extractedEyeAnimation 的 scale hold
     registerFunc(dataCatmullRomScaleHold);
-    // 须在 ScaleHold 之后：去掉全部 catmullrom（含 hold 帧），避免与 Molang 混用触发预计算报错
+    // 须在 ScaleHold 之后：仅对含 Molang 的通道去掉 catmullrom，纯常量样条保留
     registerFunc(dataCatmullRomBake);
   }
 

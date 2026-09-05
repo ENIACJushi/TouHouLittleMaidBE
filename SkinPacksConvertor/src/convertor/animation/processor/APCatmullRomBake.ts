@@ -14,10 +14,15 @@ type NumVec3 = [number, number, number];
 
 const EPSILON_TIME = 1e-4;
 
+/** 烘焙选项：force 时即使全常量也烘焙（walk 注入 Molang 前必须先去样条） */
+export type BakeCatmullRomOptions = {
+  force?: boolean;
+};
+
 /**
  * 不指定 types：注册到全部 AnimationTypes。
- * 须在 APCatmullRomScaleHold 之后：先补 scale 末帧，再去掉全部 catmullrom，
- * 避免「catmullrom + Molang」触发基岩预计算报错，同时保留 hold 关键帧数值。
+ * 须在 APCatmullRomScaleHold 之后：先补 scale 末帧，再处理 catmullrom。
+ * 仅当通道混有 Molang 时烘焙/降级，纯常量通道保留原生样条（避免 idle 稀疏关键帧变卡顿）。
  */
 export const data = {
   types: undefined, // 对所有动画均执行
@@ -30,32 +35,46 @@ export const data = {
 };
 
 /**
- * 将动画内所有骨骼通道的 catmullrom 烘焙为普通 vec3 关键帧。
+ * 按骨骼通道处理 catmullrom。
  *
  * 基岩对 catmullrom（cubic）会做预计算，要求通道内关键帧均为常量；
  * 一旦同通道混入 Molang（如雨天分支），会报：
  * 「Precomputed cubic interpolation requires keyframes have constant data」。
- * 另：循环样条缺控制点时也容易在末帧卡死；walk 已用此法，idle 等同理。
+ *
+ * 策略：默认只处理「含 Molang」的通道；纯数值 catmullrom（常见于 idle 摇晃）保留，
+ * 以免稀疏样条被压成线性平台导致一卡一卡。walk 等需先注入 Molang 的路径请传 force。
  */
-export function bakeCatmullRomBones(animation: AnimationDefinition180): void {
+export function bakeCatmullRomBones(
+  animation: AnimationDefinition180,
+  options?: BakeCatmullRomOptions,
+): void {
   if (!animation.bones) {
     return;
   }
   for (const bone of Object.values(animation.bones)) {
-    bakeCatmullRomChannelToLinear(bone.position);
-    bakeCatmullRomChannelToLinear(bone.rotation);
-    bakeCatmullRomChannelToLinear(bone.scale);
+    bakeCatmullRomChannelToLinear(bone.position, options);
+    bakeCatmullRomChannelToLinear(bone.rotation, options);
+    bakeCatmullRomChannelToLinear(bone.scale, options);
   }
 }
 
-/** 若通道为关键帧对象，则把 catmullrom 烘焙成线性 vec3（原地修改） */
-export function bakeCatmullRomChannelToLinear(data: AnimationChannel): void {
+/** 若通道为关键帧对象，则按策略把 catmullrom 烘焙成线性 vec3（原地修改） */
+export function bakeCatmullRomChannelToLinear(
+  data: AnimationChannel,
+  options?: BakeCatmullRomOptions,
+): void {
   if (data && typeof data === 'object' && !Array.isArray(data)) {
-    normalizeKeyframeChannel(data as Record<string, Vec3KeyframeValue>);
+    normalizeKeyframeChannel(
+      data as Record<string, Vec3KeyframeValue>,
+      options?.force === true,
+    );
   }
 }
 
-function normalizeKeyframeChannel(channel: Record<string, Vec3KeyframeValue>) {
+function normalizeKeyframeChannel(
+  channel: Record<string, Vec3KeyframeValue>,
+  force: boolean,
+) {
   const entries = Object.entries(channel)
     .map(([time, value]) => ({time, numTime: Number(time), value}))
     .filter((item) => Number.isFinite(item.numTime))
@@ -70,6 +89,11 @@ function normalizeKeyframeChannel(channel: Record<string, Vec3KeyframeValue>) {
     (e) => !Array.isArray(e.value) && e.value?.lerp_mode === 'catmullrom',
   );
   if (!hasCatmull) {
+    return;
+  }
+
+  // 纯常量样条可安全交给基岩预计算；勿烘焙，保留 idle 等平滑摇晃
+  if (!force && !entries.some((e) => keyframeHasMolang(e.value))) {
     return;
   }
 
@@ -179,6 +203,35 @@ function getNeighborBase(
     return value as Vec3;
   }
   return pickObjectVec3(value);
+}
+
+/** 关键帧是否含非数值 Molang（字符串表达式） */
+function keyframeHasMolang(value: Vec3KeyframeValue): boolean {
+  if (Array.isArray(value)) {
+    return vec3HasMolang(value as Vec3);
+  }
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+  const obj = value as Vec3KeyframeObject & {post?: Molang | Vec3; pre?: Molang | Vec3};
+  return molangOrVec3HasMolang(obj.post) || molangOrVec3HasMolang(obj.pre);
+}
+
+function molangOrVec3HasMolang(value: Molang | Vec3 | undefined): boolean {
+  if (value === undefined || value === null) {
+    return false;
+  }
+  if (typeof value === 'string') {
+    return true;
+  }
+  if (Array.isArray(value)) {
+    return vec3HasMolang(value as Vec3);
+  }
+  return false;
+}
+
+function vec3HasMolang(value: Vec3): boolean {
+  return value.some((c) => typeof c === 'string');
 }
 
 function pickPostVec3(value: Vec3KeyframeObject): Vec3 | undefined {

@@ -1,5 +1,8 @@
 /**
- * 验证 catmullrom 烘焙：去掉 lerp_mode，且不再与 Molang 混在同一预计算通道里。
+ * 验证 catmullrom 烘焙策略：
+ * - 纯常量样条默认保留（idle 摇晃）
+ * - force 时烘焙（walk 注入 Molang 前）
+ * - 混有 Molang 时去掉 lerp_mode，避免基岩预计算报错
  */
 import {bakeCatmullRomBones} from '../src/convertor/animation/processor/APCatmullRomBake';
 import type {AnimationDefinition180} from '../src/convertor/animation/types/AnimationSchema180';
@@ -25,7 +28,28 @@ function countCatmull(anim: AnimationDefinition180): number {
   return n;
 }
 
-// 数值 catmullrom → 线性数字关键帧
+// 纯数值 catmullrom → 默认保留（避免 idle 稀疏样条被压成线性平台）
+{
+  const anim: AnimationDefinition180 = {
+    animation_length: 1.52,
+    bones: {
+      LeftArm: {
+        rotation: {
+          '0.0': {lerp_mode: 'catmullrom', post: [0, 0, 7.25]},
+          '0.76': {lerp_mode: 'catmullrom', post: [0, 0, 8.75]},
+          '1.52': {lerp_mode: 'catmullrom', post: [0, 0, 7.25]},
+        },
+      },
+    },
+  };
+  assert(countCatmull(anim) === 3, 'setup numeric catmull');
+  bakeCatmullRomBones(anim);
+  assert(countCatmull(anim) === 3, 'numeric catmull should be preserved by default');
+  const mid = (anim.bones!.LeftArm.rotation as Record<string, any>)['0.76'];
+  assert(mid?.post?.[2] === 8.75, 'original peak value must stay');
+}
+
+// force：纯数值也烘焙（walk 路径）
 {
   const anim: AnimationDefinition180 = {
     animation_length: 1,
@@ -39,9 +63,8 @@ function countCatmull(anim: AnimationDefinition180): number {
       },
     },
   };
-  assert(countCatmull(anim) === 3, 'setup numeric catmull');
-  bakeCatmullRomBones(anim);
-  assert(countCatmull(anim) === 0, 'numeric catmull should be baked away');
+  bakeCatmullRomBones(anim, {force: true});
+  assert(countCatmull(anim) === 0, 'force should bake numeric catmull away');
   const keys = Object.keys(anim.bones!.arm.rotation as object);
   assert(keys.length >= 3, 'should keep/add keyframes');
 }

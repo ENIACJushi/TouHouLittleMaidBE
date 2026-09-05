@@ -32,9 +32,9 @@ type AnimationChannel = PositionChannel | RotationChannel | ScaleChannel | undef
 function multiply(data: AnimationChannel, isScale?: boolean) {
   if (!data) return;
 
-  // 先把 catmullrom 烘焙为线性 vec3，再乘 walk_process（逻辑与原先一致）
-  // 全局 APCatmullRomBake 会再跑一遍，对已是线性的通道为 no-op
-  bakeCatmullRomChannelToLinear(data);
+  // 必须先强制烘焙 catmullrom，再乘 walk_process；否则样条通道混入 Molang 会触发基岩预计算报错
+  // （全局 APCatmullRomBake 对纯常量通道会保留样条，故此处 force）
+  bakeCatmullRomChannelToLinear(data, {force: true});
 
   APUtils.forEachMolangOfChannel(data, (value) => {
     if (value === 0) {

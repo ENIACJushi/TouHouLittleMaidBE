@@ -49,7 +49,8 @@ function deepEqual(a: unknown, b: unknown): boolean {
       },
     },
   };
-  bakeCatmullRomBones(anim);
+  // 纯常量默认不烘焙；本用例验证 bake 路径对标量 post 的防御，需 force
+  bakeCatmullRomBones(anim, {force: true});
   const ch = anim.bones!.LeftArm.rotation as Record<string, any>;
   for (const [t, v] of Object.entries(ch)) {
     if (v && typeof v === 'object' && !Array.isArray(v)) {
