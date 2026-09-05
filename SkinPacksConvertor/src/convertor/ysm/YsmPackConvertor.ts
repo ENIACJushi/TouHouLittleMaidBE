@@ -14,6 +14,7 @@ import {
   YsmAnimationControllerFile,
 } from './YsmLocomotionResolver';
 import {adaptYsmSitClips} from './adaptYsmSitAnimation';
+import {adaptYsmSitSkirtClips} from './adaptYsmSitSkirt';
 import {registerYsmAccessoryDefaults} from './accessory/YsmAccessoryDefaults';
 import {
   applyHideBonesToGeometry,
@@ -56,6 +57,8 @@ export class YsmPackConvertor {
   private manifest!: YsmJson;
   /** 从 animation_controllers 解析的 locomotion clip 提示（包级缓存） */
   private controllerHints?: ControllerClipHints;
+  /** 主模型几何体骨名（坐下裙骨映射用） */
+  private modelBoneNames = new Set<string>();
 
   constructor(params: YsmPackConvertorInitParams) {
     this.packId = params.packId;
@@ -300,6 +303,11 @@ export class YsmPackConvertor {
         }
       }
     }
+    for (const bone of bones) {
+      if (bone?.name) {
+        this.modelBoneNames.add(bone.name);
+      }
+    }
   }
 
   /**
@@ -393,6 +401,8 @@ export class YsmPackConvertor {
       // YSM sit 下压不足 / 依赖 sitheight：补足贴地（须在空桩填充之后）
       if (info?.animation?.animations) {
         adaptYsmSitClips(info.animation.animations);
+        // 裙骨别名、弱俯仰补强、parallel 与 sit 争抢门控
+        adaptYsmSitSkirtClips(info.animation.animations, this.modelBoneNames);
       }
     }
   }

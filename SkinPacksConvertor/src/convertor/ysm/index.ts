@@ -6,6 +6,7 @@
  * - `YsmPackConvertor` / `convertYsmPackRoot`：单包转换入口
  * - `YsmLocomotionResolver`：空桩 walk/idle 等用控制器/启发式填充
  * - `adaptYsmSitAnimation`：坐下动画贴地补足（Root/AllBody Y + sitheight 默认）
+ * - `adaptYsmSitSkirt`：坐下裙姿（骨名别名、弱俯仰补强、parallel 冲突门控）
  * - `roaming/`：`v.roaming.*` 展平字段名与简易求值
  * - `accessory/`：默认隐藏登记、几何体删骨、动画 scale 烘焙、pre_animation 兜底
  *
@@ -15,7 +16,7 @@
  * 3. 读 animation_controllers → locomotion 提示
  * 4. {@link registerYsmAccessoryDefaults}（轮盘 + 动画文本；sitheight 负向默认）
  * 5. {@link collectYsmHideBoneNames} → 几何体永久隐藏
- * 6. 贴图变体、绑定 main/tlm 动画、{@link fillEmptyCanonicalClips}、{@link adaptYsmSitClips}
+ * 6. 贴图变体、绑定 main/tlm 动画、{@link fillEmptyCanonicalClips}、{@link adaptYsmSitClips}、{@link adaptYsmSitSkirtClips}
  * 7. 渲染控制器 / 实体 geometry+textures
  *
  * ## 与总入口的关系
@@ -52,6 +53,15 @@ export {
   YSM_SIT_TARGET_LOWER_Y,
   YSM_SITHEIGHT_DEFAULT,
 } from './adaptYsmSitAnimation';
+export {
+  adaptYsmSitSkirtClips,
+  remapMissingBonesByAlias,
+  boostWeakSitSkirtPitch,
+  gateParallelConflictsWithSit,
+  YSM_SIT_SKIRT_TARGET_PITCH,
+  YSM_SIT_SKIRT_WEAK_ABS,
+} from './adaptYsmSitSkirt';
+export type {AdaptYsmSitSkirtResult} from './adaptYsmSitSkirt';
 export type {
   ControllerClipHints,
   YsmAnimationControllerFile,
