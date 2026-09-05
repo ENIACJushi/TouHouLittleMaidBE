@@ -1,9 +1,10 @@
 import JSZip from 'jszip';
 import {PackFile} from '../model/PackFile';
+import {ensurePngBlob} from '../util/ensurePngBlob';
 
 /**
  * 尝试将 YSM 包内可用图片写为资源包根目录 `pack_icon.png`。
- * 优先作者头像，其次 player.texture 列表中的第一张存在的 uv。
+ * 优先作者头像，其次 player.texture；非 PNG（如 WebP 假后缀）会先转码，失败则换下一张。
  */
 export async function copyYsmPackIcon(folder: JSZip, result: PackFile): Promise<void> {
   try {
@@ -26,8 +27,12 @@ export async function copyYsmPackIcon(folder: JSZip, result: PackFile): Promise<
         continue;
       }
       const file = folder.file(path);
-      if (file) {
-        result.resultFile.file('pack_icon.png', await file.async('blob'));
+      if (!file) {
+        continue;
+      }
+      const png = await ensurePngBlob(await file.async('blob'));
+      if (png) {
+        result.resultFile.file('pack_icon.png', png);
         return;
       }
     }

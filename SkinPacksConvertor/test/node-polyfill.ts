@@ -132,9 +132,13 @@ class FileReaderPolyfill {
 (globalThis as any).createImageBitmap = async (image: Blob): Promise<BitmapLike> => {
   const buffer = await blobToBuffer(image);
   const size = readPngSize(buffer);
+  // Node 侧无 WebP 解码；拒绝非 PNG，让 ensurePngBlob 回退到其它候选图
+  if (!size) {
+    throw new Error('node-polyfill: createImageBitmap 仅支持 PNG');
+  }
   return {
-    width: size?.width ?? 1,
-    height: size?.height ?? 1,
+    width: size.width,
+    height: size.height,
     buffer,
     close() {},
   };

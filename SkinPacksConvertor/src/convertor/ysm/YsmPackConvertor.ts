@@ -19,6 +19,7 @@ import {
   collectYsmHideBoneNames,
 } from './accessory/YsmAccessoryGeoHide';
 import {toSafeIdentifier} from './YsmIdentifier';
+import {ensurePngBlob} from '../util/ensurePngBlob';
 import {PROFILE} from "../config";
 
 const TAG = 'YsmPackConvertor';
@@ -186,27 +187,31 @@ export class YsmPackConvertor {
   }
 
   /**
-   * 解析包图标
+   * 解析包图标（WebP 等非 PNG 会转码；失败则回退到贴图列表中的真 PNG）
    */
   private async parseIcon() {
     const authors = this.manifest.metadata?.authors ?? [];
     const avatarPath = authors.find((a) => a.avatar)?.avatar;
-    let iconFile = avatarPath ? this.input.file(avatarPath) : undefined;
+    const textures = this.manifest.files.player.texture ?? [];
+    const defaultBase = this.manifest.properties?.default_texture;
+    const candidates: string[] = [];
+    if (avatarPath) {
+      candidates.push(avatarPath);
+    }
+    candidates.push(...orderTextures(textures, defaultBase));
 
-    if (!iconFile) {
-      const textures = this.manifest.files.player.texture ?? [];
-      const defaultBase = this.manifest.properties?.default_texture;
-      const uvPath = pickDefaultTexturePath(textures, defaultBase);
-      if (uvPath) {
-        iconFile = this.input.file(uvPath);
+    const outName = `pack_pack_${this.packId + PROFILE.BASE_PACK_INDEX}.png`;
+    for (const path of candidates) {
+      const iconFile = this.input.file(path);
+      if (!iconFile) {
+        continue;
+      }
+      const png = await ensurePngBlob(await iconFile.async('blob'));
+      if (png) {
+        this.res.textures_icon.file(outName, png);
+        return;
       }
     }
-
-    if (!iconFile) {
-      return;
-    }
-    const blob = await iconFile.async('blob');
-    this.res.textures_icon.file(`pack_pack_${this.packId + PROFILE.BASE_PACK_INDEX}.png`, blob);
   }
 
   /**
@@ -512,11 +517,6 @@ function orderTextures(textures: YsmTextureEntry[], defaultBase?: string): strin
     }
   }
   return preferred.length > 0 ? [...preferred, ...rest] : paths;
-}
-
-function pickDefaultTexturePath(textures: YsmTextureEntry[], defaultBase?: string): string | undefined {
-  const ordered = orderTextures(textures, defaultBase);
-  return ordered[0];
 }
 
 function clampScale(raw: number): number {
