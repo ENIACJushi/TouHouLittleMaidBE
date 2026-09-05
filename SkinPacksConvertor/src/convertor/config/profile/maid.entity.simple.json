@@ -338,6 +338,7 @@
 					"v.tlm_food_level = math.mod(math.floor(v.tlm_anim / 8), 32);",
 					"v.tlm_is_gecko = 0;",
 					"v.tlm_suppress_molang_blink = 0;",
+					"v.tlm_custom_head_look = 0;",
 					"v.exp = 0;",
 					"v.scale = 1;",
 					"v.animate_blink = 1;",
@@ -391,7 +392,7 @@
 						"statue_base": "(q.property('thlm:work') >= -4) && (q.property('thlm:work') <= -2)"
 					},
 					{
-						"look_at_target": "!v.tlm_is_hug"
+						"look_at_target": "!v.tlm_is_hug && !v.tlm_custom_head_look"
 					},
 					{
 						"blink": "v.animate_blink == 1 && query.property('thlm:work') >= -1"

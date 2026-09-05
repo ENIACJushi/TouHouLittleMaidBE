@@ -72,6 +72,8 @@ const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
       "v.tlm_is_gecko = 0;", // 是否为 gecko 模型（gecko 模型在展示条件中覆写为 1）
       // sit/idle 自带眨眼关键帧时置 1，抑制 pre_parallel 的 molang 眨眼（对齐 Java main 覆盖）
       "v.tlm_suppress_molang_blink = 0;",
+      // 当前选中动画含 Head 注视驱动时由展示条件后脚本置 1，关闭通用 look_at_target
+      "v.tlm_custom_head_look = 0;",
       // 经验，预留
       "v.exp = 0;",
 
@@ -105,7 +107,7 @@ const ANIMATION_DEF_TEMPLATE: AnimationDefinition = {
     ],
     animate: [
       { "statue_base": "(q.property('thlm:work') >= -4) && (q.property('thlm:work') <= -2)" },
-      { "look_at_target": "!v.tlm_is_hug" },
+      { "look_at_target": "!v.tlm_is_hug && !v.tlm_custom_head_look" },
       { "blink" : "v.animate_blink == 1 && query.property('thlm:work') >= -1" },
       // 非 gecko 默认动画
       { "hug": "v.animate_hug == 0 && !q.is_in_ui && v.tlm_is_hug" },

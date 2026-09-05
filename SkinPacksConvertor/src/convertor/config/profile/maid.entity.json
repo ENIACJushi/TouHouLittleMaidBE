@@ -903,6 +903,7 @@
 					"v.tlm_food_level = math.mod(math.floor(v.tlm_anim / 8), 32);",
 					"v.tlm_is_gecko = 0;",
 					"v.tlm_suppress_molang_blink = 0;",
+					"v.tlm_custom_head_look = 0;",
 					"v.exp = 0;",
 					"v.scale = 1;",
 					"v.animate_blink = 1;",
@@ -986,6 +987,7 @@
 					"(v.pack == 3) ? { (v.model==1) ? { v.scale=1; }; };",
 					"(v.pack == 3) ? { (v.model==2) ? { v.scale=1; }; };",
 					"(v.pack == 3) ? { (v.model>=3) ? { v.scale=1; }; };",
+					"v.animate_sleep==102?{v.tlm_custom_head_look=1;};v.animate_sleep==105?{v.tlm_custom_head_look=1;};v.animate_sleep==109?{v.tlm_custom_head_look=1;};v.animate_sleep==111?{v.tlm_custom_head_look=1;};v.animate_parallel0==141?{v.tlm_custom_head_look=1;};v.animate_hug==147?{v.tlm_custom_head_look=1;};",
 					"(v.animate_pre_parallel2==103) ? { v.bv=0;v.by=0;v.tail1y=math.sin(1*(query.life_time-0*v.f)*360/(v.s/24))*5;v.tail1z=math.sin(1*(query.life_time-1*v.f)*360/(v.s/24))*10;v.tail2y=math.sin(1*(query.life_time-0.3*v.f)*360/(v.s/24))*10;v.tail2z=math.sin(1*(query.life_time-1.1*v.f)*360/(v.s/24))*4;v.tail3y=math.sin(1*(query.life_time-0.5*v.f)*360/(v.s/24))*4;v.tail3z=math.sin(1*(query.life_time-1.3*v.f)*360/(v.s/24))*6;v.tail4y=math.sin(1*(query.life_time-0.6*v.f)*360/(v.s/24))*10;v.tail4z=math.sin(1*(query.life_time-1.5)*360/(v.s/24))*3;v.tail5y=math.sin(1*(query.life_time-0.6)*360/(v.s/24))*20;v.tail6z=math.sin(1*(query.life_time-1.2)*360/(v.s/24))*20;v.s=72;v.f=1; };",
 					"(v.animate_pre_parallel2==105) ? { v.bv=0;v.bg=0;v.by=0;v.hv=0;v.hg=0;v.hy=0; };",
 					"(v.animate_pre_parallel2==106) ? { v.bv=0;v.by=0;v.tail1y=math.sin(1*(query.life_time-0*v.f)*360/(v.s/24))*5;v.tail1z=math.sin(1*(query.life_time-1*v.f)*360/(v.s/24))*10;v.tail2y=math.sin(1*(query.life_time-0.3*v.f)*360/(v.s/24))*10;v.tail2z=math.sin(1*(query.life_time-1.1*v.f)*360/(v.s/24))*4;v.tail3y=math.sin(1*(query.life_time-0.5*v.f)*360/(v.s/24))*4;v.tail3z=math.sin(1*(query.life_time-1.3*v.f)*360/(v.s/24))*6;v.tail4y=math.sin(1*(query.life_time-0.6*v.f)*360/(v.s/24))*10;v.tail4z=math.sin(1*(query.life_time-1.5)*360/(v.s/24))*3;v.tail5y=math.sin(1*(query.life_time-0.6)*360/(v.s/24))*20;v.tail6z=math.sin(1*(query.life_time-1.2)*360/(v.s/24))*20;v.s=72;v.f=1; };",
@@ -1198,7 +1200,7 @@
 						"statue_base": "(q.property('thlm:work') >= -4) && (q.property('thlm:work') <= -2)"
 					},
 					{
-						"look_at_target": "!v.tlm_is_hug"
+						"look_at_target": "!v.tlm_is_hug && !v.tlm_custom_head_look"
 					},
 					{
 						"blink": "v.animate_blink == 1 && query.property('thlm:work') >= -1"

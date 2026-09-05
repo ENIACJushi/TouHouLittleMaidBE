@@ -2,6 +2,7 @@ import {AnimationTypes, getAnimationSourceKey, isParallelAnimationType} from "./
 import {AnimationFileInfo} from "../resource_manager/AnimationManager";
 import {AnimationProcessor} from "./processor/AnimationProcessor";
 import {animationHasEyeBones} from "./processor/APPreParallelEyeGuard";
+import {animationHasCustomHeadLookDrive} from "./processor/APHeadLookDedup";
 import {
   buildSkinPackAnimationName,
   DEFAULT_ANIMATION_TYPES,
@@ -238,6 +239,11 @@ export class MaidAnimationConvertor {
     if (conditionMolangs.length > 0) {
       res.scripts.pre_animation.push(...conditionMolangs);
     }
+    // 当前选中动画含 Head 驱动式注视 → 置位关闭 look_at_target（须在 animate_* 赋值之后）
+    const customHeadLookMolangs = this.buildCustomHeadLookGateMolang(animationList);
+    if (customHeadLookMolangs.length > 0) {
+      res.scripts.pre_animation.push(...customHeadLookMolangs);
+    }
     // pre_parallel 目标赋值优先于 parallel 弹簧积分（同帧内先更新 tail* 再积 L13）
     deferredGatedScripts.sort((a, b) => gatedScriptOrder(a) - gatedScriptOrder(b));
     res.scripts.pre_animation.push(...deferredGatedScripts);
@@ -466,6 +472,37 @@ export class MaidAnimationConvertor {
   }
 
   /**
+   * 扫描动画列表：若某导出动画在 Head 上仍含驱动式注视，
+   * 则在对应 v.animate_* 选中时置 v.tlm_custom_head_look=1（关闭 look_at_target）。
+   * 须在 showCondition 写入 animate_* 之后调用。
+   */
+  private buildCustomHeadLookGateMolang(
+    animationList: Record<string, object>,
+  ): string[] {
+    const validTypes = new Set<string>(Object.values(AnimationTypes));
+    const stmts: string[] = [];
+    for (const [name, anim] of Object.entries(animationList)) {
+      if (!animationHasCustomHeadLookDrive(anim as AnimationDefinition180)) {
+        continue;
+      }
+      const m = /^animation\.tlm\.skin_pack\.(\d+)\.(.+)$/.exec(name);
+      if (!m) {
+        continue;
+      }
+      const exportId = Number(m[1]);
+      const type = m[2];
+      if (!validTypes.has(type) || Number.isNaN(exportId)) {
+        continue;
+      }
+      stmts.push(`v.animate_${type}==${exportId}?{v.tlm_custom_head_look=1;};`);
+    }
+    if (stmts.length === 0) {
+      return [];
+    }
+    return chunkMolangStatements(stmts, PRE_ANIMATION_MOLANG_MAX_LENGTH);
+  }
+
+  /**
    * 汇总 pack/model 到动画变量的切换条件（按模型拆成多条，避免单条过长）
    *  形如：
    *    v.pack=...;v.model=...;
@@ -477,7 +514,11 @@ export class MaidAnimationConvertor {
     modelScale: Map<number, Map<number, number>>,
     modelIsGecko: Map<number, Map<number, boolean>>,
   ): string[] {
-    if (showConditions.size === 0 && modelScale.size === 0 && modelIsGecko.size === 0) {
+    if (
+      showConditions.size === 0
+      && modelScale.size === 0
+      && modelIsGecko.size === 0
+    ) {
       return [];
     }
     const lines: string[] = [

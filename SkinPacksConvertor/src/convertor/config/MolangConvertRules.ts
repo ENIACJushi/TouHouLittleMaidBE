@@ -41,6 +41,7 @@ export const MOLANG_VARIABLE_RESOLVE_RULES: readonly MolangVariableResolveRule[]
   {name: 'tlm_anim', type: 'keep'}, // tlm 压缩位标志原值
   {name: 'tlm_is_gecko', type: 'keep'}, // tlm gecko 模型标记
   {name: 'tlm_suppress_molang_blink', type: 'keep'}, // sit/idle 自带眨眼时抑制 pre_parallel molang 眨眼
+  {name: 'tlm_custom_head_look', type: 'keep'}, // 当前动画含 Head 注视驱动时关闭 look_at_target
 ];
 
 /**
