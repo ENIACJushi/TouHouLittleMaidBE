@@ -88,13 +88,13 @@ export let TEMPLATE = {
         "minecraft:breathable"   : { "total_supply": 15, "suffocate_time": 0 },
         "minecraft:is_hidden_when_invisible": { },
         "minecraft:conditional_bandwidth_optimization": { },
-        // 占用 look/move，看向玩家时打断 random_stroll
+        // 占用 look/move：停下并注视；priority 须高于 follow/stroll，否则会被抢走 move 而提前结束
         "minecraft:behavior.look_at_player": {
           "priority": 7,
-          "look_distance": 7.0,
-          "look_time": [ 40, 100 ],
+          "look_distance": 4.0,
+          "look_time": [ 2, 4 ],
           "probability": 1,
-          "control_flags": [ "look", "move" ],
+          "control_flags": [ "look" ],
         },
 
         ///// 交互属性 /////
@@ -104,13 +104,13 @@ export let TEMPLATE = {
             {"item": "apple", "heal_amount": 3}
           ]
         },
-        // 占用 look/move，打断 random_stroll
+        // 占用 look/move；priority 高于 follow(8)/look(7)，拿蛋糕时停下 beg
         "minecraft:behavior.beg": {
           "priority": 6,
-          "look_distance": 8,
-          "look_time": [ 40, 100 ],
+          "look_distance": 6,
+          "look_time": [ 2, 4 ],
           "items": [ "cake" ],
-          "control_flags": [ "look", "move" ]
+          "control_flags": [ "look" ]
         },
 
         ///// AI属性 /////
@@ -137,7 +137,7 @@ export let TEMPLATE = {
           "track_target": true
         },
         "minecraft:behavior.random_stroll": {
-          "priority": 8,
+          "priority": 9,
           "speed_multiplier": 1.0
         }
       },
@@ -147,8 +147,9 @@ export let TEMPLATE = {
         "minecraft:navigation.walk": {
           "can_walk": false
         },
+        // priority 不可为 0：会压过 look/beg 的 move，导致注视瞬间被打断
         "minecraft:behavior.random_stroll": {
-          "priority": 0,
+          "priority": 9,
           "speed_multiplier": 0.0
         },
         "minecraft:movement.basic": { },
@@ -166,7 +167,7 @@ export let TEMPLATE = {
           "can_walk": false
         },
         "minecraft:behavior.random_stroll": {
-          "priority": 8,
+          "priority": 9,
           "speed_multiplier": 0.0
         },
         "minecraft:movement.basic": { },
@@ -177,10 +178,10 @@ export let TEMPLATE = {
           "track_target": true
         }
       },
-      // 正常跟随（站立）
+      // 正常跟随（站立）；priority 低于 look(7)/beg(6)，高于 stroll(9)，注视时停下，不看时再跟随
       "status:follow_standard":{
         "minecraft:behavior.follow_owner": {
-          "priority": 6,
+          "priority": 8,
           "speed_multiplier": 1.4,
           "start_distance": 10,
           "stop_distance": 3,
@@ -925,12 +926,13 @@ export let TEMPLATE = {
         "minecraft:physics": { "has_collision": true, "has_gravity": true, "push_towards_closest_space": false },
         "minecraft:persistent": { },
         "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
-        "minecraft:home": { },"minecraft:behavior.look_at_player": {
+        "minecraft:home": { },
+        "minecraft:behavior.look_at_player": {
           "priority": 5,
-          "look_distance": 7.0,
-          "look_time": [ 40, 100 ],
+          "look_distance": 4.0,
+          "look_time": [ 2, 4 ],
           "probability": 1,
-          "control_flags": [ "look", "move" ],
+          "control_flags": [ "look" ],
         },
         "minecraft:npc": {
           "npc_data": {
