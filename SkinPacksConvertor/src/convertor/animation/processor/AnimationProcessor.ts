@@ -5,6 +5,7 @@ import { data as dataWalk } from "./APWalk";
 import { data as dataHug } from "./APHug";
 import { data as dataMolang } from "./APMolang";
 import { data as dataPreParallelEyeGuard } from "./APPreParallelEyeGuard";
+import { data as dataScalarVec3Expand } from "./APScalarVec3Expand";
 import { data as dataCatmullRomScaleHold } from "./APCatmullRomScaleHold";
 import { data as dataCatmullRomBake } from "./APCatmullRomBake";
 import { data as dataYsmAccessoryHide } from "../../ysm/accessory/APYsmAccessoryHide";
@@ -42,7 +43,9 @@ export class AnimationProcessor {
     registerFunc(dataHug);
     // 须在 APMolang 之后：对已转换的眼皮 molang 包 suppress?this
     registerFunc(dataPreParallelEyeGuard);
-    // 须在 EyeGuard 之后：同时处理原动画与 extractedEyeAnimation 的 scale hold
+    // 须在 ScaleHold / Bake 之前：Gecko 标量关键帧简写展开为基岩要求的 vec3
+    registerFunc(dataScalarVec3Expand);
+    // 须在 EyeGuard + 标量展开之后：同时处理原动画与 extractedEyeAnimation 的 scale hold
     registerFunc(dataCatmullRomScaleHold);
     // 须在 ScaleHold 之后：去掉全部 catmullrom（含 hold 帧），避免与 Molang 混用触发预计算报错
     registerFunc(dataCatmullRomBake);
