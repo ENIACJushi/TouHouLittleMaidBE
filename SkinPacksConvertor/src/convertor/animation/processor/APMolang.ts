@@ -9,6 +9,8 @@ import {resolveYsmExpression} from "../../molang/ysm/YsmResolvers";
 import {
   AnimationBoneChannel,
   registerMolangVariableKeep,
+  registerMolangVariableDefault,
+  getDynamicMolangVariableDefaults,
   resolveVariableExpression,
 } from "../../molang/v/VariableResolvers";
 import {
@@ -338,6 +340,7 @@ const findNullCoalesceRhsEnd = (tokens: Token[], startIndex: number): number | n
 ///// 赋值左值 → keep 白名单 /////
 /**
  * 从源字符串扫描 `v.` / `variable.` 赋值左值并登记 keep（不转换右值）。
+ * 若右值为数值常量且尚未有默认值，一并登记（如 timeline `v.Lyanxs=1` → 默认 1）。
  */
 const registerAssignTargetsFromSource = (source: string): void => {
   const statements = source.split(';').map((s) => s.trim()).filter((s) => s.length > 0);
@@ -350,7 +353,15 @@ const registerAssignTargetsFromSource = (source: string): void => {
     if (!isVariableAssignTarget(lhs)) {
       continue;
     }
-    registerMolangVariableKeep(fieldFromVariableLhs(lhs));
+    const field = fieldFromVariableLhs(lhs);
+    registerMolangVariableKeep(field);
+    const rhs = statement.slice(assignIdx + 1).trim();
+    if (/^[+-]?[0-9]+(?:\.[0-9]+)?$/.test(rhs)) {
+      const defaults = getDynamicMolangVariableDefaults();
+      if (!defaults.has(field.toLowerCase())) {
+        registerMolangVariableDefault(field, Number(rhs));
+      }
+    }
   }
 };
 

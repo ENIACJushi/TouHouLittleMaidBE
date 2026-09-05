@@ -58,22 +58,62 @@ export function registerYsmAccessoryDefaults(
     registerMolangVariableDefault(field, value);
   }
 
-  const hidden = [...defaults.entries()].filter(([, v]) => v !== 0).map(([k]) => k);
+  const hidden = [...defaults.entries()]
+    .filter(([k, v]) => k.startsWith('ysm_roaming_') && v !== 0)
+    .map(([k]) => k);
   if (hidden.length > 0) {
     console.log(TAG, `配饰默认隐藏: ${hidden.join(', ')}`);
   }
 }
 
 /**
- * 从单个轮盘配置表单项提取 `ysm_roaming_*` 默认值。
+ * 从轮盘 `value` 字段解析扁平 keep 名。
+ * @returns 如 `ysm_roaming_fumo` / `lyanxs`；非 `v|variable.(roaming.)?*` 时返回 undefined
+ */
+function variableFieldFromValue(value?: string): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const trimmed = value.trim().replace(/;$/, '');
+  const roaming = /^(?:v|variable)\.roaming\.([a-zA-Z0-9_]+)$/i.exec(trimmed);
+  if (roaming) {
+    return toYsmRoamingKeepField(roaming[1]);
+  }
+  const plain = /^(?:v|variable)\.([a-zA-Z0-9_]+)$/i.exec(trimmed);
+  return plain ? plain[1].toLowerCase() : undefined;
+}
+
+/** @deprecated 兼容旧名；请用 {@link variableFieldFromValue} */
+function roamingFieldFromValue(value?: string): string | undefined {
+  return variableFieldFromValue(value);
+}
+
+/**
+ * 是否为「大小/缩放」类调节（眼珠大小 Lyanxs 等）：默认应为 1，不能落成 0 否则瞳孔消失。
+ */
+function isSizeAdjustForm(form: YsmConfigForm, field: string): boolean {
+  const label = `${form.title ?? ''}${form.description ?? ''}`;
+  if (/大小|尺寸|size|scale/i.test(label)) {
+    return true;
+  }
+  // 常见后缀：Lyanxs / Ryanxs / zuixsx（口型大小）
+  if (/(?:^|_)(?:xs|sx)$/i.test(field)) {
+    return true;
+  }
+  return false;
+}
+
+/**
+ * 从单个轮盘配置表单项提取变量默认值。
  *
- * - 仅处理 `value` 为 `v.roaming.xxx` / `variable.roaming.xxx` 的项
+ * - 支持 `v.roaming.xxx`（扁平为 ysm_roaming_*）与普通 `v.xxx`（如眼珠大小 Lyanxs）
  * - checkbox：标题/描述命中「消失」等关键词 → 1，否则 → 0
- * - **坐下高度** range：默认取负向 min（贴地），见 {@link sitheightDefaultFromForm}
- * - 其它 range / radio：未登记时默认 0（保留常服/默认表情）
+ * - **坐下高度** range：默认取负向 min（贴地）
+ * - **大小/缩放** range：默认 1（夹到 min/max），避免瞳孔/部件被缩没
+ * - 其它 range / radio：未登记时默认 0
  */
 function applyConfigFormDefault(form: YsmConfigForm, defaults: Map<string, number>): void {
-  const field = roamingFieldFromValue(form.value);
+  const field = variableFieldFromValue(form.value);
   if (!field) {
     return;
   }
@@ -90,6 +130,21 @@ function applyConfigFormDefault(form: YsmConfigForm, defaults: Map<string, numbe
   const leaf = field.replace(/^ysm_roaming_/, '');
   if (form.type === 'range' && isSitheightField(leaf, form.title, form.description)) {
     defaults.set(field, sitheightDefaultFromForm(form.min, form.max));
+    return;
+  }
+
+  // 眼珠/部件大小：timeline 常写 =1，表单 min 却是 0；默认 0 会把瞳孔缩没
+  if (form.type === 'range' && isSizeAdjustForm(form, field)) {
+    if (!defaults.has(field)) {
+      let value = 1;
+      if (typeof form.max === 'number' && Number.isFinite(form.max)) {
+        value = Math.min(value, form.max);
+      }
+      if (typeof form.min === 'number' && Number.isFinite(form.min)) {
+        value = Math.max(value, form.min);
+      }
+      defaults.set(field, value);
+    }
     return;
   }
 
@@ -153,17 +208,4 @@ function applyAnimationPatternDefaults(text: string, defaults: Map<string, numbe
       defaults.set(field, 1);
     }
   }
-}
-
-/**
- * 从轮盘 `value` 字段解析扁平 keep 名。
- * @returns 如 `ysm_roaming_fumo`；非 `v|variable.roaming.*` 时返回 undefined
- */
-function roamingFieldFromValue(value?: string): string | undefined {
-  if (!value) {
-    return undefined;
-  }
-  const trimmed = value.trim().replace(/;$/, '');
-  const match = /^(?:v|variable)\.roaming\.([a-zA-Z0-9_]+)$/i.exec(trimmed);
-  return match ? toYsmRoamingKeepField(match[1]) : undefined;
 }

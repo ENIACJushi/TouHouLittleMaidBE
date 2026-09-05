@@ -3,26 +3,27 @@ import {getDynamicMolangVariableDefaults} from '../../molang/v/VariableResolvers
 import {evalSimpleYsmRoamingExpr} from '../roaming/YsmRoamingExpr';
 
 /**
- * 动画处理器：将 YSM 配饰相关 scale 按登记默认值烘焙成常量。
+ * 动画处理器：将 YSM 配饰 / 眼珠大小等相关 scale 按登记默认值烘焙成常量。
  *
  * 注册于 {@link AnimationProcessor}，须在 APMolang 之后执行（此时 `v.roaming.*`
  * 已扁平为 `v.ysm_roaming_*`）。
  *
  * 基岩 animation molang 读取实体脚本变量不稳定（常见：加载后几秒变量失效，
- * `1-v.xxx` 变回 1，配饰重新显示）。转换器无轮盘 UI，故在导出期把
- * `v.ysm_roaming_*` 表达式求成 0/1 常量。
+ * `1-v.xxx` 变回 1，配饰重新显示；`v.Lyanxs` 停在 initialize 的 0，瞳孔消失）。
+ * 转换器无轮盘 UI，故在导出期把可求值的 scale 写成 0/1 常量。
  *
  * 服装类 `v.ysm_roaming_shangyi==0?1:0` 会按默认 0 求成 1（保持默认外观），
- * 道具类 `1-v.ysm_roaming_fumo` 按默认 1 求成 0（永久隐藏）。
+ * 道具类 `1-v.ysm_roaming_fumo` 按默认 1 求成 0（永久隐藏），
+ * 眼珠大小 `[v.Lyanxs,v.Lyanxs,1]` 按默认 1 求成 `[1,1,1]`。
  *
- * 无 YSM 配饰登记时直接跳过，避免影响纯 TLM 包。
+ * 无已登记默认值时直接跳过，避免影响纯 TLM 包。
  */
 export const data = {
   types: undefined as undefined,
   func: async ({ animation }: { animation: AnimationDefinition180 }) => {
     const defaults = getDynamicMolangVariableDefaults();
-    const hasYsmRoaming = [...defaults.keys()].some((k) => k.startsWith('ysm_roaming_'));
-    if (!hasYsmRoaming) {
+    // 有任一已登记默认值（配饰 roaming 或眼珠大小 Lyanxs 等）即尝试烘焙
+    if (defaults.size === 0) {
       return;
     }
     bakeRoamingScales(animation, defaults);
@@ -52,7 +53,7 @@ function bakeRoamingScales(
       continue;
     }
     bone.scale = baked;
-    if (baked === 0) {
+    if (isZeroScale(baked)) {
       propRoots.add(stripTrailingDigits(name));
     }
   }
@@ -74,25 +75,62 @@ function bakeRoamingScales(
 }
 
 /**
- * 尝试把含 ysm_roaming 的 scale 求成数字；无法识别则返回 undefined（保留原值）。
+ * 尝试把含已登记默认值的 scale 求成数字；无法识别则返回 undefined（保留原值）。
+ * 支持：
+ * - 字符串 `v.ysm_roaming_*…` / `v.lyanxs`
+ * - 三元组 `[v.lyanxs, v.lyanxs, 1]`（koishi 瞳孔父骨 LeftP/RightP）
  */
 function tryBakeScale(
   scale: ScaleChannel | undefined,
   defaults: ReadonlyMap<string, number>,
-): number | undefined {
+): number | [number, number, number] | undefined {
   if (scale === undefined || scale === null || typeof scale === 'number') {
     return undefined;
   }
-  if (typeof scale !== 'string') {
-    // 关键帧 / 数组中的 roaming 较罕见，暂不烘焙以免误伤
-    return undefined;
+  if (typeof scale === 'string') {
+    return tryBakeScaleComponent(scale, defaults);
   }
-  if (!/ysm_roaming_/i.test(scale)) {
-    return undefined;
+  if (Array.isArray(scale) && scale.length === 3) {
+    const baked: number[] = [];
+    for (const comp of scale) {
+      if (typeof comp === 'number') {
+        baked.push(comp);
+        continue;
+      }
+      if (typeof comp !== 'string') {
+        return undefined;
+      }
+      const v = tryBakeScaleComponent(comp, defaults);
+      if (v === undefined) {
+        return undefined;
+      }
+      baked.push(v);
+    }
+    return baked as [number, number, number];
   }
+  // 关键帧中的 roaming 较罕见，暂不烘焙以免误伤
+  return undefined;
+}
 
-  const expr = scale.replace(/\s+/g, '');
-  return evalSimpleYsmRoamingExpr(expr, defaults);
+/**
+ * 单分量：roaming 表达式或已登记默认的纯 `v.field`。
+ */
+function tryBakeScaleComponent(
+  exprRaw: string,
+  defaults: ReadonlyMap<string, number>,
+): number | undefined {
+  const expr = exprRaw.replace(/\s+/g, '');
+  if (/ysm_roaming_/i.test(expr)) {
+    return evalSimpleYsmRoamingExpr(expr, defaults);
+  }
+  const plain = /^v\.([a-z0-9_]+)$/i.exec(expr);
+  if (plain) {
+    const field = plain[1].toLowerCase();
+    if (defaults.has(field)) {
+      return defaults.get(field);
+    }
+  }
+  return undefined;
 }
 
 /**

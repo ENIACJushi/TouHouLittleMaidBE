@@ -18,6 +18,8 @@ import {getDynamicMolangKeepFields, getDynamicMolangVariableDefaults} from "../m
 import {
   chunkGatedMolangStatements,
   chunkMolangStatements,
+  fieldFromVariableLhs,
+  findSingleAssignIndex,
   parseVariableAssignLhs,
   toVariableAssignKey,
 } from "../molang/MolangAssign";
@@ -391,8 +393,9 @@ export class MaidAnimationConvertor {
   }
 
   /**
-   * 在 scripts.initialize 中注册 `v.xxx=0;`（实体加载时执行一次；已注册则跳过）。
-   * keep 登记由 APMolang 在转换期完成；此处只负责一次性默认值，切勿写入 pre_animation。
+   * 在 scripts.initialize 中注册变量默认值（实体加载时执行一次；已注册则跳过）。
+   * 优先：赋值右值数值常量（如 `v.Lyanxs=1`）→ 已登记 default → 否则 0。
+   * keep 登记由 APMolang 在转换期完成；切勿写入 pre_animation。
    */
   private registerInitVariable(
     script: string,
@@ -408,7 +411,18 @@ export class MaidAnimationConvertor {
       return;
     }
     registeredVars.add(key);
-    initialize.push(`${varName}=0;`);
+    const assignIdx = findSingleAssignIndex(script);
+    let value = 0;
+    if (assignIdx >= 0) {
+      const rhs = script.slice(assignIdx + 1).trim().replace(/;$/, '');
+      if (/^[+-]?[0-9]+(?:\.[0-9]+)?$/.test(rhs)) {
+        value = Number(rhs);
+      } else {
+        const field = fieldFromVariableLhs(varName).toLowerCase();
+        value = getDynamicMolangVariableDefaults().get(field) ?? 0;
+      }
+    }
+    initialize.push(`${varName}=${value};`);
   }
 
   /**
