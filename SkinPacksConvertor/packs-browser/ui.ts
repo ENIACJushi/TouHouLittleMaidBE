@@ -20,8 +20,6 @@ export type PacksUiRefs = {
   listEl: HTMLElement;
   retryBtn: HTMLButtonElement;
   officialLink: HTMLAnchorElement;
-  heroTitle: HTMLHeadingElement;
-  heroDesc: HTMLParagraphElement;
 };
 
 export type RenderPacksListArgs = {
@@ -69,8 +67,6 @@ function syncToolbarLabels(refs: PacksUiRefs, lang: UiLang, filter: FilterOption
   refs.refreshBtn.textContent = packsT(lang, 'refresh');
   refs.retryBtn.textContent = packsT(lang, 'retry');
   refs.officialLink.textContent = packsT(lang, 'openOfficial');
-  refs.heroTitle.textContent = packsT(lang, 'heroPacksTitle');
-  refs.heroDesc.textContent = packsT(lang, 'heroPacksDesc');
 
   for (const btn of refs.categoryButtons) {
     const cat = btn.dataset.category as PackCategory;
@@ -165,15 +161,9 @@ function showStatus(refs: PacksUiRefs, className: string, message: string, showE
   }
 }
 
-/** 创建工具栏、状态区与列表容器，返回控件 refs（事件由 controller 绑定） */
+/** 创建工具栏、状态区与列表容器，返回控件 refs（事件由 controller 绑定；hero 由壳层 index.html 提供） */
 export function mountPacksChrome(root: HTMLElement): PacksUiRefs {
   root.replaceChildren();
-
-  const hero = document.createElement('div');
-  hero.className = 'packs-hero';
-  const heroTitle = document.createElement('h1');
-  const heroDesc = document.createElement('p');
-  hero.append(heroTitle, heroDesc);
 
   const toolbar = document.createElement('div');
   toolbar.className = 'packs-toolbar';
@@ -235,7 +225,7 @@ export function mountPacksChrome(root: HTMLElement): PacksUiRefs {
   listEl.className = 'packs-list';
   listEl.hidden = true;
 
-  root.append(hero, toolbar, statusEl, listEl);
+  root.append(toolbar, statusEl, listEl);
 
   return {
     searchInput,
@@ -247,8 +237,6 @@ export function mountPacksChrome(root: HTMLElement): PacksUiRefs {
     listEl,
     retryBtn,
     officialLink,
-    heroTitle,
-    heroDesc,
   };
 }
 
