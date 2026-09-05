@@ -118,7 +118,11 @@ function renderPackCard(pack: PackInfo, lang: UiLang): HTMLElement {
     meta.append(versionSpan);
   }
 
+  // type 数组可能含重复项（如多个 sound），展示时去重并保序
+  const seenTypes = new Set<string>();
   for (const type of pack.type || []) {
+    if (seenTypes.has(type)) continue;
+    seenTypes.add(type);
     const chip = document.createElement('span');
     chip.className = TYPE_CHIP_CLASS[type] ?? 'pack-chip';
     chip.textContent = typeChipLabel(type, lang);
