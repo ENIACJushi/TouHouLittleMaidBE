@@ -20,6 +20,8 @@ type I18nKey =
   | 'loading'
   | 'empty'
   | 'error'
+  | 'errorCors'
+  | 'errorNetwork'
   | 'retry'
   | 'openOfficial'
   | 'download'
@@ -46,6 +48,10 @@ const MESSAGES: Record<UiLang, Record<I18nKey, string>> = {
     loading: '加载中…',
     empty: '没有匹配的模型包，请尝试其他关键词或分类。',
     error: '无法加载模型包列表',
+    errorCors:
+      '无法加载模型包列表：浏览器跨域（CORS）限制或网络失败。可重试，或打开官方目录。',
+    errorNetwork:
+      '无法加载模型包列表：网络请求失败。请检查连接后重试，或打开官方目录。',
     retry: '重试',
     openOfficial: '打开官方目录',
     download: '下载',
@@ -71,6 +77,10 @@ const MESSAGES: Record<UiLang, Record<I18nKey, string>> = {
     loading: 'Loading…',
     empty: 'No matching packs. Try another keyword or category.',
     error: 'Failed to load pack list',
+    errorCors:
+      'Failed to load pack list: blocked by CORS or network. Retry, or open the official directory.',
+    errorNetwork:
+      'Failed to load pack list: network request failed. Check your connection, retry, or open the official directory.',
     retry: 'Retry',
     openOfficial: 'Open official directory',
     download: 'Download',

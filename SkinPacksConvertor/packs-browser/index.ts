@@ -1,6 +1,6 @@
 import cssText from './styles.css';
 import { filterAndSortPacks } from './filter';
-import { INFO_JSON_URL } from './i18n';
+import { INFO_JSON_URL, packsT } from './i18n';
 import type { PackCategory, PackInfo, PackSortKey, UiLang } from './types';
 import {
   mountPacksChrome,
@@ -55,37 +55,66 @@ function filterOpts() {
   };
 }
 
-function currentListState(): PacksListState {
+/** 将 fetch 异常映射为可读的主文案；可选附带短 detail */
+function formatFetchError(err: unknown): string {
+  const detail = err instanceof Error ? err.message : String(err);
+  const lower = detail.toLowerCase();
+  const isFailedToFetch = /failed to fetch|load failed|networkerror|network request failed/.test(
+    lower,
+  );
+  const isTypeError = err instanceof TypeError;
+
+  let primary: string;
+  if (isFailedToFetch || isTypeError) {
+    // 浏览器跨域失败通常表现为 TypeError / Failed to fetch
+    primary = packsT(state.lang, 'errorCors');
+  } else if (/network|offline|timeout|abort/.test(lower)) {
+    primary = packsT(state.lang, 'errorNetwork');
+  } else {
+    primary = packsT(state.lang, 'error');
+  }
+
+  const short =
+    detail && detail !== primary && detail.length <= 80 ? detail.trim() : '';
+  return short ? `${primary} (${short})` : primary;
+}
+
+function listStateFor(filteredLen: number): PacksListState {
   if (state.loading) return 'loading';
   if (state.error) return 'error';
   // init 后、首次 show 前：packs 仍为 null，不展示假 loading
   if (!state.packs) return 'ready';
-  const filtered = filterAndSortPacks(state.packs, filterOpts());
-  return filtered.length === 0 ? 'empty' : 'ready';
+  return filteredLen === 0 ? 'empty' : 'ready';
 }
 
 function rerender(): void {
   if (!refs) return;
+  const opts = filterOpts();
   const total = state.packs?.length ?? 0;
+  // 每个 rerender 只过滤排序一次
   const packs =
     state.packs && !state.loading && !state.error
-      ? filterAndSortPacks(state.packs, filterOpts())
+      ? filterAndSortPacks(state.packs, opts)
       : [];
   renderPacksList(refs, {
     packs,
     total,
-    state: currentListState(),
+    state: listStateFor(packs.length),
     lang: state.lang,
-    filter: filterOpts(),
+    filter: opts,
     errorMessage: state.error ?? undefined,
   });
 }
 
 /** 仅允许请求 INFO_JSON_URL；禁止自动拉取其它资源 */
 async function fetchInfoJson(force: boolean): Promise<void> {
-  if (!force && state.packs !== null) {
-    rerender();
-    return;
+  // 非强制刷新：已有数据则复用；进行中则不重复发起
+  if (!force) {
+    if (state.loading) return;
+    if (state.packs !== null) {
+      rerender();
+      return;
+    }
   }
 
   const seq = ++fetchSeq;
@@ -112,7 +141,7 @@ async function fetchInfoJson(force: boolean): Promise<void> {
   } catch (err) {
     if (seq !== fetchSeq) return;
     state.packs = null;
-    state.error = err instanceof Error ? err.message : String(err);
+    state.error = formatFetchError(err);
   } finally {
     if (seq === fetchSeq) {
       state.loading = false;
@@ -164,6 +193,8 @@ function init(root: HTMLElement): void {
 
 function show(): void {
   visible = true;
+  // 首次加载进行中：勿再开一条 fetch（刷新/重试用 force）
+  if (state.loading && state.packs === null) return;
   if (state.packs === null) {
     void fetchInfoJson(false);
   } else {
