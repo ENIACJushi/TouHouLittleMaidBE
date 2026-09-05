@@ -7,79 +7,96 @@
 </head>
 <body>
 <div class="page">
-  <header class="hero card">
-    <div class="hero-top">
-      <h1 id="page_title">车万女仆模型包转换器</h1>
-      <div class="hero-controls">
-        <label for="language_select" id="language_label" class="sr-only">语言</label>
-        <select id="language_select" class="lang-select" aria-label="语言选择">
-          <option value="zh-CN">中文</option>
-          <option value="en-US">English</option>
-        </select>
-        <button id="theme_toggle" type="button" class="theme-toggle" aria-label="切换主题">🌙 深色模式</button>
-      </div>
+  <nav class="site-nav" aria-label="Site">
+    <button type="button" id="nav_convert" data-view="convert">转换器</button>
+    <button type="button" id="nav_packs" data-view="packs">模型包</button>
+    <div class="site-nav-controls">
+      <label for="language_select" id="language_label" class="sr-only">语言</label>
+      <select id="language_select" class="lang-select" aria-label="语言选择">
+        <option value="zh-CN">中文</option>
+        <option value="en-US">English</option>
+      </select>
     </div>
-    <p id="hero_desc">一个将 Java 版女仆模型包转换为基岩版的工具。</p>
-  </header>
+  </nav>
 
-  <main class="content-grid">
-    <section class="card">
-      <h2 id="uuid_title">UUID</h2>
-      <p id="uuid_desc">UUID 是模型包的唯一标识符，你可以在 <a href="https://www.uuidgenerator.net" target="_blank" rel="noopener noreferrer" title="UUID生成">UUID 生成网站</a> 获取它。</p>
-      <div class="field-row">
-        <label id="uuid_label" for="uuid">输入 UUID：</label>
-        <input id="uuid" type="text" placeholder="例如：xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
-      </div>
-    </section>
-
-    <section class="card">
-      <h2 id="pack_title">Java 版模型包</h2>
-      <p id="pack_desc">
-        上传 zip 模型包后点击转换。支持：
-        <a href="https://page.cfpa.team/MaidCustomPack/zh" target="_blank" rel="noopener noreferrer" title="模型下载">TLM 女仆模型包</a>
-        （含 <code>assets/*/maid_model.json</code>），以及
-        <a href="https://ysm.cfpa.team/wiki/struct/" target="_blank" rel="noopener noreferrer" title="YSM 结构">YSM 模型包</a>
-        （根目录含 <code>ysm.json</code>，结构同 Yes Steve Model）。加密 <code>.ysm</code> 暂不支持。
-      </p>
-      <p id="pack_hint" class="hint">模型包前方的序号决定游戏内的先后顺序，一个世界只能同时加载一个模型包。</p>
-
-      <div class="upload-area">
-        <table id="result_block" class="result-table">
-          <tr><th>序号</th><th colspan="2">信息</th></tr>
-          <tr><td class="center-col">*</td><td colspan="2" class="placeholder">待上传</td></tr>
-        </table>
-        <div id="drop_zone" class="drop-zone" tabindex="0" role="button" aria-label="拖拽或点击上传模型包">
-          <p id="drop_title" class="drop-title">拖拽 zip 文件到这里</p>
-          <p id="drop_subtitle" class="drop-subtitle">或点击下方按钮选择多个文件</p>
-          <label id="file_label" for="file" class="file-label">添加模型包</label>
+  <div id="view-convert">
+    <header class="hero card">
+      <div class="hero-top">
+        <h1 id="page_title">车万女仆模型包转换器</h1>
+        <div class="hero-controls">
+          <button id="theme_toggle" type="button" class="theme-toggle" aria-label="切换主题">🌙 深色模式</button>
         </div>
-        <input type="file" id="file" name="file" multiple>
       </div>
-    </section>
+      <p id="hero_desc">一个将 Java 版女仆模型包转换为基岩版的工具。</p>
+    </header>
 
-    <section class="card action-card">
-      <div>
-        <h2 id="tips_title">导入游戏</h2>
-        <div class="tips">
-        <p id="tips_intro">1、转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包优先级；产物含与主包相同的「精简/完整」子包，请与主包选用同一档：</p>
-        <ul>
-          <li id="tips_single">若是单机游戏，则令附加模型包在主包上方；</li>
-          <li id="tips_server">若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。</li>
-        </ul>
-        <p id="tips_command">2、创造模式下使用物品「记忆中的幻想乡（管理）」打开管理面板（也可执行 <code>/scriptevent thlm:manage</code>），将如下数据粘贴到「皮肤包」中：</p>
-        <div class="command-box">
-          <div class="command-toolbar">
-            <button type="button" id="command_copy" class="command-copy" disabled>复制</button>
+    <main class="content-grid">
+      <section class="card">
+        <h2 id="uuid_title">UUID</h2>
+        <p id="uuid_desc">UUID 是模型包的唯一标识符，你可以在 <a href="https://www.uuidgenerator.net" target="_blank" rel="noopener noreferrer" title="UUID生成">UUID 生成网站</a> 获取它。</p>
+        <div class="field-row">
+          <label id="uuid_label" for="uuid">输入 UUID：</label>
+          <input id="uuid" type="text" placeholder="例如：xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 id="pack_title">Java 版模型包</h2>
+        <p id="pack_desc">
+          上传 zip 模型包后点击转换。支持：
+          <a href="?view=packs" id="link_to_packs" title="模型下载">TLM 女仆模型包</a>
+          （含 <code>assets/*/maid_model.json</code>），以及
+          <a href="https://ysm.cfpa.team/wiki/struct/" target="_blank" rel="noopener noreferrer" title="YSM 结构">YSM 模型包</a>
+          （根目录含 <code>ysm.json</code>，结构同 Yes Steve Model）。加密 <code>.ysm</code> 暂不支持。
+        </p>
+        <p id="pack_hint" class="hint">模型包前方的序号决定游戏内的先后顺序，一个世界只能同时加载一个模型包。</p>
+
+        <div class="upload-area">
+          <table id="result_block" class="result-table">
+            <tr><th>序号</th><th colspan="2">信息</th></tr>
+            <tr><td class="center-col">*</td><td colspan="2" class="placeholder">待上传</td></tr>
+          </table>
+          <div id="drop_zone" class="drop-zone" tabindex="0" role="button" aria-label="拖拽或点击上传模型包">
+            <p id="drop_title" class="drop-title">拖拽 zip 文件到这里</p>
+            <p id="drop_subtitle" class="drop-subtitle">或点击下方按钮选择多个文件</p>
+            <label id="file_label" for="file" class="file-label">添加模型包</label>
           </div>
-          <pre id="command" class="command-data" aria-live="polite">待生成...</pre>
+          <input type="file" id="file" name="file" multiple>
         </div>
-        </div>
-      </div>
-      <button type="button" onclick="startConvert()" id="b_convert">开始转换</button>
-    </section>
-  </main>
+      </section>
 
-  <div id="error_log" class="error-log"></div>
+      <section class="card action-card">
+        <div>
+          <h2 id="tips_title">导入游戏</h2>
+          <div class="tips">
+          <p id="tips_intro">1、转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包优先级；产物含与主包相同的「精简/完整」子包，请与主包选用同一档：</p>
+          <ul>
+            <li id="tips_single">若是单机游戏，则令附加模型包在主包上方；</li>
+            <li id="tips_server">若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。</li>
+          </ul>
+          <p id="tips_command">2、创造模式下使用物品「记忆中的幻想乡（管理）」打开管理面板（也可执行 <code>/scriptevent thlm:manage</code>），将如下数据粘贴到「皮肤包」中：</p>
+          <div class="command-box">
+            <div class="command-toolbar">
+              <button type="button" id="command_copy" class="command-copy" disabled>复制</button>
+            </div>
+            <pre id="command" class="command-data" aria-live="polite">待生成...</pre>
+          </div>
+          </div>
+        </div>
+        <button type="button" onclick="startConvert()" id="b_convert">开始转换</button>
+      </section>
+    </main>
+
+    <div id="error_log" class="error-log"></div>
+  </div>
+
+  <div id="view-packs" hidden>
+    <header class="packs-hero">
+      <h1 id="packs_page_title"></h1>
+      <p id="packs_page_desc"></p>
+    </header>
+    <div id="packs_root"></div>
+  </div>
 </div>
 
 <!-- 样式 -->
@@ -171,6 +188,81 @@
     margin: 28px auto;
     display: grid;
     gap: 16px;
+  }
+
+  /* 站点顶栏：与 packs-browser 样式对齐，无 bundle 时也可显示 */
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+  }
+
+  .site-nav button {
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.95rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .site-nav button:hover {
+    background: var(--control-btn-bg);
+    color: var(--heading);
+  }
+
+  .site-nav button.is-active,
+  .site-nav button[aria-current="page"] {
+    background: var(--control-btn-bg);
+    color: var(--primary);
+    border-color: var(--line);
+    font-weight: 600;
+  }
+
+  .site-nav-controls {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #view-convert {
+    display: grid;
+    gap: 16px;
+  }
+
+  #view-convert[hidden],
+  #view-packs[hidden] {
+    display: none !important;
+  }
+
+  #view-packs .packs-hero {
+    margin-bottom: 0;
+    padding: 1.25rem 1.5rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+
+  #view-packs .packs-hero h1 {
+    margin: 0 0 0.35rem;
+    font-size: 1.5rem;
+    color: var(--heading);
+  }
+
+  #view-packs .packs-hero p {
+    margin: 0;
+    color: var(--muted);
   }
 
   .card {
@@ -555,6 +647,10 @@
     'zh-CN': {
       pageTitle: '车万女仆模型包转换器',
       heroDesc: '一个将 Java 版女仆模型包转换为基岩版的工具。',
+      navConvert: '转换器',
+      navPacks: '模型包',
+      packsPageTitle: '模型包浏览',
+      packsPageDesc: '浏览并下载 TLM 官方模型包。',
       languageLabel: '语言',
       languageAria: '语言选择',
       uuidTitle: 'UUID',
@@ -562,7 +658,7 @@
       uuidLabel: '输入 UUID：',
       uuidPlaceholder: '例如：xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
       packTitle: 'Java 版模型包',
-      packDesc: '上传 zip 模型包。支持 <a href="https://tlmdl.cfpa.team/" target="_blank" rel="noopener noreferrer" title="模型下载">TLM 女仆模型包</a>（含 <code>assets/*/maid_model.json</code>），以及 <a href="https://ysm.cfpa.team/wiki/struct/" target="_blank" rel="noopener noreferrer" title="YSM 结构">YSM 模型包</a>（根目录含 <code>ysm.json</code>）。加密 <code>.ysm</code> 不支持。',
+      packDesc: '上传 zip 模型包。支持 <a href="?view=packs" id="link_to_packs" title="模型下载">TLM 女仆模型包</a>（含 <code>assets/*/maid_model.json</code>），以及 <a href="https://ysm.cfpa.team/wiki/struct/" target="_blank" rel="noopener noreferrer" title="YSM 结构">YSM 模型包</a>（根目录含 <code>ysm.json</code>）。加密 <code>.ysm</code> 不支持。',
       packHint: '模型包前方的序号决定游戏内的先后顺序，一个世界只能同时加载一个模型包。',
       tableIndex: '序号',
       tableInfo: '信息',
@@ -595,6 +691,10 @@
     'en-US': {
       pageTitle: 'TouHou Little Maid Skin Pack Converter',
       heroDesc: 'Convert Java Edition maid skin packs into Bedrock Edition format.',
+      navConvert: 'Converter',
+      navPacks: 'Model Packs',
+      packsPageTitle: 'Model Pack Browser',
+      packsPageDesc: 'Browse and download official TLM model packs.',
       languageLabel: 'Language',
       languageAria: 'Language selector',
       uuidTitle: 'UUID',
@@ -602,7 +702,7 @@
       uuidLabel: 'UUID:',
       uuidPlaceholder: 'e.g. xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
       packTitle: 'Java Edition Skin Packs',
-      packDesc: 'Upload zip packs. Supports <a href="https://tlmdl.cfpa.team/" target="_blank" rel="noopener noreferrer" title="Download skins">TLM maid packs</a> (<code>assets/*/maid_model.json</code>) and <a href="https://ysm.cfpa.team/wiki/struct/" target="_blank" rel="noopener noreferrer" title="YSM structure">YSM packs</a> (root <code>ysm.json</code>). Encrypted <code>.ysm</code> is not supported.',
+      packDesc: 'Upload zip packs. Supports <a href="?view=packs" id="link_to_packs" title="Download skins">TLM maid packs</a> (<code>assets/*/maid_model.json</code>) and <a href="https://ysm.cfpa.team/wiki/struct/" target="_blank" rel="noopener noreferrer" title="YSM structure">YSM packs</a> (root <code>ysm.json</code>). Encrypted <code>.ysm</code> is not supported.',
       packHint: 'The order number controls in-game priority. Only one skin pack can be active at a time in a world.',
       tableIndex: 'Index',
       tableInfo: 'Info',
@@ -654,6 +754,16 @@
       languageSelect.setAttribute('aria-label', t('languageAria'));
     }
 
+    const navConvert = document.getElementById('nav_convert');
+    const navPacks = document.getElementById('nav_packs');
+    if (navConvert) navConvert.textContent = t('navConvert');
+    if (navPacks) navPacks.textContent = t('navPacks');
+
+    const packsTitle = document.getElementById('packs_page_title');
+    const packsDesc = document.getElementById('packs_page_desc');
+    if (packsTitle) packsTitle.textContent = t('packsPageTitle');
+    if (packsDesc) packsDesc.textContent = t('packsPageDesc');
+
     document.getElementById('uuid_title').textContent = t('uuidTitle');
     document.getElementById('uuid_desc').innerHTML = t('uuidDesc');
     document.getElementById('uuid_label').textContent = t('uuidLabel');
@@ -696,6 +806,58 @@
     if (!processing) {
       refreshList();
     }
+
+    // 同步浏览页语言
+    if (window.PacksBrowser) {
+      window.PacksBrowser.setLang(currentLang);
+    }
+  }
+
+  /** 从 URL 读取当前视图；缺省或非法值视为 convert */
+  function getViewFromUrl() {
+    const v = new URLSearchParams(location.search).get('view');
+    return v === 'packs' ? 'packs' : 'convert';
+  }
+
+  /** 切换转换器 / 模型包视图，并同步 ?view= 与 PacksBrowser */
+  function setView(view) {
+    const packs = view === 'packs';
+    document.getElementById('view-convert').hidden = packs;
+    document.getElementById('view-packs').hidden = !packs;
+
+    const navConvert = document.getElementById('nav_convert');
+    const navPacks = document.getElementById('nav_packs');
+    if (navConvert) {
+      navConvert.classList.toggle('is-active', !packs);
+      if (packs) navConvert.removeAttribute('aria-current');
+      else navConvert.setAttribute('aria-current', 'page');
+    }
+    if (navPacks) {
+      navPacks.classList.toggle('is-active', packs);
+      if (packs) navPacks.setAttribute('aria-current', 'page');
+      else navPacks.removeAttribute('aria-current');
+    }
+
+    const url = new URL(location.href);
+    if (packs) url.searchParams.set('view', 'packs');
+    else url.searchParams.delete('view');
+    history.replaceState(null, '', url);
+
+    if (packs && window.PacksBrowser) window.PacksBrowser.show();
+    else if (window.PacksBrowser) window.PacksBrowser.hide();
+  }
+
+  /** 绑定 packDesc 内「模型包」同页跳转，避免整页刷新 */
+  function bindLinkToPacks() {
+    const packDesc = document.getElementById('pack_desc');
+    if (!packDesc || packDesc.dataset.linkBound === '1') return;
+    packDesc.dataset.linkBound = '1';
+    packDesc.addEventListener('click', function(event) {
+      const link = event.target && event.target.closest ? event.target.closest('#link_to_packs') : null;
+      if (!link) return;
+      event.preventDefault();
+      setView('packs');
+    });
   }
 
   function setLanguage(lang) {
@@ -780,9 +942,24 @@
     });
   }
 
+  // 顶栏视图切换
+  const navConvertBtn = document.getElementById('nav_convert');
+  const navPacksBtn = document.getElementById('nav_packs');
+  if (navConvertBtn) {
+    navConvertBtn.addEventListener('click', function() {
+      setView('convert');
+    });
+  }
+  if (navPacksBtn) {
+    navPacksBtn.addEventListener('click', function() {
+      setView('packs');
+    });
+  }
+
   initLanguage();
   initTheme();
   initDefaultUuid();
+  bindLinkToPacks();
 
 
   // 上传相关
@@ -988,6 +1165,21 @@
 
 <!--转换器-->
 <script src="../dist/SkinConvertor.bundle.js"></script>
+<!--模型包浏览（Task 6 构建产出；缺失时 init 需兜底）-->
+<script src="../dist/PacksBrowser.bundle.js"></script>
+<script>
+  // PacksBrowser 加载后再挂载并按 URL 恢复视图
+  (function initPacksBrowserShell() {
+    var root = document.getElementById('packs_root');
+    if (window.PacksBrowser && root) {
+      window.PacksBrowser.init(root);
+      window.PacksBrowser.setLang(typeof currentLang === 'string' ? currentLang : 'zh-CN');
+    }
+    if (typeof setView === 'function' && typeof getViewFromUrl === 'function') {
+      setView(getViewFromUrl());
+    }
+  })();
+</script>
 
 <!-- JSZIP https://github.com/Stuk/jszip?tab=readme-ov-file -->
 <script>
