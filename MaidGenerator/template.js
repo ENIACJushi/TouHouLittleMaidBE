@@ -89,7 +89,13 @@ export let TEMPLATE = {
         "minecraft:is_hidden_when_invisible": { },
         "minecraft:conditional_bandwidth_optimization": { },
         // 占用 look/move，看向玩家时打断 random_stroll
-        "minecraft:behavior.look_at_player": { "priority": 7, "look_distance": 6.0, "look_time": [ 2, 4 ], "probability": 0.03, "control_flags": [ "look", "move" ] },
+        "minecraft:behavior.look_at_player": {
+          "priority": 7,
+          "look_distance": 7.0,
+          "look_time": [ 40, 100 ],
+          "probability": 1,
+          "control_flags": [ "look", "move" ],
+        },
 
         ///// 交互属性 /////
         "minecraft:healable": {
@@ -99,7 +105,13 @@ export let TEMPLATE = {
           ]
         },
         // 占用 look/move，打断 random_stroll
-        "minecraft:behavior.beg": { "priority": 7, "look_distance": 8, "look_time": [ 15, 30 ], "items": [ "cake" ], "control_flags": [ "look", "move" ] },
+        "minecraft:behavior.beg": {
+          "priority": 6,
+          "look_distance": 8,
+          "look_time": [ 40, 100 ],
+          "items": [ "cake" ],
+          "control_flags": [ "look", "move" ]
+        },
 
         ///// AI属性 /////
 
@@ -913,8 +925,13 @@ export let TEMPLATE = {
         "minecraft:physics": { "has_collision": true, "has_gravity": true, "push_towards_closest_space": false },
         "minecraft:persistent": { },
         "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
-        "minecraft:home": { },
-        "minecraft:behavior.look_at_player": { "priority": 5, "look_distance": 6.0,"probability": 0.02 },
+        "minecraft:home": { },"minecraft:behavior.look_at_player": {
+          "priority": 5,
+          "look_distance": 7.0,
+          "look_time": [ 40, 100 ],
+          "probability": 1,
+          "control_flags": [ "look", "move" ],
+        },
         "minecraft:npc": {
           "npc_data": {
             "portrait_offsets": {
