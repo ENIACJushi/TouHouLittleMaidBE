@@ -7,6 +7,7 @@
     "test:convert": "tsx test/convert.ts",
     "test:convert:ysm": "tsx test/convert.ts --ysm",
     "test:built_in": "tsx test/built_in.ts",
+    "test:packs-browser": "tsx test/packs-browser-filter.ts",
     "convert:built-in": "tsx src/built_in/convert.ts"
   },
   "dependencies": {
