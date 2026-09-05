@@ -50,6 +50,7 @@
           （根目录含 <code>ysm.json</code>，结构同 Yes Steve Model）。加密 <code>.ysm</code> 暂不支持。
         </p>
         <p id="pack_hint" class="hint">模型包前方的序号决定游戏内的先后顺序，一个世界只能同时加载一个模型包。</p>
+        <p id="pack_hint_ysm" class="hint">YSM转换处于早期开发阶段，若遇到异常，请打开“设置-创建者”启用内容日志后进入世界，在 <a href="https://github.com/ENIACJushi/TouHouLittleMaidBE/issues" target="_blank" rel="noopener noreferrer">GitHub issue</a> 提交错误日志。</p>
 
         <div class="upload-area">
           <table id="result_block" class="result-table">
@@ -660,6 +661,7 @@
       packTitle: 'Java 版模型包',
       packDesc: '上传 zip 模型包。支持 <a href="?view=packs" id="link_to_packs" title="模型下载">TLM 女仆模型包</a>（含 <code>assets/*/maid_model.json</code>），以及 <a href="https://ysm.cfpa.team/wiki/struct/" target="_blank" rel="noopener noreferrer" title="YSM 结构">YSM 模型包</a>（根目录含 <code>ysm.json</code>）。加密 <code>.ysm</code> 不支持。',
       packHint: '模型包前方的序号决定游戏内的先后顺序，一个世界只能同时加载一个模型包。',
+      packHintYsm: 'YSM转换处于早期开发阶段，若遇到异常，请打开“设置-创建者”启用内容日志后进入世界，在 <a href="https://github.com/ENIACJushi/TouHouLittleMaidBE/issues" target="_blank" rel="noopener noreferrer">GitHub issue</a> 提交错误日志。',
       tableIndex: '序号',
       tableInfo: '信息',
       tablePending: '待上传',
@@ -704,6 +706,7 @@
       packTitle: 'Java Edition Skin Packs',
       packDesc: 'Upload zip packs. Supports <a href="?view=packs" id="link_to_packs" title="Download skins">TLM maid packs</a> (<code>assets/*/maid_model.json</code>) and <a href="https://ysm.cfpa.team/wiki/struct/" target="_blank" rel="noopener noreferrer" title="YSM structure">YSM packs</a> (root <code>ysm.json</code>). Encrypted <code>.ysm</code> is not supported.',
       packHint: 'The order number controls in-game priority. Only one skin pack can be active at a time in a world.',
+      packHintYsm: 'YSM conversion is in early development. If something goes wrong, enable Content Log under Settings &gt; Creator, enter the world, then submit the error log in a <a href="https://github.com/ENIACJushi/TouHouLittleMaidBE/issues" target="_blank" rel="noopener noreferrer">GitHub issue</a>.',
       tableIndex: 'Index',
       tableInfo: 'Info',
       tablePending: 'Waiting for upload',
@@ -772,6 +775,7 @@
     document.getElementById('pack_title').textContent = t('packTitle');
     document.getElementById('pack_desc').innerHTML = t('packDesc');
     document.getElementById('pack_hint').textContent = t('packHint');
+    document.getElementById('pack_hint_ysm').innerHTML = t('packHintYsm');
 
     document.getElementById('drop_title').textContent = t('dropTitle');
     document.getElementById('drop_subtitle').textContent = t('dropSubtitle');
