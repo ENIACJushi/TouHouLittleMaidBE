@@ -131,10 +131,11 @@ export class ChairManager {
    * 将 faceLocation 转为世界坐标
    *
    * 世界轴向：东=+x，南=+z，上=+y。
-   * faceLocation 实际原点/正方向随方块 y 变化（非文档所述西北底角）：
-   * - location.y >= 0：东北底角为原点，正方向为西、上、南
-   * - location.y < 0：东北顶角为原点，正方向为西、下、南
-   * 西/南/顶(或底)面上偶发把远侧坐标报成 0，需按交互面修正为 1。
+   * faceLocation 并非固定「西北底角」：各方块轴上，原点落在靠近世界 0 的那一侧，
+   * face 正方向指向远离 0 的一侧（与 y 轴既有经验一致，x/z 按象限同理）：
+   * - 轴坐标 >= 0：原点在该轴较小面（西/底/北），world = block + face
+   * - 轴坐标 < 0：原点在该轴较大面（东/顶/南），world = block + 1 - face
+   * 远侧面上偶发把坐标报成 0，需按当前原点所在轴修正为 1。
    *
    * @param {import("@minecraft/server").Vector3} blockLocation 方块坐标
    * @param {import("@minecraft/server").Direction} blockFace 交互面
@@ -146,26 +147,32 @@ export class ChairManager {
     let y = faceLocation.y;
     let z = faceLocation.z;
 
-    // 西面/南面远侧x/z不可能为0，修正为 1
-    if (blockFace === Direction.West && x === 0) x = 1;
-    if (blockFace === Direction.South && z === 0) z = 1;
+    // 各方块轴：原点是否在靠近世界 0 的较小面
+    const xFromMin = blockLocation.x >= 0;
+    const yFromMin = blockLocation.y >= 0;
+    const zFromMin = blockLocation.z >= 0;
 
-    if (blockLocation.y >= 0) {
-      // 东北底角；正方向：西(-x)、上(+y)、南(+z)
+    // 远侧偶发报 0 → 修正为 1（远侧 = 远离世界 0 的面）
+    if (xFromMin) {
+      if (blockFace === Direction.East && x === 0) x = 1;
+    } else if (blockFace === Direction.West && x === 0) {
+      x = 1;
+    }
+    if (yFromMin) {
       if (blockFace === Direction.Up && y === 0) y = 1;
-      return {
-        x: blockLocation.x + 1 - x,
-        y: blockLocation.y + y,
-        z: blockLocation.z + z,
-      };
+    } else if (blockFace === Direction.Down && y === 0) {
+      y = 1;
+    }
+    if (zFromMin) {
+      if (blockFace === Direction.South && z === 0) z = 1;
+    } else if (blockFace === Direction.North && z === 0) {
+      z = 1;
     }
 
-    // 东北顶角；正方向：西(-x)、下(-y)、南(+z)
-    if (blockFace === Direction.Down && y === 0) y = 1;
     return {
-      x: blockLocation.x + 1 - x,
-      y: blockLocation.y + 1 - y,
-      z: blockLocation.z + z,
+      x: xFromMin ? blockLocation.x + x : blockLocation.x + 1 - x,
+      y: yFromMin ? blockLocation.y + y : blockLocation.y + 1 - y,
+      z: zFromMin ? blockLocation.z + z : blockLocation.z + 1 - z,
     };
   }
 
