@@ -194,6 +194,10 @@ export class MaidScheduleEvents {
   tryReturnHome(event: DataDrivenEntityTriggerAfterEvent) {
     // 比较维度
     let maid = event.entity;
+    // 坐下时不回家（原 JSON bool_property 过滤器已失效，改由脚本判断）
+    if (EntityMaid.isSitting(maid)) {
+      return;
+    }
     // NPC的家半径为 2
     let homeRadius = EntityMaid.Work.get(maid) === -1 ? 2 : HOME_RADIUS;
 

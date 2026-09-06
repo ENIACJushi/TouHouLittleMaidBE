@@ -1,0 +1,209 @@
+{
+	"format_version": "1.8.0",
+	"render_controllers": {
+		"controller.render.touhou_little_maid.chair_pack_touhou_little_maid": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.touhou_little_maid_cushion",
+						"Texture.touhou_little_maid_class_desk",
+						"Texture.touhou_little_maid_class_chair",
+						"Texture.touhou_little_maid_kotatsu",
+						"Texture.touhou_little_maid_play_station",
+						"Texture.touhou_little_maid_tall_stool",
+						"Texture.touhou_little_maid_low_stool",
+						"Texture.touhou_little_maid_barbecue_booth",
+						"Texture.touhou_little_maid_barbecue_booth_2",
+						"Texture.touhou_little_maid_long_stool",
+						"Texture.touhou_little_maid_square_table",
+						"Texture.touhou_little_maid_mahjong_table",
+						"Texture.touhou_little_maid_beach_chair",
+						"Texture.touhou_little_maid_parasol",
+						"Texture.touhou_little_maid_water_wheel",
+						"Texture.touhou_little_maid_saisen_bako",
+						"Texture.touhou_little_maid_well",
+						"Texture.touhou_little_maid_torii",
+						"Texture.touhou_little_maid_torii_2",
+						"Texture.touhou_little_maid_torii_3",
+						"Texture.touhou_little_maid_ema",
+						"Texture.touhou_little_maid_anti_collision_bucket",
+						"Texture.touhou_little_maid_park_bench",
+						"Texture.touhou_little_maid_rinnosuke_children_toys",
+						"Texture.touhou_little_maid_moto",
+						"Texture.touhou_little_maid_bowl",
+						"Texture.touhou_little_maid_lucky_cat_2m",
+						"Texture.touhou_little_maid_yumemi_strawberry_milk",
+						"Texture.touhou_little_maid_crystalizedsuns_moms_tombstone",
+						"Texture.touhou_little_maid_legendary_pig_man",
+						"Texture.touhou_little_maid_head_of_academycraft",
+						"Texture.touhou_little_maid_fogg05",
+						"Texture.touhou_little_maid_native_drum"
+					]
+				},
+				"geometries": {
+					"Array.geos": [
+						"Geometry.void",
+						"Geometry.touhou_little_maid_cushion",
+						"Geometry.touhou_little_maid_class_desk",
+						"Geometry.touhou_little_maid_class_chair",
+						"Geometry.touhou_little_maid_kotatsu",
+						"Geometry.touhou_little_maid_play_station",
+						"Geometry.touhou_little_maid_tall_stool",
+						"Geometry.touhou_little_maid_low_stool",
+						"Geometry.touhou_little_maid_barbecue_booth",
+						"Geometry.touhou_little_maid_barbecue_booth_2",
+						"Geometry.touhou_little_maid_long_stool",
+						"Geometry.touhou_little_maid_square_table",
+						"Geometry.touhou_little_maid_mahjong_table",
+						"Geometry.touhou_little_maid_beach_chair",
+						"Geometry.touhou_little_maid_parasol",
+						"Geometry.touhou_little_maid_water_wheel",
+						"Geometry.touhou_little_maid_saisen_bako",
+						"Geometry.touhou_little_maid_well",
+						"Geometry.touhou_little_maid_torii",
+						"Geometry.touhou_little_maid_torii_2",
+						"Geometry.touhou_little_maid_torii_3",
+						"Geometry.touhou_little_maid_ema",
+						"Geometry.touhou_little_maid_anti_collision_bucket",
+						"Geometry.touhou_little_maid_park_bench",
+						"Geometry.touhou_little_maid_rinnosuke_children_toys",
+						"Geometry.touhou_little_maid_moto",
+						"Geometry.touhou_little_maid_bowl",
+						"Geometry.touhou_little_maid_lucky_cat_2m",
+						"Geometry.touhou_little_maid_yumemi_strawberry_milk",
+						"Geometry.touhou_little_maid_crystalizedsuns_moms_tombstone",
+						"Geometry.touhou_little_maid_legendary_pig_man",
+						"Geometry.touhou_little_maid_head_of_academycraft",
+						"Geometry.touhou_little_maid_fogg05",
+						"Geometry.touhou_little_maid_native_drum"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:chair_pack')==1?q.variant+1:0]",
+			"materials": [
+				{
+					"_*": "Material.emissive"
+				},
+				{
+					"*": "Material.default"
+				}
+			],
+			"textures": [
+				"Array.skins[q.property('thlm:chair_pack')==1?q.variant+1:0]"
+			]
+		},
+		"controller.render.touhou_little_maid.chair_pack_geckolib": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.geckolib_qingluka"
+					]
+				},
+				"geometries": {
+					"Array.geos": [
+						"Geometry.void",
+						"Geometry.geckolib_qingluka"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:chair_pack')==2?q.variant+1:0]",
+			"materials": [
+				{
+					"_*": "Material.emissive"
+				},
+				{
+					"*": "Material.default"
+				}
+			],
+			"textures": [
+				"Array.skins[q.property('thlm:chair_pack')==2?q.variant+1:0]"
+			]
+		},
+		"controller.render.touhou_little_maid.chair_pack_next_update_model": {
+			"arrays": {
+				"textures": {
+					"Array.skins": [
+						"Texture.void",
+						"Texture.next_update_model_stage",
+						"Texture.next_update_model_japanese_lottery_machine",
+						"Texture.next_update_model_fishpond",
+						"Texture.next_update_model_mine",
+						"Texture.next_update_model_logging_hut",
+						"Texture.next_update_model_kitchen",
+						"Texture.next_update_model_dining_table_default",
+						"Texture.next_update_model_dining_table_spring",
+						"Texture.next_update_model_dining_table_summer",
+						"Texture.next_update_model_dining_table_autumn",
+						"Texture.next_update_model_dining_table_winter",
+						"Texture.next_update_model_cumin_lamb_chop",
+						"Texture.next_update_model_hot_spring",
+						"Texture.next_update_model_picnic_cloth",
+						"Texture.next_update_model_elite_slime",
+						"Texture.next_update_model_slime",
+						"Texture.next_update_model_flip_phone",
+						"Texture.next_update_model_fox_demon_statue",
+						"Texture.next_update_model_fox_demon_statue_1",
+						"Texture.next_update_model_bathroom",
+						"Texture.next_update_model_backpack",
+						"Texture.next_update_model_cabinet",
+						"Texture.next_update_model_single_bed",
+						"Texture.next_update_model_double_bed",
+						"Texture.next_update_model_shrine",
+						"Texture.next_update_model_3d_printer",
+						"Texture.next_update_model_doorbell_ground",
+						"Texture.next_update_model_doorbell_wall",
+						"Texture.next_update_model_exchange_machine"
+					]
+				},
+				"geometries": {
+					"Array.geos": [
+						"Geometry.void",
+						"Geometry.next_update_model_stage",
+						"Geometry.next_update_model_japanese_lottery_machine",
+						"Geometry.next_update_model_fishpond",
+						"Geometry.next_update_model_mine",
+						"Geometry.next_update_model_logging_hut",
+						"Geometry.next_update_model_kitchen",
+						"Geometry.next_update_model_dining_table_default",
+						"Geometry.next_update_model_dining_table_spring",
+						"Geometry.next_update_model_dining_table_summer",
+						"Geometry.next_update_model_dining_table_autumn",
+						"Geometry.next_update_model_dining_table_winter",
+						"Geometry.next_update_model_cumin_lamb_chop",
+						"Geometry.next_update_model_hot_spring",
+						"Geometry.next_update_model_picnic_cloth",
+						"Geometry.next_update_model_elite_slime",
+						"Geometry.next_update_model_slime",
+						"Geometry.next_update_model_flip_phone",
+						"Geometry.next_update_model_fox_demon_statue",
+						"Geometry.next_update_model_fox_demon_statue_1",
+						"Geometry.next_update_model_bathroom",
+						"Geometry.next_update_model_backpack",
+						"Geometry.next_update_model_cabinet",
+						"Geometry.next_update_model_single_bed",
+						"Geometry.next_update_model_double_bed",
+						"Geometry.next_update_model_shrine",
+						"Geometry.next_update_model_3d_printer",
+						"Geometry.next_update_model_doorbell_ground",
+						"Geometry.next_update_model_doorbell_wall",
+						"Geometry.next_update_model_exchange_machine"
+					]
+				}
+			},
+			"geometry": "Array.geos[q.property('thlm:chair_pack')==3?q.variant+1:0]",
+			"materials": [
+				{
+					"_*": "Material.emissive"
+				},
+				{
+					"*": "Material.default"
+				}
+			],
+			"textures": [
+				"Array.skins[q.property('thlm:chair_pack')==3?q.variant+1:0]"
+			]
+		}
+	}
+}

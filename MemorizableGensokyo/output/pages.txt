@@ -40,4 +40,6 @@
 {"rawtext":[{"translate":"tlm.2.7","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.2.8","with":["\n"]}]}
 {"rawtext":[{"translate":"tlm.2.9","with":["\n"]}]}
+{"rawtext":[{"translate":"tlm.2.10","with":["\n"]}]}
+{"rawtext":[{"translate":"tlm.2.11","with":["\n"]}]}
 

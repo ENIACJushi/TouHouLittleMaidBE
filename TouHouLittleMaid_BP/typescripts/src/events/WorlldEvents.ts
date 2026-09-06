@@ -10,7 +10,8 @@ import { CustomSpellCardManger } from "../danmaku/CustomSpellCardManger";
 import PowerPoint from "../altar/PowerPoint";
 import { ConfigHelper } from "../controller/Config";
 import { MaidManager } from "../maid/MaidManager";
-import { MaidSkin } from "../maid/MaidSkin";
+import { MaidSkin } from "../maid/skin/MaidSkin";
+import { ChairSkin } from "../chair/skin/ChairSkin";
 import { Logger } from "../controller/Logger";
 import { DeprecatedItemHelper } from "../items/deprecated_helper/DeprecatedHelper";
 
@@ -43,7 +44,8 @@ export class WorldEvents {
       // 初始化
       ConfigHelper.init();
       PowerPoint.init(e);
-      MaidSkin.initScoreboard();
+      MaidSkin.init();
+      ChairSkin.init();
     });
   }
 

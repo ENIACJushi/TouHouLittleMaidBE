@@ -1,0 +1,32 @@
+{
+  "format_version": "1.12.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "tlmsi:chair_show"
+    },
+    "tags": [ "crafting_table" ],
+    "pattern": [
+      " R ",
+      "WWW",
+      "IPI"
+    ],
+    "key": {
+      "W": {
+        "tag": "minecraft:wool"
+      },
+      "I": {
+        "item": "minecraft:iron_ingot"
+      },
+      "P": {
+        "tag": "minecraft:planks"
+      },
+      "R": {
+        "item": "minecraft:redstone"
+      }
+    },
+    "result": {
+      "item": "tlmsi:chair_show",
+      "count": 1
+    }
+  }
+}

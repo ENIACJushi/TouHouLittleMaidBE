@@ -5,6 +5,7 @@
     "touhou_little_maid:hakurei_gohei": { "textures": "textures/items/hakurei_gohei" },
     "touhou_little_maid:power_point": { "textures": "textures/items/power_point" },
     "touhou_little_maid:memorizable_gensokyo": { "textures": "textures/items/memorizable_gensokyo" },
+    "touhou_little_maid:memorizable_gensokyo_admin": { "textures": "textures/items/memorizable_gensokyo_admin" },
 
     "touhou_little_maid:spellcard:default":{"textures": "textures/items/spellcard/spellcard_default"},
     "touhou_little_maid:spellcard:boundary_between_wave_and_particle_3d":{"textures": "textures/items/spellcard/boundary_between_wave_and_particle_3d"},
@@ -33,6 +34,9 @@
     
     "touhou_little_maid:fairy_headwear_0": {"textures":"textures/items/fairy_headwear_0"},
     "touhou_little_maid:fairy_headwear_1": {"textures":"textures/items/fairy_headwear_1"},
-    "touhou_little_maid:fairy_headwear_2": {"textures":"textures/items/fairy_headwear_2"}
+    "touhou_little_maid:fairy_headwear_2": {"textures":"textures/items/fairy_headwear_2"},
+
+    "touhou_little_maid:chair": { "textures": "textures/thlm/chair_pack_pack_3" },
+    "touhou_little_maid:chair_show": { "textures": "textures/items/tlm/chair_show" }
   }
 }

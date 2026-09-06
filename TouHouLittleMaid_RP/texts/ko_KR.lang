@@ -1,0 +1,29 @@
+action.hint.exit.touhou_little_maid:chair=점프를 탭하여 의자에서 나오기
+##### BUILT_IN_SKINS_START #####
+tlm.chair.model.1.0.name=쿠션
+tlm.chair.model.1.1.name=학교 책상
+tlm.chair.model.1.2.name=학교 의자
+tlm.chair.model.1.3.name=코타츠
+tlm.chair.model.1.4.name=게임기 세트
+tlm.chair.model.1.5.name=높은 의자
+tlm.chair.model.1.6.name=낮은 의자
+tlm.chair.model.1.7.name=바베큐 매대
+tlm.chair.model.1.8.name=바베큐 매대
+tlm.chair.model.1.9.name=긴 의자
+tlm.chair.model.1.10.name=사각형 테이블
+tlm.chair.model.1.11.name=마작 테이블
+tlm.chair.model.1.12.name=해안 의자
+tlm.chair.model.1.13.name=파라솔
+tlm.chair.model.1.14.name=물레바퀴
+tlm.chair.model.1.15.name=세전함
+tlm.chair.model.1.16.name=우물
+tlm.chair.model.1.17.name=토리이
+tlm.chair.model.1.18.name=토리이
+tlm.chair.model.1.19.name=토리이
+tlm.chair.model.1.20.name=에마
+tlm.chair.model.1.21.name=충돌 방지대
+tlm.chair.model.1.22.name=공원 벤치
+tlm.chair.model.1.23.name=린노스케 목마
+tlm.chair.model.1.24.name=모토
+tlm.chair.model.1.25.name=신묘마루의 접시
+##### BUILT_IN_SKINS_END #####

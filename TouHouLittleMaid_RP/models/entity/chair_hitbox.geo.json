@@ -1,0 +1,35 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.touhou_little_maid.chair_hitbox",
+				"texture_width": 40,
+				"texture_height": 40,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 3,
+				"visible_bounds_offset": [0, 0.5, 0]
+			},
+			"bones": [
+				{
+					"name": "root",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{"origin": [-9, 15, -8.5], "size": [18, 1.5, 1.5], "inflate": -1, "uv": [0, 14]},
+						{"origin": [-9, -0.5, -8.5], "size": [18, 1.5, 1.5], "inflate": -1, "uv": [0, 14]},
+						{"origin": [-9, 15, 7], "size": [18, 1.5, 1.5], "inflate": -1, "uv": [0, 14]},
+						{"origin": [-9, -0.5, 7], "size": [18, 1.5, 1.5], "inflate": -1, "uv": [0, 14]},
+						{"origin": [-9, 14.5, -8.5], "size": [2.5, 2.5, 17], "inflate": -1, "uv": [0, 3]},
+						{"origin": [-9, -0.5, -8.5], "size": [2.5, 17, 1.5], "inflate": -1, "uv": [2, 1]},
+						{"origin": [-9, -0.5, 7], "size": [2.5, 17, 1.5], "inflate": -1, "uv": [2, 1]},
+						{"origin": [6.5, -0.5, 7], "size": [2.5, 17, 1.5], "inflate": -1, "uv": [2, 1]},
+						{"origin": [6.5, -0.5, -8.5], "size": [2.5, 17, 1.5], "inflate": -1, "uv": [2, 1]},
+						{"origin": [6.5, 14.5, -8.5], "size": [2.5, 2.5, 17], "inflate": -1, "uv": [0, 3]},
+						{"origin": [6.5, -1, -8.5], "size": [2.5, 2.5, 17], "inflate": -1, "uv": [0, 3]},
+						{"origin": [-9, -1, -8.5], "size": [2.5, 2.5, 17], "inflate": -1, "uv": [0, 3]}
+					]
+				}
+			]
+		}
+	]
+}

@@ -11,6 +11,8 @@ import { altarStructure } from "../altar/AltarStructureHelper";
 import { MaidManager } from "../maid/MaidManager";
 import { GarageKit } from "../blocks/GarageKit";
 import { MemorizableGensokyo } from "../book/MemorizableGensokyoUI";
+import { ManageForm } from "../controller/ManageForm";
+import { ChairManager } from "../chair/ChairManager";
 import {isInteractContainerBlock} from "../../data/BadContainerBlocks";
 
 export class ItemEvents {
@@ -24,6 +26,7 @@ export class ItemEvents {
     if (item.typeId.substring(0, 18) === "touhou_little_maid") {
       switch (item.typeId.substring(19)) {
         case "memorizable_gensokyo": MemorizableGensokyo.onUseEvent(event); break;
+        case "memorizable_gensokyo_admin": ManageForm.mainForm(event.source); break;
         default: break;
       }
     }
@@ -47,7 +50,7 @@ export class ItemEvents {
           //// 祭坛平台交互 ////
           case "altar_platform_block": {
             if (!player.isSneaking) {
-              system.run(() => { altarStructure.placeItemEvent(event.block.location, player); });
+              system.run(() => { altarStructure.placeItemEvent(event.block.location, player, itemStack); });
               event.cancel = true;
               return;
             }
@@ -70,6 +73,11 @@ export class ItemEvents {
             // 魂符释放女仆
             case "smart_slab_has_maid": {
               MaidManager.Interact.smartSlabOnUseEvent(event);
+              break;
+            }
+            // 放置坐垫
+            case "chair": {
+              ChairManager.placeOnUseEvent(event);
               break;
             }
             // 激活雕塑/手办

@@ -1,0 +1,197 @@
+import JSZip from 'jszip';
+import { TemplatesBE } from "./Templates";
+import {LangFile} from "./LangFile";
+
+/**
+ * 基岩版模型包输出文件
+ */
+export class PackFile {
+  uuid: string = '';
+  /**
+   * 女仆皮肤包注册配置 JSON（数组），用于组装 command.txt
+   */
+  packConfigStr = '[]';
+  /**
+   * 与网站展示一致的管理面板粘贴数据：{"skin":[...],"chair":[...]}
+   */
+  commandConfigStr = '{"skin":[],"chair":[]}';
+  /**
+   * 模型信息 entity/maid.entity.json
+   */
+  maid_entity: TemplatesBE.EntityDefinition = TemplatesBE.buildEntityDef();
+  /**
+   * 精简子包实体（附加包产物 subpacks/simple/entity/maid.entity.json）
+   */
+  maid_entity_simple: TemplatesBE.EntityDefinition | null = null;
+  /**
+   * 实体 description
+   */
+  entity_description = this.maid_entity["minecraft:client_entity"]["description"];
+  /**
+   * 渲染方案 render_controllers/maid.json
+   */
+  render_controller = JSON.parse(JSON.stringify(TemplatesBE.RENDER_CONTROLLER_LIST));
+  /**
+   * 各模型包定义的模型数量，用于生成配置 JSON
+   */
+  modelAmount: number[] = [];
+  /**
+   * 各女仆包 domain 名（与 modelAmount 下标对齐），供内置构建同步 BP 注释
+   */
+  maidPackDomains: string[] = [];
+
+  ///// 坐垫输出 /////
+  /**
+   * 坐垫模型信息 entity/chair.entity.json
+   */
+  chair_entity: TemplatesBE.ChairEntityDefinition = TemplatesBE.buildChairEntityDef();
+  /**
+   * 坐垫实体 description
+   */
+  chair_description = this.chair_entity["minecraft:client_entity"]["description"];
+  /**
+   * 坐垫渲染方案 render_controllers/chair.json
+   */
+  chair_controller = JSON.parse(JSON.stringify(TemplatesBE.CHAIR_RENDER_CONTROLLER_LIST));
+  /**
+   * 各坐垫模型包定义的模型数量，用于生成坐垫配置 JSON
+   */
+  chairModelAmount: number[] = [];
+  /**
+   * 各坐垫包 domain 名（与 chairModelAmount 下标对齐），供内置构建同步 BP 注释
+   */
+  chairPackDomains: string[] = [];
+  /**
+   * 各坐垫包内模型的 mounted_height 像素值（与 chairModelAmount 下标对齐）
+   */
+  chairModelHeights: number[][] = [];
+  /**
+   * 坐垫包注册配置 JSON
+   */
+  chairPackConfigStr = '[]';
+
+  /**
+   * 翻译数据
+   */
+  lang: LangFile = new LangFile();
+
+  ///// 输出文件 /////
+  /**
+   * 转换结果 zip
+   */
+  resultFile = new JSZip();
+  /**
+   * 女仆模型文件夹 models/entity/xxx/
+   */
+  models = this.resultFile.folder("models").folder("entity");
+  /**
+   * 坐垫模型文件夹 models/entity/chair/xxx/
+   * 与女仆模型分目录，避免迁移时坐垫几何体被拷进 built_in_skins（反之亦然）
+   */
+  chair_models = this.models.folder("chair");
+  /**
+   * 贴图文件夹
+   */
+  textures = this.resultFile.folder("textures");
+  /**
+   * 模型包图标文件夹
+   */
+  textures_icon = this.textures.folder("thlm");
+
+  constructor(uuid: string) {
+    this.uuid = uuid;
+  }
+
+  /**
+   * 导出文件
+   */
+  async export(): Promise<PackFile> {
+    // 创建 manifest.json
+    await this.createManifest();
+    // 写入语言文件
+    let lang_folder = this.resultFile.folder("texts");
+    let lang_list = [];
+    this.lang.stringify().forEach((str, langType) => {
+      lang_list.push(langType);
+      lang_folder.file(`${langType}.lang`, str);
+    });
+    lang_folder.file("languages.json", JSON.stringify(lang_list));
+
+    // 写入实体定义文件
+    this.resultFile.folder("entity")
+      .file("maid.entity.json", JSON.stringify(this.maid_entity, null, '\t'));
+    // 写入渲染控制器
+    this.resultFile.folder("render_controllers")
+      .file("maid.json", JSON.stringify(this.render_controller, null, '\t'));
+
+    // 附加包：写出与主包类似的精简/完整子资源包
+    if (this.maid_entity_simple) {
+      this.resultFile
+        .folder("subpacks")
+        .folder("simple")
+        .folder("entity")
+        .file("maid.entity.json", JSON.stringify(this.maid_entity_simple, null, '\t'));
+      // full 档空占位（较高 memory_tier，默认选用 → 用根目录完整实体）
+      this.resultFile.folder("subpacks").folder("full").file(".gitkeep", "");
+    }
+
+    // 若存在坐垫模型，则写入坐垫相关文件
+    if (this.chairModelAmount.length > 0) {
+      // 写入坐垫实体定义文件
+      this.resultFile.folder("entity")
+        .file("chair.entity.json", JSON.stringify(this.chair_entity, null, '\t'));
+      // 写入坐垫渲染控制器
+      this.resultFile.folder("render_controllers")
+        .file("chair.json", JSON.stringify(this.chair_controller, null, '\t'));
+    }
+
+    // 生成与网站展示一致的单个 command.txt（皮肤包 + 坐垫包）
+    this.packConfigStr = TemplatesBE.buildSkinPackConfigStr(this.modelAmount);
+    this.chairPackConfigStr = TemplatesBE.buildChairPackConfigStr(this.chairModelAmount, this.chairModelHeights);
+    this.commandConfigStr = TemplatesBE.buildCommandConfigStr(
+      this.modelAmount,
+      this.chairModelAmount,
+      this.chairModelHeights,
+    );
+    this.resultFile.file("command.txt", this.commandConfigStr);
+    return this;
+  }
+
+  /**
+   * 生成 manifest.json
+   *  subpack 的 name 仅支持字面量，不能用 lang 键
+   */
+  async createManifest() {
+    const manifestObj = JSON.parse(JSON.stringify(TemplatesBE.MANIFEST));
+    manifestObj.header.uuid = this.uuid;
+    if (this.maid_entity_simple) {
+      manifestObj.subpacks = [
+        {
+          folder_name: "simple",
+          name: "Simple",
+          memory_tier: 0,
+        },
+        {
+          folder_name: "full",
+          name: "Full models",
+          memory_tier: 1,
+        },
+      ];
+    } else {
+      manifestObj.subpacks = [];
+    }
+    this.resultFile.file("manifest.json", JSON.stringify(manifestObj, null, '\t'));
+  }
+
+
+  /**
+   * 创建公共语言字符 lang/xxx，处理完成后会为非空的项目创建文件，并注册于 languages.json
+   */
+  static createLang(): Record<string, string> {
+    let res: Record<string, string> = {};
+    for (let langName of TemplatesBE.LANG_LIST) {
+      res[langName] = '';
+    }
+    return res;
+  }
+}

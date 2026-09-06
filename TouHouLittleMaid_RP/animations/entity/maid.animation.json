@@ -1,6 +1,25 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
+		"animation.touhou_little_maid.maid.look_at_target": {
+			"loop": true,
+			"bones": {
+				"head": {
+					"rotation": [
+						"query.target_x_rotation - this",
+						"query.target_y_rotation - this",
+						0.0
+					]
+				},
+				"Head": {
+					"rotation": [
+						"query.target_x_rotation - this",
+						"query.target_y_rotation - this",
+						0.0
+					]
+				}
+			}
+		},
 		"animation.touhou_little_maid.statue_base": {
 			"loop": true,
 			"bones": {
@@ -34,12 +53,12 @@
 			"loop": true,
 			"bones": {
 				"head": {
-					"rotation": [0, 0, "query.is_interested?6:0"],
-					"position": [0, "query.is_interested?-0.1:0", 0]
+					"rotation": [0, 0, 6],
+					"position": [0, -0.1, 0]
 				},
 				"hair": {
-					"rotation": [0, 0, "query.is_interested?-6:0"],
-					"position": [0, "query.is_interested?0.2:0", 0]
+					"rotation": [0, 0, -6],
+					"position": [0, 0.2, 0]
 				}
 			}
 		},
@@ -119,6 +138,14 @@
 				},
 				"sittingRotationSkirt": {
 					"rotation": [-5, 0, 0]
+				}
+			}
+		},
+		"animation.touhou_little_maid.maid.hug_gecko_base": {
+			"loop": true,
+			"bones": {
+				"Root": {
+					"position": [-6.4, -25.6, -1.6]
 				}
 			}
 		}

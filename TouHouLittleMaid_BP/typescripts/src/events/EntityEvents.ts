@@ -2,6 +2,7 @@ import {
   DataDrivenEntityTriggerAfterEvent,
   EntityDieAfterEvent,
   EntityHitEntityAfterEvent,
+  EntityLoadAfterEvent, PlayerInteractWithEntityBeforeEvent,
   ProjectileHitBlockAfterEvent,
   ProjectileHitEntityAfterEvent,
   system,
@@ -15,6 +16,9 @@ import PowerPoint from "../altar/PowerPoint";
 import { GarageKit } from "../blocks/GarageKit";
 import { GoldMicrowaver } from "../blocks/GoldMicrowaver";
 import {MaidEvents} from "../maid/events/MaidEvents";
+import * as ChairUI from "../chair/ChairUI";
+import { ChairManager } from "../chair/ChairManager";
+import { CHAIR_IDENTIFIER } from "../chair/EntityChair";
 
 export class EntityEvents {
   // 弹射物命中方块
@@ -109,7 +113,10 @@ export class EntityEvents {
             case "u": GarageKit.scan(event); break; // u statues destroy
             case "v": MaidManager.Interact.onSitEvent(event); break; // v enter sit
             case "w": MaidManager.Interact.onStandEvent(event); break; // v enter sit
-            case "0": MaidManager.Core.onSpawnEvent(event); break; // 0 Spawn
+            case "0":
+              MaidManager.Core.onSpawnEvent(event); // 0 Spawn
+              MaidEvents.lifeCycle.onLoad(event.entity, true); // 首次生成也会走加载逻辑（如魂符放出）
+              break;
             case "1": MaidManager.Interact.onSmartSlabRecycleEvent(event); break;// 1 Smart slab
             default: break;
           }
@@ -143,6 +150,27 @@ export class EntityEvents {
     }
   }
 
+  // 实体交互事件
+  private entityInteractEvent(event: PlayerInteractWithEntityBeforeEvent) {
+    switch (event.target.typeId) {
+      case 'thlmm:maid': MaidEvents.interact.beforePlayerInteract(event); break; // 女仆交互事件
+      case 'touhou_little_maid:chair': this.chairInteractEvent(event); break;    // 坐垫交互事件
+      default: break;
+    }
+  }
+
+  // 坐垫交互事件：非潜行由 rideable 组件自动坐上，潜行则打开模型更换表单
+  private chairInteractEvent(event: PlayerInteractWithEntityBeforeEvent) {
+    // 潜行交互 → 打开模型更换表单并取消其他交互（阻止坐上）
+    if (event.player.isSneaking) {
+      event.cancel = true;
+      system.run(() => {
+        ChairUI.SkinMenu(event.player, event.target);
+      });
+    }
+    // 非潜行 → 交给实体的 minecraft:rideable 组件，让玩家坐上坐垫
+  }
+
   // 实体死亡事件
   private entityDie(event: EntityDieAfterEvent) {
     let killer = event.damageSource.damagingEntity;
@@ -155,7 +183,16 @@ export class EntityEvents {
   
   // 实体攻击实体事件
   entityHitEntity(event: EntityHitEntityAfterEvent) {
-    let hurtId = event.hitEntity.typeId;
+    const hitEntity = event.hitEntity;
+    if (hitEntity.typeId === CHAIR_IDENTIFIER) {
+      const attacker = event.damagingEntity;
+      if (attacker?.typeId === "minecraft:player" && attacker.isSneaking) {
+        ChairManager.recycleOnAttackEvent(attacker, hitEntity);
+      }
+      return;
+    }
+
+    let hurtId = hitEntity.typeId;
     if (hurtId.substring(0, 4) === 'thlm') {
       switch (hurtId.charAt(4)) {
         // 女仆攻击标志实体
@@ -163,6 +200,11 @@ export class EntityEvents {
         default: break;
       }
     }
+  }
+
+  // 实体加载（区块重载、跨维度）
+  private entityLoad(event: EntityLoadAfterEvent) {
+    MaidEvents.lifeCycle.onLoad(event.entity);
   }
 
   // 注册事件
@@ -173,6 +215,9 @@ export class EntityEvents {
     world.afterEvents.entityDie.subscribe(event => {
       this.entityDie(event);
     });
+    world.beforeEvents.playerInteractWithEntity.subscribe(event => {
+      this.entityInteractEvent(event);
+    });
     world.afterEvents.entityHitEntity.subscribe(event => {
       system.run(() => { this.entityHitEntity(event); });
     });
@@ -182,5 +227,17 @@ export class EntityEvents {
     world.afterEvents.projectileHitEntity.subscribe(event => {
       system.run(() => { this.projectileHitEntity(event); });
     });
+    world.afterEvents.entityLoad.subscribe(event => {
+      try {
+        if (event.entity.typeId !== 'thlmm:maid') {
+          return;
+        }
+      } catch {
+        return;
+      }
+      system.run(() => { this.entityLoad(event); });
+    });
+    // 订阅时世界中已有女仆不会再触发 entityLoad，补一次扫描
+    MaidEvents.lifeCycle.scanLoadedMaids();
   }
 }

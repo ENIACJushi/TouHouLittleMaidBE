@@ -1,8 +1,8 @@
-import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, system, world } from "@minecraft/server";
+import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
 import * as Tool from"../libs/ScarletToolKit";
 import { StrMaid } from "../maid/StrMaid";
-import { MaidSkin } from "../maid/MaidSkin";
 import { ConfigForm, ConfigHelper } from "./Config";
+import { ManageForm } from "./ManageForm";
 import { EntityMaid } from '../maid/EntityMaid'
 import { Logger } from "./Logger";
 
@@ -16,7 +16,7 @@ export class CommandManager {
      */
     static scriptEvent(event){
         switch(event.id){
-            case "thlm:skin_set": this.setSkin(event); break;
+            case "thlm:manage" : this.manage(event); break;
             case "thlm:config"  : this.config(event) ; break;
             case "thlm:admin"   : this.admin(event)  ; break;
             case "thlm:test"    : this.test(event)   ; break;
@@ -26,19 +26,14 @@ export class CommandManager {
         }
     }
     /**
-     * 设置皮肤包
-     *  scriptevent thlm:skin_set 6,19,20
-     * @param {ScriptEventCommandMessageAfterEvent} event 
+     * 打开管理菜单
+     *  scriptevent thlm:manage
+     * @param {ScriptEventCommandMessageAfterEvent} event
      */
-    static setSkin(event){
-        let strList = event.message.split(",");
-        let numList = [];
-        for(let str of strList){
-            numList.push(parseInt(str));
-        }
-        MaidSkin.setSkin(numList);
-        
-        world.sendMessage(`Add skin: ${numList}`);
+    static manage(event){
+        let source = event.sourceEntity;
+        if(source === undefined || source.typeId !== "minecraft:player") return;
+        ManageForm.mainForm(event.sourceEntity);
     }
     /**
      * 修改配置项
@@ -254,6 +249,8 @@ export class CommandManager {
             "touhou_little_maid:maid_backpack_small",
             "touhou_little_maid:camera",
             "touhou_little_maid:chisel",
+            "touhou_little_maid:chair",
+            "tlmsi:chair_show",
             "minecraft:clay",
             "minecraft:flint_and_steel",
             "minecraft:netherrack",
@@ -281,7 +278,8 @@ export class CommandManager {
             "touhou_little_maid:dragon_skull",
             "touhou_little_maid:gold_microwaver_item",
             "touhou_little_maid:magic_powder",
-            "touhou_little_maid:memorizable_gensokyo"
+            "touhou_little_maid:memorizable_gensokyo",
+            "touhou_little_maid:memorizable_gensokyo_admin"
         ]
 
         for(let item of itemList){

@@ -2,6 +2,7 @@ import { world, system, Entity, Player, RawText } from "@minecraft/server";
 import { lang } from "../libs/ScarletToolKit"
 import { ActionFormData, MessageFormData, ModalFormData } from "@minecraft/server-ui";
 import { LoggerLevel } from "./Logger";
+import { ManageForm } from "./ManageForm";
 
 // 计分项名称
 const SCORE_NAME = "thlmconfig";
@@ -154,8 +155,12 @@ export class ConfigHelper {
 export class ConfigForm {
   /**
    * 设置列表
+   * @param onBack 关闭列表时返回的上层表单，由管理菜单传入
    */
-  static mainForm(player: Player) {
+  static mainForm(player: Player, onBack?: () => void) {
+    if (!ManageForm.ensureOp(player)) {
+      return;
+    }
     let form = new ActionFormData();
     let keys = [];
     form.title('设置');
@@ -169,16 +174,17 @@ export class ConfigForm {
     // @ts-ignore
     form.show(player).then((response) => {
       if (response.canceled || response.selection === undefined || response.selection >= keys.length) {
+        onBack?.();
         return;
       }
       
       let key = keys[response.selection] as keyof Config;
       let definition = config[key];
       if (typeof definition.defaultValue === 'boolean') {
-        this.boolForm(player, key, definition);
+        this.boolForm(player, key, definition, onBack);
       }
       else {
-        this.numberForm(player, key, definition)
+        this.numberForm(player, key, definition, onBack);
       }
     });
   }
@@ -188,7 +194,10 @@ export class ConfigForm {
    * @param {string} key 
    * @param {*} definition 
    */
-  static boolForm(player: Player, key: keyof Config, definition: any) {
+  static boolForm(player: Player, key: keyof Config, definition: any, onBack?: () => void) {
+    if (!ManageForm.ensureOp(player)) {
+      return;
+    }
     let form = new ModalFormData()
       .title(definition.name)
       .toggle(definition.description, {
@@ -201,13 +210,16 @@ export class ConfigForm {
       if (!response.canceled && response?.formValues?.[0] !== undefined) {
         config[key].set(response.formValues[0] as boolean);
       }
-      this.mainForm(player);
+      this.mainForm(player, onBack);
     });
   }
   /**
    * 设置整型
    */
-  static numberForm(player: Player, key: keyof Config, definition: any) {
+  static numberForm(player: Player, key: keyof Config, definition: any, onBack?: () => void) {
+    if (!ManageForm.ensureOp(player)) {
+      return;
+    }
     let oriValue = config[key].value as number
     let form = new ModalFormData()
       .title(definition.name)
@@ -224,14 +236,17 @@ export class ConfigForm {
           config[key].set(value);
         }
         else {
-          this.invalidWarning(player, () => { ConfigForm.numberForm(player, key, definition) });
+          this.invalidWarning(player, () => { ConfigForm.numberForm(player, key, definition, onBack) });
           return false;
         }
       }
-      this.mainForm(player);
+      this.mainForm(player, onBack);
     });
   }
   static invalidWarning(player: Player, lastForm: ()=>void) {
+    if (!ManageForm.ensureOp(player)) {
+      return;
+    }
     let form = new MessageFormData()
       .title('失败')
       .body('无效的数据')

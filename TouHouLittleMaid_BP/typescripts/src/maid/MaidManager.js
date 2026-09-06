@@ -243,8 +243,13 @@ export class MaidManager {
 
       // 执行释放女仆逻辑
       system.run(() => {
-        //// 检测放置位置是否有两格空间 ////
         const player = event.player;
+        // 物品已丢出或切换：中止，避免复制
+        if (!Tool.ItemTool.isMainHandStillItem(player, event.itemStack)) {
+          return;
+        }
+
+        //// 检测放置位置是否有两格空间 ////
         const dimension = player.dimension;
         let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
         if (location === undefined) {
@@ -264,7 +269,7 @@ export class MaidManager {
         let maid = EntityMaid.fromStr(strPure, dimension, location, true);
 
         // 消耗照片
-        Tool.ItemTool.setPlayerMainHand(player);
+        Tool.ItemTool.replaceMainHandIfMatch(player, event.itemStack);
       })
     }
     /**
@@ -282,11 +287,16 @@ export class MaidManager {
       }
 
       system.run(() => {
+        const player = event.player;
+        // 物品已丢出或切换：中止，避免「地面魂符 + 空魂符/女仆」复制
+        if (!Tool.ItemTool.isMainHandStillItem(player, event.itemStack)) {
+          return;
+        }
+
         let itemStack = event.itemStack;
         let lore = itemStack.getLore();
 
         //// 检测放置位置是否有两格空间 ////
-        const player = event.player;
         const dimension = player.dimension;
         let location = this.getSafeLocation(dimension, event.block.location, event.blockFace);
         if (location === undefined) {
@@ -332,7 +342,7 @@ export class MaidManager {
           emptyItem.nameTag = itemName;
         }
 
-        Tool.ItemTool.setPlayerMainHand(player, emptyItem);
+        Tool.ItemTool.replaceMainHandIfMatch(player, event.itemStack, emptyItem);
       })
     }
     /**
@@ -378,6 +388,8 @@ export class MaidManager {
      */
     static onSitEvent(event) {
       let maid = event.entity;
+      // 设置坐下状态
+      EntityMaid.setSitting(maid, true);
 
       // 工作模式
       switch (EntityMaid.Work.get(maid)) {
@@ -399,6 +411,8 @@ export class MaidManager {
      */
     static onStandEvent(event) {
       let maid = event.entity;
+      // 设置站起状态
+      EntityMaid.setSitting(maid, false);
 
       // 工作模式
       switch (EntityMaid.Work.get(maid)) {
@@ -412,7 +426,9 @@ export class MaidManager {
 
       // 拾物模式
       if (EntityMaid.Pick.get(maid)) {
-        EntityMaid.Pick.set(maid, true);
+        system.runTimeout(() => {
+          EntityMaid.Pick.set(maid, true);
+        }, 1)
       }
     }
     /**
@@ -494,7 +510,7 @@ export class MaidManager {
       ///// 取模决定执行任务 /////
       //// 每次
       // 抱起扫描
-      if (maid.getProperty("thlm:is_hug")) MaidManager.Hug.maidScan(maid);
+      if (EntityMaid.isHug(maid)) MaidManager.Hug.maidScan(maid);
 
       let work = EntityMaid.Work.get(maid);
       // 农业扫描
@@ -567,7 +583,10 @@ export class MaidManager {
      * @param {DataDrivenEntityTriggerAfterEvent} event
      */
     static startEvent(event) {
-      // 抱起事件是坐下事件的父集
+      // 已在抱起中则忽略（交互不再用 thlm:is_hug 过滤）
+      if (EntityMaid.isHug(event.entity)) return;
+
+      // 抱起事件是坐下事件的父集（同时也会设置坐下状态）
       MaidManager.Interact.onSitEvent(event);
 
       // 开始抱起
@@ -588,7 +607,7 @@ export class MaidManager {
           // 生成交互实体
           this.summonInteractEntity(maid, player);
           // 设置女仆属性
-          maid.setProperty("thlm:is_hug", true);
+          EntityMaid.setHug(maid, true);
           // 玩家动画
           this.startAnimate(player);
         }
@@ -648,7 +667,7 @@ export class MaidManager {
       maid.triggerEvent("api:hug_to_sit");
 
       // 恢复属性
-      maid.setProperty("thlm:is_hug", false);
+      EntityMaid.setHug(maid, false);
 
       // 恢复玩家动画
       let player = EntityMaid.Owner.get(maid);

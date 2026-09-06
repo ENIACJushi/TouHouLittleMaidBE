@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>车万女仆模型包转换器</title>
+</head>
+<body>
+<div class="page">
+  <nav class="site-nav" aria-label="Site">
+    <button type="button" id="nav_convert" data-view="convert">转换器</button>
+    <button type="button" id="nav_packs" data-view="packs">模型包</button>
+    <div class="site-nav-controls">
+      <label for="language_select" id="language_label" class="sr-only">语言</label>
+      <select id="language_select" class="lang-select" aria-label="语言选择">
+        <option value="zh-CN">中文</option>
+        <option value="en-US">English</option>
+      </select>
+    </div>
+  </nav>
+
+  <div id="view-convert">
+    <header class="hero card">
+      <div class="hero-top">
+        <h1 id="page_title">车万女仆模型包转换器</h1>
+        <div class="hero-controls">
+          <button id="theme_toggle" type="button" class="theme-toggle" aria-label="切换主题">🌙 深色模式</button>
+        </div>
+      </div>
+      <p id="hero_desc">一个将 Java 版女仆模型包转换为基岩版的工具。</p>
+    </header>
+
+    <main class="content-grid">
+      <section class="card">
+        <h2 id="uuid_title">UUID</h2>
+        <p id="uuid_desc">UUID 是模型包的唯一标识符，你可以在 <a href="https://www.uuidgenerator.net" target="_blank" rel="noopener noreferrer" title="UUID生成">UUID 生成网站</a> 获取它。</p>
+        <div class="field-row">
+          <label id="uuid_label" for="uuid">输入 UUID：</label>
+          <input id="uuid" type="text" placeholder="例如：xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 id="pack_title">Java 版模型包</h2>
+        <p id="pack_desc">
+          上传 zip 模型包后点击转换。支持：
+          <a href="?view=packs" id="link_to_packs" title="模型下载">TLM 女仆模型包</a>
+          （含 <code>assets/*/maid_model.json</code>），以及
+          <a href="https://ysm.cfpa.team/wiki/struct/" target="_blank" rel="noopener noreferrer" title="YSM 结构">YSM 模型包</a>
+          （根目录含 <code>ysm.json</code>，结构同 Yes Steve Model）。加密 <code>.ysm</code> 暂不支持。
+        </p>
+        <p id="pack_hint" class="hint">模型包前方的序号决定游戏内的先后顺序，一个世界只能同时加载一个模型包。</p>
+        <p id="pack_hint_ysm" class="hint">YSM转换处于早期开发阶段，若遇到异常，请打开“设置-创建者”启用内容日志后进入世界，在 <a href="https://github.com/ENIACJushi/TouHouLittleMaidBE/issues" target="_blank" rel="noopener noreferrer">GitHub issue</a> 提交错误日志。</p>
+
+        <div class="upload-area">
+          <table id="result_block" class="result-table">
+            <tr><th>序号</th><th colspan="2">信息</th></tr>
+            <tr><td class="center-col">*</td><td colspan="2" class="placeholder">待上传</td></tr>
+          </table>
+          <div id="drop_zone" class="drop-zone" tabindex="0" role="button" aria-label="拖拽或点击上传模型包">
+            <p id="drop_title" class="drop-title">拖拽 zip 文件到这里</p>
+            <p id="drop_subtitle" class="drop-subtitle">或点击下方按钮选择多个文件</p>
+            <label id="file_label" for="file" class="file-label">添加模型包</label>
+          </div>
+          <input type="file" id="file" name="file" multiple>
+        </div>
+      </section>
+
+      <section class="card action-card">
+        <div>
+          <h2 id="tips_title">导入游戏</h2>
+          <div class="tips">
+          <p id="tips_intro">1、转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包优先级；产物含与主包相同的「精简/完整」子包，请与主包选用同一档：</p>
+          <ul>
+            <li id="tips_single">若是单机游戏，则令附加模型包在主包上方；</li>
+            <li id="tips_server">若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。</li>
+          </ul>
+          <p id="tips_command">2、创造模式下使用物品「记忆中的幻想乡（管理）」打开管理面板（也可执行 <code>/scriptevent thlm:manage</code>），将如下数据粘贴到「皮肤包」中：</p>
+          <div class="command-box">
+            <div class="command-toolbar">
+              <button type="button" id="command_copy" class="command-copy" disabled>复制</button>
+            </div>
+            <pre id="command" class="command-data" aria-live="polite">待生成...</pre>
+          </div>
+          </div>
+        </div>
+        <button type="button" onclick="startConvert()" id="b_convert">开始转换</button>
+      </section>
+    </main>
+
+    <div id="error_log" class="error-log"></div>
+  </div>
+
+  <div id="view-packs" hidden>
+    <header class="packs-hero">
+      <h1 id="packs_page_title"></h1>
+      <p id="packs_page_desc"></p>
+    </header>
+    <div id="packs_root"></div>
+  </div>
+</div>
+
+<!-- 样式 -->
+<style type="text/css">
+  :root {
+    color-scheme: light;
+    --bg: #f3f6ff;
+    --bg-spot-1: #edf2ff;
+    --bg-spot-2: #f7f9ff;
+    --card: #ffffff;
+    --line: #dce4f4;
+    --text: #1f2940;
+    --heading: #22336a;
+    --hero-title: #1d2b53;
+    --muted: #60708f;
+    --primary: #516dff;
+    --primary-hover: #3f5af0;
+    --danger: #df2e52;
+    --input-bg: #fbfcff;
+    --table-bg: #ffffff;
+    --table-head-bg: #f7f9ff;
+    --table-head-text: #2a3f7f;
+    --file-btn-bg: #e9eeff;
+    --file-btn-text: #3249a7;
+    --file-btn-hover-bg: #dde6ff;
+    --control-btn-bg: #eef2ff;
+    --control-btn-text: #31489d;
+    --tips-text: #3a4968;
+    --command-border: #ffe5a0;
+    --command-bg: #fff6cf;
+    --command-text: #5a4b1e;
+    --drop-bg: #f8faff;
+    --drop-border: #cfd9f7;
+    --drop-active-bg: #eef3ff;
+    --drop-active-border: #8da0ff;
+    --shadow: 0 10px 30px rgba(48, 75, 153, 0.12);
+  }
+
+  html[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0f1526;
+    --bg-spot-1: #1b2440;
+    --bg-spot-2: #101a31;
+    --card: #16213c;
+    --line: #2a3a63;
+    --text: #e8eeff;
+    --heading: #d9e2ff;
+    --hero-title: #edf2ff;
+    --muted: #97a7cc;
+    --primary: #90a4ff;
+    --primary-hover: #7c93ff;
+    --danger: #ff7b98;
+    --input-bg: #111a31;
+    --table-bg: #111a31;
+    --table-head-bg: #1d2a4d;
+    --table-head-text: #d7e1ff;
+    --file-btn-bg: #253866;
+    --file-btn-text: #d6e0ff;
+    --file-btn-hover-bg: #2d447c;
+    --control-btn-bg: #24375f;
+    --control-btn-text: #dde5ff;
+    --tips-text: #c4d2fa;
+    --command-border: #5f4f25;
+    --command-bg: #2b2517;
+    --command-text: #f3dd9e;
+    --drop-bg: #131f39;
+    --drop-border: #344b80;
+    --drop-active-bg: #1d2e56;
+    --drop-active-border: #8fa5ff;
+    --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    background: radial-gradient(circle at 15% 15%, var(--bg-spot-1) 0%, var(--bg-spot-2) 36%, var(--bg) 100%);
+    color: var(--text);
+    line-height: 1.65;
+    transition: background-color .2s ease, color .2s ease;
+  }
+
+  .page {
+    width: min(980px, calc(100% - 32px));
+    margin: 28px auto;
+    display: grid;
+    gap: 16px;
+  }
+
+  /* 站点顶栏：与 packs-browser 样式对齐，无 bundle 时也可显示 */
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+  }
+
+  .site-nav button {
+    appearance: none;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font: inherit;
+    font-size: 0.95rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .site-nav button:hover {
+    background: var(--control-btn-bg);
+    color: var(--heading);
+  }
+
+  .site-nav button.is-active,
+  .site-nav button[aria-current="page"] {
+    background: var(--control-btn-bg);
+    color: var(--primary);
+    border-color: var(--line);
+    font-weight: 600;
+  }
+
+  .site-nav-controls {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  #view-convert {
+    display: grid;
+    gap: 16px;
+  }
+
+  #view-convert[hidden],
+  #view-packs[hidden] {
+    display: none !important;
+  }
+
+  #view-packs .packs-hero {
+    margin-bottom: 0;
+    padding: 1.25rem 1.5rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+
+  #view-packs .packs-hero h1 {
+    margin: 0 0 0.35rem;
+    font-size: 1.5rem;
+    color: var(--heading);
+  }
+
+  #view-packs .packs-hero p {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 18px 20px;
+  }
+
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .lang-select {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--text);
+    padding: 7px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .hero h1 {
+    margin: 0;
+    font-size: clamp(1.4rem, 2.2vw, 2rem);
+    color: var(--hero-title);
+  }
+
+  .theme-toggle {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card);
+    color: var(--text);
+    padding: 7px 11px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform .12s ease, background-color .12s ease, border-color .12s ease;
+  }
+
+
+  .theme-toggle:hover {
+    transform: translateY(-1px);
+    border-color: var(--primary);
+  }
+
+  .hero p {
+    margin: 8px 0 0;
+    color: var(--muted);
+  }
+
+  .content-grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+    color: var(--heading);
+  }
+
+  p {
+    margin: 8px 0;
+  }
+
+  a {
+    color: var(--primary);
+    text-decoration: none;
+    border-bottom: 1px dashed transparent;
+  }
+
+  a:hover {
+    border-bottom-color: var(--primary);
+  }
+
+  .field-row {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .field-row label {
+    font-weight: 600;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--input-bg);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+
+  input[type="text"]:focus {
+    border-color: #8da0ff;
+    box-shadow: 0 0 0 3px rgba(81, 109, 255, 0.15);
+  }
+
+  .hint {
+    color: var(--muted);
+    font-size: .95rem;
+  }
+
+  .upload-area {
+    margin-top: 10px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .drop-zone {
+    border: 2px dashed var(--drop-border);
+    border-radius: 12px;
+    background: var(--drop-bg);
+    padding: 14px;
+    text-align: center;
+    transition: background-color .15s ease, border-color .15s ease, transform .15s ease;
+  }
+
+  .drop-zone.is-dragging,
+  .drop-zone:focus-visible {
+    background: var(--drop-active-bg);
+    border-color: var(--drop-active-border);
+    transform: translateY(-1px);
+    outline: none;
+  }
+
+  .drop-zone.is-disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+
+
+  .drop-title {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .drop-subtitle {
+    margin: 4px 0 10px;
+    color: var(--muted);
+    font-size: .9rem;
+  }
+
+  .result-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--table-bg);
+  }
+
+  .result-table th,
+  .result-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+
+  .center-col {
+    text-align: center;
+  }
+
+  .result-table th {
+    background: var(--table-head-bg);
+    text-align: left;
+    color: var(--table-head-text);
+  }
+
+  .result-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .placeholder {
+    color: var(--muted);
+  }
+
+  #file {
+    display: none;
+  }
+
+  .file-label,
+  #b_convert,
+  .result-table button {
+    border: none;
+    border-radius: 9px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, opacity .12s ease;
+  }
+
+  .file-label {
+    display: inline-block;
+    width: fit-content;
+    padding: 8px 12px;
+    background: var(--file-btn-bg);
+    color: var(--file-btn-text);
+    font-weight: 600;
+  }
+
+  .file-label:hover {
+    background: var(--file-btn-hover-bg);
+  }
+
+  #b_convert {
+    padding: 10px 16px;
+    background: linear-gradient(135deg, var(--primary), #6882ff);
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 6px 14px rgba(81, 109, 255, 0.3);
+  }
+
+  #b_convert:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--primary-hover), #5774ff);
+    transform: translateY(-1px);
+  }
+
+  #b_convert:disabled,
+  .result-table button:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+
+  .result-table button {
+    background: var(--control-btn-bg);
+    color: var(--control-btn-text);
+    margin-right: 6px;
+    padding: 4px 8px;
+    font-weight: 600;
+  }
+
+  .result-table button:last-child {
+    margin-right: 0;
+    background: rgba(223, 46, 82, 0.12);
+    color: var(--danger);
+  }
+
+
+  .action-card {
+    display: grid;
+    gap: 12px;
+  }
+
+  .tips {
+    color: var(--tips-text);
+  }
+
+  .tips > p:first-child {
+    margin-top: 0;
+  }
+
+  .tips ul {
+    margin: 6px 0 10px;
+    padding-left: 20px;
+  }
+
+  .command-box {
+    margin-top: 8px;
+    border-radius: 10px;
+    border: 1px solid var(--command-border);
+    background: var(--command-bg);
+    overflow: hidden;
+  }
+
+  .command-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--command-border);
+  }
+
+  .command-copy {
+    border: none;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--control-btn-bg);
+    color: var(--control-btn-text);
+    transition: opacity .12s ease, transform .12s ease, background-color .12s ease;
+  }
+
+  .command-copy:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+
+  .command-copy:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+
+  .command-data,
+  #command {
+    margin: 0;
+    padding: 10px 12px;
+    max-height: 180px;
+    overflow: auto;
+    color: var(--command-text);
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .error-log {
+    white-space: pre-wrap;
+    color: var(--danger);
+  }
+
+  @media (max-width: 700px) {
+    .page {
+      width: calc(100% - 20px);
+      margin: 16px auto;
+      gap: 12px;
+    }
+
+    .card {
+      padding: 14px;
+    }
+
+    .hero-top {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .hero-controls {
+      width: 100%;
+      justify-content: flex-start;
+    }
+
+    .result-table th,
+    .result-table td {
+      padding: 8px;
+    }
+
+  }
+</style>
+
+<!-- 主要处理 -->
+<script type="text/javascript">
+  //// 页面交互 ////
+  // 文件列表
+  var fileList = []; // [ {"name":"xxx.xx"} ]
+  var processing = false; // 正在处理
+
+  const I18N = {
+    'zh-CN': {
+      pageTitle: '车万女仆模型包转换器',
+      heroDesc: '一个将 Java 版女仆模型包转换为基岩版的工具。',
+      navConvert: '转换器',
+      navPacks: '模型包',
+      packsPageTitle: '模型包浏览',
+      packsPageDesc: '浏览并下载 TLM 官方模型包。',
+      languageLabel: '语言',
+      languageAria: '语言选择',
+      uuidTitle: 'UUID',
+      uuidDesc: 'UUID 是模型包的唯一标识符，你可以在 <a href="https://www.uuidgenerator.net" target="_blank" rel="noopener noreferrer" title="UUID生成">UUID 生成网站</a> 获取它。',
+      uuidLabel: '输入 UUID：',
+      uuidPlaceholder: '例如：xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+      packTitle: 'Java 版模型包',
+      packDesc: '上传 zip 模型包。支持 <a href="?view=packs" id="link_to_packs" title="模型下载">TLM 女仆模型包</a>（含 <code>assets/*/maid_model.json</code>），以及 <a href="https://ysm.cfpa.team/wiki/struct/" target="_blank" rel="noopener noreferrer" title="YSM 结构">YSM 模型包</a>（根目录含 <code>ysm.json</code>）。加密 <code>.ysm</code> 不支持。',
+      packHint: '模型包前方的序号决定游戏内的先后顺序，一个世界只能同时加载一个模型包。',
+      packHintYsm: 'YSM转换处于早期开发阶段，若遇到异常，请打开“设置-创建者”启用内容日志后进入世界，在 <a href="https://github.com/ENIACJushi/TouHouLittleMaidBE/issues" target="_blank" rel="noopener noreferrer">GitHub issue</a> 提交错误日志。',
+      tableIndex: '序号',
+      tableInfo: '信息',
+      tablePending: '待上传',
+      dropZoneAria: '拖拽或点击上传模型包',
+      dropTitle: '拖拽 zip 文件到这里',
+      dropSubtitle: '或点击下方按钮选择多个文件',
+      fileLabel: '添加模型包',
+      convert: '开始转换',
+      tipsTitle: '导入游戏',
+      tipsIntro: '1、转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包优先级；产物含与主包相同的「精简/完整」子包，请与主包选用同一档：',
+      tipsSingle: '若是单机游戏，则令附加模型包在主包上方；',
+      tipsServer: '若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。',
+      tipsCommand: '2、创造模式下使用物品「记忆中的幻想乡（管理）」打开管理面板（也可执行 <code>/scriptevent thlm:manage</code>），将如下数据粘贴到「皮肤包」中：',
+      commandPending: '待生成...',
+      copyCommand: '复制',
+      copySuccess: '已复制',
+      copyFailed: '复制失败',
+      moveUp: '上移',
+      moveDown: '下移',
+      remove: '删除',
+      alertUpload: '请上传Java版模型包',
+      alertUuid: '请输入 UUID',
+      themeToLight: '☀️ 浅色模式',
+      themeToDark: '🌙 深色模式',
+      themeAriaToLight: '切换到浅色模式',
+      themeAriaToDark: '切换到深色模式',
+      exportFileName: 'TLM_MaidSkinPack.mcpack'
+    },
+    'en-US': {
+      pageTitle: 'TouHou Little Maid Skin Pack Converter',
+      heroDesc: 'Convert Java Edition maid skin packs into Bedrock Edition format.',
+      navConvert: 'Converter',
+      navPacks: 'Model Packs',
+      packsPageTitle: 'Model Pack Browser',
+      packsPageDesc: 'Browse and download official TLM model packs.',
+      languageLabel: 'Language',
+      languageAria: 'Language selector',
+      uuidTitle: 'UUID',
+      uuidDesc: 'UUID is the unique identifier for your skin pack. You can generate one at <a href="https://www.uuidgenerator.net" target="_blank" rel="noopener noreferrer" title="Generate UUID">UUID Generator</a>.',
+      uuidLabel: 'UUID:',
+      uuidPlaceholder: 'e.g. xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+      packTitle: 'Java Edition Skin Packs',
+      packDesc: 'Upload zip packs. Supports <a href="?view=packs" id="link_to_packs" title="Download skins">TLM maid packs</a> (<code>assets/*/maid_model.json</code>) and <a href="https://ysm.cfpa.team/wiki/struct/" target="_blank" rel="noopener noreferrer" title="YSM structure">YSM packs</a> (root <code>ysm.json</code>). Encrypted <code>.ysm</code> is not supported.',
+      packHint: 'The order number controls in-game priority. Only one skin pack can be active at a time in a world.',
+      packHintYsm: 'YSM conversion is in early development. If something goes wrong, enable Content Log under Settings &gt; Creator, enter the world, then submit the error log in a <a href="https://github.com/ENIACJushi/TouHouLittleMaidBE/issues" target="_blank" rel="noopener noreferrer">GitHub issue</a>.',
+      tableIndex: 'Index',
+      tableInfo: 'Info',
+      tablePending: 'Waiting for upload',
+      dropZoneAria: 'Drag files here or click to upload skin packs',
+      dropTitle: 'Drag zip files here',
+      dropSubtitle: 'Or click the button below to select multiple files',
+      fileLabel: 'Add skin packs',
+      convert: 'Start Convert',
+      tipsTitle: 'Import in Game',
+      tipsIntro: '1. After conversion, import the resource pack and activate it. Set priority first. The pack includes the same Simple/Full subpacks as the main pack — keep them in sync:',
+      tipsSingle: 'For single-player, place the add-on skin pack above the main pack.',
+      tipsServer: 'For servers, edit <code>world_resource_packs.json</code> in the world folder and place the add-on skin pack above the main pack.',
+      tipsCommand: '2. In Creative mode, use the item Memorizable Gensokyo (OP) to open the manage panel (or run <code>/scriptevent thlm:manage</code>), then paste the following data into Skin Pack:',
+      commandPending: 'Pending...',
+      copyCommand: 'Copy',
+      copySuccess: 'Copied',
+      copyFailed: 'Copy failed',
+      moveUp: 'Move up',
+      moveDown: 'Move down',
+      remove: 'Remove',
+      alertUpload: 'Please upload Java Edition skin packs.',
+      alertUuid: 'Please enter UUID.',
+      themeToLight: '☀️ Light Mode',
+      themeToDark: '🌙 Dark Mode',
+      themeAriaToLight: 'Switch to light mode',
+      themeAriaToDark: 'Switch to dark mode',
+      exportFileName: 'TLM_MaidSkinPack.mcpack'
+    }
+  };
+
+  const languageSelect = document.getElementById('language_select');
+  const themeToggle = document.getElementById('theme_toggle');
+  let currentLang = 'zh-CN';
+
+  function t(key) {
+    const dict = I18N[currentLang] || I18N['zh-CN'];
+    return dict[key] || I18N['zh-CN'][key] || key;
+  }
+
+  function applyLanguage() {
+    document.documentElement.setAttribute('lang', currentLang);
+    document.title = t('pageTitle');
+
+    document.getElementById('page_title').textContent = t('pageTitle');
+    document.getElementById('hero_desc').textContent = t('heroDesc');
+    document.getElementById('language_label').textContent = t('languageLabel');
+    if (languageSelect) {
+      languageSelect.setAttribute('aria-label', t('languageAria'));
+    }
+
+    const navConvert = document.getElementById('nav_convert');
+    const navPacks = document.getElementById('nav_packs');
+    if (navConvert) navConvert.textContent = t('navConvert');
+    if (navPacks) navPacks.textContent = t('navPacks');
+
+    const packsTitle = document.getElementById('packs_page_title');
+    const packsDesc = document.getElementById('packs_page_desc');
+    if (packsTitle) packsTitle.textContent = t('packsPageTitle');
+    if (packsDesc) packsDesc.textContent = t('packsPageDesc');
+
+    document.getElementById('uuid_title').textContent = t('uuidTitle');
+    document.getElementById('uuid_desc').innerHTML = t('uuidDesc');
+    document.getElementById('uuid_label').textContent = t('uuidLabel');
+    document.getElementById('uuid').setAttribute('placeholder', t('uuidPlaceholder'));
+
+    document.getElementById('pack_title').textContent = t('packTitle');
+    document.getElementById('pack_desc').innerHTML = t('packDesc');
+    document.getElementById('pack_hint').textContent = t('packHint');
+    document.getElementById('pack_hint_ysm').innerHTML = t('packHintYsm');
+
+    document.getElementById('drop_title').textContent = t('dropTitle');
+    document.getElementById('drop_subtitle').textContent = t('dropSubtitle');
+    document.getElementById('file_label').textContent = t('fileLabel');
+    document.getElementById('drop_zone').setAttribute('aria-label', t('dropZoneAria'));
+
+    document.getElementById('b_convert').textContent = t('convert');
+    document.getElementById('tips_title').textContent = t('tipsTitle');
+    document.getElementById('tips_intro').textContent = t('tipsIntro');
+    document.getElementById('tips_single').textContent = t('tipsSingle');
+    document.getElementById('tips_server').innerHTML = t('tipsServer');
+    document.getElementById('tips_command').innerHTML = t('tipsCommand');
+
+    const commandBlock = document.getElementById('command');
+    const copyBtn = document.getElementById('command_copy');
+    if (!commandBlock.dataset.generated || commandBlock.textContent === '' || commandBlock.textContent === I18N['zh-CN'].commandPending || commandBlock.textContent === I18N['en-US'].commandPending) {
+      commandBlock.textContent = t('commandPending');
+      if (copyBtn) {
+        copyBtn.disabled = true;
+      }
+    }
+    if (copyBtn) {
+      // 已生成时保留「已复制」短暂状态文案，否则同步当前语言的「复制」
+      if (!copyBtn.dataset.flash) {
+        copyBtn.textContent = t('copyCommand');
+      }
+    }
+
+    const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    updateThemeToggleText(currentTheme);
+
+    if (!processing) {
+      refreshList();
+    }
+
+    // 同步浏览页语言
+    if (window.PacksBrowser) {
+      window.PacksBrowser.setLang(currentLang);
+    }
+  }
+
+  /** 从 URL 读取当前视图；缺省或非法值视为 convert */
+  function getViewFromUrl() {
+    const v = new URLSearchParams(location.search).get('view');
+    return v === 'packs' ? 'packs' : 'convert';
+  }
+
+  /** 切换转换器 / 模型包视图，并同步 ?view= 与 PacksBrowser */
+  function setView(view) {
+    const packs = view === 'packs';
+    document.getElementById('view-convert').hidden = packs;
+    document.getElementById('view-packs').hidden = !packs;
+
+    const navConvert = document.getElementById('nav_convert');
+    const navPacks = document.getElementById('nav_packs');
+    if (navConvert) {
+      navConvert.classList.toggle('is-active', !packs);
+      if (packs) navConvert.removeAttribute('aria-current');
+      else navConvert.setAttribute('aria-current', 'page');
+    }
+    if (navPacks) {
+      navPacks.classList.toggle('is-active', packs);
+      if (packs) navPacks.setAttribute('aria-current', 'page');
+      else navPacks.removeAttribute('aria-current');
+    }
+
+    const url = new URL(location.href);
+    if (packs) url.searchParams.set('view', 'packs');
+    else url.searchParams.delete('view');
+    history.replaceState(null, '', url);
+
+    if (packs && window.PacksBrowser) window.PacksBrowser.show();
+    else if (window.PacksBrowser) window.PacksBrowser.hide();
+  }
+
+  /** 绑定 packDesc 内「模型包」同页跳转，避免整页刷新 */
+  function bindLinkToPacks() {
+    const packDesc = document.getElementById('pack_desc');
+    if (!packDesc || packDesc.dataset.linkBound === '1') return;
+    packDesc.dataset.linkBound = '1';
+    packDesc.addEventListener('click', function(event) {
+      const link = event.target && event.target.closest ? event.target.closest('#link_to_packs') : null;
+      if (!link) return;
+      event.preventDefault();
+      setView('packs');
+    });
+  }
+
+  function setLanguage(lang) {
+    currentLang = I18N[lang] ? lang : 'zh-CN';
+    if (languageSelect) {
+      languageSelect.value = currentLang;
+    }
+    localStorage.setItem('tlm_lang', currentLang);
+    applyLanguage();
+  }
+
+  function initLanguage() {
+    const savedLang = localStorage.getItem('tlm_lang');
+    const browserLang = (navigator.language || '').toLowerCase().startsWith('zh') ? 'zh-CN' : 'en-US';
+    setLanguage(savedLang || browserLang);
+  }
+
+  function updateThemeToggleText(mode) {
+    if (!themeToggle) return;
+    themeToggle.textContent = mode === 'dark' ? t('themeToLight') : t('themeToDark');
+    themeToggle.setAttribute('aria-label', mode === 'dark' ? t('themeAriaToLight') : t('themeAriaToDark'));
+  }
+
+  // 主题切换
+  function setTheme(theme) {
+    const mode = theme === 'dark' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', mode);
+    updateThemeToggleText(mode);
+    localStorage.setItem('tlm_theme', mode);
+  }
+
+  function initTheme() {
+    const savedTheme = localStorage.getItem('tlm_theme');
+    const preferDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(savedTheme || (preferDark ? 'dark' : 'light'));
+  }
+
+  async function fetchUuidFromWebsite() {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(function() {
+        controller.abort();
+      }, 4000);
+
+      const response = await fetch('https://www.uuidgenerator.net/api/version4', {
+        method: 'GET',
+        cache: 'no-store',
+        signal: controller.signal
+      });
+
+      clearTimeout(timeout);
+
+      if (!response.ok) return '';
+      const text = (await response.text()).trim();
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(text)) return '';
+      return text;
+    } catch (error) {
+      return '';
+    }
+  }
+
+  async function initDefaultUuid() {
+    const uuidInput = document.getElementById('uuid');
+    if (!uuidInput || uuidInput.value.trim()) return;
+
+    const websiteUuid = await fetchUuidFromWebsite();
+    if (websiteUuid) {
+      uuidInput.value = websiteUuid;
+    }
+  }
+
+  if (languageSelect) {
+    languageSelect.addEventListener('change', (event) => {
+      setLanguage(event.target.value);
+    });
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      setTheme(current === 'dark' ? 'light' : 'dark');
+    });
+  }
+
+  // 顶栏视图切换
+  const navConvertBtn = document.getElementById('nav_convert');
+  const navPacksBtn = document.getElementById('nav_packs');
+  if (navConvertBtn) {
+    navConvertBtn.addEventListener('click', function() {
+      setView('convert');
+    });
+  }
+  if (navPacksBtn) {
+    navPacksBtn.addEventListener('click', function() {
+      setView('packs');
+    });
+  }
+
+  initLanguage();
+  initTheme();
+  initDefaultUuid();
+  bindLinkToPacks();
+
+
+  // 上传相关
+  const fileUploader = document.getElementById('file');
+  const dropZone = document.getElementById('drop_zone');
+
+  function addFiles(files) {
+    if (!files || processing) return;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const existed = fileList.some((item) => (
+        item.name === file.name && item.size === file.size && item.lastModified === file.lastModified
+      ));
+      if (!existed) {
+        fileList.push(file);
+      }
+    }
+    refreshList();
+  }
+
+  // 添加文件事件
+  fileUploader.addEventListener('change', (event) => {
+    addFiles(event.target.files);
+    event.target.value = '';
+  });
+
+  if (dropZone) {
+    ['dragenter', 'dragover'].forEach((eventName) => {
+      dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (processing) return;
+        dropZone.classList.add('is-dragging');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach((eventName) => {
+      dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dropZone.classList.remove('is-dragging');
+      });
+    });
+
+    dropZone.addEventListener('drop', (event) => {
+      addFiles(event.dataTransfer.files);
+    });
+
+    dropZone.addEventListener('click', (event) => {
+      if (processing || event.target.classList.contains('file-label')) return;
+      fileUploader.click();
+    });
+
+    dropZone.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        fileUploader.click();
+      }
+    });
+  }
+  function refreshList() {
+    if (processing) return;
+    const res = document.getElementById('result_block');
+    let msg = `<tr><th>${t('tableIndex')}</th><th colspan="2">${t('tableInfo')}</th></tr>`;
+
+    if (fileList.length === 0) {
+      msg += `<tr><td class="center-col">*</td><td colspan="2" class="placeholder">${t('tablePending')}</td></tr>`;
+    }
+
+    for (let i = 0; i < fileList.length; i++) {
+      msg += `<tr><td class="center-col">${i + 1}</td>`; // 序号 0为默认包预留
+      msg += `<td>${fileList[i].name}</td>`; // 文件名
+      msg += `<td><button title="${t('moveUp')}" onclick='file_up(${i})'>↑</button> <button title="${t('moveDown')}" onclick='file_down(${i})'>↓</button> <button title="${t('remove')}" onclick='file_del(${i})'>x</button></td></tr>`;
+    }
+    res.innerHTML = msg;
+  }
+
+
+  // 改变文件位置
+  function file_up(num) {
+    if (num === 0 || processing) return;
+    const temp = fileList[num-1];
+    fileList[num-1] = fileList[num]
+    fileList[num] = temp;
+    refreshList();
+  }
+  function file_down(num) {
+    if(num >= fileList.length - 1 || processing) return;
+    const temp = fileList[num+1];
+    fileList[num+1] = fileList[num]
+    fileList[num] = temp;
+    refreshList();
+  }
+  function file_del(num){
+    if(processing) return;
+    fileList.splice(num, 1);
+    refreshList();
+  }
+
+  //// 转换入口 ////
+  async function startConvert() {
+    console.log("Start converting..");
+    /// 信息完整性判断 ///
+    if (fileList.length === 0) {
+      alert(t('alertUpload'));
+      return;
+    }
+    const uuid = document.getElementById("uuid").value;
+    if (!uuid) {
+      alert(t('alertUuid'));
+      return;
+    }
+
+    if (processing) return;
+
+    /// 停止页面交互 ///
+    processing = true;
+    document.getElementById("b_convert").disabled = true;
+    document.getElementById("file").disabled = true;
+    if (dropZone) {
+      dropZone.classList.add('is-disabled');
+      dropZone.setAttribute('aria-disabled', 'true');
+    }
+
+    /// 开始转换 ///
+    let convertor = new SkinConvertor(fileList);
+    let res = await convertor.startConvert(uuid);
+    if (res) {
+      // 更新管理面板粘贴数据（与资源包内 command.txt 一致）
+      const commandBlock = document.getElementById("command");
+      commandBlock.textContent = res.commandConfigStr || '{"skin":[],"chair":[]}';
+      commandBlock.dataset.generated = 'true';
+      const copyBtn = document.getElementById('command_copy');
+      if (copyBtn) {
+        copyBtn.disabled = false;
+        copyBtn.dataset.flash = '';
+        copyBtn.textContent = t('copyCommand');
+      }
+      // 导出文件
+      res.resultFile.generateAsync({type:"blob"})
+        .then(function(content) {
+          saveAs(content, t('exportFileName'));
+        });
+    }
+
+
+    /// 恢复页面交互 ///
+    processing = false;
+    document.getElementById("b_convert").disabled = false;
+    document.getElementById("file").disabled = false;
+    if (dropZone) {
+      dropZone.classList.remove('is-disabled');
+      dropZone.removeAttribute('aria-disabled');
+    }
+  }
+
+  /** 复制数据栏内容到剪贴板 */
+  async function copyCommandData() {
+    const commandBlock = document.getElementById('command');
+    const copyBtn = document.getElementById('command_copy');
+    if (!commandBlock || !copyBtn || copyBtn.disabled || !commandBlock.dataset.generated) {
+      return;
+    }
+    const text = commandBlock.textContent || '';
+    let ok = false;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+        ok = true;
+      }
+    } catch (_) {}
+    if (!ok) {
+      // 回退：选中文本 + execCommand
+      try {
+        const range = document.createRange();
+        range.selectNodeContents(commandBlock);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        ok = document.execCommand('copy');
+        selection.removeAllRanges();
+      } catch (_) {
+        ok = false;
+      }
+    }
+    copyBtn.dataset.flash = '1';
+    copyBtn.textContent = ok ? t('copySuccess') : t('copyFailed');
+    setTimeout(function() {
+      copyBtn.dataset.flash = '';
+      copyBtn.textContent = t('copyCommand');
+    }, 1500);
+  }
+
+  // 绑定复制按钮
+  (function initCommandCopy() {
+    const copyBtn = document.getElementById('command_copy');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', copyCommandData);
+    }
+  })();
+
+</script>
+
+<!--转换器-->
+<script src="../dist/SkinConvertor.bundle.js"></script>
+<!--模型包浏览（Task 6 构建产出；缺失时 init 需兜底）-->
+<script src="../dist/PacksBrowser.bundle.js"></script>
+<script>
+  // PacksBrowser 加载后再挂载并按 URL 恢复视图
+  (function initPacksBrowserShell() {
+    var root = document.getElementById('packs_root');
+    if (window.PacksBrowser && root) {
+      window.PacksBrowser.init(root);
+      window.PacksBrowser.setLang(typeof currentLang === 'string' ? currentLang : 'zh-CN');
+    }
+    if (typeof setView === 'function' && typeof getViewFromUrl === 'function') {
+      setView(getViewFromUrl());
+    }
+  })();
+</script>
+
+<!-- JSZIP https://github.com/Stuk/jszip?tab=readme-ov-file -->
+<script>
+  var saveAs = saveAs
+    // IE 10+ (native saveAs)
+    || (typeof navigator !== "undefined" &&
+      navigator.msSaveOrOpenBlob && navigator.msSaveOrOpenBlob.bind(navigator))
+    // Everyone else
+    || (function(view) {
+      "use strict";
+      // IE <10 is explicitly unsupported
+      if (typeof navigator !== "undefined" &&
+        /MSIE [1-9]\./.test(navigator.userAgent)) {
+        return;
+      }
+      var
+        doc = view.document
+        // only get URL when necessary in case BlobBuilder.js hasn't overridden it yet
+        , get_URL = function() {
+          return view.URL || view.webkitURL || view;
+        }
+        , URL = view.URL || view.webkitURL || view
+        , save_link = doc.createElementNS("http://www.w3.org/1999/xhtml", "a")
+        , can_use_save_link = !view.externalHost && "download" in save_link
+        , click = function(node) {
+          var event = doc.createEvent("MouseEvents");
+          event.initMouseEvent(
+            "click", true, false, view, 0, 0, 0, 0, 0
+            , false, false, false, false, 0, null
+          );
+          node.dispatchEvent(event);
+        }
+        , webkit_req_fs = view.webkitRequestFileSystem
+        , req_fs = view.requestFileSystem || webkit_req_fs || view.mozRequestFileSystem
+        , throw_outside = function(ex) {
+          (view.setImmediate || view.setTimeout)(function() {
+            throw ex;
+          }, 0);
+        }
+        , force_saveable_type = "application/octet-stream"
+        , fs_min_size = 0
+        , deletion_queue = []
+        , process_deletion_queue = function() {
+          var i = deletion_queue.length;
+          while (i--) {
+            var file = deletion_queue[i];
+            if (typeof file === "string") { // file is an object URL
+              URL.revokeObjectURL(file);
+            } else { // file is a File
+              file.remove();
+            }
+          }
+          deletion_queue.length = 0; // clear queue
+        }
+        , dispatch = function(filesaver, event_types, event) {
+          event_types = [].concat(event_types);
+          var i = event_types.length;
+          while (i--) {
+            var listener = filesaver["on" + event_types[i]];
+            if (typeof listener === "function") {
+              try {
+                listener.call(filesaver, event || filesaver);
+              } catch (ex) {
+                throw_outside(ex);
+              }
+            }
+          }
+        }
+        , FileSaver = function(blob, name) {
+          // First try a.download, then web filesystem, then object URLs
+          var
+            filesaver = this
+            , type = blob.type
+            , blob_changed = false
+            , object_url
+            , target_view
+            , get_object_url = function() {
+              var object_url = get_URL().createObjectURL(blob);
+              deletion_queue.push(object_url);
+              return object_url;
+            }
+            , dispatch_all = function() {
+              dispatch(filesaver, "writestart progress write writeend".split(" "));
+            }
+            // on any filesys errors revert to saving with object URLs
+            , fs_error = function() {
+              // don't create more object URLs than needed
+              if (blob_changed || !object_url) {
+                object_url = get_object_url(blob);
+              }
+              if (target_view) {
+                target_view.location.href = object_url;
+              } else {
+                window.open(object_url, "_blank");
+              }
+              filesaver.readyState = filesaver.DONE;
+              dispatch_all();
+            }
+            , abortable = function(func) {
+              return function() {
+                if (filesaver.readyState !== filesaver.DONE) {
+                  return func.apply(this, arguments);
+                }
+              };
+            }
+            , create_if_not_found = {create: true, exclusive: false}
+            , slice
+          ;
+          filesaver.readyState = filesaver.INIT;
+          if (!name) {
+            name = "download";
+          }
+          if (can_use_save_link) {
+            object_url = get_object_url(blob);
+            // FF for Android has a nasty garbage collection mechanism
+            // that turns all objects that are not pure javascript into 'deadObject'
+            // this means `doc` and `save_link` are unusable and need to be recreated
+            // `view` is usable though:
+            doc = view.document;
+            save_link = doc.createElementNS("http://www.w3.org/1999/xhtml", "a");
+            save_link.href = object_url;
+            save_link.download = name;
+            var event = doc.createEvent("MouseEvents");
+            event.initMouseEvent(
+              "click", true, false, view, 0, 0, 0, 0, 0
+              , false, false, false, false, 0, null
+            );
+            save_link.dispatchEvent(event);
+            filesaver.readyState = filesaver.DONE;
+            dispatch_all();
+            return;
+          }
+          // Object and web filesystem URLs have a problem saving in Google Chrome when
+          // viewed in a tab, so I force save with application/octet-stream
+          // http://code.google.com/p/chromium/issues/detail?id=91158
+          if (view.chrome && type && type !== force_saveable_type) {
+            slice = blob.slice || blob.webkitSlice;
+            blob = slice.call(blob, 0, blob.size, force_saveable_type);
+            blob_changed = true;
+          }
+          // Since I can't be sure that the guessed media type will trigger a download
+          // in WebKit, I append .download to the filename.
+          // https://bugs.webkit.org/show_bug.cgi?id=65440
+          if (webkit_req_fs && name !== "download") {
+            name += ".download";
+          }
+          if (type === force_saveable_type || webkit_req_fs) {
+            target_view = view;
+          }
+          if (!req_fs) {
+            fs_error();
+            return;
+          }
+          fs_min_size += blob.size;
+          req_fs(view.TEMPORARY, fs_min_size, abortable(function(fs) {
+            fs.root.getDirectory("saved", create_if_not_found, abortable(function(dir) {
+              var save = function() {
+                dir.getFile(name, create_if_not_found, abortable(function(file) {
+                  file.createWriter(abortable(function(writer) {
+                    writer.onwriteend = function(event) {
+                      target_view.location.href = file.toURL();
+                      deletion_queue.push(file);
+                      filesaver.readyState = filesaver.DONE;
+                      dispatch(filesaver, "writeend", event);
+                    };
+                    writer.onerror = function() {
+                      var error = writer.error;
+                      if (error.code !== error.ABORT_ERR) {
+                        fs_error();
+                      }
+                    };
+                    "writestart progress write abort".split(" ").forEach(function(event) {
+                      writer["on" + event] = filesaver["on" + event];
+                    });
+                    writer.write(blob);
+                    filesaver.abort = function() {
+                      writer.abort();
+                      filesaver.readyState = filesaver.DONE;
+                    };
+                    filesaver.readyState = filesaver.WRITING;
+                  }), fs_error);
+                }), fs_error);
+              };
+              dir.getFile(name, {create: false}, abortable(function(file) {
+                // delete file if it already exists
+                file.remove();
+                save();
+              }), abortable(function(ex) {
+                if (ex.code === ex.NOT_FOUND_ERR) {
+                  save();
+                } else {
+                  fs_error();
+                }
+              }));
+            }), fs_error);
+          }), fs_error);
+        }
+        , FS_proto = FileSaver.prototype
+        , saveAs = function(blob, name) {
+          return new FileSaver(blob, name);
+        }
+      ;
+      FS_proto.abort = function() {
+        var filesaver = this;
+        filesaver.readyState = filesaver.DONE;
+        dispatch(filesaver, "abort");
+      };
+      FS_proto.readyState = FS_proto.INIT = 0;
+      FS_proto.WRITING = 1;
+      FS_proto.DONE = 2;
+
+      FS_proto.error =
+        FS_proto.onwritestart =
+          FS_proto.onprogress =
+            FS_proto.onwrite =
+              FS_proto.onabort =
+                FS_proto.onerror =
+                  FS_proto.onwriteend =
+                    null;
+
+      view.addEventListener("unload", process_deletion_queue, false);
+      saveAs.unload = function() {
+        process_deletion_queue();
+        view.removeEventListener("unload", process_deletion_queue, false);
+      };
+      return saveAs;
+    }(
+      typeof self !== "undefined" && self
+      || typeof window !== "undefined" && window
+      || this.content
+    ));
+</script>
+</body>
+</html>
+

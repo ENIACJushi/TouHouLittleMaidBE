@@ -3,7 +3,7 @@ import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit";
 import { StrMaid } from "./StrMaid";
 import { emote } from "../../data/emote";
-import { MaidSkin } from "./MaidSkin";
+import { MaidSkin } from "./skin/MaidSkin";
 import { TagDataHelper } from '../libs/TagDataInterface'
 import { DP } from '../libs/DynamicPropertyInterface';
 import { MaidTarget } from "./MaidTarget";
@@ -74,16 +74,19 @@ export class EntityMaid{
         max:2,
         properties:[
             {// lv.1
-                "danmaku": 15,    // 弹幕伤害
-                "heal"   : [3, 6] // 单次回血量（3秒一次）
+                "danmaku": 15,// 弹幕伤害
+                "heal": [3, 6], // 单次回血量（3秒一次）
+                "movement": 0.25, // 移速（脚本写入，JSON 不定义）
             },
             {// lv.2
-                "danmaku": 24,    // 弹幕伤害
-                "heal"   : [5, 8] // 单次回血量（3秒一次）
+                "danmaku": 24,
+                "heal": [5, 8],
+                "movement": 0.3,
             },
-            {// lv.3
-                "danmaku": 24,    // 弹幕伤害
-                "heal"   : [5, 8] // 单次回血量（3秒一次）
+            {// lv.3（预留，暂与 lv.2 同速）
+                "danmaku": 24,
+                "heal": [5, 8],
+                "movement": 0.3,
             }
         ],
         str:[
@@ -129,6 +132,13 @@ export class EntityMaid{
                 if(maid.getComponent("minecraft:is_tamed") !== undefined){
                     this.eventTamed(maid, level);
                 }
+                // JSON 不再写等级移速，此处按姿态写入/锁定
+                if (EntityMaid.isSitting(maid)) {
+                    EntityMaid.Movement.lock(maid);
+                }
+                else {
+                    EntityMaid.Movement.unlock(maid);
+                }
             },1);
             DP.setInt(maid, "level", level);
         },
@@ -151,11 +161,54 @@ export class EntityMaid{
         /**
          * 属性值获取
          * @param {Entity} maid 
-         * @param {string} key danmaku | heal
+         * @param {string} key danmaku | heal | movement
          * @returns {number | Array}
          */
         getProperty(maid, key){
             return this.properties[this.get(maid)-1][key];
+        }
+    }
+    /**
+     * 移速锁定（坐下）/ 按等级恢复（站起）
+     * 移速唯一来源：Level.properties.movement（实体 JSON 仅注册 minecraft:movement 组件）
+     */
+    static Movement = {
+        /**
+         * 坐下时锁死移速并清除当前速度，避免仍被 AI 推走
+         * @param {Entity} maid
+         */
+        lock(maid){
+            try {
+                let movement = maid.getComponent("minecraft:movement");
+                if (movement !== undefined) {
+                    movement.setCurrentValue(0);
+                }
+                maid.clearVelocity();
+            }
+            catch { }
+        },
+        /**
+         * 站起时按当前等级恢复移速
+         * @param {Entity} maid
+         */
+        unlock(maid){
+            try {
+                let movement = maid.getComponent("minecraft:movement");
+                if (movement === undefined) return;
+
+                let level = EntityMaid.Level.get(maid);
+                let speed = (typeof level === "number" && level >= 1)
+                  ? EntityMaid.Level.properties[level - 1]?.movement
+                  : undefined;
+
+                if (typeof speed === "number") {
+                    movement.setCurrentValue(speed);
+                }
+                else {
+                    // 等级未初始化时使用 lv1 默认移速
+                    movement.setCurrentValue(EntityMaid.Level.properties[0].movement);
+                }
+            } catch { }
         }
     }
     // 主人
@@ -397,7 +450,12 @@ export class EntityMaid{
          * @param {boolean} value
          */
         set(maid, value){
-            maid.triggerEvent(value ? "api:mode_pick" : "api:mode_quit_pick");
+            if (value) {
+                // 坐下时用静止拾物组，站立时用行走拾物组
+                maid.triggerEvent(EntityMaid.isSitting(maid) ? "api:mode_pick_sit" : "api:mode_pick");
+            } else {
+                maid.triggerEvent("api:mode_quit_pick");
+            }
             DP.setBoolean(maid, "pick", value);
         },
         switchMode(maid){
@@ -561,7 +619,57 @@ export class EntityMaid{
             maid.triggerEvent(this.getEventName(maid, this.get(maid), true));
             // 有些工作模式存在相同的组件，延迟修改避免删除
             system.runTimeout(()=>{
-                maid.triggerEvent(this.getEventName(maid, type, false));
+                // 工作属性由脚本写入；坐下相关组件由脚本按姿态选择事件，不再走 JSON 过滤器
+                maid.setProperty("thlm:work", type);
+                switch (type) {
+                    // 弹幕攻击模式
+                    case EntityMaid.Work.danmaku_attack: {
+                        // 播放声音
+                        EntityMaid.Sound.playSound(maid, 'thlmm.maid.attack');
+                        // 根据是否坐下触发不同的附加事件
+                        if (EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent("api:mode_danmaku_attack_sit");
+                        } else {
+                            maid.triggerEvent("api:mode_danmaku_attack_stand");
+                        }
+                    } break;
+                    // 近战：坐下时不添加索敌/攻击组件
+                    case EntityMaid.Work.attack: {
+                        EntityMaid.Sound.playSound(maid, "mob.thlmm.maid.attack");
+                        if (!EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent(this.getEventName(maid, type, false));
+                        }
+                    } break;
+                    // 耕地模式
+                    case EntityMaid.Work.farm: {
+                        if (!EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent("api:mode_farm");
+                        }
+                    } break;
+                    // 甘蔗模式
+                    case EntityMaid.Work.sugar_cane: {
+                        if (!EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent("api:mode_sugar_cane");
+                        }
+                    } break;
+                    // 瓜类模式
+                    case EntityMaid.Work.melon: {
+                        if (!EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent("api:mode_melon");
+                        }
+                    } break;
+                    // 可可
+                    case EntityMaid.Work.cocoa: {
+                        if (!EntityMaid.isSitting(maid)) {
+                            maid.triggerEvent("api:mode_cocoa");
+                        }
+                    } break;
+                    // 默认
+                    default:
+                        maid.triggerEvent(this.getEventName(maid, type, false));
+                        break;
+                }
+                // 设置工作状态后，立即开始寻找目标
                 MaidTarget.search(maid, 15);
             },1);
         },
@@ -645,7 +753,10 @@ export class EntityMaid{
         switchMode(maid){
             if(this.getMode(maid)===true){
                 // 家模式 → 跟随模式
-                maid.triggerEvent("api:status_follow");
+                maid.setProperty("thlm:home", false);
+                maid.triggerEvent(EntityMaid.isSitting(maid)
+                    ? "api:status_follow_sit"
+                    : "api:status_follow_stand");
             }
             else{
                 // 跟随模式 → 家模式
@@ -782,7 +893,11 @@ export class EntityMaid{
          * @returns {boolean}
          */
         static quitCheckMode(maid){
-            maid.nameTag = maid.getDynamicProperty("name");
+            // 未进入查包模式时 name 可能为 undefined，原生 nameTag 不允许赋 null/undefined
+            let name = maid.getDynamicProperty("name");
+            if (typeof name === "string") {
+                maid.nameTag = name;
+            }
 
             maid.setDynamicProperty("name");
             maid.setDynamicProperty("inv_check", false);
@@ -1164,6 +1279,8 @@ export class EntityMaid{
             EntityMaid.initDynamicProperties(maid);
             system.runTimeout(()=>{
                 if(EntityMaid.Work.get(maid)<0) return;
+                // JSON 仅注册 movement 组件，按等级写入实际移速
+                EntityMaid.Movement.unlock(maid);
                 // 选择随机皮肤
                 if(!EntityMaid.Owner.has(maid)){
                     EntityMaid.Skin.setRandom(maid);
@@ -1361,12 +1478,131 @@ export class EntityMaid{
         return false;
     }
     /**
+     * 压缩位标志（thlm:anim）
+     *  bit0 坐下 / bit1 抱起 / bit2 睡觉 / bit3~7 food_level（0~20，默认 20）
+     */
+    static Anim = {
+        PROPERTY: "thlm:anim",
+        BIT_SIT: 1 << 0,
+        BIT_HUG: 1 << 1,
+        BIT_SLEEP: 1 << 2,
+        FOOD_SHIFT: 3,
+        FOOD_MASK: 0x1F,
+        FOOD_MAX: 20,
+        FOOD_DEFAULT: 20,
+        /**
+         * @param {Entity} maid
+         * @returns {number}
+         */
+        get(maid){
+            return maid.getProperty(this.PROPERTY) ?? (this.FOOD_DEFAULT << this.FOOD_SHIFT);
+        },
+        /**
+         * @param {Entity} maid
+         * @param {number} bit
+         * @returns {boolean}
+         */
+        has(maid, bit){
+            return (this.get(maid) & bit) !== 0;
+        },
+        /**
+         * @param {Entity} maid
+         * @param {number} bit
+         * @param {boolean} value
+         */
+        setBit(maid, bit, value){
+            let cur = this.get(maid);
+            maid.setProperty(this.PROPERTY, value ? (cur | bit) : (cur & ~bit));
+        },
+        /**
+         * @param {Entity} maid
+         * @returns {number} 0~20
+         */
+        getFood(maid){
+            // 饥饿值默认为 20，获取不到时按默认值返回
+            return (this.get(maid) >> this.FOOD_SHIFT) & this.FOOD_MASK;
+        },
+        /**
+         * @param {Entity} maid
+         * @param {number} value 实际有效范围 0~20
+         */
+        setFood(maid, value){
+            let food = Math.max(0, Math.min(this.FOOD_MAX, Math.floor(Number(value) || 0)));
+            let cur = this.get(maid);
+            maid.setProperty(this.PROPERTY,
+                (cur & ~(this.FOOD_MASK << this.FOOD_SHIFT)) | (food << this.FOOD_SHIFT));
+        }
+    };
+    /**
      * 是否处于坐下状态
      * @param {Entity} maid
      * @returns {boolean}
      */
     static isSitting(maid){
-        return maid.getProperty('thlm:is_sitting');
+        return this.Anim.has(maid, this.Anim.BIT_SIT);
+    }
+    /**
+     * 设置坐下位（由实体事件 thlmm:j / thlmm:v 写入）
+     * 同步锁定/恢复 minecraft:movement，避免坐下后仍寻路移动
+     * @param {Entity} maid
+     * @param {boolean} value
+     */
+    static setSitting(maid, value){
+        this.Anim.setBit(maid, this.Anim.BIT_SIT, value);
+        if (value) {
+            this.Movement.lock(maid);
+        }
+        else {
+            this.Movement.unlock(maid);
+        }
+    }
+    /**
+     * 是否处于抱起状态
+     * @param {Entity} maid
+     * @returns {boolean}
+     */
+    static isHug(maid){
+        return this.Anim.has(maid, this.Anim.BIT_HUG);
+    }
+    /**
+     * 设置抱起位
+     * @param {Entity} maid
+     * @param {boolean} value
+     */
+    static setHug(maid, value){
+        this.Anim.setBit(maid, this.Anim.BIT_HUG, value);
+    }
+    /**
+     * 是否处于睡觉状态（bit2）
+     * @param {Entity} maid
+     * @returns {boolean}
+     */
+    static isSleeping(maid){
+        return this.Anim.has(maid, this.Anim.BIT_SLEEP);
+    }
+    /**
+     * 设置睡觉位
+     * @param {Entity} maid
+     * @param {boolean} value
+     */
+    static setSleeping(maid, value){
+        this.Anim.setBit(maid, this.Anim.BIT_SLEEP, value);
+    }
+    /**
+     * 获取饥饿值（压缩在 thlm:anim 的 bit3~7）
+     * @param {Entity} maid
+     * @returns {number} 0~20
+     */
+    static getFoodLevel(maid){
+        return this.Anim.getFood(maid);
+    }
+    /**
+     * 设置饥饿值
+     * @param {Entity} maid
+     * @param {number} value 0~20
+     */
+    static setFoodLevel(maid, value){
+        this.Anim.setFood(maid, value);
     }
     /**
      * 坐下

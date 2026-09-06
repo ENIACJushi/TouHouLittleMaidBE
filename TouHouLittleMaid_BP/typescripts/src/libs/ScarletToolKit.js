@@ -144,6 +144,71 @@ export class ItemTool {
         return container.getItem(slot);
     }
     /**
+     * 校验主手是否仍为期望物品（比对 typeId + lore）
+     * before 事件里的 itemStack 只是快照，实际消耗常在 system.run 中执行；
+     * 若玩家在同一操作中丢出/切换物品，不校验会导致放出实体的同时地面仍保留原物品（复制）。
+     * @param {Player} player
+     * @param {ItemStack|undefined} expected 事件快照或期望物品
+     * @returns {boolean}
+     */
+    static isMainHandStillItem(player, expected) {
+        if (expected === undefined) {
+            return false;
+        }
+        const hand = ItemTool.getPlayerMainHand(player);
+        if (hand === undefined || hand.typeId !== expected.typeId) {
+            return false;
+        }
+        const expectedLore = expected.getLore();
+        const handLore = hand.getLore();
+        if (expectedLore.length !== handLore.length) {
+            return false;
+        }
+        for (let i = 0; i < expectedLore.length; i++) {
+            if (expectedLore[i] !== handLore[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * 主手仍匹配 expected 时消耗 amount 个；否则不操作
+     * @param {Player} player
+     * @param {ItemStack|undefined} expected
+     * @param {number} [amount=1]
+     * @returns {boolean} 是否成功消耗
+     */
+    static consumeMainHandIfMatch(player, expected, amount = 1) {
+        if (!ItemTool.isMainHandStillItem(player, expected)) {
+            return false;
+        }
+        const hand = ItemTool.getPlayerMainHand(player);
+        if (hand === undefined) {
+            return false;
+        }
+        if (hand.amount <= amount) {
+            ItemTool.setPlayerMainHand(player);
+        } else {
+            hand.amount -= amount;
+            ItemTool.setPlayerMainHand(player, hand);
+        }
+        return true;
+    }
+    /**
+     * 主手仍匹配 expected 时替换为主手物品（undefined 表示清空）；否则不操作
+     * @param {Player} player
+     * @param {ItemStack|undefined} expected
+     * @param {ItemStack|undefined} [newItem]
+     * @returns {boolean} 是否成功替换
+     */
+    static replaceMainHandIfMatch(player, expected, newItem = undefined) {
+        if (!ItemTool.isMainHandStillItem(player, expected)) {
+            return false;
+        }
+        ItemTool.setPlayerMainHand(player, newItem);
+        return true;
+    }
+    /**
      * 减少玩家主手装备的耐久
      * @param {Player} player 
      * @param {Number} amount 
