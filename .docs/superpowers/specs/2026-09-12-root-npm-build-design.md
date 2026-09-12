@@ -11,8 +11,8 @@
 | 项 | 选择 |
 |----|------|
 | 入口位置 | 仓库根目录 `package.json` |
-| 聚合指令 | 不提供 `build` / `build:all` / `release` |
-| SkinPacksConvertor | 转发 `build:single` |
+| 聚合指令 | 提供 `pack:all`（全量构建 + version + pack）；不提供泛化的 `build` / `build:all` |
+| SkinPacksConvertor | 转发 `build:single`（仅网站，不含内置模型包） |
 | 依赖安装 | 各模块各自 `npm install`，不引入 workspaces |
 | 实现方式 | 薄转发（方案 1） |
 
@@ -36,6 +36,7 @@ npm run <script> --prefix <模块目录>
 | `build:scripts` | `TouHouLittleMaid_BP/typescripts` → `build` → `tsc` |
 | `version` | `.tools` → `version` → `node version.js` |
 | `pack` | `.tools` → `pack` → `node pack.js` |
+| `pack:all` | 依次：`build:maid` → `build:book` → `build:scripts` → `build:skin` → `version` → `pack`（发版前需先手改 `.tools/version.js`） |
 
 ## 子模块最小改动
 
