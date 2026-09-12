@@ -9,6 +9,10 @@
     "build:scripts": "npm run build --prefix TouHouLittleMaid_BP/typescripts",
     "version": "npm run version --prefix .tools",
     "pack": "npm run pack --prefix .tools",
-    "pack:all": "npm run build:maid && npm run build:book && npm run build:scripts && npm run build:skin && npm run version && npm run pack"
+    "pack:all": "npm run build:maid && npm run build:book && npm run build:scripts && npm run build:skin && npm run version && npm run pack",
+    "test": "npm run copy --prefix .tools",
+    "test:maid": "npm run build:maid && npm run test",
+    "test:book": "npm run build:book && npm run test",
+    "test:scripts": "npm run build:scripts && npm run test"
   }
 }

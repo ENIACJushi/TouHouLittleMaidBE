@@ -1,7 +1,8 @@
 {
     "scripts": {
         "version": "node version.js",
-        "pack": "node pack.js"
+        "pack": "node pack.js",
+        "copy": "copy.bat"
     },
     "dependencies": {
         "adm-zip": "^0.5.16"

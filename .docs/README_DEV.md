@@ -28,6 +28,7 @@
 | `version` | 无（仅需 Node） |
 | `pack` | `.tools/`（需要 `adm-zip`） |
 | `pack:all` | 上表全部相关目录（尤其 `SkinPacksConvertor/`、`typescripts/`、`.tools/`） |
+| `test` / `test:*` | 无额外 npm 依赖；需已配置环境变量 `MinecraftPath`（Windows） |
 
 示例：
 
@@ -50,8 +51,31 @@ cd .tools && npm install && cd ..
 | `npm run version` | 按 `.tools/version.js` 写入版本信息 | BP/RP `manifest.json`、lang 等 |
 | `npm run pack` | 打包发布 zip（含 BP、RP、转换器网页） | `.tools/` 下生成的发布包 |
 | `npm run pack:all` | 按下方顺序全量构建并打包 | 同上各产物 + 发布 zip |
+| `npm run test` | 将 BP/RP/PBR 复制到本地开发包目录（同 `.tools/copy.bat`） | `%MinecraftPath%\development_*_packs\…` |
+| `npm run test:maid` | `build:maid` 后执行 `test` | 同上 |
+| `npm run test:book` | `build:book` 后执行 `test` | 同上 |
+| `npm run test:scripts` | `build:scripts` 后执行 `test` | 同上 |
 
 等价地，也可在各模块目录内直接运行其本地 script（例如 `SkinPacksConvertor` 内 `npm run build:single`）。
+
+### 本地测试部署（copy）
+
+需先设置环境变量 `MinecraftPath`，指向基岩版共享存档根目录，例如：
+
+```text
+C:\Users\xxx\AppData\Roaming\Minecraft Bedrock\Users\Shared\games\com.mojang
+```
+
+然后：
+
+| 指令 | 行为 |
+|------|------|
+| `npm run test` | 仅复制（等价于在 `.tools` 下运行 `copy.bat`） |
+| `npm run test:maid` | `build:maid` → `test` |
+| `npm run test:book` | `build:book` → `test` |
+| `npm run test:scripts` | `build:scripts` → `test` |
+
+会覆盖 `development_behavior_packs` / `development_resource_packs` 下的 `TouHouLittleMaid_BP`、`TouHouLittleMaid_RP`、`TouHouLittleMaid_PBR`。该流程依赖 Windows 批处理，仅在本机 Windows 开发环境使用。
 
 ### 全量打包
 
