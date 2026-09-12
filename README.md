@@ -4,6 +4,7 @@ A bedrock-edition Add-On transplanted by Java mod: TouHou Little Maid. (https://
 ## Tutorial
 
 - [Introduction](.docs/intruduce/EN.md)
+- [Develop README](.docs/README_DEV.md)
 - [Guidebook generation](MemorizableGensokyo/README.md)
 
 ## Authors

@@ -1,4 +1,8 @@
 {
+    "scripts": {
+        "version": "node version.js",
+        "pack": "node pack.js"
+    },
     "dependencies": {
         "adm-zip": "^0.5.16"
     }

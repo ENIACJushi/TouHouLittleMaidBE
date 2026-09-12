@@ -4,12 +4,14 @@
   "description": "A bedrock-edition Add-On transplanted by Java mod: TouHou Little Maid. (https://github.com/TartaricAcid/TouhouLittleMaid)",
   "main": "index.js",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ENIACJushi",
   "license": "MIT",
   "devDependencies": {
     "@minecraft/server": "2.3.0-beta.1.21.111-stable",
-    "@minecraft/server-ui": "2.1.0-beta.1.21.90-stable"
+    "@minecraft/server-ui": "2.1.0-beta.1.21.90-stable",
+    "typescript": "^5.9.3"
   }
 }
