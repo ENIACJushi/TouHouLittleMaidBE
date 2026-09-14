@@ -1,5 +1,5 @@
 import { Entity, system } from "@minecraft/server";
-import { MaidTarget } from "../MaidTarget";
+import { MaidTarget } from "../work/MaidTarget";
 import { Level } from "./Level";
 import { isSitting } from "./Anim";
 import { Sound } from "./Sound";
@@ -158,7 +158,7 @@ export const Work = {
           maid.triggerEvent(this.getEventName(maid, type, false));
           break;
       }
-      // 设置工作状态后，立即开始寻找目标（MaidTarget 仍在旧文件，Task 8 再迁）
+      // 设置工作状态后，立即开始寻找目标
       MaidTarget.search(maid, 15);
     }, 1);
   },

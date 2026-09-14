@@ -14,7 +14,7 @@ import { GeneralBullet } from "../../danmaku/shapes/bullets/general_bullet/Gener
 import { FanShapedPattern } from "../../danmaku/patterns/line/FanShapedPattern";
 import { GeneralBulletColor } from "../../danmaku/shapes/bullets/general_bullet/GeneralBulletColor";
 import { GeneralBulletType } from "../../danmaku/shapes/bullets/general_bullet/GeneralBulletType";
-import { MaidTarget } from "../MaidTarget";
+import { MaidTarget } from "../work/MaidTarget";
 import { MaidEvents } from "./MaidEvents";
 
 const HOME_RADIUS = 32;

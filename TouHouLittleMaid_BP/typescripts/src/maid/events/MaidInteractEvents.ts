@@ -16,7 +16,7 @@ import { StrMaid } from "../StrMaid";
 import { Vector } from "../../libs/VectorMC";
 import * as Tool from "../../libs/ScarletToolKit";
 import * as UI from "../MaidUI";
-import { MaidTarget } from "../MaidTarget";
+import { MaidTarget } from "../work/MaidTarget";
 import { isInteractContainerBlock } from "../../../data/BadContainerBlocks";
 
 /** 与原先 JSON interact cooldown 0.2s 对齐 */

@@ -8,7 +8,7 @@ import {
   system,
   world,
 } from "@minecraft/server";
-import { MaidTarget } from "../maid/MaidTarget";
+import { MaidTarget } from "../maid/work/MaidTarget";
 import { altarStructure } from "../altar/AltarStructureHelper";
 import * as Danmaku from "../danmaku/DanmakuManager";
 import PowerPoint from "../altar/PowerPoint";
