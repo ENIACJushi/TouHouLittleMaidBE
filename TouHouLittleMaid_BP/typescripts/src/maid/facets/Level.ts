@@ -1,7 +1,7 @@
 import { Entity, system } from "@minecraft/server";
 import { DP } from "../../libs/DynamicPropertyInterface";
-// Movement / isSitting 尚未迁入 facets，暂从旧 EntityMaid 转发以保持行为等价
-import { EntityMaid } from "../EntityMaid";
+import { Movement } from "./Movement";
+import { isSitting } from "./sitting";
 
 /** 单级属性表 */
 type LevelProperty = {
@@ -70,11 +70,11 @@ export const Level = {
         this.eventTamed(maid, level);
       }
       // JSON 不再写等级移速，此处按姿态写入/锁定
-      if (EntityMaid.isSitting(maid)) {
-        EntityMaid.Movement.lock(maid);
+      if (isSitting(maid)) {
+        Movement.lock(maid);
       }
       else {
-        EntityMaid.Movement.unlock(maid);
+        Movement.unlock(maid);
       }
     }, 1);
     DP.setInt(maid, "level", level);
