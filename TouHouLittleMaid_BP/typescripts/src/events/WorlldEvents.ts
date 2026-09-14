@@ -9,7 +9,6 @@ import { ShootItemManager } from "../items/shoot_item/ShootItemManager";
 import { CustomSpellCardManger } from "../danmaku/CustomSpellCardManger";
 import PowerPoint from "../altar/PowerPoint";
 import { ConfigHelper } from "../controller/Config";
-import { MaidManager } from "../maid/MaidManager";
 import { MaidSkin } from "../maid/skin/MaidSkin";
 import { ChairSkin } from "../chair/skin/ChairSkin";
 import { Logger } from "../controller/Logger";

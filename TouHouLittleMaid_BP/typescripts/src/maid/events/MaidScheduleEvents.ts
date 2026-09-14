@@ -1,23 +1,120 @@
 import {
-  DataDrivenEntityTriggerAfterEvent, system, world,
+  DataDrivenEntityTriggerAfterEvent,
+  EntityDieAfterEvent,
+  system,
+  world,
 } from "@minecraft/server";
-import {EntityMaid} from "../EntityMaid";
-import {Vector, VO} from "../../libs/VectorMC";
+import { EntityMaid } from "../EntityMaid";
+import { Vector, VO } from "../../libs/VectorMC";
 import { SakuraLaser } from "../../danmaku/shapes/laser/SakuraLaser";
 import * as Tool from "../../libs/ScarletToolKit";
-import {LineShoot} from "../../danmaku/shoots/LineShoot";
-import {EntityDanmakuActor} from "../../danmaku/actors/EntityDanmakuActor";
-import {GeneralBullet} from "../../danmaku/shapes/bullets/general_bullet/GeneralBullet";
-import {FanShapedPattern} from "../../danmaku/patterns/line/FanShapedPattern";
-import {GeneralBulletColor} from "../../danmaku/shapes/bullets/general_bullet/GeneralBulletColor";
-import {GeneralBulletType} from "../../danmaku/shapes/bullets/general_bullet/GeneralBulletType";
+import { LineShoot } from "../../danmaku/shoots/LineShoot";
+import { EntityDanmakuActor } from "../../danmaku/actors/EntityDanmakuActor";
+import { GeneralBullet } from "../../danmaku/shapes/bullets/general_bullet/GeneralBullet";
+import { FanShapedPattern } from "../../danmaku/patterns/line/FanShapedPattern";
+import { GeneralBulletColor } from "../../danmaku/shapes/bullets/general_bullet/GeneralBulletColor";
+import { GeneralBulletType } from "../../danmaku/shapes/bullets/general_bullet/GeneralBulletType";
+import { MaidTarget } from "../MaidTarget";
+import { MaidEvents } from "./MaidEvents";
 
 const HOME_RADIUS = 32;
 
 /**
- * 日程事件
+ * 日程事件（原 MaidManager.Shedule）
  */
 export class MaidScheduleEvents {
+  /**
+   * 定时事件（一步约 3 秒）
+   */
+  onTimer(event: DataDrivenEntityTriggerAfterEvent) {
+    const STEP_MAX = 1000;
+    let maid = event.entity;
+    if (maid === undefined) return;
+
+    ///// 步数计算 一步3秒 /////
+    let healStep = maid.getDynamicProperty("step") as number | undefined;
+    // 计时量未初始化 立即初始化
+    if (healStep === undefined) {
+      maid.setDynamicProperty("step", 0);
+      return;
+    }
+    if (healStep >= STEP_MAX) {
+      maid.setDynamicProperty("step", 0);
+    } else {
+      maid.setDynamicProperty("step", healStep + 1);
+    }
+
+    ///// 取模决定执行任务 /////
+    //// 每次
+    // 抱起扫描
+    if (EntityMaid.isHug(maid)) MaidEvents.interact.maidScan(maid);
+
+    let work = EntityMaid.Work.get(maid);
+    // 农业扫描
+    switch (work) {
+      case EntityMaid.Work.farm:
+      case EntityMaid.Work.melon:
+      case EntityMaid.Work.cocoa:
+        MaidTarget.stepEvent(maid, work);
+        break;
+      default:
+        break;
+    }
+    if (world.gameRules.mobGriefing === false && EntityMaid.Pick.get(maid) === true) {
+      // 无生物破坏的拾物模式
+      system.runTimeout(() => {
+        EntityMaid.Pick.magnet(maid, 5);
+      }, 2); // 延迟执行，更及时地捡起农作物
+    }
+    try {
+      // 使用质数 2 3 5 7 11 13 17 19
+      // 3步 - 9秒
+      if (healStep % 3 === 0) {
+        // 回血
+        try {
+          let healthComponent = EntityMaid.Health.getComponent(maid);
+          if (healthComponent.currentValue < healthComponent.defaultValue) {
+            // 回血
+            let healAmount = EntityMaid.Level.getProperty(maid, "heal") as [number, number];
+            healthComponent.setCurrentValue(
+              Math.min(
+                healthComponent.defaultValue,
+                healthComponent.currentValue + Tool.getRandomInteger(healAmount[0], healAmount[1])
+              )
+            );
+          }
+        } catch {}
+        // 扫描 坐下时不执行
+        try {
+          if (!EntityMaid.isSitting(maid)) {
+            MaidTarget.search(maid, 15);
+          }
+        } catch {}
+      }
+      // 11步 - 33秒
+      else if (healStep % 11 === 0) {
+        // 播放idle语音
+        if (!EntityMaid.Mute.get(maid)) {
+          system.runTimeout(() => {
+            try {
+              EntityMaid.playSound(maid, "mob.thlmm.maid.idle");
+            } catch {}
+          }, Tool.getRandomInteger(0, 100));
+        }
+      }
+    } catch {}
+  }
+
+  /**
+   * 女仆击杀
+   * 调用此事件时 event.damageSource.damagingEntity 必定存在且为女仆
+   */
+  onKill(event: EntityDieAfterEvent) {
+    let maid = event.damageSource.damagingEntity!;
+    let oldAmount = EntityMaid.Kill.get(maid);
+    EntityMaid.Kill.set(maid, oldAmount + 1);
+  }
+
   /**
    * 进行弹幕攻击
    */
