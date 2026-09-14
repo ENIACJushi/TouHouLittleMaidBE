@@ -7,8 +7,99 @@ import { Work } from "./Work";
 import { Movement } from "./Movement";
 import { Home } from "./Home";
 import { Pick } from "./Pick";
+import { Backpack } from "./Backpack";
+import { Anim } from "./Anim";
+import { Emote } from "./Emote";
+import { Sound } from "./Sound";
+import { Skin } from "./Skin";
+import { Ride } from "./Ride";
+import { Statues } from "./Statues";
+import { initDynamicProperties, initMaid, init_maid } from "./init";
+import {
+  formatOutput,
+  getNameTag,
+  isSafeBlock,
+} from "./util";
+import {
+  getFoodLevel,
+  isHug,
+  isSitting,
+  isSleeping,
+  setFoodLevel,
+  setHug,
+  setSitting,
+  setSleeping,
+  sitDown,
+  standUp,
+} from "./Anim";
 
-export { Owner, Health, Level, Kill, Mute, Work, Movement, Home, Pick };
+export {
+  Owner,
+  Health,
+  Level,
+  Kill,
+  Mute,
+  Work,
+  Movement,
+  Home,
+  Pick,
+  Backpack,
+  Anim,
+  Emote,
+  Sound,
+  Skin,
+  Ride,
+  Statues,
+  initDynamicProperties,
+  initMaid,
+  init_maid,
+  formatOutput,
+  getNameTag,
+  isSafeBlock,
+  isSitting,
+  setSitting,
+  isHug,
+  setHug,
+  isSleeping,
+  setSleeping,
+  getFoodLevel,
+  setFoodLevel,
+  sitDown,
+  standUp,
+};
 
 /** 可选命名空间聚合（非 Entity 包装） */
-export const Maid = { Owner, Health, Level, Kill, Mute, Work, Movement, Home, Pick };
+export const Maid = {
+  Owner,
+  Health,
+  Level,
+  Kill,
+  Mute,
+  Work,
+  Movement,
+  Home,
+  Pick,
+  Backpack,
+  Anim,
+  Emote,
+  Sound,
+  Skin,
+  Ride,
+  Statues,
+  initDynamicProperties,
+  initMaid,
+  init_maid,
+  formatOutput,
+  getNameTag,
+  isSafeBlock,
+  isSitting,
+  setSitting,
+  isHug,
+  setHug,
+  isSleeping,
+  setSleeping,
+  getFoodLevel,
+  setFoodLevel,
+  sitDown,
+  standUp,
+};

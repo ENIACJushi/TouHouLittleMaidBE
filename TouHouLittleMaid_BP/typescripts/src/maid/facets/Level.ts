@@ -1,7 +1,7 @@
 import { Entity, system } from "@minecraft/server";
 import { DP } from "../../libs/DynamicPropertyInterface";
 import { Movement } from "./Movement";
-import { isSitting } from "./sitting";
+import { isSitting } from "./Anim";
 
 /** 单级属性表 */
 type LevelProperty = {

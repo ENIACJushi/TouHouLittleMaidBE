@@ -1,7 +1,7 @@
 import { Entity } from "@minecraft/server";
 import { DP } from "../../libs/DynamicPropertyInterface";
 import { dim_int2string, dim_string2int } from "../../libs/ScarletToolKit";
-import { isSitting } from "./sitting";
+import { isSitting } from "./Anim";
 
 /**
  * 家模式与家坐标 DP（行为对齐 EntityMaid.Home）

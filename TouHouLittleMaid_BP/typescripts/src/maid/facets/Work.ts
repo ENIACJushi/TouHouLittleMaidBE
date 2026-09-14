@@ -1,14 +1,8 @@
 import { Entity, system } from "@minecraft/server";
 import { MaidTarget } from "../MaidTarget";
 import { Level } from "./Level";
-import { isSitting } from "./sitting";
-
-/** 播放声音（对齐 EntityMaid.Sound.playSound；Sound facet 尚未迁入） */
-function playSound(maid: Entity, name: string): void {
-  maid.dimension.runCommand(
-    `playsound ${name} @a ${maid.location.x} ${maid.location.y} ${maid.location.z}`,
-  );
-}
+import { isSitting } from "./Anim";
+import { Sound } from "./Sound";
 
 /**
  * 工作模式（行为对齐 EntityMaid.Work）
@@ -120,7 +114,7 @@ export const Work = {
         // 弹幕攻击模式
         case Work.danmaku_attack: {
           // 播放声音
-          playSound(maid, "thlmm.maid.attack");
+          Sound.playSound(maid, "thlmm.maid.attack");
           // 根据是否坐下触发不同的附加事件
           if (isSitting(maid)) {
             maid.triggerEvent("api:mode_danmaku_attack_sit");
@@ -130,7 +124,7 @@ export const Work = {
         } break;
         // 近战：坐下时不添加索敌/攻击组件
         case Work.attack: {
-          playSound(maid, "mob.thlmm.maid.attack");
+          Sound.playSound(maid, "mob.thlmm.maid.attack");
           if (!isSitting(maid)) {
             maid.triggerEvent(this.getEventName(maid, type, false));
           }

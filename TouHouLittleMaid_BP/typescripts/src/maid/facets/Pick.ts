@@ -1,6 +1,7 @@
-import { Entity, EntityInventoryComponent, EntityItemComponent } from "@minecraft/server";
+import { Entity, EntityItemComponent } from "@minecraft/server";
 import { DP } from "../../libs/DynamicPropertyInterface";
-import { isSitting } from "./sitting";
+import { isSitting } from "./Anim";
+import { Backpack } from "./Backpack";
 
 /**
  * 拾物模式与磁力吸取（行为对齐 EntityMaid.Pick）
@@ -31,8 +32,7 @@ export const Pick = {
    * 吸取范围内的物品
    */
   magnet(maid: Entity, range: number): void {
-    // Backpack 尚未迁入，直接读 inventory 组件（与 Backpack.getContainer 等价）
-    let container = (maid.getComponent("inventory") as EntityInventoryComponent).container;
+    let container = Backpack.getContainer(maid)!;
 
     let items = maid.dimension.getEntities({
       "location": maid.location,
