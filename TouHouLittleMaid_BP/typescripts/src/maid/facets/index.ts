@@ -16,9 +16,12 @@ import { Ride } from "./Ride";
 import { Statues } from "./Statues";
 import { initDynamicProperties, initMaid, init_maid } from "./init";
 import {
+  despawn,
   formatOutput,
   getNameTag,
   isSafeBlock,
+  playSound,
+  spawnRandomMaid,
 } from "./util";
 import {
   getFoodLevel,
@@ -56,6 +59,9 @@ export {
   formatOutput,
   getNameTag,
   isSafeBlock,
+  despawn,
+  playSound,
+  spawnRandomMaid,
   isSitting,
   setSitting,
   isHug,
@@ -92,6 +98,9 @@ export const Maid = {
   formatOutput,
   getNameTag,
   isSafeBlock,
+  despawn,
+  playSound,
+  spawnRandomMaid,
   isSitting,
   setSitting,
   isHug,

@@ -1,4 +1,4 @@
-import { Block, Entity } from "@minecraft/server";
+import { Block, Dimension, Entity, Vector3 } from "@minecraft/server";
 import { Backpack } from "./Backpack";
 import { Health } from "./Health";
 import { Kill } from "./Kill";
@@ -67,4 +67,27 @@ export function getNameTag(maid: Entity): string {
     return name === undefined ? "" : name as string;
   }
   return maid.nameTag;
+}
+
+/**
+ * 移除女仆实体（对齐 EntityMaid.despawn）
+ */
+export function despawn(maid: Entity): void {
+  maid.triggerEvent("despawn");
+}
+
+/**
+ * 播放声音（对齐 EntityMaid.playSound）
+ */
+export function playSound(maid: Entity, name: string): void {
+  maid.dimension.runCommand(
+    `playsound ${name} @a ${maid.location.x} ${maid.location.y} ${maid.location.z}`,
+  );
+}
+
+/**
+ * 生成一个随机女仆（对齐 EntityMaid.spawnRandomMaid；当前仍为默认女仆）
+ */
+export function spawnRandomMaid(dimension: Dimension, location: Vector3): Entity {
+  return dimension.spawnEntity("thlmm:maid" as any, location);
 }

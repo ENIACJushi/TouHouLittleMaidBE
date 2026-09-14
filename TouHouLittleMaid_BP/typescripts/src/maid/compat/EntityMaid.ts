@@ -1,0 +1,85 @@
+/**
+ * 兼容旧 EntityMaid 静态 API：仅转发到 facets / serialize，不写新业务。
+ */
+import {
+  Anim,
+  Backpack,
+  Emote,
+  Health,
+  Home,
+  Kill,
+  Level,
+  Movement,
+  Mute,
+  Owner,
+  Pick,
+  Ride,
+  Skin,
+  Sound,
+  Statues,
+  Work,
+  despawn,
+  formatOutput,
+  getFoodLevel,
+  getNameTag,
+  initDynamicProperties,
+  init_maid,
+  isHug,
+  isSafeBlock,
+  isSitting,
+  isSleeping,
+  playSound,
+  setFoodLevel,
+  setHug,
+  setSitting,
+  setSleeping,
+  sitDown,
+  spawnRandomMaid,
+  standUp,
+} from "../facets/index";
+import { fromStr, toLore, toStr } from "../serialize/entityCodec";
+
+/** 兼容旧 EntityMaid 静态调用面 */
+export class EntityMaid {
+  static Owner = Owner;
+  static Health = Health;
+  static Level = Level;
+  static Kill = Kill;
+  static Mute = Mute;
+  static Work = Work;
+  static Movement = Movement;
+  static Home = Home;
+  static Pick = Pick;
+  static Backpack = Backpack;
+  static Anim = Anim;
+  static Emote = Emote;
+  static Sound = Sound;
+  static Skin = Skin;
+  static Ride = Ride;
+  static Statues = Statues;
+
+  static initDynamicProperties = initDynamicProperties;
+  static init_maid = init_maid;
+
+  static toStr = toStr;
+  static fromStr = fromStr;
+  static toLore = toLore;
+
+  static formatOutput = formatOutput;
+  static getNameTag = getNameTag;
+  static isSafeBlock = isSafeBlock;
+  static despawn = despawn;
+  static playSound = playSound;
+  static spawnRandomMaid = spawnRandomMaid;
+
+  static isSitting = isSitting;
+  static setSitting = setSitting;
+  static isHug = isHug;
+  static setHug = setHug;
+  static isSleeping = isSleeping;
+  static setSleeping = setSleeping;
+  static getFoodLevel = getFoodLevel;
+  static setFoodLevel = setFoodLevel;
+  static sitDown = sitDown;
+  static standUp = standUp;
+}
