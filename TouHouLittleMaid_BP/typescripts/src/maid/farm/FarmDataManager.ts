@@ -1,3 +1,6 @@
+/**
+ * 【延期】农作数据管理器尚未接入新行为，占位保留；勿在本轮重构中接线或扩展。
+ */
 import {
   Container
 } from '@minecraft/server';
