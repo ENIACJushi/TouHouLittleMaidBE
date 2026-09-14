@@ -15,7 +15,7 @@ import { EntityMaid } from "../EntityMaid";
 import { StrMaid } from "../StrMaid";
 import { Vector } from "../../libs/VectorMC";
 import * as Tool from "../../libs/ScarletToolKit";
-import * as UI from "../MaidUI";
+import * as UI from "../ui/MaidUI";
 import { MaidTarget } from "../work/MaidTarget";
 import { isInteractContainerBlock } from "../../../data/BadContainerBlocks";
 

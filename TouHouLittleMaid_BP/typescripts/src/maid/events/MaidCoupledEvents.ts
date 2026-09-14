@@ -3,7 +3,7 @@ import {
 } from "@minecraft/server";
 import { EntityMaid } from "../EntityMaid";
 import * as Tool from "../../libs/ScarletToolKit";
-import * as UI from "../MaidUI";
+import * as UI from "../ui/MaidUI";
 
 /**
  * 和女仆强耦合但不是女仆自身的事件（开盒、NPC、抱起座椅扫描等）
