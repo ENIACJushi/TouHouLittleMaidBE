@@ -649,3 +649,6 @@ export class MaidInteractEvents {
     player.runCommand("playanimation @s animation.thlm.player.hug_maid");
   }
 }
+
+/** 单例：供 MaidEvents 与日程等模块直接引用，避免经聚合器环依赖 */
+export const maidInteractEvents = new MaidInteractEvents();

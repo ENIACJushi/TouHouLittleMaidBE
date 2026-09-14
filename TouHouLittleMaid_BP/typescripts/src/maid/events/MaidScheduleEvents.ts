@@ -15,10 +15,9 @@ import { FanShapedPattern } from "../../danmaku/patterns/line/FanShapedPattern";
 import { GeneralBulletColor } from "../../danmaku/shapes/bullets/general_bullet/GeneralBulletColor";
 import { GeneralBulletType } from "../../danmaku/shapes/bullets/general_bullet/GeneralBulletType";
 import { MaidTarget } from "../work/MaidTarget";
-import { MaidEvents } from "./MaidEvents";
+import { maidInteractEvents } from "./MaidInteractEvents";
 
 const HOME_RADIUS = 32;
-
 /**
  * 日程事件（原 MaidManager.Shedule）
  */
@@ -46,8 +45,8 @@ export class MaidScheduleEvents {
 
     ///// 取模决定执行任务 /////
     //// 每次
-    // 抱起扫描
-    if (EntityMaid.isHug(maid)) MaidEvents.interact.maidScan(maid);
+    // 抱起扫描（直接引用 interact 模块，避免经 MaidEvents 环依赖）
+    if (EntityMaid.isHug(maid)) maidInteractEvents.maidScan(maid);
 
     let work = EntityMaid.Work.get(maid);
     // 农业扫描

@@ -1,11 +1,16 @@
 import {MaidCoupledEvents} from "./MaidCoupledEvents";
-import {MaidInteractEvents} from "./MaidInteractEvents";
+import {maidInteractEvents} from "./MaidInteractEvents";
 import {MaidLifeCycleEvents} from "./MaidLifeCycleEvents";
 import {MaidScheduleEvents} from "./MaidScheduleEvents";
+import { Work } from "../facets/Work";
+import { MaidTarget } from "../work/MaidTarget";
 
 export namespace MaidEvents {
-  export const interact = new MaidInteractEvents();
+  export const interact = maidInteractEvents;
   export const lifeCycle = new MaidLifeCycleEvents();
   export const schedule = new MaidScheduleEvents();
   export const coupled = new MaidCoupledEvents();
 }
+
+// 工作模式变更后索敌：在 events 层接线，保持 facets/Work 不依赖 work 模块
+Work.setOnWorkChanged((maid) => MaidTarget.search(maid, 15));
