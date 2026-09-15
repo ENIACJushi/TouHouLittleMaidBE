@@ -4,9 +4,9 @@
  *
  * 允许的根目录薄再导出（非业务实现）：
  * - EntityMaid.ts → compat/EntityMaid
- * - MaidUI.ts → ui/MaidUI
  * - MaidTarget.ts → work/*
  *
+ * UI 权威路径：ui/MaidUI（经本 main 再导出 MainMenu/SkinMenu）
  * StrMaid 权威路径：serialize/StrMaid（也可经本 main 再导出）
  */
 
