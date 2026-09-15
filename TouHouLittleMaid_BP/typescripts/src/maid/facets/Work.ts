@@ -216,10 +216,10 @@ export const Work = {
     return this.IMG_LIST[type];
   },
   /**
-   * 获取声音
-   * 注意：旧实现误写 SOUND_LIST（实际为 SOUND_LIS），此处保持同等行为
+   * 获取切换到该工作模式时的音效 id；无对应音效时返回 undefined
+   * 使用场景：外部需要按模式查音效表时（当前主流程已改为行为包内播放）
    */
   getSound(type: number): string | undefined {
-    return (this as unknown as { SOUND_LIST: (string | undefined)[] }).SOUND_LIST[type];
+    return this.SOUND_LIS[type];
   },
 };

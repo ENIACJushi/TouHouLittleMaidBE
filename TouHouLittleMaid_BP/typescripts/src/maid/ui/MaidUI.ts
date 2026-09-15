@@ -96,10 +96,10 @@ class MaidMenuSimple {
       .button({ rawtext: [{ translate: mode_pick
         ? "gui.touhou_little_maid:button.pickup.true.name"
         : "gui.touhou_little_maid:button.pickup.false.name" }] }, Pick.getImg(mode_pick))
-      // 静音模式（旧逻辑误传 mode_pick，保持同等行为）
+      // 静音模式（文案与图标均应对齐 mode_mute；旧 JS 误把图标绑到 mode_pick）
       .button({ rawtext: [{ translate: mode_mute
         ? "gui.touhou_little_maid:button.mute.true.name"
-        : "gui.touhou_little_maid:button.mute.false.name" }] }, Mute.getImg(mode_pick))
+        : "gui.touhou_little_maid:button.mute.false.name" }] }, Mute.getImg(mode_mute))
       // 选择模型
       .button({ rawtext: [{ translate: "gui.touhou_little_maid:button.skin.name" }, { text: " | " }, skin_display] }, MaidSkin.getPackIcon(skin_pack_index));
 
@@ -261,8 +261,8 @@ class MaidMenuUI {
       .button({ translate: Ride.getLang(false) }, Ride.getImg(false)) // ride 模式
       // 显示/隐藏背包
       .button(Backpack.getButtonLang(backpack_invisible), Backpack.getButtonImg(backpack_invisible)) // 隐藏背包
-      // 静音模式（旧逻辑 Mute.getLang 误传 pick_mode，保持同等行为）
-      .button({ translate: Mute.getLang(pick_mode) }, Mute.getImg(mute_mode)) // mute 模式
+      // 静音模式（文案与图标均应对齐 mute_mode；旧 JS 误传 pick_mode）
+      .button({ translate: Mute.getLang(mute_mode) }, Mute.getImg(mute_mode)) // mute 模式
       // 选择模型
       .button({ rawtext: [{ translate: "gui.touhou_little_maid:button.skin.name" }, { text: " | " }, skin_display] }, "textures/gui/maid_skin.png"); // 选择模型
     // 工作模式

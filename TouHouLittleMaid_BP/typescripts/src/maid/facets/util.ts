@@ -6,6 +6,7 @@ import { Level } from "./Level";
 import { Mute } from "./Mute";
 import { Owner } from "./Owner";
 import { Pick } from "./Pick";
+import { Sound } from "./Sound";
 import { Work } from "./Work";
 
 /**
@@ -77,12 +78,11 @@ export function despawn(maid: Entity): void {
 }
 
 /**
- * 播放声音（对齐 EntityMaid.playSound）
+ * 播放声音（委托 Sound.playSound，避免与 facets/Sound 双实现）
+ * 使用场景：compat/EntityMaid.playSound 与仍走 util 的调用方
  */
 export function playSound(maid: Entity, name: string): void {
-  maid.dimension.runCommand(
-    `playsound ${name} @a ${maid.location.x} ${maid.location.y} ${maid.location.z}`,
-  );
+  Sound.playSound(maid, name);
 }
 
 /**

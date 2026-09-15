@@ -65,8 +65,8 @@ export const Owner = {
     let name = this.getName(maid);
     if (name !== undefined) {
       let players = world.getPlayers({ "name": name });
-      // 对齐旧实现：原代码对查询结果调用 length()
-      if ((players as unknown as { length(): number }).length() !== 0) {
+      // world.getPlayers 返回数组，用 length 属性判断（旧 JS 误写 length() 会抛错）
+      if (players.length !== 0) {
         return players[0];
       }
     }
