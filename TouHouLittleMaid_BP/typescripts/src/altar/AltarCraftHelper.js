@@ -1,10 +1,10 @@
 import { Dimension, EnchantmentTypes, ItemStack, Player } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
 import * as Tool from "../libs/ScarletToolKit"
-import { recipeList } from "../../data/recipes/index"
+import { recipeList } from "../../data/recipes/main"
 import { tagDefines } from "../../data/recipes/tag_define"
 import PowerPoint from "./PowerPoint";
-import { EntityMaid } from "../maid/index"
+import { EntityMaid } from "../maid/main"
 
 export class AltarCraftHelper{
     constructor(){

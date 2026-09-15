@@ -1,7 +1,7 @@
 import { Player, world, system } from "@minecraft/server"
 import * as Tool from"./libs/ScarletToolKit";
 import * as mcui from "@minecraft/server-ui"
-import { StrMaid } from "./maid/index";
+import { StrMaid } from "./maid/main";
 import { Logger } from "./controller/Logger";
 
 const TAG = 'EXP';

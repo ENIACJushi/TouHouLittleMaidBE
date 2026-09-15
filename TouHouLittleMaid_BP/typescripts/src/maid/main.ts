@@ -7,11 +7,11 @@
  * - MaidUI.ts → ui/MaidUI
  * - MaidTarget.ts → work/*
  *
- * StrMaid 权威路径：serialize/StrMaid（也可经本 index 再导出）
+ * StrMaid 权威路径：serialize/StrMaid（也可经本 main 再导出）
  */
 
 // 基础层
-export * from "./facets/index";
+export * from "./facets/main";
 export * from "./serialize/StrMaid";
 export * from "./serialize/entityCodec";
 

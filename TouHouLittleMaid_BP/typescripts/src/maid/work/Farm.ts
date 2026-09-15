@@ -2,7 +2,7 @@
 import { Entity, Dimension, system, BlockPermutation, BlockVolume } from "@minecraft/server";
 import { Vector } from "../../libs/VectorMC";
 import { EntityMaid } from "../EntityMaid";
-import { FarmBlocks } from "../../../data/FarmBlocks/index";
+import { FarmBlocks } from "../../../data/FarmBlocks/main";
 import { SpeedController } from "./SpeedController";
 
 /**

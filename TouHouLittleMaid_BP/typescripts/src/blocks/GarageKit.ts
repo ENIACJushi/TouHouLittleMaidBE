@@ -16,7 +16,7 @@ import { ActionbarMessage, ItemTool, lore2Str} from "../libs/ScarletToolKit";
 import {
   EntityMaid,
   StrMaid,
-} from "../maid/index";
+} from "../maid/main";
 import { Logger } from "../controller/Logger";
 
 const TAG = 'GarageKit';

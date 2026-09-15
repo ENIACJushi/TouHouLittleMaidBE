@@ -36,7 +36,7 @@ import {
   sitDown,
   spawnRandomMaid,
   standUp,
-} from "../facets/index";
+} from "../facets/main";
 import { fromStr, toLore, toStr } from "../serialize/entityCodec";
 
 /** 兼容旧 EntityMaid 静态调用面 */

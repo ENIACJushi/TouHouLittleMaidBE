@@ -3,7 +3,7 @@ import * as Tool from"../libs/ScarletToolKit";
 import {
     StrMaid,
     EntityMaid,
-} from "../maid/index";
+} from "../maid/main";
 import { ConfigForm, ConfigHelper } from "./Config";
 import { ManageForm } from "./ManageForm";
 import { Logger } from "./Logger";
