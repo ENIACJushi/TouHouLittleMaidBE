@@ -12,9 +12,11 @@ import {
   StartupEvent,
 } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
-import { StrMaid } from "../maid/StrMaid";
 import { ActionbarMessage, ItemTool, lore2Str} from "../libs/ScarletToolKit";
-import { EntityMaid } from "../maid/EntityMaid";
+import {
+  EntityMaid,
+  StrMaid,
+} from "../maid/index";
 import { Logger } from "../controller/Logger";
 
 const TAG = 'GarageKit';

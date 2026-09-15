@@ -12,7 +12,7 @@ import {
   world,
 } from "@minecraft/server";
 import { EntityMaid } from "../EntityMaid";
-import { StrMaid } from "../StrMaid";
+import { StrMaid } from "../serialize/StrMaid";
 import { Vector } from "../../libs/VectorMC";
 import * as Tool from "../../libs/ScarletToolKit";
 import * as UI from "../ui/MaidUI";

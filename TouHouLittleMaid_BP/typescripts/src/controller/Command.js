@@ -1,9 +1,11 @@
 import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
 import * as Tool from"../libs/ScarletToolKit";
-import { StrMaid } from "../maid/StrMaid";
+import {
+    StrMaid,
+    EntityMaid,
+} from "../maid/index";
 import { ConfigForm, ConfigHelper } from "./Config";
 import { ManageForm } from "./ManageForm";
-import { EntityMaid } from '../maid/EntityMaid'
 import { Logger } from "./Logger";
 
 const TAG = 'Command';

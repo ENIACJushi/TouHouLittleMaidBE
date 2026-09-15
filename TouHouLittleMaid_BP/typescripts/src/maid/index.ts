@@ -4,9 +4,10 @@
  *
  * 允许的根目录薄再导出（非业务实现）：
  * - EntityMaid.ts → compat/EntityMaid
- * - StrMaid.ts → serialize/StrMaid
  * - MaidUI.ts → ui/MaidUI
  * - MaidTarget.ts → work/*
+ *
+ * StrMaid 权威路径：serialize/StrMaid（也可经本 index 再导出）
  */
 
 // 基础层
