@@ -5,23 +5,23 @@
  *   import { EntityMaid, StrMaid, MainMenu, MaidTarget, MaidEvents } from "../maid/main";
  *
  * 分区一览：
- * - 实体能力（嵌套）：EntityMaid / Maid（facets 命名空间）
- * - 序列化：StrMaid、toStr / fromStr / toLore
+ * - 实体能力（嵌套）：EntityMaid（Owner / Work / Util 等挂在静态属性上）
+ * - 实体序列化：EntityMaid.toStr / fromStr / toLore
+ * - 字符串编解码：StrMaid（操作 lore / 编码串，非实体）
  * - 事件：MaidEvents
  * - 工作：MaidTarget、WorkHandler
  * - UI：MainMenu、SkinMenu
  * - 皮肤：MaidSkin、类型
  *
  * maid 包内部：可直接引用子目录（facets/work/ui/…），避免经本文件再导出造成环依赖。
+ * facets / entityCodec 不经本文件再导出；实体侧统一用 EntityMaid.*。
  */
 
 // ——— 实体能力 ———
 export { EntityMaid } from "./EntityMaid";
-export * from "./facets/main";
 
-// ——— 序列化 ———
+// ——— 字符串编解码（物品 lore 等；与 EntityMaid 实体域分离） ———
 export * from "./serialize/StrMaid";
-export * from "./serialize/entityCodec";
 
 // ——— 事件 ———
 export { MaidEvents } from "./events/MaidEvents";
