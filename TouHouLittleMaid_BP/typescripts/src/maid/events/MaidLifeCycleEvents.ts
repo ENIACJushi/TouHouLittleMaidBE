@@ -78,7 +78,7 @@ export class MaidLifeCycleEvents {
   onSpawn(event: DataDrivenEntityTriggerAfterEvent) {
     let maid = event.entity;
     maid.triggerEvent("api:init_success");
-    EntityMaid.init_maid(maid);
+    EntityMaid.Init.maid(maid);
   }
 
   /**

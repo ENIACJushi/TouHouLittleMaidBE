@@ -67,21 +67,8 @@ export class EntityMaid {
   /** 杂项工具（名称标签、安全方块、消散、随机生成等）；场景：通用辅助调用 */
   static Util = Util;
 
-
-  /** @deprecated 请用 Init.dynamicProperties */
-  static initDynamicProperties = Init.dynamicProperties.bind(Init);
-  /** @deprecated 请用 Init.maid */
-  static init_maid = Init.maid.bind(Init);
-
+  /** 实体 ↔ 字符串 / lore 序列化入口；场景：照片、魂符、胶片等物品持久化 */
   static toStr = toStr;
   static fromStr = fromStr;
   static toLore = toLore;
-
-  /** @deprecated 请用 Util.* / Pose.* / Food.* / Sound.* */
-  static formatOutput = Util.formatOutput.bind(Util);
-  static getNameTag = Util.getNameTag.bind(Util);
-  static isSafeBlock = Util.isSafeBlock.bind(Util);
-  static despawn = Util.despawn.bind(Util);
-  static playSound = Util.playSound.bind(Util);
-  static spawnRandomMaid = Util.spawnRandomMaid.bind(Util);
 }

@@ -274,7 +274,7 @@ export class GarageKit {
         );
         if (statuesBlocks.getCapacity() < space.x * space.y * space.z) {
           maid.dimension.fillBlocks(statuesBlocks, "minecraft:clay");
-          EntityMaid.despawn(maid);
+          EntityMaid.Util.despawn(maid);
         }
       }; break;
       case -3: {
@@ -285,7 +285,7 @@ export class GarageKit {
          */
         let block = maid.dimension.getBlock(maid.location);
         if (block === undefined || block.typeId !== blockGarageKit) {
-          EntityMaid.despawn(maid);
+          EntityMaid.Util.despawn(maid);
         }
       }; break;
       case -4: {
@@ -309,7 +309,7 @@ export class GarageKit {
           maid.dimension.spawnItem(item, maid.location);
 
           /// 销毁实体
-          EntityMaid.despawn(maid);
+          EntityMaid.Util.despawn(maid);
         }
       }; break;
       default: break;

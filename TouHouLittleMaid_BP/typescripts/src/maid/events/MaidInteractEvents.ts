@@ -143,14 +143,14 @@ export class MaidInteractEvents {
     let lore = EntityMaid.toLore(maid);
 
     // 发出声音
-    EntityMaid.playSound(maid, "thlm.camera_use");
+    EntityMaid.Util.playSound(maid, "thlm.camera_use");
 
     // 输出照片
     let location = maid.location;
     location.y += 0.5;
     let output_item = new ItemStack("touhou_little_maid:photo", 1);
     output_item.setLore(lore);
-    let maidnName = EntityMaid.getNameTag(maid);
+    let maidnName = EntityMaid.Util.getNameTag(maid);
     if (maidnName !== "") {
       output_item.nameTag = `§z${maidnName}`;
     }
@@ -194,15 +194,15 @@ export class MaidInteractEvents {
       default:
         return undefined;
     }
-    if (!EntityMaid.isSafeBlock(dimension.getBlock(location)!)) {
+    if (!EntityMaid.Util.isSafeBlock(dimension.getBlock(location)!)) {
       return undefined;
     }
     // 上
     const locationUp = new Vector(location.x, location.y + 1, location.z);
-    if (!EntityMaid.isSafeBlock(dimension.getBlock(locationUp)!)) {
+    if (!EntityMaid.Util.isSafeBlock(dimension.getBlock(locationUp)!)) {
       // 下
       const locationDown = new Vector(location.x, location.y - 1, location.z);
-      if (EntityMaid.isSafeBlock(dimension.getBlock(location)!)) {
+      if (EntityMaid.Util.isSafeBlock(dimension.getBlock(location)!)) {
         return locationDown;
       } else {
         return undefined;
@@ -308,7 +308,7 @@ export class MaidInteractEvents {
       let itemName = itemStack.nameTag;
       if (lore.length === 0) {
         // 首次使用
-        maid = EntityMaid.spawnRandomMaid(dimension, location);
+        maid = EntityMaid.Util.spawnRandomMaid(dimension, location);
         try {
           EntityMaid.Skin.setRandom(maid);
           system.runTimeout(() => {
@@ -365,7 +365,7 @@ export class MaidInteractEvents {
     // 修改魂符
     let new_itme = new ItemStack("touhou_little_maid:smart_slab_has_maid", 1);
     if (item.nameTag === undefined) {
-      let maidnName = EntityMaid.getNameTag(maid);
+      let maidnName = EntityMaid.Util.getNameTag(maid);
       if (maidnName !== "") {
         new_itme.nameTag = `§z${maidnName}`;
       }

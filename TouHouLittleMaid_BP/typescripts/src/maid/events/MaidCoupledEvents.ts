@@ -14,8 +14,8 @@ export class MaidCoupledEvents {
    */
   boxOpen(event: DataDrivenEntityTriggerAfterEvent) {
     let box = event.entity;
-    EntityMaid.spawnRandomMaid(box.dimension, box.location);
-    EntityMaid.playSound(box, "thlm.box");
+    EntityMaid.Util.spawnRandomMaid(box.dimension, box.location);
+    EntityMaid.Util.playSound(box, "thlm.box");
     box.triggerEvent("despawn");
   }
 
