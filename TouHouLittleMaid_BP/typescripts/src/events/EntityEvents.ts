@@ -8,13 +8,12 @@ import {
   system,
   world,
 } from "@minecraft/server";
-import { MaidTarget } from "../maid/work/MaidTarget";
+import { MaidEvents } from "../maid/main";
 import { altarStructure } from "../altar/AltarStructureHelper";
 import * as Danmaku from "../danmaku/DanmakuManager";
 import PowerPoint from "../altar/PowerPoint";
 import { GarageKit } from "../blocks/GarageKit";
 import { GoldMicrowaver } from "../blocks/GoldMicrowaver";
-import { MaidEvents } from "../maid/events/MaidEvents";
 import * as ChairUI from "../chair/ChairUI";
 import { ChairManager } from "../chair/ChairManager";
 import { CHAIR_IDENTIFIER } from "../chair/EntityChair";
@@ -195,7 +194,7 @@ export class EntityEvents {
     if (hurtId.substring(0, 4) === 'thlm') {
       switch (hurtId.charAt(4)) {
         // 女仆攻击标志实体
-        case "t": MaidTarget.targetAcquire(event); break;
+        case "t": MaidEvents.targetAcquire(event); break;
         default: break;
       }
     }

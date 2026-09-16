@@ -1,6 +1,9 @@
 import { world } from "@minecraft/server";
 import { getRandomInteger } from "../../libs/ScarletToolKit";
-import { SkinPackConfig, SkinPackDisplayInfo } from "../../maid/skin/MaidSkinTypes";
+import {
+  SkinPackConfig,
+  SkinPackDisplayInfo,
+} from "../../maid/main";
 import {
   DEFAULT_MOUNTED_HEIGHT_PIXEL,
   normalizeMountedHeightPixel,

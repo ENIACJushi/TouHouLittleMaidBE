@@ -8,7 +8,7 @@ import {
 } from "@minecraft/server";
 import { ShootItemManager } from "../items/shoot_item/ShootItemManager";
 import { altarStructure } from "../altar/AltarStructureHelper";
-import { MaidEvents } from "../maid/events/MaidEvents";
+import { MaidEvents } from "../maid/main";
 import { GarageKit } from "../blocks/GarageKit";
 import { MemorizableGensokyo } from "../book/MemorizableGensokyoUI";
 import { ManageForm } from "../controller/ManageForm";

@@ -1,0 +1,82 @@
+{
+  "root": true,
+  "ignorePatterns": ["../scripts/**", "node_modules/**"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module"
+  },
+  "env": {
+    "es2022": true
+  },
+  "overrides": [
+    {
+      "files": ["src/**/*.{ts,js}"],
+      "excludedFiles": ["src/maid/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/maid/compat", "**/maid/compat/**"],
+                "message": "compat 已移除。请从 maid/main 导入。"
+              },
+              {
+                "group": ["**/maid/EntityMaid", "**/maid/EntityMaid.js"],
+                "message": "包外请从 maid/main 导入 EntityMaid。"
+              },
+              {
+                "group": ["**/maid/MaidTarget", "**/maid/StrMaid", "**/maid/MaidUI"],
+                "message": "根目录兼容 shim 已删除。请从 maid/main 导入。"
+              },
+              {
+                "group": [
+                  "**/maid/facets/**",
+                  "**/maid/work/**",
+                  "**/maid/ui/**",
+                  "**/maid/serialize/**",
+                  "**/maid/events/**",
+                  "**/maid/skin/**"
+                ],
+                "message": "包外请只从 maid/main 导入女仆公开 API。"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/maid/**/*.{ts,js}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["**/maid/compat", "**/maid/compat/**", "./compat", "./compat/**"],
+                "message": "compat 目录已删除，勿再引用。"
+              },
+              {
+                "group": ["../MaidTarget", "../../MaidTarget"],
+                "message": "请使用 ./work/MaidTarget 或相对子路径。"
+              },
+              {
+                "group": ["../StrMaid", "../../StrMaid"],
+                "message": "请使用 ./serialize/StrMaid（同目录内可用 ./StrMaid）。"
+              },
+              {
+                "group": ["../MaidUI", "../../MaidUI"],
+                "message": "请使用 ./ui/MaidUI。"
+              },
+              {
+                "group": ["./main", "../main"],
+                "message": "maid 包内部勿经 main 再导入，以免环依赖。"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

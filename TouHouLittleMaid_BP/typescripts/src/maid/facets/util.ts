@@ -79,7 +79,7 @@ export function despawn(maid: Entity): void {
 
 /**
  * 播放声音（委托 Sound.playSound，避免与 facets/Sound 双实现）
- * 使用场景：compat/EntityMaid.playSound 与仍走 util 的调用方
+ * 使用场景：EntityMaid.playSound 与仍走 util 的调用方
  */
 export function playSound(maid: Entity, name: string): void {
   Sound.playSound(maid, name);
