@@ -1,7 +1,7 @@
 import * as mcui from "@minecraft/server-ui";
 import { system, Entity, Player } from "@minecraft/server";
 import { Backpack } from "../facets/Backpack";
-import { getNameTag } from "../facets/util";
+import { Util } from "../facets/util";
 import { Health } from "../facets/Health";
 import { Home } from "../facets/Home";
 import { Kill } from "../facets/Kill";
@@ -56,7 +56,7 @@ class MaidMenuSimple {
     this.maid = maid;
 
     // 名称为空时，使用默认名
-    this.maid_name = getNameTag(maid);
+    this.maid_name = Util.getNameTag(maid);
     if (this.maid_name === "") {
       this.maid_name = { translate: "entity.touhou_little_maid:maid.name" };
     }
@@ -220,7 +220,7 @@ class MaidMenuUI {
   constructor(player: Player, maid: Entity) {
     this.player = player;
     this.maid = maid;
-    this.maid_name = getNameTag(maid);
+    this.maid_name = Util.getNameTag(maid);
   }
 
   main(): void {

@@ -1,7 +1,7 @@
 import { Entity } from "@minecraft/server";
 import { DP } from "../../libs/DynamicPropertyInterface";
 import { dim_int2string, dim_string2int } from "../../libs/ScarletToolKit";
-import { isSitting } from "./Anim";
+import { Anim } from "./Anim";
 
 /**
  * 家模式与家坐标 DP（行为对齐 EntityMaid.Home）
@@ -20,7 +20,7 @@ export const Home = {
     if (this.getMode(maid) === true) {
       // 家模式 → 跟随模式
       maid.setProperty("thlm:home", false);
-      maid.triggerEvent(isSitting(maid)
+      maid.triggerEvent(Anim.isSitting(maid)
         ? "api:status_follow_sit"
         : "api:status_follow_stand");
     }

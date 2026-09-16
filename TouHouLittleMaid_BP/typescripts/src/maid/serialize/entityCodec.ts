@@ -14,10 +14,10 @@ import {
   world,
 } from "@minecraft/server";
 import { str2Lore } from "../../libs/ScarletToolKit";
-import { isSitting, sitDown } from "../facets/Anim";
+import { Anim } from "../facets/Anim";
 import { Backpack } from "../facets/Backpack";
 import { Health } from "../facets/Health";
-import { init_maid } from "../facets/init";
+import { Init } from "../facets/init";
 import { Kill } from "../facets/Kill";
 import { Level } from "../facets/Level";
 import { Mute } from "../facets/Mute";
@@ -25,7 +25,7 @@ import { Owner } from "../facets/Owner";
 import { Pick } from "../facets/Pick";
 import { Skin } from "../facets/Skin";
 import { Sound } from "../facets/Sound";
-import { getNameTag } from "../facets/util";
+import { Util } from "../facets/util";
 import { Work } from "../facets/Work";
 import { StrMaid } from "./StrMaid";
 
@@ -60,14 +60,14 @@ export function toStr(maid: Entity, dump: boolean = true): string {
   // 背包等级
   maidStr = StrMaid.backpackType.set(maidStr, Backpack.getType(maid));
   // 是否坐下
-  maidStr = StrMaid.Sit.set(maidStr, isSitting(maid));
+  maidStr = StrMaid.Sit.set(maidStr, Anim.isSitting(maid));
 
   // 字符类数据最后设置
   if (o_id !== undefined) {
     // 主人名称
     maidStr = StrMaid.Str.setOwnerName(maidStr, Owner.getName(maid));
     // 女仆名称
-    if (getNameTag(maid) !== "") maidStr = StrMaid.Str.setMaidName(maidStr, getNameTag(maid));
+    if (Util.getNameTag(maid) !== "") maidStr = StrMaid.Str.setMaidName(maidStr, Util.getNameTag(maid));
   }
 
   // 爆出物品
@@ -105,7 +105,7 @@ export function fromStr(
 
   /// 生成女仆 ///
   var maid = dimension.spawnEntity("thlmm:maid" as any, location);
-  init_maid(maid, true);
+  Init.maid(maid, true);
 
   /// 设置状态 ///
   // 等级
@@ -154,11 +154,11 @@ export function fromStr(
   }
 
   // 设置坐下状态
-  if (StrMaid.Sit.get(maidStr) === true) {
+  if (StrMaid.Sit.get(maidStr)) {
     system.runTimeout(() => {
       try {
         if (maid !== undefined) {
-          sitDown(maid);
+          Anim.sitDown(maid);
         }
       }
       catch { }

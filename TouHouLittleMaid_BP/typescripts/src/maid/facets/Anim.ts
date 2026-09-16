@@ -2,7 +2,7 @@ import { Entity } from "@minecraft/server";
 import { Movement } from "./Movement";
 
 /**
- * 压缩位标志（thlm:anim）
+ * 压缩位标志（thlm:anim）与姿态辅助
  * bit0 坐下 / bit1 抱起 / bit2 睡觉 / bit3~7 food_level（0~20，默认 20）
  */
 export const Anim = {
@@ -52,81 +52,63 @@ export const Anim = {
       (cur & ~(this.FOOD_MASK << this.FOOD_SHIFT)) | (food << this.FOOD_SHIFT),
     );
   },
+
+  /** 是否处于坐下状态 */
+  isSitting(maid: Entity): boolean {
+    return this.has(maid, this.BIT_SIT);
+  },
+
+  /**
+   * 设置坐下位（由实体事件 thlmm:j / thlmm:v 写入）
+   * 同步锁定/恢复 minecraft:movement，避免坐下后仍寻路移动
+   */
+  setSitting(maid: Entity, value: boolean): void {
+    this.setBit(maid, this.BIT_SIT, value);
+    if (value) {
+      Movement.lock(maid);
+    }
+    else {
+      Movement.unlock(maid);
+    }
+  },
+
+  /** 是否处于抱起状态 */
+  isHug(maid: Entity): boolean {
+    return this.has(maid, this.BIT_HUG);
+  },
+
+  /** 设置抱起位 */
+  setHug(maid: Entity, value: boolean): void {
+    this.setBit(maid, this.BIT_HUG, value);
+  },
+
+  /** 是否处于睡觉状态（bit2） */
+  isSleeping(maid: Entity): boolean {
+    return this.has(maid, this.BIT_SLEEP);
+  },
+
+  /** 设置睡觉位 */
+  setSleeping(maid: Entity, value: boolean): void {
+    this.setBit(maid, this.BIT_SLEEP, value);
+  },
+
+  /** 获取饥饿值（压缩在 thlm:anim 的 bit3~7） */
+  getFoodLevel(maid: Entity): number {
+    return this.getFood(maid);
+  },
+
+  /** 设置饥饿值 */
+  setFoodLevel(maid: Entity, value: number): void {
+    this.setFood(maid, value);
+  },
+
+  /** 坐下（触发实体事件） */
+  sitDown(maid: Entity): void {
+    maid.triggerEvent("thlmm:v");
+  },
+
+  /** 站起（触发实体事件） */
+  standUp(maid: Entity): void {
+    maid.triggerEvent("thlmm:w");
+  },
 };
-
-/**
- * 是否处于坐下状态（对齐 EntityMaid.isSitting）
- */
-export function isSitting(maid: Entity): boolean {
-  return Anim.has(maid, Anim.BIT_SIT);
-}
-
-/**
- * 设置坐下位（由实体事件 thlmm:j / thlmm:v 写入）
- * 同步锁定/恢复 minecraft:movement，避免坐下后仍寻路移动
- */
-export function setSitting(maid: Entity, value: boolean): void {
-  Anim.setBit(maid, Anim.BIT_SIT, value);
-  if (value) {
-    Movement.lock(maid);
-  }
-  else {
-    Movement.unlock(maid);
-  }
-}
-
-/**
- * 是否处于抱起状态
- */
-export function isHug(maid: Entity): boolean {
-  return Anim.has(maid, Anim.BIT_HUG);
-}
-
-/**
- * 设置抱起位
- */
-export function setHug(maid: Entity, value: boolean): void {
-  Anim.setBit(maid, Anim.BIT_HUG, value);
-}
-
-/**
- * 是否处于睡觉状态（bit2）
- */
-export function isSleeping(maid: Entity): boolean {
-  return Anim.has(maid, Anim.BIT_SLEEP);
-}
-
-/**
- * 设置睡觉位
- */
-export function setSleeping(maid: Entity, value: boolean): void {
-  Anim.setBit(maid, Anim.BIT_SLEEP, value);
-}
-
-/**
- * 获取饥饿值（压缩在 thlm:anim 的 bit3~7）
- */
-export function getFoodLevel(maid: Entity): number {
-  return Anim.getFood(maid);
-}
-
-/**
- * 设置饥饿值
- */
-export function setFoodLevel(maid: Entity, value: number): void {
-  Anim.setFood(maid, value);
-}
-
-/**
- * 坐下
- */
-export function sitDown(maid: Entity): void {
-  maid.triggerEvent("thlmm:v");
-}
-
-/**
- * 站起
- */
-export function standUp(maid: Entity): void {
-  maid.triggerEvent("thlmm:w");
-}

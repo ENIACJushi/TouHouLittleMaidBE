@@ -4,6 +4,7 @@ import { Level } from "./Level";
 /**
  * 移速锁定/恢复（行为对齐 EntityMaid.Movement）
  * 移速唯一来源：Level.properties.movement（实体 JSON 仅注册 minecraft:movement 组件）
+ * todo 未来还会在这里实现实体移速的切换
  */
 export const Movement = {
   /**

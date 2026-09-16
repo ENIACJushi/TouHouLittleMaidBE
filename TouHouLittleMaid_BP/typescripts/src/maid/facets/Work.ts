@@ -1,6 +1,6 @@
 import { Entity, system } from "@minecraft/server";
 import { Level } from "./Level";
-import { isSitting } from "./Anim";
+import { Anim } from "./Anim";
 import { Sound } from "./Sound";
 
 /** 工作模式变更后的可选回调（由 events 引导注册，避免 facets → work） */
@@ -124,7 +124,7 @@ export const Work = {
           // 播放声音
           Sound.playSound(maid, "thlmm.maid.attack");
           // 根据是否坐下触发不同的附加事件
-          if (isSitting(maid)) {
+          if (Anim.isSitting(maid)) {
             maid.triggerEvent("api:mode_danmaku_attack_sit");
           } else {
             maid.triggerEvent("api:mode_danmaku_attack_stand");
@@ -133,31 +133,31 @@ export const Work = {
         // 近战：坐下时不添加索敌/攻击组件
         case Work.attack: {
           Sound.playSound(maid, "mob.thlmm.maid.attack");
-          if (!isSitting(maid)) {
+          if (!Anim.isSitting(maid)) {
             maid.triggerEvent(this.getEventName(maid, type, false));
           }
         } break;
         // 耕地模式
         case Work.farm: {
-          if (!isSitting(maid)) {
+          if (!Anim.isSitting(maid)) {
             maid.triggerEvent("api:mode_farm");
           }
         } break;
         // 甘蔗模式
         case Work.sugar_cane: {
-          if (!isSitting(maid)) {
+          if (!Anim.isSitting(maid)) {
             maid.triggerEvent("api:mode_sugar_cane");
           }
         } break;
         // 瓜类模式
         case Work.melon: {
-          if (!isSitting(maid)) {
+          if (!Anim.isSitting(maid)) {
             maid.triggerEvent("api:mode_melon");
           }
         } break;
         // 可可
         case Work.cocoa: {
-          if (!isSitting(maid)) {
+          if (!Anim.isSitting(maid)) {
             maid.triggerEvent("api:mode_cocoa");
           }
         } break;

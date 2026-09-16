@@ -14,27 +14,8 @@ import { Sound } from "./Sound";
 import { Skin } from "./Skin";
 import { Ride } from "./Ride";
 import { Statues } from "./Statues";
-import { initDynamicProperties, initMaid, init_maid } from "./init";
-import {
-  despawn,
-  formatOutput,
-  getNameTag,
-  isSafeBlock,
-  playSound,
-  spawnRandomMaid,
-} from "./util";
-import {
-  getFoodLevel,
-  isHug,
-  isSitting,
-  isSleeping,
-  setFoodLevel,
-  setHug,
-  setSitting,
-  setSleeping,
-  sitDown,
-  standUp,
-} from "./Anim";
+import { Init } from "./init";
+import { Util } from "./util";
 
 export {
   Owner,
@@ -53,28 +34,14 @@ export {
   Skin,
   Ride,
   Statues,
-  initDynamicProperties,
-  initMaid,
-  init_maid,
-  formatOutput,
-  getNameTag,
-  isSafeBlock,
-  despawn,
-  playSound,
-  spawnRandomMaid,
-  isSitting,
-  setSitting,
-  isHug,
-  setHug,
-  isSleeping,
-  setSleeping,
-  getFoodLevel,
-  setFoodLevel,
-  sitDown,
-  standUp,
+  Init,
+  Util,
 };
 
-/** 可选命名空间聚合（非 Entity 包装） */
+/**
+ * 可选命名空间聚合（非 Entity 包装）
+ * 散落能力收在 Init / Util / Anim，不再平铺自由函数
+ */
 export const Maid = {
   Owner,
   Health,
@@ -92,23 +59,6 @@ export const Maid = {
   Skin,
   Ride,
   Statues,
-  initDynamicProperties,
-  initMaid,
-  init_maid,
-  formatOutput,
-  getNameTag,
-  isSafeBlock,
-  despawn,
-  playSound,
-  spawnRandomMaid,
-  isSitting,
-  setSitting,
-  isHug,
-  setHug,
-  isSleeping,
-  setSleeping,
-  getFoodLevel,
-  setFoodLevel,
-  sitDown,
-  standUp,
+  Init,
+  Util,
 };

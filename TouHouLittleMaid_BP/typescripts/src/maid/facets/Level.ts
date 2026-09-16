@@ -1,7 +1,7 @@
 import { Entity, system } from "@minecraft/server";
 import { DP } from "../../libs/DynamicPropertyInterface";
 import { Movement } from "./Movement";
-import { isSitting } from "./Anim";
+import { Anim } from "./Anim";
 
 /** 单级属性表 */
 type LevelProperty = {
@@ -70,7 +70,7 @@ export const Level = {
         this.eventTamed(maid, level);
       }
       // JSON 不再写等级移速，此处按姿态写入/锁定
-      if (isSitting(maid)) {
+      if (Anim.isSitting(maid)) {
         Movement.lock(maid);
       }
       else {

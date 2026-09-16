@@ -9,6 +9,7 @@ import {
   Emote,
   Health,
   Home,
+  Init,
   Kill,
   Level,
   Movement,
@@ -19,25 +20,8 @@ import {
   Skin,
   Sound,
   Statues,
+  Util,
   Work,
-  despawn,
-  formatOutput,
-  getFoodLevel,
-  getNameTag,
-  initDynamicProperties,
-  init_maid,
-  isHug,
-  isSafeBlock,
-  isSitting,
-  isSleeping,
-  playSound,
-  setFoodLevel,
-  setHug,
-  setSitting,
-  setSleeping,
-  sitDown,
-  spawnRandomMaid,
-  standUp,
 } from "./facets/main";
 import { fromStr, toLore, toStr } from "./serialize/entityCodec";
 
@@ -59,29 +43,34 @@ export class EntityMaid {
   static Skin = Skin;
   static Ride = Ride;
   static Statues = Statues;
+  static Init = Init;
+  static Util = Util;
 
-  static initDynamicProperties = initDynamicProperties;
-  static init_maid = init_maid;
+  /** @deprecated 请用 Init.dynamicProperties */
+  static initDynamicProperties = Init.dynamicProperties.bind(Init);
+  /** @deprecated 请用 Init.maid */
+  static init_maid = Init.maid.bind(Init);
 
   static toStr = toStr;
   static fromStr = fromStr;
   static toLore = toLore;
 
-  static formatOutput = formatOutput;
-  static getNameTag = getNameTag;
-  static isSafeBlock = isSafeBlock;
-  static despawn = despawn;
-  static playSound = playSound;
-  static spawnRandomMaid = spawnRandomMaid;
+  /** @deprecated 请用 Util.* / Anim.* */
+  static formatOutput = Util.formatOutput.bind(Util);
+  static getNameTag = Util.getNameTag.bind(Util);
+  static isSafeBlock = Util.isSafeBlock.bind(Util);
+  static despawn = Util.despawn.bind(Util);
+  static playSound = Util.playSound.bind(Util);
+  static spawnRandomMaid = Util.spawnRandomMaid.bind(Util);
 
-  static isSitting = isSitting;
-  static setSitting = setSitting;
-  static isHug = isHug;
-  static setHug = setHug;
-  static isSleeping = isSleeping;
-  static setSleeping = setSleeping;
-  static getFoodLevel = getFoodLevel;
-  static setFoodLevel = setFoodLevel;
-  static sitDown = sitDown;
-  static standUp = standUp;
+  static isSitting = Anim.isSitting.bind(Anim);
+  static setSitting = Anim.setSitting.bind(Anim);
+  static isHug = Anim.isHug.bind(Anim);
+  static setHug = Anim.setHug.bind(Anim);
+  static isSleeping = Anim.isSleeping.bind(Anim);
+  static setSleeping = Anim.setSleeping.bind(Anim);
+  static getFoodLevel = Anim.getFoodLevel.bind(Anim);
+  static setFoodLevel = Anim.setFoodLevel.bind(Anim);
+  static sitDown = Anim.sitDown.bind(Anim);
+  static standUp = Anim.standUp.bind(Anim);
 }
