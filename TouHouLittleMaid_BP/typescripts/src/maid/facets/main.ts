@@ -9,6 +9,7 @@ import { Home } from "./Home";
 import { Pick } from "./Pick";
 import { Backpack } from "./Backpack";
 import { PackedState } from "./PackedState";
+import { Food } from "./Food";
 import { Emote } from "./Emote";
 import { Sound } from "./Sound";
 import { Skin } from "./Skin";
@@ -29,6 +30,7 @@ export {
   Pick,
   Backpack,
   PackedState,
+  Food,
   Emote,
   Sound,
   Skin,
@@ -40,7 +42,6 @@ export {
 
 /**
  * 可选命名空间聚合（非 Entity 包装）
- * 散落能力收在 Init / Util / PackedState，不再平铺自由函数
  */
 export const Maid = {
   Owner,
@@ -54,6 +55,7 @@ export const Maid = {
   Pick,
   Backpack,
   PackedState,
+  Food,
   Emote,
   Sound,
   Skin,

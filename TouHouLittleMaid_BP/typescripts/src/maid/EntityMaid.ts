@@ -6,6 +6,7 @@
 import {
   Backpack,
   Emote,
+  Food,
   Health,
   Home,
   Init,
@@ -38,6 +39,7 @@ export class EntityMaid {
   static Pick = Pick;
   static Backpack = Backpack;
   static PackedState = PackedState;
+  static Food = Food;
   static Emote = Emote;
   static Sound = Sound;
   static Skin = Skin;
@@ -55,7 +57,7 @@ export class EntityMaid {
   static fromStr = fromStr;
   static toLore = toLore;
 
-  /** @deprecated 请用 Util.* / PackedState.* */
+  /** @deprecated 请用 Util.* / PackedState.* / Food.* */
   static formatOutput = Util.formatOutput.bind(Util);
   static getNameTag = Util.getNameTag.bind(Util);
   static isSafeBlock = Util.isSafeBlock.bind(Util);
@@ -69,8 +71,6 @@ export class EntityMaid {
   static setHug = PackedState.setHug.bind(PackedState);
   static isSleeping = PackedState.isSleeping.bind(PackedState);
   static setSleeping = PackedState.setSleeping.bind(PackedState);
-  static getFoodLevel = PackedState.getFoodLevel.bind(PackedState);
-  static setFoodLevel = PackedState.setFoodLevel.bind(PackedState);
   static sitDown = PackedState.sitDown.bind(PackedState);
   static standUp = PackedState.standUp.bind(PackedState);
 }
