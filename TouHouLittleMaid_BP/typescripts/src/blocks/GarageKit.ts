@@ -12,9 +12,11 @@ import {
   StartupEvent,
 } from "@minecraft/server";
 import { Vector } from "../libs/VectorMC";
-import { StrMaid } from "../maid/StrMaid";
 import { ActionbarMessage, ItemTool, lore2Str} from "../libs/ScarletToolKit";
-import { EntityMaid } from "../maid/EntityMaid";
+import {
+  EntityMaid,
+  StrMaid,
+} from "../maid/main";
 import { Logger } from "../controller/Logger";
 
 const TAG = 'GarageKit';
@@ -164,14 +166,14 @@ export class GarageKit {
           );
           maid.setDynamicProperty("spawn_set", true);
           // 设置大小
-          EntityMaid.Statues.scale.set(maid, size.scale);
-          EntityMaid.Statues.space.set(maid, new Vector(size.space[0], size.space[1], size.space[2]));
+          EntityMaid.Statues.setScale(maid, size.scale);
+          EntityMaid.Statues.setSpace(maid, new Vector(size.space[0], size.space[1], size.space[2]));
           // 设置皮肤
           EntityMaid.Skin.setPack(maid, skin.pack);
           EntityMaid.Skin.setIndex(maid, skin.index);
           // 设置坐下状态
           if (StrMaid.Sit.get(maidStr)) {
-            EntityMaid.sitDown(maid);
+            EntityMaid.Pose.sitDown(maid);
           }
           maid.triggerEvent("become_garage_kit_un_solid");
 
@@ -189,14 +191,14 @@ export class GarageKit {
           );
           maid.setDynamicProperty("spawn_set", true);
           // 设置大小
-          EntityMaid.Statues.scale.set(maid, size.scale);
-          EntityMaid.Statues.space.set(maid, new Vector(size.space[0], size.space[1], size.space[2]));
+          EntityMaid.Statues.setScale(maid, size.scale);
+          EntityMaid.Statues.setSpace(maid, new Vector(size.space[0], size.space[1], size.space[2]));
           // 设置皮肤
           EntityMaid.Skin.setPack(maid, skin.pack);
           EntityMaid.Skin.setIndex(maid, skin.index);
           // 设置坐下状态
           if (StrMaid.Sit.get(maidStr)) {
-            EntityMaid.sitDown(maid);
+            EntityMaid.Pose.sitDown(maid);
           }
 
           maid.triggerEvent("become_statues");
@@ -248,7 +250,7 @@ export class GarageKit {
     let maid = event.entity;
     switch (EntityMaid.Work.get(maid)) {
       case -2: { // 雕塑 恢复构造前状态
-        let space = EntityMaid.Statues.space.get(maid);
+        let space = EntityMaid.Statues.getSpace(maid);
         if (!space) {
           Logger.warn(TAG, 'Status release Failed: Space info undefined.');
           return;
@@ -272,7 +274,7 @@ export class GarageKit {
         );
         if (statuesBlocks.getCapacity() < space.x * space.y * space.z) {
           maid.dimension.fillBlocks(statuesBlocks, "minecraft:clay");
-          EntityMaid.despawn(maid);
+          EntityMaid.Util.despawn(maid);
         }
       }; break;
       case -3: {
@@ -283,7 +285,7 @@ export class GarageKit {
          */
         let block = maid.dimension.getBlock(maid.location);
         if (block === undefined || block.typeId !== blockGarageKit) {
-          EntityMaid.despawn(maid);
+          EntityMaid.Util.despawn(maid);
         }
       }; break;
       case -4: {
@@ -297,7 +299,7 @@ export class GarageKit {
           let item = new ItemStack("touhou_little_maid:garage_kit", 1);
           let pack = EntityMaid.Skin.getPack(maid);
           let index = EntityMaid.Skin.getIndex(maid);
-          let sit = EntityMaid.isSitting(maid) ? 'sit' : 'stand';
+          let sit = EntityMaid.Pose.isSitting(maid) ? 'sit' : 'stand';
           // item.nameTag = JSON.stringify({rawtext:[MaidSkin.getSkinDisplayName(pack, index)]}); // 无法显示translate文本
 
           // 设置属性
@@ -307,7 +309,7 @@ export class GarageKit {
           maid.dimension.spawnItem(item, maid.location);
 
           /// 销毁实体
-          EntityMaid.despawn(maid);
+          EntityMaid.Util.despawn(maid);
         }
       }; break;
       default: break;
@@ -386,13 +388,13 @@ export class GarageKit {
     let infoStr = lore[0].split(',');
 
     let size = this.SIZE[0];
-    EntityMaid.Statues.scale.set(maid, size.scale);
-    EntityMaid.Statues.space.set(maid, new Vector(size.space[0], size.space[1], size.space[2]));
+    EntityMaid.Statues.setScale(maid, size.scale);
+    EntityMaid.Statues.setSpace(maid, new Vector(size.space[0], size.space[1], size.space[2]));
     try {
       EntityMaid.Skin.setPack(maid, Number(infoStr[0]));
       EntityMaid.Skin.setIndex(maid, Number(infoStr[1]));
       if (infoStr[2] === 'sit') {
-        EntityMaid.sitDown(maid);
+        EntityMaid.Pose.sitDown(maid);
       }
     } catch { };
 

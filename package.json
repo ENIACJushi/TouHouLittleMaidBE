@@ -7,6 +7,7 @@
     "build:book": "npm run build --prefix MemorizableGensokyo",
     "build:skin": "npm run build:single --prefix SkinPacksConvertor",
     "build:scripts": "npm run build --prefix TouHouLittleMaid_BP/typescripts",
+    "lint:scripts": "npm run lint --prefix TouHouLittleMaid_BP/typescripts",
     "version": "npm run version --prefix .tools",
     "pack": "npm run pack --prefix .tools",
     "pack:all": "npm run build:maid && npm run build:book && npm run build:scripts && npm run build:skin && npm run version && npm run pack",

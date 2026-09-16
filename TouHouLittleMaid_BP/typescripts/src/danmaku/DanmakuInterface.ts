@@ -1,5 +1,5 @@
 import {Entity, EntityApplyDamageOptions, EntityDamageCause, system, world} from "@minecraft/server";
-import { EntityMaid } from "../maid/EntityMaid";
+import { EntityMaid } from "../maid/main";
 import { config } from "../controller/Config";
 import { DanmakuDamageDispatcher } from "./DanmakuDamageDispatcher";
 

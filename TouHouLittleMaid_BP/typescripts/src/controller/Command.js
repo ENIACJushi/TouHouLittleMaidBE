@@ -1,9 +1,11 @@
 import { BlockComponentTypes, ItemStack, ScriptEventCommandMessageAfterEvent, system } from "@minecraft/server";
 import * as Tool from"../libs/ScarletToolKit";
-import { StrMaid } from "../maid/StrMaid";
+import {
+    StrMaid,
+    EntityMaid,
+} from "../maid/main";
 import { ConfigForm, ConfigHelper } from "./Config";
 import { ManageForm } from "./ManageForm";
-import { EntityMaid } from '../maid/EntityMaid'
 import { Logger } from "./Logger";
 
 const TAG = 'Command';
@@ -88,7 +90,7 @@ export class CommandManager {
                     return;
                 }
                 
-                source.sendMessage({rawtext: EntityMaid.formatOutput(maid)});
+                source.sendMessage({rawtext: EntityMaid.Util.formatOutput(maid)});
             }; break;
             default:{
                 if(event.message.substring(0, 4)==="setm"){// 修改女仆信息
@@ -145,7 +147,7 @@ export class CommandManager {
                     // 修改后信息
                     system.runTimeout(()=>{// 等设置好了再展示
                         source.sendMessage({rawtext: [{translate: "message.tlm.admin.set.after"}]})
-                        source.sendMessage({rawtext: EntityMaid.formatOutput(maid)});   
+                        source.sendMessage({rawtext: EntityMaid.Util.formatOutput(maid)});   
                     }, 2);
                 }
                 else if(event.message.substring(0, 4)==="seti"){// 修改物品信息

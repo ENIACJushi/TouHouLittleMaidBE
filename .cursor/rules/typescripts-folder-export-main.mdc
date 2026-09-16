@@ -1,0 +1,33 @@
+---
+description: TouHouLittleMaid_BP/typescripts 目录桶导出与脚本入口用 main，不用 index
+globs: TouHouLittleMaid_BP/typescripts/**/*.{ts,js}
+alwaysApply: false
+---
+
+# TypeScript 文件夹导出约定
+
+在 `TouHouLittleMaid_BP/typescripts` 内，**文件夹桶（barrel）导出与脚本入口必须命名为 `main`，禁止使用 `index`。**
+
+## 要求
+
+- 新增或整理模块目录时，对外再导出入口写为 `main.ts` / `main.js`
+- 从该目录导入时，显式写 `.../main`，不要依赖 `index` 默认解析
+- 发现已有 `index` 作桶导出或入口时，应改为 `main`，并同步更新所有引用与 manifest
+
+## 示例
+
+```typescript
+// ❌ BAD：用 index 作为文件夹导出
+// src/maid/facets/index.ts
+export * from "./HealthFacet";
+// import { ... } from "../facets/index";
+
+// ✅ GOOD：用 main 作为文件夹导出
+// src/danmaku/shapes/main.ts
+export { GeneralBullet } from "./GeneralBullet";
+// import { GeneralBullet } from "../shapes/main";
+```
+
+## 参考
+
+现有符合约定的入口：`src/main.ts`、`src/maid/main.ts`、`src/maid/facets/main.ts`、`src/common/main.ts`、`src/controller/main.ts`、`src/danmaku/main.ts` 等。

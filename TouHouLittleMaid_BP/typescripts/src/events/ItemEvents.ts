@@ -8,7 +8,7 @@ import {
 } from "@minecraft/server";
 import { ShootItemManager } from "../items/shoot_item/ShootItemManager";
 import { altarStructure } from "../altar/AltarStructureHelper";
-import { MaidManager } from "../maid/MaidManager";
+import { MaidEvents } from "../maid/main";
 import { GarageKit } from "../blocks/GarageKit";
 import { MemorizableGensokyo } from "../book/MemorizableGensokyoUI";
 import { ManageForm } from "../controller/ManageForm";
@@ -67,12 +67,12 @@ export class ItemEvents {
             // case "gold_microwaver_item": GoldMicrowaver.placeEvent(event); break;
             // 照片释放女仆
             case "photo": {
-              MaidManager.Interact.photoOnUseEvent(event);
+              MaidEvents.interact.photoOnUse(event);
               break;
             }
             // 魂符释放女仆
             case "smart_slab_has_maid": {
-              MaidManager.Interact.smartSlabOnUseEvent(event);
+              MaidEvents.interact.smartSlabOnUse(event);
               break;
             }
             // 放置坐垫

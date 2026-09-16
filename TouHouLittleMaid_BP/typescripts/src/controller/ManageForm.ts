@@ -1,9 +1,11 @@
 import { Player, PlayerPermissionLevel } from "@minecraft/server";
 import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
 import { lang } from "../libs/ScarletToolKit";
-import { MaidSkin } from "../maid/skin/MaidSkin";
+import {
+  MaidSkin,
+  SkinPackConfig,
+} from "../maid/main";
 import { ChairSkin } from "../chair/skin/ChairSkin";
-import { SkinPackConfig } from "../maid/skin/MaidSkinTypes";
 import { ConfigForm } from "./Config";
 
 /**

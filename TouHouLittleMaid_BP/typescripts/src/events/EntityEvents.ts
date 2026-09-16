@@ -8,14 +8,12 @@ import {
   system,
   world,
 } from "@minecraft/server";
-import { MaidTarget } from "../maid/MaidTarget";
-import { MaidManager } from "../maid/MaidManager";
+import { MaidEvents } from "../maid/main";
 import { altarStructure } from "../altar/AltarStructureHelper";
 import * as Danmaku from "../danmaku/DanmakuManager";
 import PowerPoint from "../altar/PowerPoint";
 import { GarageKit } from "../blocks/GarageKit";
 import { GoldMicrowaver } from "../blocks/GoldMicrowaver";
-import {MaidEvents} from "../maid/events/MaidEvents";
 import * as ChairUI from "../chair/ChairUI";
 import { ChairManager } from "../chair/ChairManager";
 import { CHAIR_IDENTIFIER } from "../chair/EntityChair";
@@ -87,37 +85,37 @@ export class EntityEvents {
             // ddb: danmaku debug shoot
             case "ddb": Danmaku.debug_shoot(event.entity); break;
             // b: box open
-            case "b": MaidManager.boxOpenEvent(event); break;
+            case "b": MaidEvents.coupled.boxOpen(event); break;
             // n: NPC
-            case "n": MaidManager.NPCInteract(event); break;
+            case "n": MaidEvents.coupled.npcInteract(event); break;
             // h: hug
-            case "h": MaidManager.Hug.seatScan(event); break;
+            case "h": MaidEvents.coupled.seatScan(event); break;
             default: break;
           }; break;
         // 女仆专用事件
         case "m":
           switch (event.eventId.substring(6, 7)) {
             case "a": MaidEvents.schedule.tryDanmakuAttack(event); break; // a Danmaku Attack
-            case "d": MaidManager.Core.onDeathEvent(event); break; // d Death
-            case "f": MaidManager.Core.onTamed(event); break; // f on tamed
+            case "d": MaidEvents.lifeCycle.onDeath(event); break; // d Death
+            case "f": MaidEvents.lifeCycle.onTamed(event); break; // f on tamed
             case "h": MaidEvents.schedule.tryReturnHome(event); break; // h Home
-            case "i": MaidManager.Interact.inventoryModeEvent(event); break; // i Inventory mode
-            case "j": MaidManager.Hug.startEvent(event); break; // j Hug
-            case "k": MaidManager.Hug.stopEvent(event); break; // k Hug stop
+            case "i": MaidEvents.interact.inventoryMode(event); break; // i Inventory mode
+            case "j": MaidEvents.interact.startHug(event); break; // j Hug
+            case "k": MaidEvents.interact.stopHug(event); break; // k Hug stop
             case "l": MaidEvents.schedule.setLevel(event); break; // l Level
-            case "m": MaidManager.Interact.onInteractEvent(event); break; // m Master interact
-            case "n": MaidManager.onNPCEvent(event); break; // n NPC
-            case "p": MaidManager.Interact.onPhotoEvent(event); break; // p Photo
-            case "s": MaidManager.Interact.sitModeEvent(event); break; // s Sit mode
-            case "t": MaidManager.Shedule.timerEvent(event); break; // t Timer
+            case "m": MaidEvents.interact.onInteract(event); break; // m Master interact
+            case "n": MaidEvents.coupled.onNpc(event); break; // n NPC
+            case "p": MaidEvents.interact.onPhoto(event); break; // p Photo
+            case "s": MaidEvents.interact.sitMode(event); break; // s Sit mode
+            case "t": MaidEvents.schedule.onTimer(event); break; // t Timer
             case "u": GarageKit.scan(event); break; // u statues destroy
-            case "v": MaidManager.Interact.onSitEvent(event); break; // v enter sit
-            case "w": MaidManager.Interact.onStandEvent(event); break; // v enter sit
+            case "v": MaidEvents.interact.onSit(event); break; // v enter sit
+            case "w": MaidEvents.interact.onStand(event); break; // w enter stand
             case "0":
-              MaidManager.Core.onSpawnEvent(event); // 0 Spawn
+              MaidEvents.lifeCycle.onSpawn(event); // 0 Spawn
               MaidEvents.lifeCycle.onLoad(event.entity, true); // 首次生成也会走加载逻辑（如魂符放出）
               break;
-            case "1": MaidManager.Interact.onSmartSlabRecycleEvent(event); break;// 1 Smart slab
+            case "1": MaidEvents.interact.onSmartSlabRecycle(event); break;// 1 Smart slab
             default: break;
           }
           break;
@@ -125,15 +123,15 @@ export class EntityEvents {
         case "b":
           switch (event.eventId.substring(6)) {
             // g: grave
-            case "g": MaidManager.Core.tombstoneAttackEvent(event); break;
+            case "g": MaidEvents.lifeCycle.tombstoneAttack(event); break;
             // t0: type 0 (default)
-            case "t0": MaidManager.Interact.backpackTypeChangeEvent(event, 0); break;
+            case "t0": MaidEvents.interact.backpackTypeChange(event, 0); break;
             // t1: type 1 (small)
-            case "t1": MaidManager.Interact.backpackTypeChangeEvent(event, 1); break;
+            case "t1": MaidEvents.interact.backpackTypeChange(event, 1); break;
             // t2: type 2 (middle)
-            case "t2": MaidManager.Interact.backpackTypeChangeEvent(event, 2); break;
+            case "t2": MaidEvents.interact.backpackTypeChange(event, 2); break;
             // t3: type 3 (big)
-            case "t3": MaidManager.Interact.backpackTypeChangeEvent(event, 3); break;
+            case "t3": MaidEvents.interact.backpackTypeChange(event, 3); break;
           }
           break;
         case "w":
@@ -176,7 +174,7 @@ export class EntityEvents {
     let killer = event.damageSource.damagingEntity;
     if (killer !== undefined) {
       if (killer.typeId === "thlmm:maid") {
-        MaidManager.Shedule.killEvent(event);
+        MaidEvents.schedule.onKill(event);
       }
     }
   }
@@ -196,7 +194,7 @@ export class EntityEvents {
     if (hurtId.substring(0, 4) === 'thlm') {
       switch (hurtId.charAt(4)) {
         // 女仆攻击标志实体
-        case "t": MaidTarget.targetAcquire(event); break;
+        case "t": MaidEvents.targetAcquire(event); break;
         default: break;
       }
     }

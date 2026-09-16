@@ -1,6 +1,6 @@
 import { world, system } from "@minecraft/server"
 import experiment from "./experiment"
-import { initTest } from "../test/index";
+import { initTest } from "../test/main";
 import { BlockEvents } from "./events/BlockEvents";
 import { EntityEvents } from "./events/EntityEvents";
 import { ItemEvents } from "./events/ItemEvents";
