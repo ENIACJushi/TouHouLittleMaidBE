@@ -94,7 +94,7 @@ export class MaidScheduleEvents {
       // 11步 - 33秒
       else if (healStep % 11 === 0) {
         // 播放idle语音
-        if (!EntityMaid.Mute.get(maid)) {
+        if (!EntityMaid.Sound.getMute(maid)) {
           system.runTimeout(() => {
             try {
               EntityMaid.playSound(maid, "mob.thlmm.maid.idle");

@@ -2,7 +2,6 @@ import { Owner } from "./Owner";
 import { Health } from "./Health";
 import { Level } from "./Level";
 import { Kill } from "./Kill";
-import { Mute } from "./Mute";
 import { Work } from "./Work";
 import { Movement } from "./Movement";
 import { Home } from "./Home";
@@ -24,7 +23,6 @@ export {
   Health,
   Level,
   Kill,
-  Mute,
   Work,
   Movement,
   Home,
@@ -50,7 +48,6 @@ export const Maid = {
   Health,
   Level,
   Kill,
-  Mute,
   Work,
   Movement,
   Home,

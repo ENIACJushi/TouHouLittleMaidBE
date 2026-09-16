@@ -20,11 +20,10 @@ import { Health } from "../facets/Health";
 import { Init } from "../facets/init";
 import { Kill } from "../facets/Kill";
 import { Level } from "../facets/Level";
-import { Mute } from "../facets/Mute";
+import { Sound } from "../facets/Sound";
 import { Owner } from "../facets/Owner";
 import { Pick } from "../facets/Pick";
 import { Skin } from "../facets/Skin";
-import { Sound } from "../facets/Sound";
 import { Util } from "../facets/util";
 import { Work } from "../facets/Work";
 import { StrMaid } from "./StrMaid";
@@ -54,7 +53,7 @@ export function toStr(maid: Entity, dump: boolean = true): string {
   // 拾物模式
   maidStr = StrMaid.Pick.set(maidStr, Pick.get(maid));
   // 静音模式
-  maidStr = StrMaid.Mute.set(maidStr, Mute.get(maid));
+  maidStr = StrMaid.Mute.set(maidStr, Sound.getMute(maid));
   // 背包是否隐藏
   maidStr = StrMaid.backpackInvisibility.set(maidStr, Backpack.getInvisible(maid));
   // 背包等级
@@ -129,7 +128,7 @@ export function fromStr(
   // 拾物模式
   Pick.set(maid, StrMaid.Pick.get(maidStr));
   // 静音模式
-  Mute.set(maid, StrMaid.Mute.get(maidStr));
+  Sound.setMute(maid, StrMaid.Mute.get(maidStr));
   // 背包是否隐藏（对齐旧实现：可能传入 undefined）
   Backpack.setInvisible(maid, StrMaid.backpackInvisibility.get(maidStr) as boolean);
   // 背包类型

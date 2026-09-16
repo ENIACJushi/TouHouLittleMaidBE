@@ -13,7 +13,6 @@ import {
   Kill,
   Level,
   Movement,
-  Mute,
   Owner,
   PackedState,
   Pick,
@@ -33,7 +32,6 @@ export class EntityMaid {
   static Health = Health;
   static Level = Level;
   static Kill = Kill;
-  static Mute = Mute;
   static Work = Work;
   static Movement = Movement;
   static Home = Home;
@@ -59,7 +57,7 @@ export class EntityMaid {
   static fromStr = fromStr;
   static toLore = toLore;
 
-  /** @deprecated 请用 Util.* / Pose.* / Food.* */
+  /** @deprecated 请用 Util.* / Pose.* / Food.* / Sound.* */
   static formatOutput = Util.formatOutput.bind(Util);
   static getNameTag = Util.getNameTag.bind(Util);
   static isSafeBlock = Util.isSafeBlock.bind(Util);

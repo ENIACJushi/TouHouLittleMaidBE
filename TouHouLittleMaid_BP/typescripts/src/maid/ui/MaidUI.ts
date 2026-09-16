@@ -6,7 +6,7 @@ import { Health } from "../facets/Health";
 import { Home } from "../facets/Home";
 import { Kill } from "../facets/Kill";
 import { Level } from "../facets/Level";
-import { Mute } from "../facets/Mute";
+import { Sound } from "../facets/Sound";
 import { Pick } from "../facets/Pick";
 import { Ride } from "../facets/Ride";
 import { Skin } from "../facets/Skin";
@@ -67,7 +67,7 @@ class MaidMenuSimple {
     let work_type = Work.get(this.maid);
     let home_mode = Home.getMode(this.maid);
     let mode_pick = Pick.get(this.maid);
-    let mode_mute = Mute.get(this.maid);
+    let mode_mute = Sound.getMute(this.maid);
     let backpack_invisible = Backpack.getInvisible(this.maid);
     let skin_pack_index = Skin.getPack(this.maid);
     let skin_index = Skin.getIndex(this.maid);
@@ -99,7 +99,7 @@ class MaidMenuSimple {
       // 静音模式（文案与图标均应对齐 mode_mute；旧 JS 误把图标绑到 mode_pick）
       .button({ rawtext: [{ translate: mode_mute
         ? "gui.touhou_little_maid:button.mute.true.name"
-        : "gui.touhou_little_maid:button.mute.false.name" }] }, Mute.getImg(mode_mute))
+        : "gui.touhou_little_maid:button.mute.false.name" }] }, Sound.getMuteImg(mode_mute))
       // 选择模型
       .button({ rawtext: [{ translate: "gui.touhou_little_maid:button.skin.name" }, { text: " | " }, skin_display] }, MaidSkin.getPackIcon(skin_pack_index));
 
@@ -122,7 +122,7 @@ class MaidMenuSimple {
           system.runTimeout(() => { this.main(); }, 1);
           break;
         case 4:
-          Mute.switchMode(this.maid);
+          Sound.switchMute(this.maid);
           system.runTimeout(() => { this.main(); }, 1);
           break;
         case 5:
@@ -233,7 +233,7 @@ class MaidMenuUI {
     let work_type = Work.get(this.maid);
     let home_mode = Home.getMode(this.maid);
     let pick_mode = Pick.get(this.maid);
-    let mute_mode = Mute.get(this.maid);
+    let mute_mode = Sound.getMute(this.maid);
     let backpack_invisible = Backpack.getInvisible(this.maid);
     let skin_pack_index = Skin.getPack(this.maid);
     let skin_index = Skin.getIndex(this.maid);
@@ -262,7 +262,7 @@ class MaidMenuUI {
       // 显示/隐藏背包
       .button(Backpack.getButtonLang(backpack_invisible), Backpack.getButtonImg(backpack_invisible)) // 隐藏背包
       // 静音模式（文案与图标均应对齐 mute_mode；旧 JS 误传 pick_mode）
-      .button({ translate: Mute.getLang(mute_mode) }, Mute.getImg(mute_mode)) // mute 模式
+      .button({ translate: Sound.getMuteLang(mute_mode) }, Sound.getMuteImg(mute_mode)) // mute 模式
       // 选择模型
       .button({ rawtext: [{ translate: "gui.touhou_little_maid:button.skin.name" }, { text: " | " }, skin_display] }, "textures/gui/maid_skin.png"); // 选择模型
     // 工作模式
@@ -280,7 +280,7 @@ class MaidMenuUI {
           case 2: Pick.set(this.maid, !pick_mode); system.runTimeout(() => { this.main(); }, 1); break; // 拾物模式
           case 3: Ride.switchMode(this.maid); system.runTimeout(() => { this.main(); }, 1); break; // 骑乘模式
           case 4: Backpack.setInvisible(this.maid, !backpack_invisible); system.runTimeout(() => { this.main(); }, 1); break; // 隐藏背包
-          case 5: Mute.set(this.maid, !mute_mode); system.runTimeout(() => { this.main(); }, 1); break; // 静音模式
+          case 5: Sound.setMute(this.maid, !mute_mode); system.runTimeout(() => { this.main(); }, 1); break; // 静音模式
           case 6: this.skinPackSelection(); break; // 模型选择
           default:// 工作模式选择
             Work.set(this.maid, response.selection - 7);

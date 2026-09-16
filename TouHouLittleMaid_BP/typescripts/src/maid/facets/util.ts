@@ -3,7 +3,6 @@ import { Backpack } from "./Backpack";
 import { Health } from "./Health";
 import { Kill } from "./Kill";
 import { Level } from "./Level";
-import { Mute } from "./Mute";
 import { Owner } from "./Owner";
 import { Pick } from "./Pick";
 import { Sound } from "./Sound";
@@ -50,7 +49,7 @@ export const Util = {
     rawtext.push({ "text": `${Pick.get(maid)}\n` });
     // 静音模式
     rawtext.push({ "translate": "message.tlm.admin.maid.mute" });
-    rawtext.push({ "text": `${Mute.get(maid)}\n` });
+    rawtext.push({ "text": `${Sound.getMute(maid)}\n` });
 
     return rawtext;
   },
