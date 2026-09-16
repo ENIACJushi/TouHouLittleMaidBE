@@ -5,6 +5,7 @@ import {
   world,
 } from "@minecraft/server";
 import { EntityMaid } from "../EntityMaid";
+import { Pose } from "../facets/Pose";
 import { Vector, VO } from "../../libs/VectorMC";
 import { SakuraLaser } from "../../danmaku/shapes/laser/SakuraLaser";
 import * as Tool from "../../libs/ScarletToolKit";
@@ -46,7 +47,7 @@ export class MaidScheduleEvents {
     ///// 取模决定执行任务 /////
     //// 每次
     // 抱起扫描（直接引用 interact 模块，避免经 MaidEvents 环依赖）
-    if (EntityMaid.isHug(maid)) maidInteractEvents.maidScan(maid);
+    if (Pose.isHug(maid)) maidInteractEvents.maidScan(maid);
 
     let work = EntityMaid.Work.get(maid);
     // 农业扫描
@@ -85,7 +86,7 @@ export class MaidScheduleEvents {
         } catch {}
         // 扫描 坐下时不执行
         try {
-          if (!EntityMaid.isSitting(maid)) {
+          if (!Pose.isSitting(maid)) {
             MaidTarget.search(maid, 15);
           }
         } catch {}
@@ -291,7 +292,7 @@ export class MaidScheduleEvents {
     // 比较维度
     let maid = event.entity;
     // 坐下时不回家（原 JSON bool_property 过滤器已失效，改由脚本判断）
-    if (EntityMaid.isSitting(maid)) {
+    if (Pose.isSitting(maid)) {
       return;
     }
     // NPC的家半径为 2

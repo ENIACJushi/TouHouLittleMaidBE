@@ -12,6 +12,7 @@ import {
   world,
 } from "@minecraft/server";
 import { EntityMaid } from "../EntityMaid";
+import { Pose } from "../facets/Pose";
 import { StrMaid } from "../serialize/StrMaid";
 import { Vector } from "../../libs/VectorMC";
 import * as Tool from "../../libs/ScarletToolKit";
@@ -62,7 +63,7 @@ export class MaidInteractEvents {
 
     // 鞍：已抱起则拦住，避免重复触发 JSON 抱起事件
     if (itemId === "minecraft:saddle") {
-      if (EntityMaid.isHug(maid)) {
+      if (Pose.isHug(maid)) {
         event.cancel = true;
       }
       return;
@@ -79,7 +80,7 @@ export class MaidInteractEvents {
     }
 
     // 抱起中不要切换坐下
-    if (EntityMaid.isHug(maid)) {
+    if (Pose.isHug(maid)) {
       return;
     }
 
@@ -92,7 +93,7 @@ export class MaidInteractEvents {
     }
     sitToggleCooldown.set(cooldownKey, now);
 
-    const sitting = EntityMaid.isSitting(maid);
+    const sitting = Pose.isSitting(maid);
     event.cancel = true;
     system.run(() => {
       try {
@@ -102,10 +103,10 @@ export class MaidInteractEvents {
         if (sitting) {
           // 站起需要延迟执行，不然移动属性会修改失败
           system.runTimeout(() => {
-            EntityMaid.standUp(maid);
+            Pose.standUp(maid);
           }, 1);
         } else {
-          EntityMaid.sitDown(maid);
+          Pose.sitDown(maid);
         }
       } catch {
         // 实体可能已卸载
@@ -383,7 +384,7 @@ export class MaidInteractEvents {
   onSit(event: DataDrivenEntityTriggerAfterEvent) {
     let maid = event.entity;
     // 设置坐下状态
-    EntityMaid.setSitting(maid, true);
+    Pose.setSitting(maid, true);
 
     // 工作模式
     switch (EntityMaid.Work.get(maid)) {
@@ -416,7 +417,7 @@ export class MaidInteractEvents {
   onStand(event: DataDrivenEntityTriggerAfterEvent) {
     let maid = event.entity;
     // 设置站起状态
-    EntityMaid.setSitting(maid, false);
+    Pose.setSitting(maid, false);
 
     // 工作模式
     switch (EntityMaid.Work.get(maid)) {
@@ -511,7 +512,7 @@ export class MaidInteractEvents {
    */
   startHug(event: DataDrivenEntityTriggerAfterEvent) {
     // 已在抱起中则忽略（交互不再用 thlm:is_hug 过滤）
-    if (EntityMaid.isHug(event.entity)) return;
+    if (Pose.isHug(event.entity)) return;
 
     // 抱起事件是坐下事件的父集（同时也会设置坐下状态）
     this.onSit(event);
@@ -534,7 +535,7 @@ export class MaidInteractEvents {
         // 生成交互实体
         this.summonInteractEntity(maid, player as Player);
         // 设置女仆属性
-        EntityMaid.setHug(maid, true);
+        Pose.setHug(maid, true);
         // 玩家动画
         this.startAnimate(player as Player);
       } else {
@@ -591,7 +592,7 @@ export class MaidInteractEvents {
     maid.triggerEvent("api:hug_to_sit");
 
     // 恢复属性
-    EntityMaid.setHug(maid, false);
+    Pose.setHug(maid, false);
 
     // 恢复玩家动画
     let player = EntityMaid.Owner.get(maid);

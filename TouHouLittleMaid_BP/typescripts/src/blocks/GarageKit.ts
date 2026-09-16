@@ -173,7 +173,7 @@ export class GarageKit {
           EntityMaid.Skin.setIndex(maid, skin.index);
           // 设置坐下状态
           if (StrMaid.Sit.get(maidStr)) {
-            EntityMaid.sitDown(maid);
+            EntityMaid.Pose.sitDown(maid);
           }
           maid.triggerEvent("become_garage_kit_un_solid");
 
@@ -198,7 +198,7 @@ export class GarageKit {
           EntityMaid.Skin.setIndex(maid, skin.index);
           // 设置坐下状态
           if (StrMaid.Sit.get(maidStr)) {
-            EntityMaid.sitDown(maid);
+            EntityMaid.Pose.sitDown(maid);
           }
 
           maid.triggerEvent("become_statues");
@@ -299,7 +299,7 @@ export class GarageKit {
           let item = new ItemStack("touhou_little_maid:garage_kit", 1);
           let pack = EntityMaid.Skin.getPack(maid);
           let index = EntityMaid.Skin.getIndex(maid);
-          let sit = EntityMaid.isSitting(maid) ? 'sit' : 'stand';
+          let sit = EntityMaid.Pose.isSitting(maid) ? 'sit' : 'stand';
           // item.nameTag = JSON.stringify({rawtext:[MaidSkin.getSkinDisplayName(pack, index)]}); // 无法显示translate文本
 
           // 设置属性
@@ -394,7 +394,7 @@ export class GarageKit {
       EntityMaid.Skin.setPack(maid, Number(infoStr[0]));
       EntityMaid.Skin.setIndex(maid, Number(infoStr[1]));
       if (infoStr[2] === 'sit') {
-        EntityMaid.sitDown(maid);
+        EntityMaid.Pose.sitDown(maid);
       }
     } catch { };
 

@@ -66,13 +66,4 @@ export class EntityMaid {
   static despawn = Util.despawn.bind(Util);
   static playSound = Util.playSound.bind(Util);
   static spawnRandomMaid = Util.spawnRandomMaid.bind(Util);
-
-  static isSitting = Pose.isSitting.bind(Pose);
-  static setSitting = Pose.setSitting.bind(Pose);
-  static isHug = Pose.isHug.bind(Pose);
-  static setHug = Pose.setHug.bind(Pose);
-  static isSleeping = Pose.isSleeping.bind(Pose);
-  static setSleeping = Pose.setSleeping.bind(Pose);
-  static sitDown = Pose.sitDown.bind(Pose);
-  static standUp = Pose.standUp.bind(Pose);
 }
