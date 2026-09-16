@@ -2,10 +2,11 @@ import { Entity } from "@minecraft/server";
 import { Movement } from "./Movement";
 
 /**
- * 压缩位标志（thlm:anim）与姿态辅助
+ * 压缩状态位域（实体属性仍为 thlm:anim，契约冻结不改名）
  * bit0 坐下 / bit1 抱起 / bit2 睡觉 / bit3~7 food_level（0~20，默认 20）
  */
-export const Anim = {
+export const PackedState = {
+  /** 引擎侧属性名（历史命名，勿改） */
   PROPERTY: "thlm:anim",
   BIT_SIT: 1 << 0,
   BIT_HUG: 1 << 1,
@@ -15,7 +16,7 @@ export const Anim = {
   FOOD_MAX: 20,
   FOOD_DEFAULT: 20,
   /**
-   * 读取完整 anim 整型
+   * 读取完整压缩整型
    */
   get(maid: Entity): number {
     return (maid.getProperty(this.PROPERTY) as number | undefined)

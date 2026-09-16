@@ -4,7 +4,6 @@
  * 仅转发 facets / serialize，不写业务。
  */
 import {
-  Anim,
   Backpack,
   Emote,
   Health,
@@ -15,6 +14,7 @@ import {
   Movement,
   Mute,
   Owner,
+  PackedState,
   Pick,
   Ride,
   Skin,
@@ -37,7 +37,7 @@ export class EntityMaid {
   static Home = Home;
   static Pick = Pick;
   static Backpack = Backpack;
-  static Anim = Anim;
+  static PackedState = PackedState;
   static Emote = Emote;
   static Sound = Sound;
   static Skin = Skin;
@@ -55,7 +55,7 @@ export class EntityMaid {
   static fromStr = fromStr;
   static toLore = toLore;
 
-  /** @deprecated 请用 Util.* / Anim.* */
+  /** @deprecated 请用 Util.* / PackedState.* */
   static formatOutput = Util.formatOutput.bind(Util);
   static getNameTag = Util.getNameTag.bind(Util);
   static isSafeBlock = Util.isSafeBlock.bind(Util);
@@ -63,14 +63,14 @@ export class EntityMaid {
   static playSound = Util.playSound.bind(Util);
   static spawnRandomMaid = Util.spawnRandomMaid.bind(Util);
 
-  static isSitting = Anim.isSitting.bind(Anim);
-  static setSitting = Anim.setSitting.bind(Anim);
-  static isHug = Anim.isHug.bind(Anim);
-  static setHug = Anim.setHug.bind(Anim);
-  static isSleeping = Anim.isSleeping.bind(Anim);
-  static setSleeping = Anim.setSleeping.bind(Anim);
-  static getFoodLevel = Anim.getFoodLevel.bind(Anim);
-  static setFoodLevel = Anim.setFoodLevel.bind(Anim);
-  static sitDown = Anim.sitDown.bind(Anim);
-  static standUp = Anim.standUp.bind(Anim);
+  static isSitting = PackedState.isSitting.bind(PackedState);
+  static setSitting = PackedState.setSitting.bind(PackedState);
+  static isHug = PackedState.isHug.bind(PackedState);
+  static setHug = PackedState.setHug.bind(PackedState);
+  static isSleeping = PackedState.isSleeping.bind(PackedState);
+  static setSleeping = PackedState.setSleeping.bind(PackedState);
+  static getFoodLevel = PackedState.getFoodLevel.bind(PackedState);
+  static setFoodLevel = PackedState.setFoodLevel.bind(PackedState);
+  static sitDown = PackedState.sitDown.bind(PackedState);
+  static standUp = PackedState.standUp.bind(PackedState);
 }

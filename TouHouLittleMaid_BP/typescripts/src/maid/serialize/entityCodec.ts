@@ -14,7 +14,7 @@ import {
   world,
 } from "@minecraft/server";
 import { str2Lore } from "../../libs/ScarletToolKit";
-import { Anim } from "../facets/Anim";
+import { PackedState } from "../facets/PackedState";
 import { Backpack } from "../facets/Backpack";
 import { Health } from "../facets/Health";
 import { Init } from "../facets/init";
@@ -60,7 +60,7 @@ export function toStr(maid: Entity, dump: boolean = true): string {
   // 背包等级
   maidStr = StrMaid.backpackType.set(maidStr, Backpack.getType(maid));
   // 是否坐下
-  maidStr = StrMaid.Sit.set(maidStr, Anim.isSitting(maid));
+  maidStr = StrMaid.Sit.set(maidStr, PackedState.isSitting(maid));
 
   // 字符类数据最后设置
   if (o_id !== undefined) {
@@ -158,7 +158,7 @@ export function fromStr(
     system.runTimeout(() => {
       try {
         if (maid !== undefined) {
-          Anim.sitDown(maid);
+          PackedState.sitDown(maid);
         }
       }
       catch { }
