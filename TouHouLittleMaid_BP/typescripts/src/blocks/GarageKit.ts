@@ -166,8 +166,8 @@ export class GarageKit {
           );
           maid.setDynamicProperty("spawn_set", true);
           // 设置大小
-          EntityMaid.Statues.scale.set(maid, size.scale);
-          EntityMaid.Statues.space.set(maid, new Vector(size.space[0], size.space[1], size.space[2]));
+          EntityMaid.Statues.setScale(maid, size.scale);
+          EntityMaid.Statues.setSpace(maid, new Vector(size.space[0], size.space[1], size.space[2]));
           // 设置皮肤
           EntityMaid.Skin.setPack(maid, skin.pack);
           EntityMaid.Skin.setIndex(maid, skin.index);
@@ -191,8 +191,8 @@ export class GarageKit {
           );
           maid.setDynamicProperty("spawn_set", true);
           // 设置大小
-          EntityMaid.Statues.scale.set(maid, size.scale);
-          EntityMaid.Statues.space.set(maid, new Vector(size.space[0], size.space[1], size.space[2]));
+          EntityMaid.Statues.setScale(maid, size.scale);
+          EntityMaid.Statues.setSpace(maid, new Vector(size.space[0], size.space[1], size.space[2]));
           // 设置皮肤
           EntityMaid.Skin.setPack(maid, skin.pack);
           EntityMaid.Skin.setIndex(maid, skin.index);
@@ -250,7 +250,7 @@ export class GarageKit {
     let maid = event.entity;
     switch (EntityMaid.Work.get(maid)) {
       case -2: { // 雕塑 恢复构造前状态
-        let space = EntityMaid.Statues.space.get(maid);
+        let space = EntityMaid.Statues.getSpace(maid);
         if (!space) {
           Logger.warn(TAG, 'Status release Failed: Space info undefined.');
           return;
@@ -388,8 +388,8 @@ export class GarageKit {
     let infoStr = lore[0].split(',');
 
     let size = this.SIZE[0];
-    EntityMaid.Statues.scale.set(maid, size.scale);
-    EntityMaid.Statues.space.set(maid, new Vector(size.space[0], size.space[1], size.space[2]));
+    EntityMaid.Statues.setScale(maid, size.scale);
+    EntityMaid.Statues.setSpace(maid, new Vector(size.space[0], size.space[1], size.space[2]));
     try {
       EntityMaid.Skin.setPack(maid, Number(infoStr[0]));
       EntityMaid.Skin.setIndex(maid, Number(infoStr[1]));
