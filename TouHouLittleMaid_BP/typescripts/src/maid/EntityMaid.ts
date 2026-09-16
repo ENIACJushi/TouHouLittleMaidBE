@@ -17,6 +17,7 @@ import {
   Owner,
   PackedState,
   Pick,
+  Pose,
   Ride,
   Skin,
   Sound,
@@ -39,6 +40,7 @@ export class EntityMaid {
   static Pick = Pick;
   static Backpack = Backpack;
   static PackedState = PackedState;
+  static Pose = Pose;
   static Food = Food;
   static Emote = Emote;
   static Sound = Sound;
@@ -57,7 +59,7 @@ export class EntityMaid {
   static fromStr = fromStr;
   static toLore = toLore;
 
-  /** @deprecated 请用 Util.* / PackedState.* / Food.* */
+  /** @deprecated 请用 Util.* / Pose.* / Food.* */
   static formatOutput = Util.formatOutput.bind(Util);
   static getNameTag = Util.getNameTag.bind(Util);
   static isSafeBlock = Util.isSafeBlock.bind(Util);
@@ -65,12 +67,12 @@ export class EntityMaid {
   static playSound = Util.playSound.bind(Util);
   static spawnRandomMaid = Util.spawnRandomMaid.bind(Util);
 
-  static isSitting = PackedState.isSitting.bind(PackedState);
-  static setSitting = PackedState.setSitting.bind(PackedState);
-  static isHug = PackedState.isHug.bind(PackedState);
-  static setHug = PackedState.setHug.bind(PackedState);
-  static isSleeping = PackedState.isSleeping.bind(PackedState);
-  static setSleeping = PackedState.setSleeping.bind(PackedState);
-  static sitDown = PackedState.sitDown.bind(PackedState);
-  static standUp = PackedState.standUp.bind(PackedState);
+  static isSitting = Pose.isSitting.bind(Pose);
+  static setSitting = Pose.setSitting.bind(Pose);
+  static isHug = Pose.isHug.bind(Pose);
+  static setHug = Pose.setHug.bind(Pose);
+  static isSleeping = Pose.isSleeping.bind(Pose);
+  static setSleeping = Pose.setSleeping.bind(Pose);
+  static sitDown = Pose.sitDown.bind(Pose);
+  static standUp = Pose.standUp.bind(Pose);
 }

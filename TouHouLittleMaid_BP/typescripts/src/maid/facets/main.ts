@@ -9,6 +9,7 @@ import { Home } from "./Home";
 import { Pick } from "./Pick";
 import { Backpack } from "./Backpack";
 import { PackedState } from "./PackedState";
+import { Pose } from "./Pose";
 import { Food } from "./Food";
 import { Emote } from "./Emote";
 import { Sound } from "./Sound";
@@ -30,6 +31,7 @@ export {
   Pick,
   Backpack,
   PackedState,
+  Pose,
   Food,
   Emote,
   Sound,
@@ -55,6 +57,7 @@ export const Maid = {
   Pick,
   Backpack,
   PackedState,
+  Pose,
   Food,
   Emote,
   Sound,

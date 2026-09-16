@@ -1,6 +1,6 @@
 import { Entity, EntityItemComponent } from "@minecraft/server";
 import { DP } from "../../libs/DynamicPropertyInterface";
-import { PackedState } from "./PackedState";
+import { Pose } from "./Pose";
 import { Backpack } from "./Backpack";
 
 /**
@@ -13,7 +13,7 @@ export const Pick = {
   set(maid: Entity, value: boolean): void {
     if (value) {
       // 坐下时用静止拾物组，站立时用行走拾物组
-      maid.triggerEvent(PackedState.isSitting(maid) ? "api:mode_pick_sit" : "api:mode_pick");
+      maid.triggerEvent(Pose.isSitting(maid) ? "api:mode_pick_sit" : "api:mode_pick");
     } else {
       maid.triggerEvent("api:mode_quit_pick");
     }
