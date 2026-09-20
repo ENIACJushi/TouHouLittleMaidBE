@@ -5,10 +5,15 @@ import * as fs from "fs";
 import { TEMPLATE } from './template.js';
 import {Skin} from "./modules/Skin.js";
 import {Seek} from "./modules/Seek.js";
+import { processSlots } from "./modules/slots/main.js";
 
 const OUTPUT_PATH = '../TouHouLittleMaid_BP/entities/maid/maid.json'; // 输出路径
 
-class MaidGenerator {
+/**
+ * 女仆实体 JSON 生成器：在 template 上叠加 Skin/Seek/槽位等模块后写出 maid.json。
+ * 使用场景：npm run build；槽位模块产出 slot:* 原子装载事件供脚本调用。
+ */
+export class MaidGenerator {
   /**
    * 主函数
    */
@@ -17,13 +22,15 @@ class MaidGenerator {
     console.log('Do modify...');
     Skin.process(this);
     Seek.process(this);
-    // 输出到文件
-    fs.writeFile(OUTPUT_PATH, JSON.stringify(TEMPLATE), 'utf8', (err) => {
-      if (err) {
-        console.error(`写入${OUTPUT_PATH}.lang文件时发生错误: `, err);
-      }
-    });
-    console.log('Complete.');
+    processSlots(this);
+    // 同步写出，保证 build 结束时 maid.json 已落盘
+    try {
+      fs.writeFileSync(OUTPUT_PATH, JSON.stringify(TEMPLATE), 'utf8');
+      console.log('Complete.');
+    } catch (err) {
+      console.error(`写入${OUTPUT_PATH}时发生错误: `, err);
+      process.exitCode = 1;
+    }
   }
 
   /**
