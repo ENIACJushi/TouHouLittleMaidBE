@@ -22,7 +22,18 @@ export const ATTACK_SLOT: IntSlotDef = {
   max: 32,
 };
 
+/**
+ * 模型 variant 槽：事件仍用历史 skin:N（见 SKIN_LEGACY_EVENTS），区间对齐 MaidGenerator Skin.js
+ */
+export const VARIANT_SLOT: IntSlotDef = {
+  id: "variant",
+  kind: "int",
+  min: 0,
+  max: 200,
+};
+
 /** 已注册整型槽，便于通用运行时查找 */
 export const INT_SLOTS: Readonly<Record<string, IntSlotDef>> = {
   [ATTACK_SLOT.id]: ATTACK_SLOT,
+  [VARIANT_SLOT.id]: VARIANT_SLOT,
 };
