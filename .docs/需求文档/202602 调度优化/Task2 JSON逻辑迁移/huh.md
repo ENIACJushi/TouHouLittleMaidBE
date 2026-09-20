@@ -12,8 +12,13 @@
 ### 实现计划
 
 + 一些组件现在已经可以被脚本直接修改，在迁移前可以先确认一下
-+ 先在脚本侧建立起「槽位」主体框架（与万金油 `api:` 并列、边界清晰），先锋包括：
-  + variant（已有 `skin:N` 形态，可接入槽位运行时）
-  + attack 等只能靠 component_group 切换的数值档
-+ 业务（如 Level）暂可继续用现有 `api:lv_*`；待槽位稳定后再改为组合调用原子槽
++ 「槽位」主体框架已起步（与万金油 `api:` 并列）：
+  + ~~variant（`skin:N` + VariantSlot）~~
+  + ~~attack（`slot:attack_*`）~~
++ **下一步要加的槽位与作用** → [槽位系统 §9](./槽位系统-脚本到JSON.md)：
+  + **P0** `health`、`knockback` — 拆 `api:lv_*_basic`，服务 Level
+  + **P1** `backpack` — 收束背包容量
+  + **P2** `dmg_tame` — 驯服 damage_sensor 整表枚举
+  + **P3** `seek` 脚本接入等
++ 业务（如 Level）暂可继续用现有 `api:lv_*`；P0 齐后再改为组合原子槽
 + JSON 侧决策/副作用（音效等）迁移：排在槽位基础系统之后，且不触动 `thlmm:` 命名

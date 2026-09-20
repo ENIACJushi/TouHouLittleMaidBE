@@ -180,7 +180,7 @@ Level.set(lv)                 # 业务语义
 1. ~~定稿本文约定（命名、事件体、目录）。~~
 2. ~~实现生成器 `expandIntSlot` + 先锋槽 `attack`（`slot:attack_1..32`）。~~
 3. ~~脚本 `registry` + `runtime` + `Slots.attack`；`Skin`/`VariantSlot` 适配历史 `skin:*` 并补 `_quit`。~~
-4. 再批量增加其它数值/枚举槽。
+4. 按 **§9 下一步槽位清单** 批量增加数值/枚举槽（优先 P0，服务 Level 拆捆）。
 5. 业务（Level 等）改为组合槽；旧 `api:lv_*` 视情况废弃。
 6. （另线）JSON 决策/音效迁移 —— 不并入本系统实现。
 
@@ -190,3 +190,79 @@ Level.set(lv)                 # 业务语义
 
 - 新增槽位时：先改生成器槽位表，再补脚本 `registry`（或由生成器吐出 `slots.gen.ts`，二选一，优先避免两处手写漂移）。  
 - 审查时重点看：业务是否绕过 `Slots` 直接 `triggerEvent("slot:…")`；`slot:*` 事件是否混入决策/副作用。
+
+---
+
+## 9. 下一步槽位清单
+
+原则：**只把「必须靠换 component_group」且能原子化的数值/有限枚举」做成槽**；复杂 AI 捆包、JSON→脚本钩子、脚本已能直改的组件，不进本表。
+
+### 9.1 已有
+
+| 槽位 | 事件形态 | 作用 | 主要调用方 |
+|------|----------|------|------------|
+| `attack` | `slot:attack_<1..32>` | 设置 `minecraft:attack.damage` | 日后 `Level`；现可手动试 |
+| `variant` | 历史 `skin:<0..200>` + `_quit` | 设置 `minecraft:variant` | `facets/Skin` → `VariantSlot` |
+
+### 9.2 建议新增（按优先级）
+
+#### P0 — 拆开 `api:lv_*_basic`，打通 Level 组合调用
+
+现状捆包 `thlmm:lv1_basic` / `lv2_basic` 内含：attack + health + knockback_resistance。attack 已独立；下面两项补齐后，`Level.set` 即可改为组合槽而不再挂整包 basic。
+
+| 槽位 id | 组件 | 建议取值 | 作用 | 备注 |
+|---------|------|----------|------|------|
+| `health` | `minecraft:health`（`value`/`max` 同档） | int，建议 **20~100**（至少覆盖 64、70；可预留升级） | 设置最大生命（及同档当前值重置语义由引擎/组定义） | `Health.setMax` 脚本侧仍为 TODO，**只能靠换组**；与 `attack` 同为 Level 核心 |
+| `knockback` | `minecraft:knockback_resistance.value` | 离散：建议用 **百分制 int** 如 `0..100` 表示 0.00~1.00，或 enum `0/10/20/100`（对应 0、0.1、0.2、1.0） | 抗击退 | lv1=0.1、lv2=0.2；NPC/雕像/手办等现用 1.0，可共用同一槽 |
+
+**P0 完成后的 Level 目标形态（示意）：**
+
+```text
+Level.set(lv)
+  → quit 旧 api:lv_*_basic（过渡期）或不再使用
+  → Slots.attack.set(damage)
+  → Slots.health.set(maxHp)
+  → Slots.knockback.set(…)
+  → 驯服 damage_sensor 仍暂走 api:lv_N_tame（见 P2）
+  → Movement 仍脚本直写
+```
+
+#### P1 — 背包容量（替换/收束 `api:backpack_*`）
+
+| 槽位 id | 组件 | 建议取值 | 作用 | 备注 |
+|---------|------|----------|------|------|
+| `backpack` | `minecraft:inventory`（`inventory_size` + private/restrict 变体） | enum：`default/small/middle/big`（及可选 `_sneaking` 子态） | 切换背包格数与私有/仅主人 | 现有组已原子；可迁到 `slot:backpack_*` 或运行时适配旧 `api:backpack_*`（注意现事件还带 `set_property`，迁槽时属性改由脚本写） |
+
+姿态切换时 default↔sneaking 的互换，仍由业务（或 hook）组合两次槽调用，**不要**把 sit 决策写进 `slot:*` 事件体。
+
+#### P2 — 驯服承伤表（原 `api:lv_*_tame`）
+
+| 槽位 id | 组件 | 建议取值 | 作用 | 备注 |
+|---------|------|----------|------|------|
+| `dmg_tame`（暂名） | `minecraft:damage_sensor` 整表 | enum：`lv1` / `lv2` / … | 主人免疫、潜行开菜单、全局减伤倍率等 | **结构复杂、含 thlmm:m 钩子**，适合「整表一档」的枚举槽，而不是把 triggers 拆成数值；可晚于 P0，Level 过渡期继续 `api:lv_N_tame` |
+
+#### P3 — 已有生成物对齐 / 可选
+
+| 槽位 id | 现状 | 作用 | 备注 |
+|---------|------|------|------|
+| `seek` | `tlm_seek:enter_N` / `quit_N` + 属性 | 按 `thlmt:value` 索敌 | 已大批量生成；脚本尚未正式调用。可运行时适配旧事件名（类似 Skin），或日后重生为 `slot:seek_*`（成本高，默认适配） |
+| `scale` | 属性 `thlm:scale` 已脚本可写 | 雕塑缩放 | **优先确认** `@minecraft/server` 能否直改 scale 组件；能直改则 **不做槽** |
+
+### 9.3 明确不做槽（或另案）
+
+| 能力 | 原因 |
+|------|------|
+| `minecraft:movement` 数值 | 已由 `Movement` 脚本直写；JSON 只注册组件 |
+| 站/坐/抱 **整套** movement+nav+behavior | 多组件捆包 + 与 `thlmm:v/w` 双向耦合；保持现组/`api:`，不硬拆成假原子槽 |
+| 工作模式 AI（farm/attack/danmaku…） | 多 behavior + family 捆包，属业务 `api:mode_*`，不是单组件数值槽 |
+| follow / home 状态组 | 同上，业务状态机，非数值档 |
+| `thlmm:*` 钩子与音效 | JSON→脚本或副作用线，与 slot 无关 |
+
+### 9.4 推荐实施顺序（实现时仍每步至少一提交）
+
+1. **`health` 槽**（生成器 + `Slots.health`）— 解锁 `Health.setMax` 语义  
+2. **`knockback` 槽**（生成器 + `Slots.knockback`）— 与 health 一起可拆 `lv_*_basic`  
+3. （可选）文档/代码中写明 Level 过渡：basic 改组合槽，tame 仍 `api:`  
+4. **`backpack` 枚举槽**或旧事件适配  
+5. **`dmg_tame` 枚举槽** → 再废 `api:lv_*`  
+6. **`seek` 脚本接入**（适配旧名即可）
