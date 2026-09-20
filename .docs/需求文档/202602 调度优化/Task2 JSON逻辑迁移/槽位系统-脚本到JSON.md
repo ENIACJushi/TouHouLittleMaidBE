@@ -177,11 +177,11 @@ Level.set(lv)                 # 业务语义
 
 ## 7. 落地顺序
 
-1. 定稿本文约定（命名、事件体、目录）。  
-2. 实现生成器 `expandIntSlot` + 先锋槽（建议 `attack`，或先把 `variant`/`Skin` 接入 runtime）。  
-3. 脚本 `registry` + `runtime` + `Slots.*` 具名 API。  
-4. 再批量增加其它数值/枚举槽。  
-5. 业务（Level 等）改为组合槽；旧 `api:lv_*` 视情况废弃。  
+1. ~~定稿本文约定（命名、事件体、目录）。~~
+2. ~~实现生成器 `expandIntSlot` + 先锋槽 `attack`（`slot:attack_1..32`）。~~
+3. ~~脚本 `registry` + `runtime` + `Slots.attack`；`Skin`/`VariantSlot` 适配历史 `skin:*` 并补 `_quit`。~~
+4. 再批量增加其它数值/枚举槽。
+5. 业务（Level 等）改为组合槽；旧 `api:lv_*` 视情况废弃。
 6. （另线）JSON 决策/音效迁移 —— 不并入本系统实现。
 
 ---
