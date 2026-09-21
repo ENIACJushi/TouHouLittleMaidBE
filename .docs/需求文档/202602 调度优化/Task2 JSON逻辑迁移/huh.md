@@ -19,6 +19,6 @@
   + ~~knockback（`slot:knockback_*` 百分制）~~
 + **P0 / Level basic 已完成，且已验证：删旧 `lv*_basic` 可兼容**（惯例见 [槽位系统 §6.1](./槽位系统-脚本到JSON.md)）
 + 下一步见 [槽位系统 §9](./槽位系统-脚本到JSON.md)：
-  + **P1** `backpack` / **P2** `dmg_tame` / **P3** `seek`
-  + Level **tame** 仍 `api:lv_N_tame`（迁完后同样按 §6.1 删旧事件）
+  + **P1** `backpack` / **P2** `seek` 等
+  + **不做** `dmg_tame` 槽：驯服承伤改由 **脚本伤害事件** 替代后再删 `api:lv_*_tame`
 + JSON 侧决策/副作用（音效等）迁移：排在槽位基础系统之后，且不触动 `thlmm:` 命名
