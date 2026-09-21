@@ -41,7 +41,7 @@ export const Init = {
       this.dynamicProperties(maid);
       system.runTimeout(() => {
         if (Work.get(maid) < 0) return;
-        // 卸下 become_maid 挂的 lv1_basic 捆包，改挂等级槽位
+        // 按等级挂载 attack/health/knockback 槽位（不再依赖 JSON lv*_basic）
         Level.eventBasic(maid, Level.get(maid) ?? 1);
         // JSON 仅注册 movement 组件，按等级写入实际移速
         Movement.unlock(maid);

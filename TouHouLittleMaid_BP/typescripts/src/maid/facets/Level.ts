@@ -74,7 +74,7 @@ export const Level = {
    */
   set(maid: Entity, level: number): void {
     let oldLevel = this.get(maid);
-    // tame 捆包仍走 api；basic 改由 eventBasic 清旧捆包并挂槽位
+    // tame 捆包仍走 api；basic 由 eventBasic 挂槽位
     if (oldLevel !== undefined && maid.getComponent("minecraft:is_tamed") !== undefined) {
       maid.triggerEvent(`api:lv_${oldLevel}_tame_quit`);
     }
@@ -95,14 +95,6 @@ export const Level = {
     DP.setInt(maid, "level", level);
   },
   /**
-   * 卸下历史 api:lv_*_basic 捆包（与原子槽互斥；含 become_maid 初始挂载的 lv1_basic）
-   */
-  quitLegacyBasic(maid: Entity): void {
-    for (let lv = 1; lv <= this.max; lv++) {
-      maid.triggerEvent(`api:lv_${lv}_basic_quit`);
-    }
-  },
-  /**
    * 按等级挂载 basic 属性：attack / health / knockback 槽位组合
    */
   eventBasic(maid: Entity, level: number): void {
@@ -110,7 +102,6 @@ export const Level = {
     if (props === undefined) {
       return;
     }
-    this.quitLegacyBasic(maid);
     Slots.attack.set(maid, props.attack);
     Slots.health.set(maid, props.health);
     Slots.knockback.set(maid, props.knockback);
