@@ -1,13 +1,15 @@
 /**
- * 槽位模块入口：集中调用各先锋/业务槽的展开。
- * 使用场景：MaidGenerator.main 在 Skin/Seek 之外注册脚本→JSON 原子挂载点。
+ * 槽位模块入口：展开 JSON 原子档，并同步元数据到 BP 脚本侧 slots.gen.ts。
+ * 使用场景：MaidGenerator.main；改数值以本目录各槽定义为准，build 后脚本侧自动对齐。
  */
-import { processAttackSlot } from "./attack.js";
-import { processHealthSlot } from "./health.js";
-import { processKnockbackSlot } from "./knockback.js";
+import { ATTACK_SLOT, processAttackSlot } from "./attack.js";
+import { HEALTH_SLOT, processHealthSlot } from "./health.js";
+import { KNOCKBACK_SLOT, processKnockbackSlot } from "./knockback.js";
+import { SKIN_VARIANT_SLOT } from "../Skin.js";
+import { writeSlotsGen } from "./sync.js";
 
 /**
- * 处理全部已注册槽位
+ * 处理全部已注册槽位：展开事件组 + 同步脚本元数据
  * @param {object} g MaidGenerator 实例
  */
 export function processSlots(g) {
@@ -15,4 +17,6 @@ export function processSlots(g) {
   processAttackSlot(g);
   processHealthSlot(g);
   processKnockbackSlot(g);
+  // variant 事件由 Skin.js 展开；此处一并同步数值区间到脚本
+  writeSlotsGen([ATTACK_SLOT, HEALTH_SLOT, KNOCKBACK_SLOT, SKIN_VARIANT_SLOT]);
 }

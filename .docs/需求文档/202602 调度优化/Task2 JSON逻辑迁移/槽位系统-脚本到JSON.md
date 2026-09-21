@@ -188,7 +188,10 @@ Level.set(lv)                 # 业务语义
 
 ## 8. 文档与代码同步
 
-- 新增槽位时：先改生成器槽位表，再补脚本 `registry`（或由生成器吐出 `slots.gen.ts`，二选一，优先避免两处手写漂移）。  
+- 新增/改槽位数值：改 `MaidGenerator/modules/slots/*`（或 `Skin.js` variant 区间）后 `npm run build`。  
+  build 会同时更新 `maid.json` 与脚本侧 `typescripts/src/maid/slots/slots.gen.ts`（**不**自动 tsc）。  
+  `registry.ts` 只保留类型并再导出 `slots.gen.ts`。
+- 临时改数值可直接编辑 `slots.gen.ts`；下次 build 会覆盖，且不会改 maid.json。
 - 审查时重点看：业务是否绕过 `Slots` 直接 `triggerEvent("slot:…")`；`slot:*` 事件是否混入决策/副作用。
 
 ---
