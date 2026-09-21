@@ -23,6 +23,16 @@ export const ATTACK_SLOT: IntSlotDef = {
 };
 
 /**
+ * 最大生命槽：对应生成器 HEALTH_SLOT（minecraft:health value/max，20~100）
+ */
+export const HEALTH_SLOT: IntSlotDef = {
+  id: "health",
+  kind: "int",
+  min: 20,
+  max: 100,
+};
+
+/**
  * 模型 variant 槽：事件仍用历史 skin:N（见 SKIN_LEGACY_EVENTS），区间对齐 MaidGenerator Skin.js
  */
 export const VARIANT_SLOT: IntSlotDef = {
@@ -35,5 +45,6 @@ export const VARIANT_SLOT: IntSlotDef = {
 /** 已注册整型槽，便于通用运行时查找 */
 export const INT_SLOTS: Readonly<Record<string, IntSlotDef>> = {
   [ATTACK_SLOT.id]: ATTACK_SLOT,
+  [HEALTH_SLOT.id]: HEALTH_SLOT,
   [VARIANT_SLOT.id]: VARIANT_SLOT,
 };

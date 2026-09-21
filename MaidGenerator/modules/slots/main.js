@@ -3,6 +3,7 @@
  * 使用场景：MaidGenerator.main 在 Skin/Seek 之外注册脚本→JSON 原子挂载点。
  */
 import { processAttackSlot } from "./attack.js";
+import { processHealthSlot } from "./health.js";
 
 /**
  * 处理全部已注册槽位
@@ -11,4 +12,5 @@ import { processAttackSlot } from "./attack.js";
 export function processSlots(g) {
   console.log("展开槽位系统...");
   processAttackSlot(g);
+  processHealthSlot(g);
 }

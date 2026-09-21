@@ -65,11 +65,18 @@ function assertPureSlotEvent(eventName, event) {
 
 /**
  * 展开整型区间槽位：为 [min, max] 每一档生成组 + add/quit 事件
- * @param {import('../../main.js').MaidGenerator | object} g 生成器实例（需 addComponentGroup / addEvent）
- * @param {{ id: string, min: number, max: number, component: string, shape: object }} def 槽位定义
+ * @param {object} g 生成器实例（需 addComponentGroup / addEvent）
+ * @param {{
+ *   id: string,
+ *   min: number,
+ *   max: number,
+ *   component: string,
+ *   shape: object,
+ *   mapToken?: (token: number) => *,
+ * }} def 槽位定义；mapToken 可选，将档位映射进组件字段（如 knockback 百分制→0~1）
  */
 export function expandIntSlot(g, def) {
-  const { id, min, max, component, shape } = def;
+  const { id, min, max, component, shape, mapToken } = def;
   if (typeof id !== "string" || !id) {
     throw new Error("expandIntSlot: id 无效");
   }
@@ -86,13 +93,17 @@ export function expandIntSlot(g, def) {
   if (shape === undefined || shape === null || typeof shape !== "object") {
     throw new Error(`expandIntSlot(${id}): shape 无效`);
   }
+  if (mapToken !== undefined && typeof mapToken !== "function") {
+    throw new Error(`expandIntSlot(${id}): mapToken 必须是函数`);
+  }
 
   console.log(`展开整型槽位 ${id}: ${min}~${max} (${count} 档)`);
   for (let token = min; token <= max; token++) {
     const groupName = slotGroupName(id, token);
     const quitName = slotQuitEventName(id, token);
+    const fillValue = mapToken ? mapToken(token) : token;
     const groupBody = {
-      [component]: fillShape(shape, token),
+      [component]: fillShape(shape, fillValue),
     };
     g.addComponentGroup(groupName, groupBody);
 
