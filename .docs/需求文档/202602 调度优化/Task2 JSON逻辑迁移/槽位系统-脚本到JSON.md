@@ -19,7 +19,7 @@
 
 - 不改动、不重命名现有 `thlmm:` / `thlmb:` 等 **JSON→脚本** 体系
 - 不把环境音效、粒子、`queue_command` 等决策迁入本系统（那是 Task2 后续、另一条线）
-- 不要求立刻拆掉现有捆包事件（如 `api:lv_1_basic`）；槽位与之 **可并存**，业务后迁
+- `api:lv_*_basic` / `thlmm:lv*_basic` 已删除；basic 仅走槽位。`api:lv_*_tame` 仍保留
 
 ### 与 `api:` 的边界
 
@@ -167,11 +167,8 @@ Level.set(lv)                 # 业务语义
 
 ## 6. 与 Level 等业务的关系
 
-现状：`Level` 调用 `api:lv_N_basic` / `_tame`，组内捆了 attack、health 等。
-
-目标：Level（或其它业务）改为组合原子槽；**本阶段交付物是中间层 + 生成约定**，不强制同一提交内改完 Level。
-
-迁移时注意：同一实体上，旧捆包组与新原子槽若含 **同一组件键**，会互相覆盖，需约定切换窗口（先退旧 `api:lv_*`，再挂 `slot:*`，或按组件键逐步替换）。
+`Level.eventBasic` 组合 `Slots.attack/health/knockback`；`eventTamed` 仍用 `api:lv_N_tame`。  
+JSON 已删除 `thlmm:lv*_basic` 与 `api:lv_*_basic`（含 quit），无 `quitLegacyBasic`。
 
 ---
 
@@ -213,11 +210,10 @@ Level.set(lv)                 # 业务语义
 
 #### ~~P0~~（已完成）— 拆 `api:lv_*_basic` 所需原子槽
 
-`attack` / `health` / `knockback` 已齐。`Level.set` 仍可暂用捆包；目标组合形态：
+`attack` / `health` / `knockback` 已齐；`Level.eventBasic` 仅挂槽位（旧 basic 捆包已删）。形态：
 
 ```text
 Level.set(lv)
-  → quit 旧 api:lv_*_basic（过渡期）或不再使用
   → Slots.attack.set(damage)          // lv1→12, lv2→16（step=2）
   → Slots.health.set(maxHp)           // lv1→64, lv2→70（step=2，71→70）
   → Slots.knockback.set(percent)      // lv1→10, lv2→20（step=2，即 0.1 / 0.2）
