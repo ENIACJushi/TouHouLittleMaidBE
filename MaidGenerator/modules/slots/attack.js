@@ -1,15 +1,18 @@
 /**
- * 攻击伤害槽位：为 minecraft:attack.damage 生成 slot:attack_<n> 原子档。
- * 使用场景：脚本 Slots.attack.set 挂载；Level 等业务日后组合调用，与 api:lv_* 捆包并存。
+ * 攻击伤害槽位：步进区间（避免 1~32 密排）。
+ * 使用场景：脚本 Slots.attack.set；非精确档向下对齐到最高支持值。
  */
 import { expandIntSlot } from "./expand.js";
 
-/** 与文档约定及等级常用伤害对齐的闭区间（含基础 6、lv1 12、lv2 16） */
+/**
+ * 偶数伤害档：覆盖基础 6、lv1 12、lv2 16；set(13)→12
+ */
 export const ATTACK_SLOT = {
   id: "attack",
   kind: "int",
-  min: 1,
+  min: 2,
   max: 32,
+  step: 2,
   component: "minecraft:attack",
   shape: { damage: "$" },
 };

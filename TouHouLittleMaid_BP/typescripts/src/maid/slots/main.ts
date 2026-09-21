@@ -7,6 +7,8 @@ export type { IntSlotDef } from "./registry";
 export { slotMountEvent, slotQuitEvent, slotDpKey } from "./names";
 export {
   isIntTokenInRange,
+  resolveIntTokenFloor,
+  slotStep,
   getIntSlot,
   setIntSlot,
   clearIntSlot,

@@ -21,7 +21,7 @@ export const HealthSlot = {
   },
 
   /**
-   * 设置最大生命档（20~100）；越界返回 false
+   * 设置最大生命档（20~100，step=2）；非偶数向下对齐，如 71→70；越界返回 false
    */
   set(maid: Entity, maxHp: number): boolean {
     return setIntSlot(maid, HEALTH_SLOT, maxHp);

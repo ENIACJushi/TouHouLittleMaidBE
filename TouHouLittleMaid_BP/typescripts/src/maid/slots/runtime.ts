@@ -1,5 +1,5 @@
 /**
- * 槽位运行时：校验范围、维护当前档、先 quit 再 mount。
+ * 槽位运行时：校验/步进向下取档、维护当前档、先 quit 再 mount。
  * 使用场景：Slots.* 具名 API；亦可传入自定义事件名以适配历史 skin:N 等。
  */
 import { Entity } from "@minecraft/server";
@@ -46,11 +46,40 @@ export const SKIN_LEGACY_EVENTS: SlotEventNames = {
   quit: (token) => `skin:${token}_quit`,
 };
 
+/** 读取步进，缺省 1 */
+export function slotStep(def: IntSlotDef): number {
+  return def.step ?? 1;
+}
+
 /**
- * 判断 token 是否落在整型槽闭区间内
+ * 判断 token 是否为该槽的合法支持档（落在区间且对齐 step）
  */
 export function isIntTokenInRange(def: IntSlotDef, token: number): boolean {
-  return Number.isInteger(token) && token >= def.min && token <= def.max;
+  const step = slotStep(def);
+  return (
+    Number.isInteger(token)
+    && token >= def.min
+    && token <= def.max
+    && (token - def.min) % step === 0
+  );
+}
+
+/**
+ * 将任意请求值解析为「≤ 请求值的最高支持档」。
+ * 低于 min、非有限数 → undefined；高于 max 时对齐到 ≤ max 的最高支持档。
+ */
+export function resolveIntTokenFloor(def: IntSlotDef, value: number): number | undefined {
+  if (!Number.isFinite(value) || value < def.min) {
+    return undefined;
+  }
+  const step = slotStep(def);
+  const capped = Math.min(Math.floor(value), def.max);
+  const k = Math.floor((capped - def.min) / step);
+  const token = def.min + k * step;
+  if (!isIntTokenInRange(def, token)) {
+    return undefined;
+  }
+  return token;
 }
 
 /**
@@ -61,15 +90,16 @@ export function getIntSlot(maid: Entity, def: IntSlotDef): number | undefined {
 }
 
 /**
- * 装载整型槽到指定档：同值 no-op；越界返回 false；成功返回 true
+ * 装载整型槽：先按步进向下取档，再 quit 旧档 / mount 新档；无法解析则 false
  */
 export function setIntSlot(
   maid: Entity,
   def: IntSlotDef,
-  token: number,
+  requested: number,
   options?: SetIntSlotOptions,
 ): boolean {
-  if (!isIntTokenInRange(def, token)) {
+  const token = resolveIntTokenFloor(def, requested);
+  if (token === undefined) {
     return false;
   }
   const trackDp = options?.trackDp !== false;

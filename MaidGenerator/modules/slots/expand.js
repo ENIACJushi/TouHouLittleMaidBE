@@ -64,12 +64,14 @@ function assertPureSlotEvent(eventName, event) {
 }
 
 /**
- * 展开整型区间槽位：为 [min, max] 每一档生成组 + add/quit 事件
+ * 展开整型区间槽位：按 [min, max] 与 step 生成档位 + add/quit 事件。
+ * step 默认为 1（密排）；step>1 时为步进区间，仅生成 min + k*step ≤ max。
  * @param {object} g 生成器实例（需 addComponentGroup / addEvent）
  * @param {{
  *   id: string,
  *   min: number,
  *   max: number,
+ *   step?: number,
  *   component: string,
  *   shape: object,
  *   mapToken?: (token: number) => *,
@@ -77,15 +79,26 @@ function assertPureSlotEvent(eventName, event) {
  */
 export function expandIntSlot(g, def) {
   const { id, min, max, component, shape, mapToken } = def;
+  const step = def.step === undefined ? 1 : def.step;
   if (typeof id !== "string" || !id) {
     throw new Error("expandIntSlot: id 无效");
   }
   if (!Number.isInteger(min) || !Number.isInteger(max) || min > max) {
     throw new Error(`expandIntSlot(${id}): min/max 无效 (${min}, ${max})`);
   }
-  const count = max - min + 1;
-  if (count > INT_SLOT_EXPAND_MAX) {
-    throw new Error(`expandIntSlot(${id}): 展开数量 ${count} 超过上限 ${INT_SLOT_EXPAND_MAX}`);
+  if (!Number.isInteger(step) || step < 1) {
+    throw new Error(`expandIntSlot(${id}): step 无效 (${step})`);
+  }
+  /** @type {number[]} */
+  const tokens = [];
+  for (let token = min; token <= max; token += step) {
+    tokens.push(token);
+  }
+  if (tokens.length === 0) {
+    throw new Error(`expandIntSlot(${id}): 无有效档位`);
+  }
+  if (tokens.length > INT_SLOT_EXPAND_MAX) {
+    throw new Error(`expandIntSlot(${id}): 展开数量 ${tokens.length} 超过上限 ${INT_SLOT_EXPAND_MAX}`);
   }
   if (typeof component !== "string" || !component) {
     throw new Error(`expandIntSlot(${id}): component 无效`);
@@ -97,8 +110,8 @@ export function expandIntSlot(g, def) {
     throw new Error(`expandIntSlot(${id}): mapToken 必须是函数`);
   }
 
-  console.log(`展开整型槽位 ${id}: ${min}~${max} (${count} 档)`);
-  for (let token = min; token <= max; token++) {
+  console.log(`展开整型槽位 ${id}: ${min}~${max} step=${step} (${tokens.length} 档)`);
+  for (const token of tokens) {
     const groupName = slotGroupName(id, token);
     const quitName = slotQuitEventName(id, token);
     const fillValue = mapToken ? mapToken(token) : token;

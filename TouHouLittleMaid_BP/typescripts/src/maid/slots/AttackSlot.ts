@@ -21,7 +21,7 @@ export const AttackSlot = {
   },
 
   /**
-   * 设置伤害档（1~32）；越界返回 false
+   * 设置伤害档（2~32，step=2）；非偶数向下对齐，如 13→12；越界返回 false
    */
   set(maid: Entity, damage: number): boolean {
     return setIntSlot(maid, ATTACK_SLOT, damage);
