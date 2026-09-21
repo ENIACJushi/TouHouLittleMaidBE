@@ -12,6 +12,7 @@ const OUTPUT_PATH = '../TouHouLittleMaid_BP/entities/maid/maid.json'; // 输出�
 /**
  * 女仆实体 JSON 生成器：在 template 上叠加 Skin/Seek/槽位等模块后写出 maid.json。
  * 使用场景：npm run build；槽位模块产出 slot:* 原子装载事件供脚本调用。
+ * @implements {import('./modules/slots/types.js').MaidGeneratorApi}
  */
 export class MaidGenerator {
   /**

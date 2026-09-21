@@ -1,6 +1,8 @@
 /**
  * 将槽位运行时元数据同步到 BP 脚本侧（slots.gen.ts）。
  * 使用场景：MaidGenerator build 时写出，便于脚本对照/临时改数值；不触发 tsc。
+ *
+ * 类型见 {@link ./types.js}
  */
 import * as fs from "fs";
 import * as path from "path";
@@ -16,8 +18,8 @@ export const DEFAULT_SLOTS_GEN_PATH = path.resolve(
 
 /**
  * 抽出脚本运行时需要的整型槽字段（不含 component/shape/mapToken）
- * @param {object} def 生成器槽位定义
- * @returns {{ id: string, kind: "int", min: number, max: number, step: number }}
+ * @param {import('./types.js').IntSlotRuntimeDef | import('./types.js').IntSlotDef} def
+ * @returns {import('./types.js').IntSlotRuntimeDef & { step: number }}
  */
 export function toRuntimeIntSlot(def) {
   if (!def || typeof def.id !== "string") {
@@ -41,7 +43,8 @@ export function toRuntimeIntSlot(def) {
 
 /**
  * 将一个运行时槽定义格式化为 TypeScript 对象字面量
- * @param {{ id: string, kind: string, min: number, max: number, step: number }} slot
+ * @param {import('./types.js').IntSlotRuntimeDef & { step: number }} slot
+ * @returns {string}
  */
 function formatSlotLiteral(slot) {
   return [
@@ -57,7 +60,7 @@ function formatSlotLiteral(slot) {
 
 /**
  * 写出 slots.gen.ts
- * @param {Array<object>} slotDefs 生成器侧完整槽定义（会经 toRuntimeIntSlot 抽取）
+ * @param {Array<import('./types.js').IntSlotRuntimeDef | import('./types.js').IntSlotDef>} slotDefs
  * @param {string} [outPath] 输出路径
  */
 export function writeSlotsGen(slotDefs, outPath = DEFAULT_SLOTS_GEN_PATH) {

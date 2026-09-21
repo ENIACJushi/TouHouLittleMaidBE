@@ -3,6 +3,7 @@ export const SKIN_END_INDEX = 200;
 
 /**
  * 供槽位同步用的 variant 运行时定义（事件名仍为历史 skin:N，非 slot:variant_*）
+ * @type {import('./slots/types.js').IntSlotRuntimeDef}
  */
 export const SKIN_VARIANT_SLOT = {
   id: "variant",

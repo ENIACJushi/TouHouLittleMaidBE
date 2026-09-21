@@ -4,24 +4,24 @@
  */
 import { expandIntSlot } from "./expand.js";
 
-/** 百分制闭区间；事件名 slot:knockback_<n>，组件 value 为 n/100 */
+/**
+ * 百分制闭区间；事件名 slot:knockback_<n>，组件 value 为 n/100
+ * @type {import('./types.js').IntSlotDef}
+ */
 export const KNOCKBACK_SLOT = {
   id: "knockback",
   kind: "int",
   min: 0,
   max: 100,
+  step: 1,
   component: "minecraft:knockback_resistance",
   shape: { value: "$" },
-  /**
-   * @param {number} token 百分制档位
-   * @returns {number} 引擎 value（0~1）
-   */
   mapToken: (token) => token / 100,
 };
 
 /**
  * 将 knockback 槽展开进生成器
- * @param {object} g MaidGenerator 实例
+ * @param {import('./types.js').MaidGeneratorApi} g
  */
 export function processKnockbackSlot(g) {
   expandIntSlot(g, KNOCKBACK_SLOT);

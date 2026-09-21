@@ -1,6 +1,8 @@
 /**
  * 槽位展开工具：按约定生成 slot:<id>_<token> 组件组及成对装载/卸载事件。
  * 使用场景：MaidGenerator 批量产出脚本→JSON 原子组件挂载点，业务层不直接写事件名。
+ *
+ * 类型见 {@link ./types.js}
  */
 
 /** 单次 int 槽展开数量上限，防止误配撑爆 maid.json */
@@ -8,9 +10,9 @@ const INT_SLOT_EXPAND_MAX = 256;
 
 /**
  * 将 shape 模板中的 "$" 递归替换为 token（数字或字符串）
- * @param {*} node 组件体模板节点
- * @param {string|number} token 档位值
- * @returns {*} 替换后的深拷贝结构
+ * @param {import('./types.js').SlotShapeValue} node 组件体模板节点
+ * @param {string|number|*} token 档位值（或 mapToken 结果）
+ * @returns {import('./types.js').SlotShapeValue} 替换后的深拷贝结构
  */
 function fillShape(node, token) {
   if (node === "$") {
@@ -33,6 +35,7 @@ function fillShape(node, token) {
  * 组名 / 装载事件名：slot:<id>_<token>
  * @param {string} id 槽位 id
  * @param {string|number} token 档位
+ * @returns {string}
  */
 export function slotGroupName(id, token) {
   return `slot:${id}_${token}`;
@@ -42,6 +45,7 @@ export function slotGroupName(id, token) {
  * 卸载事件名：slot:<id>_<token>_quit
  * @param {string} id 槽位 id
  * @param {string|number} token 档位
+ * @returns {string}
  */
 export function slotQuitEventName(id, token) {
   return `slot:${id}_${token}_quit`;
@@ -50,7 +54,7 @@ export function slotQuitEventName(id, token) {
 /**
  * 校验 slot 事件体仅含 add 或 remove（构建期断言）
  * @param {string} eventName 事件名
- * @param {object} event 事件体
+ * @param {import('./types.js').SlotPureEvent} event 事件体
  */
 function assertPureSlotEvent(eventName, event) {
   const keys = Object.keys(event);
@@ -66,16 +70,8 @@ function assertPureSlotEvent(eventName, event) {
 /**
  * 展开整型区间槽位：按 [min, max] 与 step 生成档位 + add/quit 事件。
  * step 默认为 1（密排）；step>1 时为步进区间，仅生成 min + k*step ≤ max。
- * @param {object} g 生成器实例（需 addComponentGroup / addEvent）
- * @param {{
- *   id: string,
- *   min: number,
- *   max: number,
- *   step?: number,
- *   component: string,
- *   shape: object,
- *   mapToken?: (token: number) => *,
- * }} def 槽位定义；mapToken 可选，将档位映射进组件字段（如 knockback 百分制→0~1）
+ * @param {import('./types.js').MaidGeneratorApi} g 生成器实例
+ * @param {import('./types.js').IntSlotDef} def 整型槽定义
  */
 export function expandIntSlot(g, def) {
   const { id, min, max, component, shape, mapToken } = def;
@@ -120,7 +116,9 @@ export function expandIntSlot(g, def) {
     };
     g.addComponentGroup(groupName, groupBody);
 
+    /** @type {import('./types.js').SlotPureEvent} */
     const addEvent = { add: { component_groups: [groupName] } };
+    /** @type {import('./types.js').SlotPureEvent} */
     const quitEvent = { remove: { component_groups: [groupName] } };
     assertPureSlotEvent(groupName, addEvent);
     assertPureSlotEvent(quitName, quitEvent);
@@ -131,8 +129,8 @@ export function expandIntSlot(g, def) {
 
 /**
  * 展开枚举槽位：为 values 每一项生成组 + add/quit 事件
- * @param {object} g 生成器实例
- * @param {{ id: string, values: Array<string|number>, component: string, shape: object }} def 槽位定义
+ * @param {import('./types.js').MaidGeneratorApi} g 生成器实例
+ * @param {import('./types.js').EnumSlotDef} def 枚举槽定义
  */
 export function expandEnumSlot(g, def) {
   const { id, values, component, shape } = def;
@@ -155,7 +153,9 @@ export function expandEnumSlot(g, def) {
     };
     g.addComponentGroup(groupName, groupBody);
 
+    /** @type {import('./types.js').SlotPureEvent} */
     const addEvent = { add: { component_groups: [groupName] } };
+    /** @type {import('./types.js').SlotPureEvent} */
     const quitEvent = { remove: { component_groups: [groupName] } };
     assertPureSlotEvent(groupName, addEvent);
     assertPureSlotEvent(quitName, quitEvent);

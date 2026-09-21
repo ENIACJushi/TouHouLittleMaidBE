@@ -9,6 +9,7 @@
 
 - `modules/Skin.js` / `Seek.js`：历史枚举展开
 - `modules/slots/`：脚本→JSON **槽位系统**（`slot:<id>_<token>` 原子组件装载/卸载），见仓库文档 `Task2 JSON逻辑迁移/槽位系统-脚本到JSON.md`
+- `modules/slots/types.js`：槽位通用 JSDoc 类型（`IntSlotDef` / `IntSlotRuntimeDef` / `EnumSlotDef` 等）
 - `modules/slots/sync.js`：build 时写出 `TouHouLittleMaid_BP/typescripts/src/maid/slots/slots.gen.ts`
 
 ### 改槽位数值
