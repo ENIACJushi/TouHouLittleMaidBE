@@ -1,4 +1,5 @@
 import { Entity, EntityHealthComponent } from "@minecraft/server";
+import { HealthSlot } from "../slots/HealthSlot";
 
 /**
  * 生命值读写与显示字符串（行为对齐 EntityMaid.Health）
@@ -30,10 +31,11 @@ export const Health = {
     return this.getComponent(maid).setCurrentValue(amount);
   },
   /**
-   * TODO: 设置最大生命值 *未实现
+   * 设置最大生命值：经 HealthSlot 换挂（20~100 step=2，非精确档向下对齐）。
+   * 注意：换组可能把当前生命重置为同档 value；无法对齐时返回 false。
    */
-  setMax(maid: Entity, amount: number): void {
-
+  setMax(maid: Entity, amount: number): boolean {
+    return HealthSlot.set(maid, amount);
   },
   // 特殊字符的起始位置
   strOffset: 0xE600,

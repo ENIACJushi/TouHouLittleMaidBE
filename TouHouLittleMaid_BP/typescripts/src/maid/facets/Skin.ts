@@ -1,9 +1,10 @@
 import { Entity, EntityVariantComponent } from "@minecraft/server";
 import { MaidSkin } from "../skin/MaidSkin";
+import { VariantSlot } from "../slots/VariantSlot";
 
 /**
  * 实体皮肤读写（行为对齐 EntityMaid.Skin）
- * 皮肤包注册逻辑仍在 MaidSkin，本 facet 仅委托
+ * 皮肤包注册逻辑仍在 MaidSkin；模型编号经 VariantSlot 互斥挂载（历史事件 skin:*）
  */
 export const Skin = {
   /**
@@ -13,10 +14,10 @@ export const Skin = {
     maid.setProperty("thlm:skin_pack", skinpack);
   },
   /**
-   * 设置模型编号（从 0 开始）
+   * 设置模型编号（从 0 开始）；委托槽位运行时先卸旧组再装新组
    */
   setIndex(maid: Entity, index: number): void {
-    maid.triggerEvent(`skin:${index}`);
+    VariantSlot.set(maid, index);
   },
   /**
    * 获取模型包编号
