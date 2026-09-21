@@ -170,6 +170,22 @@ Level.set(lv)                 # 业务语义
 `Level.eventBasic` 组合 `Slots.attack/health/knockback`；`eventTamed` 仍用 `api:lv_N_tame`。  
 JSON 已删除 `thlmm:lv*_basic` 与 `api:lv_*_basic`（含 quit），无 `quitLegacyBasic`。
 
+### 6.1 兼容性结论与删旧事件惯例（已验证）
+
+**结论（2026-09）：** Level basic 迁槽位并 **直接删除** 旧 `lv*_basic` 捆包/事件后，与现有玩法 **可兼容**（含生成、升级、魂符还原等路径依赖 `Init` / `Level.set` → `eventBasic` 挂槽）。
+
+后续其它 `api:` 捆包迁移，按同一套路删旧，不必长期保留 quit 兼容层：
+
+1. **先** 脚本业务改为只调 `Slots.*`（或新槽），Init/反序列化等入口也要能补齐槽位。  
+2. **再** 从 `MaidGenerator/template.js` 删除对应 `component_groups` + `api:*` / `api:*_quit`，以及 `become_*` 等对旧组的 add/remove 引用。  
+3. `npm run build` 重生 `maid.json` + `slots.gen.ts`；脚本侧去掉任何 `quitLegacy*` / 对旧事件名的 `triggerEvent`。  
+4. 实机确认后再合入；文档在本节或 §9 勾掉对应项。
+
+仍保留、不按此条误删的：
+
+- `thlmm:` / `thlmb:` 等 **JSON→脚本** 钩子  
+- 尚未迁完的捆包（如当前 `api:lv_*_tame`、工作模式 `api:mode_*` 等）
+
 ---
 
 ## 7. 落地顺序
@@ -201,16 +217,16 @@ JSON 已删除 `thlmm:lv*_basic` 与 `api:lv_*_basic`（含 quit），无 `quitL
 
 | 槽位 | 事件形态 | 作用 | 主要调用方 |
 |------|----------|------|------------|
-| `attack` | `slot:attack_<2..32 step=2>` | 设置 `minecraft:attack.damage`（偶数档；set 向下对齐） | 日后 `Level`；现可手动试 |
-| `health` | `slot:health_<20..100 step=2>` | 设置 `minecraft:health`（偶数档；set 向下对齐） | `Health.setMax` / `Slots.health`；日后 `Level` |
-| `knockback` | `slot:knockback_<0..100 step=2>` | 百分制偶数档 → `knockback_resistance.value = n/100`（set 向下对齐） | `Slots.knockback`（含 `setRatio`）；日后 `Level` |
+| `attack` | `slot:attack_<2..32 step=2>` | 设置 `minecraft:attack.damage`（偶数档；set 向下对齐） | `Level.eventBasic` |
+| `health` | `slot:health_<20..100 step=2>` | 设置 `minecraft:health`（偶数档；set 向下对齐） | `Level.eventBasic` / `Health.setMax` |
+| `knockback` | `slot:knockback_<0..100 step=2>` | 百分制偶数档 → `knockback_resistance.value = n/100`（set 向下对齐） | `Level.eventBasic` / `Slots.knockback` |
 | `variant` | 历史 `skin:<0..200>` + `_quit` | 设置 `minecraft:variant` | `facets/Skin` → `VariantSlot` |
 
 ### 9.2 后续（按优先级）
 
 #### ~~P0~~（已完成）— 拆 `api:lv_*_basic` 所需原子槽
 
-`attack` / `health` / `knockback` 已齐；`Level.eventBasic` 仅挂槽位（旧 basic 捆包已删）。形态：
+`attack` / `health` / `knockback` 已齐；`Level.eventBasic` 仅挂槽位；**旧 basic 捆包已删且已验证可兼容**（见 §6.1）。形态：
 
 ```text
 Level.set(lv)
