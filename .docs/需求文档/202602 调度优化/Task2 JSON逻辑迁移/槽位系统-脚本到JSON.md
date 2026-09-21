@@ -206,7 +206,7 @@ Level.set(lv)                 # 业务语义
 |------|----------|------|------------|
 | `attack` | `slot:attack_<2..32 step=2>` | 设置 `minecraft:attack.damage`（偶数档；set 向下对齐） | 日后 `Level`；现可手动试 |
 | `health` | `slot:health_<20..100 step=2>` | 设置 `minecraft:health`（偶数档；set 向下对齐） | `Health.setMax` / `Slots.health`；日后 `Level` |
-| `knockback` | `slot:knockback_<0..100>` | 百分制 → `knockback_resistance.value = n/100` | `Slots.knockback`（含 `setRatio`）；日后 `Level` |
+| `knockback` | `slot:knockback_<0..100 step=2>` | 百分制偶数档 → `knockback_resistance.value = n/100`（set 向下对齐） | `Slots.knockback`（含 `setRatio`）；日后 `Level` |
 | `variant` | 历史 `skin:<0..200>` + `_quit` | 设置 `minecraft:variant` | `facets/Skin` → `VariantSlot` |
 
 ### 9.2 后续（按优先级）
@@ -220,7 +220,7 @@ Level.set(lv)
   → quit 旧 api:lv_*_basic（过渡期）或不再使用
   → Slots.attack.set(damage)          // lv1→12, lv2→16（step=2）
   → Slots.health.set(maxHp)           // lv1→64, lv2→70（step=2，71→70）
-  → Slots.knockback.set(percent)      // lv1→10, lv2→20（即 0.1 / 0.2）
+  → Slots.knockback.set(percent)      // lv1→10, lv2→20（step=2，即 0.1 / 0.2）
   → 驯服 damage_sensor 仍暂走 api:lv_N_tame（见 P2）
   → Movement 仍脚本直写
 ```

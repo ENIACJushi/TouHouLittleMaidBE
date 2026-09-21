@@ -35,14 +35,14 @@ export const KnockbackSlot = {
   },
 
   /**
-   * 设置百分制抗击退（0~100）；越界返回 false
+   * 设置百分制抗击退（0~100，step=2）；非偶数向下对齐，如 11→10；越界返回 false
    */
   set(maid: Entity, percent: number): boolean {
     return setIntSlot(maid, KNOCKBACK_SLOT, percent);
   },
 
   /**
-   * 按引擎 ratio（0~1）设置；内部四舍五入到百分制
+   * 按引擎 ratio（0~1）设置；先四舍五入到百分制，再按 step 向下对齐
    */
   setRatio(maid: Entity, ratio: number): boolean {
     return this.set(maid, knockbackRatioToToken(ratio));

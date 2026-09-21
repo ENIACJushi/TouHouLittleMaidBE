@@ -35,13 +35,13 @@ export const HEALTH_SLOT: GeneratedIntSlotDef = {
   step: 2,
 };
 
-/** 槽位 knockback：0~100 step=1 */
+/** 槽位 knockback：0~100 step=2 */
 export const KNOCKBACK_SLOT: GeneratedIntSlotDef = {
   id: "knockback",
   kind: "int",
   min: 0,
   max: 100,
-  step: 1,
+  step: 2,
 };
 
 /** 槽位 variant：0~200 step=1 */

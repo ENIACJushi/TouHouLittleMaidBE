@@ -5,7 +5,7 @@
 import { expandIntSlot } from "./expand.js";
 
 /**
- * 百分制闭区间；事件名 slot:knockback_<n>，组件 value 为 n/100
+ * 百分制闭区间 step=2（偶数档）；事件名 slot:knockback_<n>，组件 value 为 n/100
  * @type {import('./types.js').IntSlotDef}
  */
 export const KNOCKBACK_SLOT = {
@@ -13,7 +13,7 @@ export const KNOCKBACK_SLOT = {
   kind: "int",
   min: 0,
   max: 100,
-  step: 1,
+  step: 2,
   component: "minecraft:knockback_resistance",
   shape: { value: "$" },
   mapToken: (token) => token / 100,
