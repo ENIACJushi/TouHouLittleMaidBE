@@ -4,6 +4,7 @@
  */
 import { processAttackSlot } from "./attack.js";
 import { processHealthSlot } from "./health.js";
+import { processKnockbackSlot } from "./knockback.js";
 
 /**
  * 处理全部已注册槽位
@@ -13,4 +14,5 @@ export function processSlots(g) {
   console.log("展开槽位系统...");
   processAttackSlot(g);
   processHealthSlot(g);
+  processKnockbackSlot(g);
 }

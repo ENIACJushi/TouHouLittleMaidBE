@@ -33,6 +33,16 @@ export const HEALTH_SLOT: IntSlotDef = {
 };
 
 /**
+ * 抗击退槽：百分制 0~100 → 引擎 value = token/100（对应生成器 KNOCKBACK_SLOT）
+ */
+export const KNOCKBACK_SLOT: IntSlotDef = {
+  id: "knockback",
+  kind: "int",
+  min: 0,
+  max: 100,
+};
+
+/**
  * 模型 variant 槽：事件仍用历史 skin:N（见 SKIN_LEGACY_EVENTS），区间对齐 MaidGenerator Skin.js
  */
 export const VARIANT_SLOT: IntSlotDef = {
@@ -46,5 +56,6 @@ export const VARIANT_SLOT: IntSlotDef = {
 export const INT_SLOTS: Readonly<Record<string, IntSlotDef>> = {
   [ATTACK_SLOT.id]: ATTACK_SLOT,
   [HEALTH_SLOT.id]: HEALTH_SLOT,
+  [KNOCKBACK_SLOT.id]: KNOCKBACK_SLOT,
   [VARIANT_SLOT.id]: VARIANT_SLOT,
 };
