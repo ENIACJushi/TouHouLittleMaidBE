@@ -17,7 +17,7 @@
   + ~~attack（`slot:attack_*`）~~
   + ~~health（`slot:health_*`，`Health.setMax`）~~
   + ~~knockback（`slot:knockback_*` 百分制）~~
-+ **P0 已完成**；下一步见 [槽位系统 §9](./槽位系统-脚本到JSON.md)：
-  + **Level 过渡**：basic 改组合槽，tame 仍 `api:`
++ **P0 / Level basic 已完成**；下一步见 [槽位系统 §9](./槽位系统-脚本到JSON.md)：
   + **P1** `backpack` / **P2** `dmg_tame` / **P3** `seek`
+  + Level **tame** 仍 `api:lv_N_tame`
 + JSON 侧决策/副作用（音效等）迁移：排在槽位基础系统之后，且不触动 `thlmm:` 命名

@@ -1,5 +1,6 @@
 import { Entity, system } from "@minecraft/server";
 import { DP } from "../../libs/DynamicPropertyInterface";
+import { Level } from "./Level";
 import { Movement } from "./Movement";
 import { Owner } from "./Owner";
 import { Skin } from "./Skin";
@@ -40,6 +41,8 @@ export const Init = {
       this.dynamicProperties(maid);
       system.runTimeout(() => {
         if (Work.get(maid) < 0) return;
+        // 卸下 become_maid 挂的 lv1_basic 捆包，改挂等级槽位
+        Level.eventBasic(maid, Level.get(maid) ?? 1);
         // JSON 仅注册 movement 组件，按等级写入实际移速
         Movement.unlock(maid);
         // 选择随机皮肤

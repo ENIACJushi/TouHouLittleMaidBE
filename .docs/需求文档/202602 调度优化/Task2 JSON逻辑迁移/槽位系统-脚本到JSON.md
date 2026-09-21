@@ -181,7 +181,7 @@ Level.set(lv)                 # 业务语义
 2. ~~实现生成器 `expandIntSlot` + 先锋槽 `attack`（`slot:attack_1..32`）。~~
 3. ~~脚本 `registry` + `runtime` + `Slots.attack`；`Skin`/`VariantSlot` 适配历史 `skin:*` 并补 `_quit`。~~
 4. ~~P0：`health` + `knockback` 槽（可拆 `api:lv_*_basic`）。~~
-5. 业务（Level 等）改为组合槽；旧 `api:lv_*` 视情况废弃（tame 仍可暂留 `api:lv_N_tame`）。
+5. ~~业务 Level **basic** 改组合槽（tame 仍 `api:lv_N_tame`）。~~；其余 `api:lv_*` / P1+ 继续。
 6. （另线）JSON 决策/音效迁移 —— 不并入本系统实现。
 
 ---
@@ -260,7 +260,7 @@ Level.set(lv)
 
 1. ~~**`health` 槽**~~  
 2. ~~**`knockback` 槽**~~  
-3. **Level 过渡**：`basic` 改组合槽，`tame` 仍 `api:`  
+3. ~~**Level 过渡**：`basic` 改组合槽，`tame` 仍 `api:`~~  
 4. **`backpack` 枚举槽**或旧事件适配  
 5. **`dmg_tame` 枚举槽** → 再废 `api:lv_*`  
 6. **`seek` 脚本接入**（适配旧名即可）
