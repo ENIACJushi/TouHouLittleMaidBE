@@ -1138,6 +1138,13 @@ export let TEMPLATE = {
       },// timer 每3秒一次的定时事件
       "thlmm:a": {}, // danmaku Attack
       "thlmm:d" :{}, // Death
+      // 环境音效钩子（由 environment:* 事件 trigger；脚本播 Sound，JSON 只改 property）
+      "thlmm:eh": {}, // environment Hot
+      "thlmm:ec": {}, // environment Cold
+      "thlmm:er": {}, // environment Rain
+      "thlmm:es": {}, // environment Snow
+      "thlmm:em": {}, // environment Morning
+      "thlmm:en": {}, // environment Night
       "thlmm:f": {
         "remove": { "component_groups": [ "thlmm:maid_wild" ] },
         "add": {"component_groups": [ "thlmm:maid_tame", "status:follow_standard", "thlmm:maid_tame_sit"]},
@@ -1365,30 +1372,37 @@ export let TEMPLATE = {
       "api:backpack_quit_invisible":{ "set_property":{"thlm:backpack_invisible": false} },
 
       ///// 环境变化 /////
+      // property 仍由 JSON 写入（供 environment_sensor 去抖）；音效改 thlmm:e* 钩子通知脚本播放
       "environment:temperature_mild":{
         "set_property":{"environment:temperature": 0}
       },
       "environment:temperature_warm":{
         "set_property":{"environment:temperature": 1},
-        "queue_command":{ "command": "playsound mob.thlmm.maid.hot @a ~~~"}
+        "trigger": "thlmm:eh"
       },
       "environment:temperature_cold":{
         "set_property":{"environment:temperature": 2},
-        "queue_command":{ "command": "playsound mob.thlmm.maid.cold @a ~~~"}
+        "trigger": "thlmm:ec"
       },
 
       "environment:weather_clear":{ "set_property":{"environment:weather": 0} },
       "environment:weather_rain":{
         "set_property":{"environment:weather": 1},
-        "queue_command": {"command": "playsound mob.thlmm.maid.rain @a ~~~"}
+        "trigger": "thlmm:er"
       },
       "environment:weather_snow":{
         "set_property":{"environment:weather": 2},
-        "queue_command": {"command": "playsound mob.thlmm.maid.snow @a ~~~"}
+        "trigger": "thlmm:es"
       },
 
-      "environment:morning":{ "set_property":{"environment:daytime": 1}, "queue_command":{ "command": ["playsound mob.thlmm.maid.morning @a ~~~"]}},
-      "environment:night"  :{ "set_property":{"environment:daytime": 0}, "queue_command":{ "command": ["playsound mob.thlmm.maid.night @a ~~~"]}},
+      "environment:morning":{
+        "set_property":{"environment:daytime": 1},
+        "trigger": "thlmm:em"
+      },
+      "environment:night":{
+        "set_property":{"environment:daytime": 0},
+        "trigger": "thlmm:en"
+      },
     }
   }
 }

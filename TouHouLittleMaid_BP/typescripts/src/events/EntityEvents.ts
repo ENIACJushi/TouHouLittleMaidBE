@@ -101,6 +101,7 @@ export class EntityEvents {
           switch (event.eventId.substring(6, 7)) {
             case "a": MaidEvents.schedule.tryDanmakuAttack(event); break; // a Danmaku Attack
             case "d": MaidEvents.lifeCycle.onDeath(event); break; // d Death
+            case "e": MaidEvents.lifeCycle.onEnvironmentSound(event); break; // e* environment sound (eh/ec/er/es/em/en)
             case "f": MaidEvents.lifeCycle.onTamed(event); break; // f on tamed
             case "h": MaidEvents.schedule.tryReturnHome(event); break; // h Home
             case "i": MaidEvents.interact.inventoryMode(event); break; // i Inventory mode
