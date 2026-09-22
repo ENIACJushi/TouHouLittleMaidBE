@@ -1,5 +1,7 @@
 # 槽位系统（脚本 → JSON）
 
+**Task2 状态：已完成**（交付见 §9.1 / §9.2；移出项见 §9.3）。
+
 本文档约定 Task2 中 **脚本主动装载/卸载实体组件** 的基础层架构。  
 它位于具体业务（等级、工作模式等）之下，与既有「万金油」`api:` 事件、以及 JSON→脚本的 `thlmm:` 钩子 **并列且边界清晰**。
 
@@ -21,6 +23,8 @@
 - 不把环境音效、粒子、`queue_command` 等决策迁入本系统（那是 Task2 后续、另一条线）
 - `api:lv_*_basic` / `thlmm:lv*_basic` 已删除；basic 仅走槽位
 - **不做** `dmg_tame` 一类 damage_sensor 槽：驯服承伤 / 减伤 / 主人相关伤害逻辑，后续用 **脚本伤害事件** 替代，不经槽位系统
+- **不做** `scale` 槽：可脚本直改
+- **不做** 本任务内接入 `seek`：现生成结构需调整且未使用，留给「精准目标控制」任务
 
 ### 与 `api:` 的边界
 
@@ -197,8 +201,9 @@ JSON 已删除 `thlmm:lv*_basic` 与 `api:lv_*_basic`（含 quit），无 `quitL
 2. ~~实现生成器 `expandIntSlot` + 先锋槽 `attack`（`slot:attack_1..32`）。~~
 3. ~~脚本 `registry` + `runtime` + `Slots.attack`；`Skin`/`VariantSlot` 适配历史 `skin:*` 并补 `_quit`。~~
 4. ~~P0：`health` + `knockback` 槽（可拆 `api:lv_*_basic`）。~~
-5. ~~业务 Level **basic** 改组合槽。~~；后续槽位见 P1+；`lv_*_tame` 走脚本伤害事件另线，不进槽位。
-6. （另线）JSON 决策/音效迁移；驯服承伤改脚本伤害事件 —— 均不并入槽位系统。
+5. ~~业务 Level **basic** 改组合槽。~~
+6. ~~Task2 槽位范围收尾：`seek` / `scale` / backpack / dmg_tame 均不纳入本任务。~~
+7. （另线，非本任务）JSON 决策/音效；驯服承伤改脚本伤害事件；精准目标控制时再改 seek。
 
 ---
 
@@ -225,9 +230,7 @@ JSON 已删除 `thlmm:lv*_basic` 与 `api:lv_*_basic`（含 quit），无 `quitL
 | `knockback` | `slot:knockback_<0..100 step=2>` | 百分制偶数档 → `knockback_resistance.value = n/100`（set 向下对齐） | `Level.eventBasic` / `Slots.knockback` |
 | `variant` | 历史 `skin:<0..200>` + `_quit` | 设置 `minecraft:variant` | `facets/Skin` → `VariantSlot` |
 
-### 9.2 后续（按优先级）
-
-#### ~~P0~~（已完成）— 拆 `api:lv_*_basic` 所需原子槽
+### 9.2 Task2 范围内已完成（原 P0）
 
 `attack` / `health` / `knockback` 已齐；`Level.eventBasic` 仅挂槽位；**旧 basic 捆包已删且已验证可兼容**（见 §6.1）。形态：
 
@@ -240,37 +243,24 @@ Level.set(lv)
   → 驯服承伤：过渡期仍可挂 api:lv_N_tame；终态用脚本伤害事件，不做槽
 ```
 
-#### P1 — 背包容量（替换/收束 `api:backpack_*`）
+**Task2 槽位工作到此结束。** 下列项不进入本任务后续实现。
 
-| 槽位 id | 组件 | 建议取值 | 作用 | 备注 |
-|---------|------|----------|------|------|
-| `backpack` | `minecraft:inventory`（`inventory_size` + private/restrict 变体） | enum：`default/small/middle/big`（及可选 `_sneaking` 子态） | 切换背包格数与私有/仅主人 | 现有组已原子；可迁到 `slot:backpack_*` 或运行时适配旧 `api:backpack_*`（注意现事件还带 `set_property`，迁槽时属性改由脚本写） |
-
-姿态切换时 default↔sneaking 的互换，仍由业务（或 hook）组合两次槽调用，**不要**把 sit 决策写进 `slot:*` 事件体。
-
-#### P2 — 已有生成物对齐 / 可选
-
-| 槽位 id | 现状 | 作用 | 备注 |
-|---------|------|------|------|
-| `seek` | `tlm_seek:enter_N` / `quit_N` + 属性 | 按 `thlmt:value` 索敌 | 已大批量生成；脚本尚未正式调用。默认运行时适配旧事件名 |
-| `scale` | 属性 `thlm:scale` 已脚本可写 | 雕塑缩放 | **优先确认**能否直改 scale 组件；能直改则 **不做槽** |
-
-### 9.3 明确不做槽（或另案）
+### 9.3 明确不做槽 / 移出本任务
 
 | 能力 | 原因 |
 |------|------|
 | `minecraft:movement` 数值 | 已由 `Movement` 脚本直写；JSON 只注册组件 |
+| `thlm:scale` / scale 组件 | **可脚本直改**，不做槽 |
 | 站/坐/抱 **整套** movement+nav+behavior | 多组件捆包 + 与 `thlmm:v/w` 双向耦合；保持现组/`api:` |
 | 工作模式 AI（farm/attack/danmaku…） | 多 behavior + family 捆包，属业务 `api:mode_*` |
 | follow / home 状态组 | 业务状态机，非数值档 |
-| 驯服 `damage_sensor` / `api:lv_*_tame` / 原拟定 `dmg_tame` | **不做槽**；主人免疫、减伤、开菜单等改由 **脚本伤害事件** 承接后删除 JSON 表 |
+| 背包容量 / `api:backpack_*` | 格数档位少、无灵活变动需求；维持现有 `api:backpack_*` |
+| 驯服 `damage_sensor` / `api:lv_*_tame` | 不做槽；改由 **脚本伤害事件** 承接后删 JSON 表 |
+| `seek` / `tlm_seek:*`（现生成 0~300 档） | **结构需调整且当前未使用**；留到调度总览「精准目标控制」任务再优化，本任务不接入脚本、不改生成结构 |
 | `thlmm:*` 钩子与音效 | JSON→脚本或副作用线，与 slot 无关 |
 
-### 9.4 推荐实施顺序（实现时仍每步至少一提交）
+### 9.4 本任务实施记录（均已完成）
 
 1. ~~**`health` 槽**~~  
 2. ~~**`knockback` 槽**~~  
-3. ~~**Level `basic` 改组合槽**~~  
-4. **`backpack` 枚举槽**或旧事件适配  
-5. **`seek` 脚本接入**（适配旧名即可）  
-6. （另线，非槽位）脚本伤害事件替代 `api:lv_*_tame` 后按 §6.1 删旧
+3. ~~**Level `basic` 改组合槽并删旧 `lv*_basic`**~~
