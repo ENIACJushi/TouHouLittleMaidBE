@@ -11,8 +11,9 @@
   "author": "ENIACJushi",
   "license": "MIT",
   "devDependencies": {
-    "@minecraft/server": "2.3.0-beta.1.21.111-stable",
-    "@minecraft/server-ui": "2.1.0-beta.1.21.90-stable",
+    "@minecraft/server": "2.11.0-beta.1.26.51-stable",
+    "@minecraft/server-ui": "2.3.0-beta.1.26.51-stable",
+    "@minecraft/vanilla-data": "1.26.32",
     "@typescript-eslint/parser": "^7.18.0",
     "eslint": "^8.57.1",
     "typescript": "^5.9.3"

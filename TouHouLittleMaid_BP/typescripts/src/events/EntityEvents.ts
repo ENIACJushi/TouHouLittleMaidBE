@@ -2,6 +2,7 @@ import {
   DataDrivenEntityTriggerAfterEvent,
   EntityDieAfterEvent,
   EntityHitEntityAfterEvent,
+  EntityHurtAfterEvent,
   EntityLoadAfterEvent, PlayerInteractWithEntityBeforeEvent,
   ProjectileHitBlockAfterEvent,
   ProjectileHitEntityAfterEvent,
@@ -17,6 +18,9 @@ import { GoldMicrowaver } from "../blocks/GoldMicrowaver";
 import * as ChairUI from "../chair/ChairUI";
 import { ChairManager } from "../chair/ChairManager";
 import { CHAIR_IDENTIFIER } from "../chair/EntityChair";
+
+/** 女仆实体 typeId；hurt/death 音效订阅用 entityTypes 限定 */
+const MAID_TYPE_ID = "thlmm:maid";
 
 export class EntityEvents {
   // 弹射物命中方块
@@ -151,7 +155,7 @@ export class EntityEvents {
   // 实体交互事件
   private entityInteractEvent(event: PlayerInteractWithEntityBeforeEvent) {
     switch (event.target.typeId) {
-      case 'thlmm:maid': MaidEvents.interact.beforePlayerInteract(event); break; // 女仆交互事件
+      case MAID_TYPE_ID: MaidEvents.interact.beforePlayerInteract(event); break; // 女仆交互事件
       case 'touhou_little_maid:chair': this.chairInteractEvent(event); break;    // 坐垫交互事件
       default: break;
     }
@@ -169,14 +173,28 @@ export class EntityEvents {
     // 非潜行 → 交给实体的 minecraft:rideable 组件，让玩家坐上坐垫
   }
 
-  // 实体死亡事件
+  // 实体死亡事件（击杀者侧；不能用 entityTypes=maid，否则漏掉女仆击杀其它实体）
   private entityDie(event: EntityDieAfterEvent) {
     let killer = event.damageSource.damagingEntity;
     if (killer !== undefined) {
-      if (killer.typeId === "thlmm:maid") {
+      if (killer.typeId === MAID_TYPE_ID) {
         MaidEvents.schedule.onKill(event);
       }
     }
+  }
+
+  /**
+   * 女仆受伤 → 脚本播 hurt（取代 sounds.json 自动音效）
+   */
+  private maidHurt(event: EntityHurtAfterEvent) {
+    MaidEvents.lifeCycle.onHurt(event);
+  }
+
+  /**
+   * 女仆死亡 → 脚本播 death（取代 sounds.json 自动音效；与击杀统计订阅分离）
+   */
+  private maidDied(event: EntityDieAfterEvent) {
+    MaidEvents.lifeCycle.onDied(event);
   }
   
   // 实体攻击实体事件
@@ -210,9 +228,19 @@ export class EntityEvents {
     world.afterEvents.dataDrivenEntityTrigger.subscribe(event => {
       system.run(() => { this.dataDrivenEntityTrigger(event); });
     });
+    // 女仆击杀其它实体（不加 entityTypes：死者不一定是女仆）
     world.afterEvents.entityDie.subscribe(event => {
       this.entityDie(event);
     });
+    // 女仆自身 hurt/death 音效：entityTypes 限定，避免全图实体回调
+    world.afterEvents.entityHurt.subscribe(
+      event => { system.run(() => { this.maidHurt(event); }); },
+      { entityTypes: [MAID_TYPE_ID] },
+    );
+    world.afterEvents.entityDie.subscribe(
+      event => { system.run(() => { this.maidDied(event); }); },
+      { entityTypes: [MAID_TYPE_ID] },
+    );
     world.beforeEvents.playerInteractWithEntity.subscribe(event => {
       this.entityInteractEvent(event);
     });
@@ -227,7 +255,7 @@ export class EntityEvents {
     });
     world.afterEvents.entityLoad.subscribe(event => {
       try {
-        if (event.entity.typeId !== 'thlmm:maid') {
+        if (event.entity.typeId !== MAID_TYPE_ID) {
           return;
         }
       } catch {

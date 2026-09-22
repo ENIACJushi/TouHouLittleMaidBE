@@ -1,6 +1,8 @@
 import {
   DataDrivenEntityTriggerAfterEvent,
   Entity,
+  EntityDieAfterEvent,
+  EntityHurtAfterEvent,
   ItemStack,
   world,
 } from "@minecraft/server";
@@ -11,6 +13,7 @@ import { VO } from "../../libs/VectorMC";
 import { DP } from "../../libs/DynamicPropertyInterface";
 
 const TAG = "MaidLifeCycle";
+/** 女仆实体 typeId；订阅 hurt/die 时用 entityTypes 限定以降低回调量 */
 const MAID_TYPE_ID = "thlmm:maid";
 
 /**
@@ -70,6 +73,43 @@ export class MaidLifeCycleEvents {
 
     EntityMaid.Skin.setRandom(maid);
     Logger.debug(TAG, `皮肤未注册 (${pack},${index})，已重新随机`);
+  }
+
+  /**
+   * 女仆受伤（脚本侧替代 sounds.json 自动 hurt）。
+   * 使用场景：EntityEvents 以 entityTypes=[thlmm:maid] 订阅 EntityHurtAfterEvent。
+   * 不查 mute，对齐原自动音效行为；负伤害（治疗）不播。
+   */
+  onHurt(event: EntityHurtAfterEvent): void {
+    if (event.damage <= 0) {
+      return;
+    }
+    const maid = event.hurtEntity;
+    try {
+      if (!maid.isValid) {
+        return;
+      }
+      EntityMaid.Sound.play(maid, EntityMaid.Sound.Type.Hurt);
+    } catch (e) {
+      Logger.debug(TAG, `onHurt 音效失败: ${e}`);
+    }
+  }
+
+  /**
+   * 女仆死亡音效（脚本侧替代 sounds.json 自动 death）。
+   * 使用场景：EntityEvents 以 entityTypes=[thlmm:maid] 订阅 EntityDieAfterEvent；
+   * 与数驱 onDeath（坟墓/胶片）分离，仅负责播放。
+   */
+  onDied(event: EntityDieAfterEvent): void {
+    const maid = event.deadEntity;
+    try {
+      if (!maid.isValid) {
+        return;
+      }
+      EntityMaid.Sound.play(maid, EntityMaid.Sound.Type.Death);
+    } catch (e) {
+      Logger.debug(TAG, `onDied 音效失败: ${e}`);
+    }
   }
 
   /**

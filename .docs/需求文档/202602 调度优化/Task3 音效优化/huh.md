@@ -6,5 +6,6 @@
   - 内部实现：`TouHouLittleMaid_BP/typescripts/src/maid/sound/`
   - **包外播音效只能走 facets**：`EntityMaid.Sound.play` / `EntityMaid.Sound.Type`（勿直接 import `maid/sound`）
 - [x] 脚本侧全部女仆音效接入 `Sound.play`（idle / attack / feed / tamed / camera / box；Work 经 SOUND_LIS 查表）
-- [] 根据列出的所有音效，决定下一步（迁 JSON 环境音、接未播类型 find_target 等）
+- [x] 用 `EntityHurtAfterEvent` / `EntityDieAfterEvent`（`entityTypes: [thlmm:maid]`）取代 `sounds.json` 自动 hurt/death
+- [] 确定 SoundDefinitionRegistry.getDefinitions 的机制，决定音效包实现方案。若这个函数可以获取导入的音效包的音效，则音效包只需要提供packId即可，不需要提供音效列表
 - [] 为音效包key值加入 packId，并将音效文件
