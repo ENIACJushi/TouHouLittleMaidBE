@@ -1,10 +1,21 @@
 import { Entity } from "@minecraft/server";
 import { DP } from "../../libs/DynamicPropertyInterface";
+import {
+  MaidSoundManager,
+  MaidSoundPlayOptions,
+  MaidSoundType,
+} from "../sound/main";
 
 /**
- * 女仆音效与静音
+ * 女仆音效与静音（门面）。
+ *
+ * **包外 / 跨模块播音效的唯一入口**（经 `EntityMaid.Sound` 暴露；勿直接 import `maid/sound`）。
+ * 新播放走 {@link play}（枚举 + 管理器）；{@link playSound} 保留原始 key 命令播放，供迁移过渡。
  */
 export const Sound = {
+  /** 音效类型枚举（转发；包外用 EntityMaid.Sound.Type，勿直接依赖 sound/） */
+  Type: MaidSoundType,
+
   /**
    * 取消驯服语音
    */
@@ -16,10 +27,20 @@ export const Sound = {
       maid.setDynamicProperty("sound:disable_tamed");
       return;
     }
-    this.playSound(maid, "mob.thlmm.maid.tamed");
+    this.play(maid, MaidSoundType.Tamed);
   },
   /**
-   * 播放声音（不自动检查静音；调用方自行判断）
+   * 按音效类型播放（委托 {@link MaidSoundManager}；不自动检查静音）
+   * @param maid 女仆实体
+   * @param type 音效类型
+   * @param options 可选 pitch / volume 等
+   */
+  play(maid: Entity, type: MaidSoundType, options?: MaidSoundPlayOptions): void {
+    MaidSoundManager.play(maid, type, options);
+  },
+  /**
+   * 播放声音（原始 sound_definitions key；不自动检查静音；调用方自行判断）
+   * 保留原 `playsound` 命令实现，避免迁移期行为回退。
    */
   playSound(maid: Entity, name: string): void {
     maid.dimension.runCommand(
@@ -61,3 +82,6 @@ export const Sound = {
     return is_mute ? "gui.touhou_little_maid:button.mute.true.name" : "gui.touhou_little_maid:button.mute.false.name";
   },
 };
+
+export { MaidSoundType, MaidSoundManager };
+export type { MaidSoundPlayOptions };

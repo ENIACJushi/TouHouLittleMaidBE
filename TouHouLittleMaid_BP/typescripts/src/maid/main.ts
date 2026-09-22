@@ -12,9 +12,10 @@
  * - 工作：MaidTarget、WorkHandler
  * - UI：MainMenu、SkinMenu
  * - 皮肤：MaidSkin、类型
+ * - 音效：包外只走 EntityMaid.Sound（facets）；`maid/sound` 为内部实现，不对外导出
  *
  * maid 包内部：可直接引用子目录（facets/work/ui/…），避免经本文件再导出造成环依赖。
- * facets / entityCodec 不经本文件再导出；实体侧统一用 EntityMaid.*。
+ * facets / entityCodec / sound 不经本文件再导出；实体侧统一用 EntityMaid.*。
  */
 
 // ——— 实体能力 ———

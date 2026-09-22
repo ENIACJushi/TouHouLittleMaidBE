@@ -50,7 +50,11 @@ export class EntityMaid {
   static Food = Food;
   /** 表情 */
   static Emote = Emote;
-  /** 声音 */
+  /**
+   * 声音（含静音 / 驯服音 / 按类型播放）。
+   * 包外播音效只走本门面，例如 `EntityMaid.Sound.play(maid, EntityMaid.Sound.Type.Idle)`；
+   * 勿直接 import `maid/sound`。
+   */
   static Sound = Sound;
   /** 模型 */
   static Skin = Skin;
