@@ -97,7 +97,7 @@ export class MaidScheduleEvents {
         if (!EntityMaid.Sound.getMute(maid)) {
           system.runTimeout(() => {
             try {
-              EntityMaid.Util.playSound(maid, "mob.thlmm.maid.idle");
+              EntityMaid.Sound.play(maid, EntityMaid.Sound.Type.Idle);
             } catch {}
           }, Tool.getRandomInteger(0, 100));
         }

@@ -5,5 +5,6 @@
 - [x] 脚本侧女仆音效管理器：`MaidSoundType`（string enum）+ `MAID_SOUND_KEYS` 对照表 + `MaidSoundManager.play(maid, type, options?)`
   - 内部实现：`TouHouLittleMaid_BP/typescripts/src/maid/sound/`
   - **包外播音效只能走 facets**：`EntityMaid.Sound.play` / `EntityMaid.Sound.Type`（勿直接 import `maid/sound`）
-- [] 根据列出的所有音效，决定下一步（迁 JSON 环境音、修 attack key、接未播类型等）
+- [x] 脚本侧全部女仆音效接入 `Sound.play`（idle / attack / feed / tamed / camera / box；Work 经 SOUND_LIS 查表）
+- [] 根据列出的所有音效，决定下一步（迁 JSON 环境音、接未播类型 find_target 等）
 - [] 为音效包key值加入 packId，并将音效文件
