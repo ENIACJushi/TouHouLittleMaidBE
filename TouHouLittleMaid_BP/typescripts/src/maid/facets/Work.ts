@@ -1,7 +1,7 @@
 import { Entity, system } from "@minecraft/server";
 import { Level } from "./Level";
 import { Pose } from "./Pose";
-import { Sound } from "./Sound";
+import { MaidSoundType, Sound } from "./Sound";
 
 /** 工作模式变更后的可选回调（由 events 引导注册，避免 facets → work） */
 let onWorkChanged: ((maid: Entity) => void) | undefined;
@@ -62,11 +62,14 @@ export const Work = {
 
     "ranged_attack",
   ],
-  // 切换到模式时的音效(现在已经转移到行为包内播放)
+  /**
+   * 切换到该工作模式时的音效类型（经 Sound.play 播放）。
+   * 使用场景：Work.set 统一查表播放；无对应音效则为 undefined。
+   */
   SOUND_LIS: [
     undefined,
-    "mob.thlmm.maid.attack",
-    "mob.thlmm.maid.attack",
+    MaidSoundType.Attack,
+    MaidSoundType.Attack,
     undefined,
     undefined,
     undefined,
@@ -74,13 +77,13 @@ export const Work = {
 
     undefined,
     undefined,
-    "mob.thlmm.maid.feed",
+    MaidSoundType.Feed,
     undefined,
     undefined,
     undefined,
-    "mob.thlmm.maid.feed",
+    MaidSoundType.Feed,
     undefined,
-  ] as (string | undefined)[],
+  ] as (MaidSoundType | undefined)[],
   // UI 图标
   IMG_LIST: [
     "textures/items/feather.png",
@@ -118,11 +121,14 @@ export const Work = {
     system.runTimeout(() => {
       // 工作属性由脚本写入；坐下相关组件由脚本按姿态选择事件，不再走 JSON 过滤器
       maid.setProperty("thlm:work", type);
+      // 切换模式音效（攻击 / 喂食等，见 SOUND_LIS）
+      const modeSound = this.getSound(type);
+      if (modeSound !== undefined) {
+        Sound.play(maid, modeSound);
+      }
       switch (type) {
         // 弹幕攻击模式
         case Work.danmaku_attack: {
-          // 播放声音
-          Sound.playSound(maid, "thlmm.maid.attack");
           // 根据是否坐下触发不同的附加事件
           if (Pose.isSitting(maid)) {
             maid.triggerEvent("api:mode_danmaku_attack_sit");
@@ -132,7 +138,6 @@ export const Work = {
         } break;
         // 近战：坐下时不添加索敌/攻击组件
         case Work.attack: {
-          Sound.playSound(maid, "mob.thlmm.maid.attack");
           if (!Pose.isSitting(maid)) {
             maid.triggerEvent(this.getEventName(maid, type, false));
           }
@@ -216,10 +221,10 @@ export const Work = {
     return this.IMG_LIST[type];
   },
   /**
-   * 获取切换到该工作模式时的音效 id；无对应音效时返回 undefined
-   * 使用场景：外部需要按模式查音效表时（当前主流程已改为行为包内播放）
+   * 获取切换到该工作模式时的音效类型；无对应音效时返回 undefined
+   * 使用场景：Work.set 播放；外部也可按模式查表后交给 Sound.play
    */
-  getSound(type: number): string | undefined {
+  getSound(type: number): MaidSoundType | undefined {
     return this.SOUND_LIS[type];
   },
 };

@@ -40,6 +40,10 @@ export {
   Util,
 };
 
+/** 音效类型 / 管理器再导出：仅供 maid 包内；包外请用 EntityMaid.Sound，勿经本文件取用 sound 实现 */
+export { MaidSoundType, MaidSoundManager } from "./Sound";
+export type { MaidSoundPlayOptions } from "./Sound";
+
 /**
  * 可选命名空间聚合（非 Entity 包装）
  */

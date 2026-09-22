@@ -143,7 +143,7 @@ export class MaidInteractEvents {
     let lore = EntityMaid.toLore(maid);
 
     // 发出声音
-    EntityMaid.Util.playSound(maid, "thlm.camera_use");
+    EntityMaid.Sound.play(maid, EntityMaid.Sound.Type.CameraUse);
 
     // 输出照片
     let location = maid.location;

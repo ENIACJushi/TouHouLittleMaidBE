@@ -1,6 +1,8 @@
 import {
   DataDrivenEntityTriggerAfterEvent,
   Entity,
+  EntityDieAfterEvent,
+  EntityHurtAfterEvent,
   ItemStack,
   world,
 } from "@minecraft/server";
@@ -9,9 +11,24 @@ import { MaidSkin } from "../skin/MaidSkin";
 import { Logger } from "../../controller/Logger";
 import { VO } from "../../libs/VectorMC";
 import { DP } from "../../libs/DynamicPropertyInterface";
+import { MaidSoundType } from "../sound/main";
 
 const TAG = "MaidLifeCycle";
+/** 女仆实体 typeId；订阅 hurt/die 时用 entityTypes 限定以降低回调量 */
 const MAID_TYPE_ID = "thlmm:maid";
+
+/**
+ * thlmm:e* 后缀 → 环境音效类型。
+ * 使用场景：JSON environment:* 事件 trigger 到 thlmm:eh 等空钩后，由脚本查表播放。
+ */
+const ENV_SOUND_BY_SUFFIX: Readonly<Record<string, MaidSoundType>> = {
+  h: MaidSoundType.Hot,
+  c: MaidSoundType.Cold,
+  r: MaidSoundType.Rain,
+  s: MaidSoundType.Snow,
+  m: MaidSoundType.Morning,
+  n: MaidSoundType.Night,
+};
 
 /**
  * 生命周期事件（原 MaidManager.Core）
@@ -70,6 +87,69 @@ export class MaidLifeCycleEvents {
 
     EntityMaid.Skin.setRandom(maid);
     Logger.debug(TAG, `皮肤未注册 (${pack},${index})，已重新随机`);
+  }
+
+  /**
+   * 女仆受伤（脚本侧替代 sounds.json 自动 hurt）。
+   * 使用场景：EntityEvents 以 entityTypes=[thlmm:maid] 订阅 EntityHurtAfterEvent。
+   * 不查 mute，对齐原自动音效行为；负伤害（治疗）不播。
+   */
+  onHurt(event: EntityHurtAfterEvent): void {
+    if (event.damage <= 0) {
+      return;
+    }
+    const maid = event.hurtEntity;
+    try {
+      if (!maid.isValid) {
+        return;
+      }
+      EntityMaid.Sound.play(maid, EntityMaid.Sound.Type.Hurt);
+    } catch (e) {
+      Logger.debug(TAG, `onHurt 音效失败: ${e}`);
+    }
+  }
+
+  /**
+   * 女仆死亡音效（脚本侧替代 sounds.json 自动 death）。
+   * 使用场景：EntityEvents 以 entityTypes=[thlmm:maid] 订阅 EntityDieAfterEvent；
+   * 与数驱 onDeath（坟墓/胶片）分离，仅负责播放。
+   */
+  onDied(event: EntityDieAfterEvent): void {
+    const maid = event.deadEntity;
+    try {
+      if (!maid.isValid) {
+        return;
+      }
+      EntityMaid.Sound.play(maid, EntityMaid.Sound.Type.Death);
+    } catch (e) {
+      Logger.debug(TAG, `onDied 音效失败: ${e}`);
+    }
+  }
+
+  /**
+   * 环境变化音效（JSON environment_sensor → environment:* → trigger thlmm:e*）。
+   * 使用场景：取代 template 内 queue_command playsound；尊重 mute（对齐 idle）。
+   * @param event 数驱触发；eventId 形如 thlmm:eh / ec / er / es / em / en
+   */
+  onEnvironmentSound(event: DataDrivenEntityTriggerAfterEvent): void {
+    const maid = event.entity;
+    const suffix = event.eventId.substring(7); // thlmm:e + 后缀
+    const type = ENV_SOUND_BY_SUFFIX[suffix];
+    if (type === undefined) {
+      Logger.debug(TAG, `未知环境音效钩子: ${event.eventId}`);
+      return;
+    }
+    try {
+      if (!maid.isValid) {
+        return;
+      }
+      if (EntityMaid.Sound.getMute(maid)) {
+        return;
+      }
+      EntityMaid.Sound.play(maid, type);
+    } catch (e) {
+      Logger.debug(TAG, `onEnvironmentSound(${suffix}) 失败: ${e}`);
+    }
   }
 
   /**

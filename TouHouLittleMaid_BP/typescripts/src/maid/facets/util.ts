@@ -81,7 +81,8 @@ export const Util = {
   },
 
   /**
-   * 播放声音（委托 Sound，避免双实现）
+   * 按原始 sound_definitions key 播放（迁移过渡保留）。
+   * 女仆相关音效请改用 `Sound.play(maid, Sound.Type.*)`，勿再经本方法传 maid key。
    */
   playSound(maid: Entity, name: string): void {
     Sound.playSound(maid, name);
