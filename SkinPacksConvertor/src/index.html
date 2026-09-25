@@ -688,7 +688,7 @@
       themeToDark: '🌙 深色模式',
       themeAriaToLight: '切换到浅色模式',
       themeAriaToDark: '切换到深色模式',
-      exportFileName: 'TLM_MaidSkinPack.mcpack'
+      exportFileName: 'TLM_MaidSkinPack.mcaddon'
     },
     'en-US': {
       pageTitle: 'TouHou Little Maid Skin Pack Converter',
@@ -733,7 +733,7 @@
       themeToDark: '🌙 Dark Mode',
       themeAriaToLight: 'Switch to light mode',
       themeAriaToDark: 'Switch to dark mode',
-      exportFileName: 'TLM_MaidSkinPack.mcpack'
+      exportFileName: 'TLM_MaidSkinPack.mcaddon'
     }
   };
 
@@ -1102,8 +1102,9 @@
         copyBtn.dataset.flash = '';
         copyBtn.textContent = t('copyCommand');
       }
-      // 导出文件
-      res.resultFile.generateAsync({type:"blob"})
+      // 导出文件（附加包含自动注册 BP，打成 mcaddon）
+      const downloadZip = await res.buildDownloadZip();
+      downloadZip.generateAsync({type:"blob"})
         .then(function(content) {
           saveAs(content, t('exportFileName'));
         });

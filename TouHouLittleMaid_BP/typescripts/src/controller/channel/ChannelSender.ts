@@ -11,6 +11,7 @@ import {
   encodeDataFrame,
   generateUuid,
   isValidTopic,
+  isValidUuid,
   padHex4,
   splitPayload,
 } from './ChannelProtocol';
@@ -32,8 +33,8 @@ type PendingSend = {
  * 职责：持有 uuid、周期 register 直到 assign、分片发送、可选 unregister。
  */
 export class ChannelSender {
-  /** 本实例固定 uuid */
-  private readonly uuid: string = generateUuid();
+  /** 本实例固定 uuid（通道身份；附加包应使用转换器写入的稳定值） */
+  private readonly uuid: string;
 
   /** 主包分配的短 id；未分配时为 undefined */
   private senderId: string | undefined = undefined;
@@ -53,8 +54,17 @@ export class ChannelSender {
 
   /**
    * 创建后在下一 tick 开始监听 assign 并立即 register。
+   * @param preferredChannelUuid 可选 32 位小写 hex；不传则随机生成
    */
-  constructor() {
+  constructor(preferredChannelUuid?: string) {
+    if (
+      preferredChannelUuid !== undefined &&
+      isValidUuid(preferredChannelUuid)
+    ) {
+      this.uuid = preferredChannelUuid;
+    } else {
+      this.uuid = generateUuid();
+    }
     system.run(() => {
       if (this.unregistered) {
         return;

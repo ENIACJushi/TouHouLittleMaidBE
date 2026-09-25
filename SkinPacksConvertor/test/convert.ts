@@ -4,7 +4,8 @@
  * 源目录：
  *   TLM 默认：tools/touhou_little_maid-1.0.0-bedrock
  *   YSM：仓库 .ref/koishi（npm run test:convert -- --ysm）
- * 输出：test/output/TLM_MaidSkinPack/ 与 test/output/TLM_MaidSkinPack.mcpack
+ * 输出：test/output/TLM_MaidSkinPack.mcaddon（内含 RP + 自动注册 BP）
+ *       以及解压目录 test/output/TLM_MaidSkinPack/
  *
  * 运行：
  *   npm run test:convert
@@ -25,6 +26,7 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 import JSZip from 'jszip';
 import { SkinConvertor } from '../src/convertor/SkinConvertor';
+import { ADDON_BP_FOLDER, ADDON_RP_FOLDER } from '../src/convertor/model/PackFile';
 import { getErrorLog } from './node-polyfill';
 
 /** 固定 UUID，方便反复覆盖同一份开发资源包 */
@@ -117,7 +119,8 @@ function resolveMinecraftPackDir(): string {
   if (!minecraftPath) {
     throw new Error('使用 -m / --move 时需要设置环境变量 MinecraftPath');
   }
-  return path.join(minecraftPath, 'development_resource_packs', PACK_FOLDER_NAME);
+  // 返回 development 根下的包名；install 时再拆到 resource/behavior
+  return path.join(minecraftPath, PACK_FOLDER_NAME);
 }
 
 async function pathExists(target: string): Promise<boolean> {
@@ -143,10 +146,33 @@ async function clearDirKeepManifest(dir: string): Promise<void> {
 }
 
 /**
- * 将生成的皮肤包同步到 Minecraft 开发资源包目录。
- * 若目标已有 manifest.json，则保留不覆盖。
+ * 将生成的 RP/BP 同步到 Minecraft development_*_packs。
+ * srcPackDir 为解压后的 mcaddon 根（含 TLM_MaidSkinPack_RP / _BP）。
  */
-async function installToMinecraft(srcPackDir: string, destPackDir: string): Promise<void> {
+async function installToMinecraft(srcPackDir: string, destHint: string): Promise<void> {
+  const minecraftPath = process.env.MinecraftPath;
+  if (!minecraftPath) {
+    throw new Error('使用 -m / --move 时需要设置环境变量 MinecraftPath');
+  }
+
+  const rpSrc = path.join(srcPackDir, ADDON_RP_FOLDER);
+  const bpSrc = path.join(srcPackDir, ADDON_BP_FOLDER);
+  const rpDest = path.join(minecraftPath, 'development_resource_packs', PACK_FOLDER_NAME);
+  const bpDest = path.join(minecraftPath, 'development_behavior_packs', `${PACK_FOLDER_NAME}_BP`);
+
+  await installOnePack(rpSrc, rpDest);
+  if (await pathExists(bpSrc)) {
+    await installOnePack(bpSrc, bpDest);
+  }
+
+  console.log(`已安装到开发资源包: ${rpDest}`);
+  if (await pathExists(bpSrc)) {
+    console.log(`已安装到开发行为包: ${bpDest}`);
+  }
+  void destHint;
+}
+
+async function installOnePack(srcPackDir: string, destPackDir: string): Promise<void> {
   await fs.mkdir(destPackDir, { recursive: true });
   const keepManifest = await pathExists(path.join(destPackDir, MANIFEST_FILE));
   await clearDirKeepManifest(destPackDir);
@@ -161,9 +187,8 @@ async function installToMinecraft(srcPackDir: string, destPackDir: string): Prom
     },
   });
 
-  console.log(`已安装到开发资源包: ${destPackDir}`);
   if (keepManifest) {
-    console.log(`已保留原有 ${MANIFEST_FILE}，未覆盖`);
+    console.log(`已保留原有 ${destPackDir}/${MANIFEST_FILE}，未覆盖`);
   }
 }
 
@@ -217,7 +242,7 @@ async function main() {
   const zipName = useYsm ? 'koishi.zip' : 'touhou_little_maid-1.0.0-bedrock.zip';
   const outputRoot = path.join(testDir, 'output');
   const packDir = path.join(outputRoot, PACK_FOLDER_NAME);
-  const mcpackPath = path.join(outputRoot, `${PACK_FOLDER_NAME}.mcpack`);
+  const mcaddonPath = path.join(outputRoot, `${PACK_FOLDER_NAME}.mcaddon`);
 
   const sourceStat = await fs.stat(sourceDir).catch(() => undefined);
   if (!sourceStat?.isDirectory()) {
@@ -244,14 +269,17 @@ async function main() {
   }
 
   console.log(`管理面板数据: ${result.commandConfigStr}`);
+  console.log(`通道 uuid: ${result.packIds.channelUuid}`);
+  console.log(`行为包 uuid: ${result.packIds.bpHeaderUuid}`);
 
-  const zipBuffer = await result.resultFile.generateAsync({
+  const downloadZip = await result.buildDownloadZip();
+  const zipBuffer = await downloadZip.generateAsync({
     type: 'nodebuffer',
     compression: 'DEFLATE',
   });
 
   await fs.mkdir(outputRoot, { recursive: true });
-  await fs.writeFile(mcpackPath, zipBuffer);
+  await fs.writeFile(mcaddonPath, zipBuffer);
   await writeZipToDir(zipBuffer, packDir);
 
   const err = getErrorLog();
@@ -260,8 +288,8 @@ async function main() {
     console.warn(err);
   }
 
-  console.log(`已写出资源包目录: ${packDir}`);
-  console.log(`已写出 mcpack: ${mcpackPath}`);
+  console.log(`已写出附加包目录: ${packDir}`);
+  console.log(`已写出 mcaddon: ${mcaddonPath}`);
 
   if (moveToMinecraft) {
     await installToMinecraft(packDir, minecraftPackDir);
