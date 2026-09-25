@@ -13,15 +13,20 @@
 
 **主包**：`SkinPackChannel` 监听 topic `skin`，载荷与管理面板相同（整表替换并写动态属性）。
 
+**转换器**：网页附加包转换额外生成自动注册行为包，下载为 `.mcaddon`：
+
+- `TLM_MaidSkinPack_RP/`：原资源包；manifest 依赖主 RP + 本 BP  
+- `TLM_MaidSkinPack_BP/`：脚本模块；稳定 `channelUuid`（由资源包 UUID 派生）；manifest 依赖本 RP + 主 BP + `@minecraft/server@1.18.0`（`sendScriptEvent` 正式版最低）  
+- 脚本加载后：`register` → `assign` → `send('skin', command.json)` → `unregister`  
+- `min_engine_version`：`[1, 21, 70]`
+
 ```ts
-// 副包示例（脚本入口）
-import { ChannelSender } from '...'; // 复制 channel 模块或同源依赖
-const sender = new ChannelSender();
+// 手写副包示例
+const sender = new ChannelSender(channelUuid32Hex);
 sender.send('skin', JSON.stringify({
   skin: [{ count: 20 }],
   chair: [{ count: 10, heights: [3, 15] }],
 }));
-// 一次性注册可在 whenReady 发完后 sender.unregister();
 ```
 
 载荷格式：
