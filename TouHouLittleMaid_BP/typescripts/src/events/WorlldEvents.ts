@@ -13,9 +13,13 @@ import { MaidSkin } from "../maid/main";
 import { ChairSkin } from "../chair/skin/ChairSkin";
 import { Logger } from "../controller/Logger";
 import { DeprecatedItemHelper } from "../items/deprecated_helper/DeprecatedHelper";
+import { ChannelReceiver } from "../controller/channel/main";
 
 export class WorldEvents {
   public registerAllEvents () {
+    // 跨包通信接收端尽早订阅，便于附加包周期 register 接上
+    ChannelReceiver.start();
+
     system.afterEvents.scriptEventReceive.subscribe(event => {
       system.run(() => { this.thlmScriptEventReceive(event); })
     }, { namespaces: ["thlm"] });
