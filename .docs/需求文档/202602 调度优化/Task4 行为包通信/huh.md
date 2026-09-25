@@ -2,7 +2,8 @@
 
 ## 基础通信模块
 
-多发送 → 单接收。设计见 [基础通信模块设计.md](./基础通信模块设计.md)。
+多发送 → 单接收。设计见 [基础通信模块设计.md](./基础通信模块设计.md)。  
+实现：`typescripts/src/controller/channel/`（`WorldEvents` 已 `ChannelReceiver.start()`）。
 
 副包 uuid 周期 `register` → 主包 `assign`（4 位数字 id + uuid）→ 再发数据；可选 `unregister`。
 
