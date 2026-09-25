@@ -10,7 +10,7 @@ import { ChairSkin } from '../chair/skin/ChairSkin';
  * - 旧格式：[{"count":20}] —— 仅女仆
  *
  * 使用场景：
- * - Channel topic `skin`（新产物自动注册，主路径）
+ * - Channel topic `skin`（新产物自动注册，仅更新内存、不写动态属性）
  * - ManageForm 粘贴（仅兼容无 BP 的旧资源包）
  */
 export type CombinedPackConfig = {
@@ -89,6 +89,21 @@ export function applyCombinedPackConfig(combined: CombinedPackConfig): boolean {
     applied = true;
   }
   return applied;
+}
+
+/**
+ * 通道专用：只更新内存，不写动态属性。
+ * 未给出的一侧置空，从而在内存中丢弃本会话已加载的粘贴配置。
+ */
+export function applyCombinedPackConfigFromChannel(
+  combined: CombinedPackConfig
+): boolean {
+  if (combined.skin === undefined && combined.chair === undefined) {
+    return false;
+  }
+  MaidSkin.applyExtraPacks(combined.skin ?? []);
+  ChairSkin.applyExtraPacks(combined.chair ?? []);
+  return true;
 }
 
 /**
