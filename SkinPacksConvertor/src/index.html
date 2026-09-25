@@ -70,18 +70,14 @@
         <div>
           <h2 id="tips_title">导入游戏</h2>
           <div class="tips">
-          <p id="tips_intro">1、转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包优先级；产物含与主包相同的「精简/完整」子包，请与主包选用同一档：</p>
+          <p id="tips_download">1、转换完成后下载 <code>.mcaddon</code>，导入并同时激活其中的<strong>资源包</strong>与<strong>行为包</strong>（须已启用车万女仆主包）。</p>
+          <p id="tips_priority">2、调整资源包优先级，令附加模型包在主包上方：</p>
           <ul>
-            <li id="tips_single">若是单机游戏，则令附加模型包在主包上方；</li>
-            <li id="tips_server">若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。</li>
+            <li id="tips_single">若是单机游戏，在世界资源包列表中上移附加模型包；</li>
+            <li id="tips_server">若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包排在主包之前。</li>
           </ul>
-          <p id="tips_command">2、创造模式下使用物品「记忆中的幻想乡（管理）」打开管理面板（也可执行 <code>/scriptevent thlm:manage</code>），将如下数据粘贴到「皮肤包」中：</p>
-          <div class="command-box">
-            <div class="command-toolbar">
-              <button type="button" id="command_copy" class="command-copy" disabled>复制</button>
-            </div>
-            <pre id="command" class="command-data" aria-live="polite">待生成...</pre>
-          </div>
+          <p id="tips_subpack">3、产物含与主包相同的「精简/完整」子包，请与主包选用同一档。</p>
+          <p id="tips_auto">4、进入世界后，行为包脚本会自动向主包注册皮肤/坐垫配置。</p>
           </div>
         </div>
         <button type="button" onclick="startConvert()" id="b_convert">开始转换</button>
@@ -126,9 +122,6 @@
     --control-btn-bg: #eef2ff;
     --control-btn-text: #31489d;
     --tips-text: #3a4968;
-    --command-border: #ffe5a0;
-    --command-bg: #fff6cf;
-    --command-text: #5a4b1e;
     --drop-bg: #f8faff;
     --drop-border: #cfd9f7;
     --drop-active-bg: #eef3ff;
@@ -160,9 +153,6 @@
     --control-btn-bg: #24375f;
     --control-btn-text: #dde5ff;
     --tips-text: #c4d2fa;
-    --command-border: #5f4f25;
-    --command-bg: #2b2517;
-    --command-text: #f3dd9e;
     --drop-bg: #131f39;
     --drop-border: #344b80;
     --drop-active-bg: #1d2e56;
@@ -550,59 +540,6 @@
     padding-left: 20px;
   }
 
-  .command-box {
-    margin-top: 8px;
-    border-radius: 10px;
-    border: 1px solid var(--command-border);
-    background: var(--command-bg);
-    overflow: hidden;
-  }
-
-  .command-toolbar {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px;
-    border-bottom: 1px solid var(--command-border);
-  }
-
-  .command-copy {
-    border: none;
-    border-radius: 8px;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    background: var(--control-btn-bg);
-    color: var(--control-btn-text);
-    transition: opacity .12s ease, transform .12s ease, background-color .12s ease;
-  }
-
-  .command-copy:hover:not(:disabled) {
-    transform: translateY(-1px);
-  }
-
-  .command-copy:disabled {
-    opacity: .55;
-    cursor: not-allowed;
-  }
-
-  .command-data,
-  #command {
-    margin: 0;
-    padding: 10px 12px;
-    max-height: 180px;
-    overflow: auto;
-    color: var(--command-text);
-    font-family: "Consolas", "Courier New", monospace;
-    font-size: 13px;
-    line-height: 1.45;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-  }
-
   .error-log {
     white-space: pre-wrap;
     color: var(--danger);
@@ -671,14 +608,12 @@
       fileLabel: '添加模型包',
       convert: '开始转换',
       tipsTitle: '导入游戏',
-      tipsIntro: '1、转换完成后，将得到的资源包导入并在世界激活。激活后需要先调整资源包优先级；产物含与主包相同的「精简/完整」子包，请与主包选用同一档：',
-      tipsSingle: '若是单机游戏，则令附加模型包在主包上方；',
-      tipsServer: '若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包在主包上方。',
-      tipsCommand: '2、创造模式下使用物品「记忆中的幻想乡（管理）」打开管理面板（也可执行 <code>/scriptevent thlm:manage</code>），将如下数据粘贴到「皮肤包」中：',
-      commandPending: '待生成...',
-      copyCommand: '复制',
-      copySuccess: '已复制',
-      copyFailed: '复制失败',
+      tipsDownload: '1、转换完成后下载 <code>.mcaddon</code>，导入并同时激活其中的<strong>资源包</strong>与<strong>行为包</strong>（须已启用车万女仆主包）。',
+      tipsPriority: '2、调整资源包优先级，令附加模型包在主包上方：',
+      tipsSingle: '若是单机游戏，在世界资源包列表中上移附加模型包；',
+      tipsServer: '若是服务器，则修改世界文件夹下的 <code>world_resource_packs.json</code>，令附加模型包排在主包之前。',
+      tipsSubpack: '3、产物含与主包相同的「精简/完整」子包，请与主包选用同一档。',
+      tipsAuto: '4、进入世界后，行为包脚本会自动向主包注册皮肤/坐垫配置。',
       moveUp: '上移',
       moveDown: '下移',
       remove: '删除',
@@ -716,14 +651,12 @@
       fileLabel: 'Add skin packs',
       convert: 'Start Convert',
       tipsTitle: 'Import in Game',
-      tipsIntro: '1. After conversion, import the resource pack and activate it. Set priority first. The pack includes the same Simple/Full subpacks as the main pack — keep them in sync:',
-      tipsSingle: 'For single-player, place the add-on skin pack above the main pack.',
-      tipsServer: 'For servers, edit <code>world_resource_packs.json</code> in the world folder and place the add-on skin pack above the main pack.',
-      tipsCommand: '2. In Creative mode, use the item Memorizable Gensokyo (OP) to open the manage panel (or run <code>/scriptevent thlm:manage</code>), then paste the following data into Skin Pack:',
-      commandPending: 'Pending...',
-      copyCommand: 'Copy',
-      copySuccess: 'Copied',
-      copyFailed: 'Copy failed',
+      tipsDownload: '1. After conversion, download the <code>.mcaddon</code> and enable both the <strong>resource pack</strong> and the <strong>behavior pack</strong> (Touhou Little Maid main pack required).',
+      tipsPriority: '2. Set resource-pack priority so the add-on skin pack is above the main pack:',
+      tipsSingle: 'For single-player, move the add-on skin pack up in the world resource-pack list.',
+      tipsServer: 'For servers, edit <code>world_resource_packs.json</code> in the world folder so the add-on skin pack is listed before the main pack.',
+      tipsSubpack: '3. The pack includes the same Simple/Full subpacks as the main pack — keep them in sync.',
+      tipsAuto: '4. After entering the world, the behavior-pack script registers skin/chair config with the main pack automatically.',
       moveUp: 'Move up',
       moveDown: 'Move down',
       remove: 'Remove',
@@ -784,25 +717,12 @@
 
     document.getElementById('b_convert').textContent = t('convert');
     document.getElementById('tips_title').textContent = t('tipsTitle');
-    document.getElementById('tips_intro').textContent = t('tipsIntro');
+    document.getElementById('tips_download').innerHTML = t('tipsDownload');
+    document.getElementById('tips_priority').textContent = t('tipsPriority');
     document.getElementById('tips_single').textContent = t('tipsSingle');
     document.getElementById('tips_server').innerHTML = t('tipsServer');
-    document.getElementById('tips_command').innerHTML = t('tipsCommand');
-
-    const commandBlock = document.getElementById('command');
-    const copyBtn = document.getElementById('command_copy');
-    if (!commandBlock.dataset.generated || commandBlock.textContent === '' || commandBlock.textContent === I18N['zh-CN'].commandPending || commandBlock.textContent === I18N['en-US'].commandPending) {
-      commandBlock.textContent = t('commandPending');
-      if (copyBtn) {
-        copyBtn.disabled = true;
-      }
-    }
-    if (copyBtn) {
-      // 已生成时保留「已复制」短暂状态文案，否则同步当前语言的「复制」
-      if (!copyBtn.dataset.flash) {
-        copyBtn.textContent = t('copyCommand');
-      }
-    }
+    document.getElementById('tips_subpack').textContent = t('tipsSubpack');
+    document.getElementById('tips_auto').textContent = t('tipsAuto');
 
     const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
     updateThemeToggleText(currentTheme);
@@ -1092,16 +1012,6 @@
     let convertor = new SkinConvertor(fileList);
     let res = await convertor.startConvert(uuid);
     if (res) {
-      // 更新管理面板粘贴数据（与资源包内 command.txt 一致）
-      const commandBlock = document.getElementById("command");
-      commandBlock.textContent = res.commandConfigStr || '{"skin":[],"chair":[]}';
-      commandBlock.dataset.generated = 'true';
-      const copyBtn = document.getElementById('command_copy');
-      if (copyBtn) {
-        copyBtn.disabled = false;
-        copyBtn.dataset.flash = '';
-        copyBtn.textContent = t('copyCommand');
-      }
       // 导出文件（附加包含自动注册 BP，打成 mcaddon）
       const downloadZip = await res.buildDownloadZip();
       downloadZip.generateAsync({type:"blob"})
@@ -1120,51 +1030,6 @@
       dropZone.removeAttribute('aria-disabled');
     }
   }
-
-  /** 复制数据栏内容到剪贴板 */
-  async function copyCommandData() {
-    const commandBlock = document.getElementById('command');
-    const copyBtn = document.getElementById('command_copy');
-    if (!commandBlock || !copyBtn || copyBtn.disabled || !commandBlock.dataset.generated) {
-      return;
-    }
-    const text = commandBlock.textContent || '';
-    let ok = false;
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(text);
-        ok = true;
-      }
-    } catch (_) {}
-    if (!ok) {
-      // 回退：选中文本 + execCommand
-      try {
-        const range = document.createRange();
-        range.selectNodeContents(commandBlock);
-        const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-        ok = document.execCommand('copy');
-        selection.removeAllRanges();
-      } catch (_) {
-        ok = false;
-      }
-    }
-    copyBtn.dataset.flash = '1';
-    copyBtn.textContent = ok ? t('copySuccess') : t('copyFailed');
-    setTimeout(function() {
-      copyBtn.dataset.flash = '';
-      copyBtn.textContent = t('copyCommand');
-    }, 1500);
-  }
-
-  // 绑定复制按钮
-  (function initCommandCopy() {
-    const copyBtn = document.getElementById('command_copy');
-    if (copyBtn) {
-      copyBtn.addEventListener('click', copyCommandData);
-    }
-  })();
 
 </script>
 

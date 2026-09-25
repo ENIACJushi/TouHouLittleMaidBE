@@ -11,6 +11,9 @@ import {
 /**
  * 管理菜单
  * 与设置、皮肤包配置平级入口
+ *
+ * 「皮肤包」表单仅保留解析/落盘，供无自动注册行为包的旧资源包手动粘贴；
+ * 新转换产物应启用附加 BP，由通道 topic `skin` 自动注册。
  */
 export class ManageForm {
   /**
@@ -52,7 +55,8 @@ export class ManageForm {
   }
 
   /**
-   * 设置附加皮肤包 / 坐垫包：粘贴转换网站生成的 JSON
+   * 兼容旧皮肤包：粘贴转换数据并整表替换。
+   * 新产物请走附加行为包自动注册，无需使用本表单。
    */
   static skinPackForm(player: Player) {
     if (!ManageForm.ensureOp(player)) {

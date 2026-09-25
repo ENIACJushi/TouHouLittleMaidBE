@@ -5,11 +5,13 @@ import {
 import { ChairSkin } from '../chair/skin/ChairSkin';
 
 /**
- * 网站导出 / 通道 / 管理面板共用的模型包配置。
+ * 附加皮肤/坐垫包配置的解析与落盘。
+ * - 新格式：{"skin":[...],"chair":[...]}
  * - 旧格式：[{"count":20}] —— 仅女仆
- * - 新格式：{"skin":[...],"chair":[...]} —— 女仆 + 坐垫
  *
- * 使用场景：ManageForm 粘贴、Channel topic `skin` 投递。
+ * 使用场景：
+ * - Channel topic `skin`（新产物自动注册，主路径）
+ * - ManageForm 粘贴（仅兼容无 BP 的旧资源包）
  */
 export type CombinedPackConfig = {
   skin?: SkinPackConfig[];

@@ -30,7 +30,8 @@ export class PackFile {
    */
   packConfigStr = '[]';
   /**
-   * 与网站展示一致的管理面板粘贴数据：{"skin":[...],"chair":[...]}
+   * 皮肤/坐垫注册配置：{"skin":[...],"chair":[...]}
+   * 由附加 BP 进世界后自动发给主包；同时写入 RP 的 command.txt。
    */
   commandConfigStr = '{"skin":[],"chair":[]}';
   /**
@@ -129,7 +130,7 @@ export class PackFile {
    * 导出文件（资源包 + 可选注册行为包）
    */
   async export(): Promise<PackFile> {
-    // 生成与网站展示一致的单个 command.txt（皮肤包 + 坐垫包）
+    // 生成皮肤/坐垫合并配置（附加 BP 载荷 + command.txt）
     this.packConfigStr = TemplatesBE.buildSkinPackConfigStr(this.modelAmount);
     this.chairPackConfigStr = TemplatesBE.buildChairPackConfigStr(this.chairModelAmount, this.chairModelHeights);
     this.commandConfigStr = TemplatesBE.buildCommandConfigStr(

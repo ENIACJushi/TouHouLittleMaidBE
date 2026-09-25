@@ -11,11 +11,10 @@ import {
 const TAG = 'SkinPackChannel';
 
 /**
- * 皮肤 / 坐垫附加包跨行为包注册。
+ * 皮肤 / 坐垫附加包跨行为包注册（新产物主路径）。
  *
- * 使用场景：副行为包在加载后通过 ChannelSender.send('skin', json) 投递
- * 与管理面板相同的网站导出 JSON，绕过表单约 101 字符限制。
- * 语义为整表替换（与粘贴提交一致）；多副包需自行约定由谁发送完整列表。
+ * 副行为包经 ChannelSender.send('skin', json) 投递与旧面板相同的 JSON；
+ * 管理面板粘贴仅兼容无 BP 的旧资源包。
  */
 export class SkinPackChannel {
   /** 通道 topic，与设计文档一致 */

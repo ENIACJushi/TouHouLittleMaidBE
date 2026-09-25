@@ -13,7 +13,7 @@ export namespace TemplatesBE {
   }
 
   /**
-   * 管理面板粘贴数据 / command.txt 内容，与网站展示一致
+   * 皮肤/坐垫注册配置 JSON，供附加 BP 自动注册（及 RP 内 command.txt）
    * 格式：{"skin":[{"count":20}],"chair":[{"count":10,"heights":[3,15]}]}
    */
   export function buildCommandConfigStr(
