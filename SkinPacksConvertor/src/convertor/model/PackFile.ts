@@ -1,6 +1,20 @@
 import JSZip from 'jszip';
 import { TemplatesBE } from "./Templates";
 import {LangFile} from "./LangFile";
+import {
+  ADDON_PACK_VERSION,
+  AddonPackIds,
+  SCRIPT_MIN_ENGINE_VERSION,
+  TLM_MAIN_PACK_VERSION,
+  TLM_MAIN_RP_UUID,
+  buildAddonPackIds,
+} from "../register_bp/AddonPackIds";
+import { buildRegisterBehaviorPack } from "../register_bp/buildRegisterBehaviorPack";
+import { PROFILE } from "../config";
+
+/** 导出 zip 内资源包 / 行为包目录名 */
+export const ADDON_RP_FOLDER = 'TLM_MaidSkinPack_RP';
+export const ADDON_BP_FOLDER = 'TLM_MaidSkinPack_BP';
 
 /**
  * 基岩版模型包输出文件
@@ -8,11 +22,16 @@ import {LangFile} from "./LangFile";
 export class PackFile {
   uuid: string = '';
   /**
+   * 派生的附加包标识（资源包 uuid + 行为包 / 通道 uuid）
+   */
+  packIds: AddonPackIds;
+  /**
    * 女仆皮肤包注册配置 JSON（数组），用于组装 command.txt
    */
   packConfigStr = '[]';
   /**
-   * 与网站展示一致的管理面板粘贴数据：{"skin":[...],"chair":[...]}
+   * 皮肤/坐垫注册配置：{"skin":[...],"chair":[...]}
+   * 由附加 BP 进世界后自动发给主包；同时写入 RP 的 command.txt。
    */
   commandConfigStr = '{"skin":[],"chair":[]}';
   /**
@@ -77,9 +96,13 @@ export class PackFile {
 
   ///// 输出文件 /////
   /**
-   * 转换结果 zip
+   * 资源包 zip（根目录即为 RP 内容）
    */
   resultFile = new JSZip();
+  /**
+   * 自动注册行为包 zip；仅网页附加包转换时生成
+   */
+  behaviorPackFile: JSZip | null = null;
   /**
    * 女仆模型文件夹 models/entity/xxx/
    */
@@ -100,12 +123,22 @@ export class PackFile {
 
   constructor(uuid: string) {
     this.uuid = uuid;
+    this.packIds = buildAddonPackIds(uuid);
   }
 
   /**
-   * 导出文件
+   * 导出文件（资源包 + 可选注册行为包）
    */
   async export(): Promise<PackFile> {
+    // 生成皮肤/坐垫合并配置（附加 BP 载荷 + command.txt）
+    this.packConfigStr = TemplatesBE.buildSkinPackConfigStr(this.modelAmount);
+    this.chairPackConfigStr = TemplatesBE.buildChairPackConfigStr(this.chairModelAmount, this.chairModelHeights);
+    this.commandConfigStr = TemplatesBE.buildCommandConfigStr(
+      this.modelAmount,
+      this.chairModelAmount,
+      this.chairModelHeights,
+    );
+
     // 创建 manifest.json
     await this.createManifest();
     // 写入语言文件
@@ -145,25 +178,85 @@ export class PackFile {
         .file("chair.json", JSON.stringify(this.chair_controller, null, '\t'));
     }
 
-    // 生成与网站展示一致的单个 command.txt（皮肤包 + 坐垫包）
-    this.packConfigStr = TemplatesBE.buildSkinPackConfigStr(this.modelAmount);
-    this.chairPackConfigStr = TemplatesBE.buildChairPackConfigStr(this.chairModelAmount, this.chairModelHeights);
-    this.commandConfigStr = TemplatesBE.buildCommandConfigStr(
-      this.modelAmount,
-      this.chairModelAmount,
-      this.chairModelHeights,
-    );
     this.resultFile.file("command.txt", this.commandConfigStr);
+
+    // 网页附加包：生成自动注册行为包
+    if (PROFILE.BASE_PACK_INDEX >= 1000) {
+      this.behaviorPackFile = buildRegisterBehaviorPack(
+        this.packIds,
+        this.commandConfigStr,
+      );
+    } else {
+      this.behaviorPackFile = null;
+    }
     return this;
   }
 
   /**
-   * 生成 manifest.json
+   * 将 RP + BP 打成可导入的 addon zip（目录：TLM_MaidSkinPack_RP / _BP）。
+   * 无行为包时退化为仅资源包内容（兼容内置转换）。
+   */
+  async buildDownloadZip(): Promise<JSZip> {
+    if (!this.behaviorPackFile) {
+      return this.resultFile;
+    }
+    const addon = new JSZip();
+    await this.copyZipIntoFolder(addon, ADDON_RP_FOLDER, this.resultFile);
+    await this.copyZipIntoFolder(addon, ADDON_BP_FOLDER, this.behaviorPackFile);
+    return addon;
+  }
+
+  /**
+   * 把 src 的文件树拷入 dest 的 folderName/ 下。
+   */
+  private async copyZipIntoFolder(
+    dest: JSZip,
+    folderName: string,
+    src: JSZip,
+  ): Promise<void> {
+    const folder = dest.folder(folderName);
+    if (!folder) {
+      return;
+    }
+    const entries = Object.keys(src.files);
+    for (const path of entries) {
+      const entry = src.files[path];
+      if (entry.dir) {
+        folder.folder(path);
+        continue;
+      }
+      folder.file(path, await entry.async('uint8array'));
+    }
+  }
+
+  /**
+   * 生成资源包 manifest.json（含与 BP / 主 RP 的依赖）。
    *  subpack 的 name 仅支持字面量，不能用 lang 键
    */
   async createManifest() {
     const manifestObj = JSON.parse(JSON.stringify(TemplatesBE.MANIFEST));
-    manifestObj.header.uuid = this.uuid;
+    manifestObj.header.uuid = this.packIds.rpHeaderUuid;
+    manifestObj.header.version = ADDON_PACK_VERSION;
+    manifestObj.header.min_engine_version = SCRIPT_MIN_ENGINE_VERSION;
+    manifestObj.modules[0].uuid = this.packIds.rpModuleUuid;
+    manifestObj.modules[0].version = ADDON_PACK_VERSION;
+
+    const dependencies: Array<Record<string, unknown>> = [
+      // 主资源包（模型实体定义依赖）
+      {
+        uuid: TLM_MAIN_RP_UUID,
+        version: TLM_MAIN_PACK_VERSION,
+      },
+    ];
+    // 网页附加包：与自动注册行为包互依赖
+    if (PROFILE.BASE_PACK_INDEX >= 1000) {
+      dependencies.push({
+        uuid: this.packIds.bpHeaderUuid,
+        version: ADDON_PACK_VERSION,
+      });
+    }
+    manifestObj.dependencies = dependencies;
+
     if (this.maid_entity_simple) {
       manifestObj.subpacks = [
         {

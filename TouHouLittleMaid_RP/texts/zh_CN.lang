@@ -195,7 +195,7 @@ message.tlm.config.logger_enable.description=将调试日志广播到世界
 message.tlm.config.logger_level.name=日志等级
 message.tlm.config.logger_level.description=0:NONE 1:ERROR 2:WARN 3: INFO 4: DEBUG
 message.tlm.config.skin_pack.name=皮肤包
-message.tlm.config.skin_pack.description=粘贴转换网站生成的数据，如 {"skin":[{"count":20}],"chair":[{"count":10}]}
+message.tlm.config.skin_pack.description=（兼容旧包）粘贴无自动注册行为包时的转换数据，如 {"skin":[{"count":20}],"chair":[{"count":10}]}。新产物请启用转换器生成的行为包自动注册。
 
 ##### 其它 #####
 danmaku.pellet.name=§a点弹

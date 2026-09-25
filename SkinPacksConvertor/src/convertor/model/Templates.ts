@@ -13,7 +13,7 @@ export namespace TemplatesBE {
   }
 
   /**
-   * 管理面板粘贴数据 / command.txt 内容，与网站展示一致
+   * 皮肤/坐垫注册配置 JSON，供附加 BP 自动注册（及 RP 内 command.txt）
    * 格式：{"skin":[{"count":20}],"chair":[{"count":10,"heights":[3,15]}]}
    */
   export function buildCommandConfigStr(
@@ -27,7 +27,7 @@ export namespace TemplatesBE {
     });
   }
 
-  // 资源包 manifest.json 模板
+  // 资源包 manifest.json 模板（dependencies 在 PackFile.createManifest 中按派生 uuid 填充）
   export const MANIFEST = {
     "format_version": 2,
     "header": {
@@ -35,12 +35,12 @@ export namespace TemplatesBE {
       "description": "Skin Pack of TouHou Little Maid",
       "uuid": "<uuid>",
       "version": [ 1, 0, 0 ],
-      "min_engine_version": [ 1, 20, 30 ]
+      "min_engine_version": [ 1, 21, 70 ]
     },
     "modules": [
       {
         "type": "resources",
-        "uuid": "b283624d-5a73-4f82-9ea4-9a1f50eeb0ab",
+        "uuid": "<module-uuid>",
         "version": [ 1, 0, 0 ]
       }
     ],
