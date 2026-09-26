@@ -397,31 +397,7 @@ export let TEMPLATE = {
       },
 
       ///// 等级属性 /////
-      // tame 在驯服成功后由脚本挂载；basic（攻击/生命/抗击退）已迁脚本槽位
-      "thlmm:lv1_tame": {
-        "minecraft:damage_sensor": {
-          "triggers": [
-            { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"all_of":[
-                    {"test": "is_owner","subject": "damager","value": true},
-                    {"test": "is_sneaking", "subject": "damager", "value": true }
-                  ]} }}, // 打开菜单
-            { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } }, // 免疫主人伤害
-            { "cause": "all", "damage_multiplier": 0.9 }
-          ]
-        }
-      },
-      "thlmm:lv2_tame": {
-        "minecraft:damage_sensor": {
-          "triggers": [
-            { "cause": "entity_attack", "deals_damage": false, "on_damage": { "event": "thlmm:m", "target": "self", "filters":{"all_of":[
-                    {"test": "is_owner","subject": "damager","value": true},
-                    {"test": "is_sneaking", "subject": "damager", "value": true }
-                  ]} }}, // 打开菜单
-            { "cause": "all", "deals_damage": false, "on_damage": { "filters": {"test": "is_owner","subject": "other","value": true} } }, // 免疫主人伤害
-            { "cause": "all", "damage_multiplier": 0.75 }
-          ]
-        }
-      },
+      // tame 承伤已迁脚本 Damage 管线；basic（攻击/生命/抗击退）走脚本槽位
 
       ///// 工作模式 /////
       // 战斗索敌
@@ -1043,7 +1019,6 @@ export let TEMPLATE = {
             "thlmm:maid_wild",
             "environment:simple",
             "backpack:default",
-            "thlmm:lv1_tame",
             "status:follow_standard",
             "status:follow_sit",
             "thlmm:maid_tame"
@@ -1060,7 +1035,6 @@ export let TEMPLATE = {
             "thlmm:maid_wild",
             "environment:simple",
             "backpack:default",
-            "thlmm:lv1_tame",
             "status:follow_standard",
             "status:follow_sit",
             "thlmm:maid_tame"
@@ -1076,7 +1050,6 @@ export let TEMPLATE = {
             "thlmm:maid_wild",
             "environment:simple",
             "backpack:default",
-            "thlmm:lv1_tame",
             "status:follow_standard",
             "status:follow_sit",
             "thlmm:maid_tame"
@@ -1097,7 +1070,6 @@ export let TEMPLATE = {
                 "thlmm:maid_wild",
                 "environment:simple",
                 "backpack:default",
-                "thlmm:lv1_tame",
                 "status:follow_standard",
                 "status:follow_sit",
                 "thlmm:maid_tame",
@@ -1315,9 +1287,7 @@ export let TEMPLATE = {
       },
 
       //// 等级 ////
-      // basic（attack/health/knockback）已迁脚本槽位；此处仅保留 tame damage_sensor
-      "api:lv_1_tame"  : {"add": { "component_groups": [ "thlmm:lv1_tame"  ] }}, "api:lv_1_tame_quit"  : {"remove": { "component_groups": [ "thlmm:lv1_tame"  ] }},
-      "api:lv_2_tame"  : {"add": { "component_groups": [ "thlmm:lv2_tame"  ] }}, "api:lv_2_tame_quit"  : {"remove": { "component_groups": [ "thlmm:lv2_tame"  ] }},
+      // basic 槽位 + 驯服承伤脚本（Task5）；不再生成 api:lv_*_tame
 
       //// 工作模式 ////
       "api:mode_idle"     :  {"sequence": [{"add"   : {"component_groups": ["mode:idle"]}, "set_property":{"thlm:work": 0}}]},

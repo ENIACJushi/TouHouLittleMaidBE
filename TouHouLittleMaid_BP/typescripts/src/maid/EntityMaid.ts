@@ -5,6 +5,7 @@
  */
 import {
   Backpack,
+  Damage,
   Emote,
   Food,
   Health,
@@ -32,6 +33,11 @@ export class EntityMaid {
   static Owner = Owner;
   /** 生命值 */
   static Health = Health;
+  /**
+   * 驯服承伤管线（before-hurt）。
+   * 使用场景：EntityEvents 订阅；护甲/饰品经 registerDamageModifier 扩展。
+   */
+  static Damage = Damage;
   /** 等级 */
   static Level = Level;
   /** 工作模式 */

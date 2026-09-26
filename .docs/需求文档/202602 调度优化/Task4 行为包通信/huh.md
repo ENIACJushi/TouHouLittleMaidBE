@@ -13,7 +13,7 @@
 
 皮肤配置需跨包传递，依赖上述通道。
 
-转换器导出 `.mcaddon`（RP + 自动注册 BP）。主包 `SkinPackChannel` 监听 topic `skin`，脚本进世界后自动整表替换并写动态属性。
+转换器导出 `.mcaddon`（RP + 自动注册 BP）。主包 `SkinPackChannel` 监听 topic `skin`，进世界后在内存整表替换（不写动态属性）；若本会话已加载粘贴配置则在内存中改用通道数据。
 
 **转换器产物**：
 

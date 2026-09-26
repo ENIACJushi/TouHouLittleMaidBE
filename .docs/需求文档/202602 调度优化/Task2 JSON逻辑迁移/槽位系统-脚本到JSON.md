@@ -174,7 +174,7 @@ Level.set(lv)                 # 业务语义
 
 `Level.eventBasic` 组合 `Slots.attack/health/knockback`。  
 JSON 已删除 `thlmm:lv*_basic` 与 `api:lv_*_basic`（含 quit），无 `quitLegacyBasic`。  
-`api:lv_*_tame`（damage_sensor）为过渡保留；**不迁入槽位**，待脚本伤害事件就绪后删除。
+`api:lv_*_tame`（damage_sensor）**已由 Task5 脚本伤害管线替代并删除**；见 [Task5 huh](../Task5%20伤害转移至脚本处理/huh.md)。
 
 ### 6.1 兼容性结论与删旧事件惯例（已验证）
 
@@ -191,7 +191,7 @@ JSON 已删除 `thlmm:lv*_basic` 与 `api:lv_*_basic`（含 quit），无 `quitL
 
 - `thlmm:` / `thlmb:` 等 **JSON→脚本** 钩子  
 - 尚未迁完的捆包（如工作模式 `api:mode_*` 等）
-- `api:lv_*_tame`：等脚本伤害事件替代后再删，**不要**改造成 `slot:*`
+- `api:lv_*_tame`：~~等脚本伤害事件替代后再删~~ → **Task5 已删**；勿再改造成 `slot:*`
 
 ---
 
@@ -255,7 +255,7 @@ Level.set(lv)
 | 工作模式 AI（farm/attack/danmaku…） | 多 behavior + family 捆包，属业务 `api:mode_*` |
 | follow / home 状态组 | 业务状态机，非数值档 |
 | 背包容量 / `api:backpack_*` | 格数档位少、无灵活变动需求；维持现有 `api:backpack_*` |
-| 驯服 `damage_sensor` / `api:lv_*_tame` | 不做槽；改由 **脚本伤害事件** 承接后删 JSON 表 |
+| 驯服 `damage_sensor` / `api:lv_*_tame` | **Task5 已删**；脚本 `EntityMaid.Damage` 承接 |
 | `seek` / `tlm_seek:*`（现生成 0~300 档） | **结构需调整且当前未使用**；留到调度总览「精准目标控制」任务再优化，本任务不接入脚本、不改生成结构 |
 | `thlmm:*` 钩子与音效 | JSON→脚本或副作用线，与 slot 无关 |
 

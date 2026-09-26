@@ -210,6 +210,7 @@ export class MaidLifeCycleEvents {
   onTamed(event: DataDrivenEntityTriggerAfterEvent) {
     let maid = event.entity;
 
+    // 历史：挂 api:lv_N_tame；Task5 后承伤由 Damage 管线处理，eventTamed 为空操作
     EntityMaid.Level.eventTamed(maid, EntityMaid.Level.get(maid)!);
 
     // 设置主人

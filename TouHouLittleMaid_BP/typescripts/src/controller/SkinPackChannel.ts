@@ -4,7 +4,7 @@ import {
   ChannelReceiver,
 } from './channel/main';
 import {
-  applyCombinedPackConfig,
+  applyCombinedPackConfigFromChannel,
   parseCombinedPackConfig,
 } from './CombinedPackConfig';
 
@@ -13,7 +13,7 @@ const TAG = 'SkinPackChannel';
 /**
  * 皮肤 / 坐垫附加包跨行为包注册（新产物主路径）。
  *
- * 副行为包经 ChannelSender.send('skin', json) 投递与旧面板相同的 JSON；
+ * 副行为包经 ChannelSender.send('skin', json) 投递；只更新内存，不写动态属性。
  * 管理面板粘贴仅兼容无 BP 的旧资源包。
  */
 export class SkinPackChannel {
@@ -42,10 +42,10 @@ export class SkinPackChannel {
       );
       return;
     }
-    applyCombinedPackConfig(combined);
+    applyCombinedPackConfigFromChannel(combined);
     Logger.info(
       TAG,
-      `已应用附加包配置 sender=${meta.senderId}` +
+      `已应用附加包配置（仅内存） sender=${meta.senderId}` +
         ` skin=${combined.skin?.length ?? '-'} chair=${combined.chair?.length ?? '-'}`
     );
   }

@@ -3,6 +3,7 @@ import {
   EntityDieAfterEvent,
   EntityHitEntityAfterEvent,
   EntityHurtAfterEvent,
+  EntityHurtBeforeEvent,
   EntityLoadAfterEvent, PlayerInteractWithEntityBeforeEvent,
   ProjectileHitBlockAfterEvent,
   ProjectileHitEntityAfterEvent,
@@ -10,6 +11,7 @@ import {
   world,
 } from "@minecraft/server";
 import { MaidEvents } from "../maid/main";
+import { EntityMaid } from "../maid/EntityMaid";
 import { altarStructure } from "../altar/AltarStructureHelper";
 import * as Danmaku from "../danmaku/DanmakuManager";
 import PowerPoint from "../altar/PowerPoint";
@@ -185,6 +187,14 @@ export class EntityEvents {
   }
 
   /**
+   * 驯服女仆承伤（主人免疫 / 潜行菜单 / 等级减伤）。
+   * before 回调内可直接改 cancel/damage；开菜单已在 Damage 内 system.run。
+   */
+  private maidHurtBefore(event: EntityHurtBeforeEvent) {
+    EntityMaid.Damage.onBeforeHurt(event);
+  }
+
+  /**
    * 女仆受伤 → 脚本播 hurt（取代 sounds.json 自动音效）
    */
   private maidHurt(event: EntityHurtAfterEvent) {
@@ -233,6 +243,11 @@ export class EntityEvents {
     world.afterEvents.entityDie.subscribe(event => {
       this.entityDie(event);
     });
+    // 驯服承伤管线：before 限定女仆 type（entityFilter.type）
+    world.beforeEvents.entityHurt.subscribe(
+      event => { this.maidHurtBefore(event); },
+      { entityFilter: { type: MAID_TYPE_ID } },
+    );
     // 女仆自身 hurt/death 音效：entityTypes 限定，避免全图实体回调
     world.afterEvents.entityHurt.subscribe(
       event => { system.run(() => { this.maidHurt(event); }); },
