@@ -7,6 +7,7 @@ import {
 } from "@minecraft/server";
 import { Owner } from "./Owner";
 import { Level } from "./Level";
+import { Work } from "./Work";
 import { MainMenu } from "../ui/MaidUI";
 
 /**
@@ -108,6 +109,12 @@ export const Damage = {
 
     // 野生：保持引擎默认承伤
     if (maid.getComponent("minecraft:is_tamed") === undefined) {
+      return;
+    }
+
+    // NPC(-1) / 雕塑(-2) / 手办等 work<0：承伤仍由 JSON damage_sensor 处理，脚本不介入
+    const work = Work.get(maid);
+    if (typeof work === "number" && work < 0) {
       return;
     }
 
