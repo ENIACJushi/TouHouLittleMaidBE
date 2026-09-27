@@ -39,8 +39,8 @@
         ]
       },
       "spawn_egg": {
-        "base_color": "#13171A",
-        "overlay_color": "#A5A5A5"
+        "texture": "touhou_little_maid:fairy_spawn_egg",
+        "texture_index": 0
       }
     }
   }

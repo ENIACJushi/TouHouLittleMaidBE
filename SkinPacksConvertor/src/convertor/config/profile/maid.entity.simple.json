@@ -561,8 +561,8 @@
 				"controller.render.touhou_little_maid.pack_minecraft_15th"
 			],
 			"spawn_egg": {
-				"base_color": "#ffffff",
-				"overlay_color": "#ca0011"
+				"texture": "touhou_little_maid:maid_spawn_egg",
+				"texture_index": 0
 			}
 		}
 	}
