@@ -24,7 +24,10 @@
   + [huh](./Task7%20优化寻路方案/huh.md) — 有界 A\*（Walk/Jump1/Fall/**SprintGap 冲量跃谷**）；认领前 `canReach` 再 stamp
 + [] 加入背包保留功能
 + [] 加入饰品栏
-  + 目前的关键问题是：如何让女仆物品栏的部分格位只能放入指定的物品
+  + 卡点调研：[饰品栏/huh.md](./饰品栏/huh.md)
+  + 结论：实体 `inventory` **无**按格白名单；`ContainerRules` 整容器且只读（偏 Bundle）；原生按格仅 `equippable.accepted_items`
+  + 推荐：预留格 + 脚本纠错（兼容查包）；并行探针 equippable；勿指望给女仆库存设 Rules
+  + 考虑将女仆捡物品也交给脚本执行，这样还可以为之后捡经验和p点铺路
 
 次要目标
 + [] 优化工作模式组织方式，采用更灵活的注册模式替代现有的固定列表
