@@ -1,4 +1,4 @@
-import {recipeList} from "../../TouHouLittleMaid_BP/scripts/data/recipes/index.js"
+import {recipeList} from "../../TouHouLittleMaid_BP/scripts/data/recipes/main.js"
 
 export const book1 = [
 // 前言
