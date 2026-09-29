@@ -5,6 +5,17 @@
 
 **后续：** 农作使用本系统 **刚需 Task7 脚本寻路**（预判可达，避免独占锁死）。顺序：Task6 基建 → Task7 寻路 → 再改 `Farm` 等接入。
 
+### 已拍板
+
+| 项 | 决定 |
+| --- | --- |
+| Seek 容量 | **256**（`0..255`） |
+| 事件名 | **`slot:seek_<n>` / `_quit`**；删除未使用的旧 `tlm_seek:*` / `seek:*` |
+| 目标实体 | 新增 **`thlmt:seek_marker`**（日后正式目标点也用它） |
+| Phase 0 | **已完成**；步骤/结果 → [Phase0-仇恨清除手动测试.md](./Phase0-仇恨清除手动测试.md)；探针代码归档 → [Phase0-探针归档/](./Phase0-探针归档/README.md) |
+
+**Phase 0 通俗结论：** 锁得上；松手要「卸索敌 + `reset_target`」；Seek 用会重评过滤器的配置（`reevaluate_description: true` + `persist_time: 0`），不能指望只改 `thlmt:value` 就立刻清恨。详见该文档「通俗结论」一节。
+
 ---
 
 ## 调研结论（卡点：单女仆独占锁定）
@@ -36,7 +47,10 @@
 配套（系统层）：
 
 1. Seek 组 **只留索敌**，不捆绑攻击组件
-2. 显式 `api:reset_target`；Seek 开 `reevaluate_description` + 低 `persist_time`（Phase 0 实测）
+2. 显式 `api:reset_target`；Seek 开 `reevaluate_description` + 低 `persist_time`（**Phase 0 已实测定稿**）
+   - **已验证（C）：** 仅卸 Seek 组后 `Entity.target` **仍残留**原目标 → `quit`/`release` **必须** `卸组 + reset_target`
+   - **已验证（D）：** sticky（`reevaluate_description:false` / `persist_time:5`）下把目标 `value` 改为 -1，约 2s 内 `Entity.target` **仍残留** → 释放锁不能只改属性
+   - **已验证（E）：** reeval（`reevaluate_description:true` / `persist_time:0`）下 `value=-1` 约 0.25s 即 `hate=undefined` → 正式 Seek **采用该配置**
 3. 脚本：`allocate` / `mount` / `quit` / `stamp` / `release` / `resetTarget`
 4. **不**改工作 `mode:*` 的 family 索敌；**不**改 `Farm` / `Melon` / … 放置逻辑
 
