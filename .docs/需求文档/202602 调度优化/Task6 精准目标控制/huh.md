@@ -13,6 +13,7 @@
 | 事件名 | **`slot:seek_<n>` / `_quit`**；删除未使用的旧 `tlm_seek:*` / `seek:*` |
 | 目标实体 | 新增 **`thlmt:seek_marker`**（日后正式目标点也用它） |
 | Phase 0 | **已完成**；步骤/结果 → [Phase0-仇恨清除手动测试.md](./Phase0-仇恨清除手动测试.md)；探针代码归档 → [Phase0-探针归档/](./Phase0-探针归档/README.md) |
+| Phase 1 | **已完成**：`slot:seek_0..255` + `api:reset_target` + `thlmt:seek_marker`；见 [实现计划.md](./实现计划.md) |
 
 **Phase 0 通俗结论：** 锁得上；松手要「卸索敌 + `reset_target`」；Seek 用会重评过滤器的配置（`reevaluate_description: true` + `persist_time: 0`），不能指望只改 `thlmt:value` 就立刻清恨。详见该文档「通俗结论」一节。
 
@@ -23,7 +24,7 @@
 ### 脚本侧做不到什么
 
 + `Entity.target`：**只读**（`read-only target?: Entity`）。不能 `maid.target = xxx` 指定仇恨。
-+ 无独立 `setTarget` / `clearTarget` Script API；清恨用 JSON 事件动作 `reset_target`（`{ "reset_target": {} }`），当前女仆实体 **尚未声明** 该事件。
++ 无独立 `setTarget` / `clearTarget` Script API；清恨用 JSON 事件动作 `reset_target`（`{ "reset_target": {} }`）；女仆已声明 **`api:reset_target`**（Phase 1），并由各 `slot:seek_<n>_quit` 叠加调用。
 
 ### 平台过滤器硬约束
 
@@ -34,8 +35,9 @@
 
 | 位置 | 说明 |
 | --- | --- |
-| `MaidGenerator/modules/Seek.js` + 已生成进 `maid.json` | `seek:i` 过滤 `thlmt:value==i`（0～300）；含多余 `ranged_attack`；`tlm_seek:*` **脚本从未调用** |
-| `entities/maid_target/debug_target_2.json` + `debug_fairy.json` | 原型：目标有 `thlmt:value`，妖精过滤器 `value: 9` |
+| `MaidGenerator/modules/Seek.js` + 已生成进 `maid.json` | **Phase 1：** `slot:seek_0..255` 过滤 `thlmt:value==i`；无攻击组件；`api:reset_target`；脚本门面待 Phase 2 |
+| `entities/maid_target/seek_marker.json` | 正式探针目标 `thlmt:seek_marker`，`thlmt:value` ∈ [-1,255] |
+| `entities/maid_target/debug_target_2.json` + `debug_fairy.json` | 历史原型（Phase0 归档） |
 | `mode:farm` 等 + `thlmt:farm` 等 | 生产仍按 `is_family` 共享索敌（**本任务不改**） |
 | `Farm.ts` 冷却重建 | 「必须新建一个，否则仇恨无法消除」→ 侧面说明卸状态/改实体不一定清恨 |
 
