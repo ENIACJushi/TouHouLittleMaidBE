@@ -14,6 +14,7 @@
 | 目标实体 | 新增 **`thlmt:seek_marker`**（日后正式目标点也用它） |
 | Phase 0 | **已完成**；步骤/结果 → [Phase0-仇恨清除手动测试.md](./Phase0-仇恨清除手动测试.md)；探针代码归档 → [Phase0-探针归档/](./Phase0-探针归档/README.md) |
 | Phase 1 | **已完成**：`slot:seek_0..255` + `api:reset_target` + `thlmt:seek_marker`；见 [实现计划.md](./实现计划.md) |
+| Phase 2 | **已完成**：`EntityMaid.Seek` + 游戏内双女仆独占 **PASS**；验收代码归档 → [Phase2-验收归档/](./Phase2-验收归档/README.md) |
 
 **Phase 0 通俗结论：** 锁得上；松手要「卸索敌 + `reset_target`」；Seek 用会重评过滤器的配置（`reevaluate_description: true` + `persist_time: 0`），不能指望只改 `thlmt:value` 就立刻清恨。详见该文档「通俗结论」一节。
 

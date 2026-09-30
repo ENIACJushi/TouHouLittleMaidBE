@@ -19,6 +19,7 @@ import {
   Pick,
   Pose,
   Ride,
+  Seek,
   Skin,
   Sound,
   Statues,
@@ -76,6 +77,11 @@ export class EntityMaid {
   static Kill = Kill;
   /** 杂项工具（名称标签、安全方块、消散、随机生成等）；场景：通用辅助调用 */
   static Util = Util;
+  /**
+   * 精准目标 Seek（allocate / mount / stamp / quit / release / resetTarget）。
+   * 使用场景：Task6 独占锁定；不挂农作业务。
+   */
+  static Seek = Seek;
 
   /** 实体 ↔ 字符串 / lore 序列化入口；场景：照片、魂符、胶片等物品持久化 */
   static toStr = toStr;
