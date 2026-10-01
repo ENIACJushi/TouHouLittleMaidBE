@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 路径执行器状态机（Task7 Phase2）。
  * 使用场景：Path.follow；Walk/Jump1/Fall 用 Seek+marker；SprintGap 用冲量。
  *
@@ -32,7 +32,7 @@ export const IN_FLIGHT_MAX = 4;
  * 连续 Walk 抽稀步长：每隔这么多格留一个途经点（段尾必留）。
  * 使用场景：省略原版可走完的中间格，且不超过 follow_range 安全余量。
  */
-const VIA_STEP = 8;
+const VIA_STEP = 16;
 
 /** 途经到达水平容差（触及≈0，略放宽抖动） */
 const ARRIVE_VIA_H = 0.75;
