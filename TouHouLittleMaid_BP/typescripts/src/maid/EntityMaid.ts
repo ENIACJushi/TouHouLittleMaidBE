@@ -84,9 +84,9 @@ export class EntityMaid {
    */
   static Seek = Seek;
   /**
-   * 脚本寻路（find / canReach；follow 待 Phase2）。
-   * 使用场景：农作认领前可达预判；Walk/Gap 边与执行共用规则。
-   */
+ * 脚本寻路（find / canReach / follow / cancel）。
+ * 使用场景：农作认领前可达预判；follow 执行 Walk+Seek 与 Gap 冲量。
+ */
   static Path = Path;
 
   /** 实体 ↔ 字符串 / lore 序列化入口；场景：照片、魂符、胶片等物品持久化 */

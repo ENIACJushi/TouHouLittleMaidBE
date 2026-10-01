@@ -7,8 +7,10 @@
 import { Dimension, Entity, Vector3 } from "@minecraft/server";
 import { aStar, AStarOptions } from "./AStar";
 import { SEARCH_H, SEARCH_V } from "./constants";
+import { Executor } from "./Executor";
 import { StandableCache } from "./StandableCache";
 import { BlockPos, PathResult, StandableCacheOptions, StandNode } from "./types";
+import { unreachableCache } from "./UnreachableCache";
 
 /**
  * Path.find / canReach 选项。
@@ -165,12 +167,23 @@ export const Path = {
   /**
    * 是否可达（仅看 PathResult.ok）。
    * 使用场景：认领过滤；与 find 共用规则。
+   * 若目标在短时不可达缓存中则直接 false（可 ignoreBan）。
    */
   canReach(
     maid: Entity,
     dest: Vector3 | StandNode,
-    options?: PathFindOptions
+    options?: PathFindOptions & { ignoreBan?: boolean }
   ): boolean {
+    const probe = new StandableCache(maid.dimension, {
+      waterAsHazard: options?.waterAsHazard,
+    });
+    const goal = standNodeFromDest(probe, dest);
+    if (!goal) {
+      return false;
+    }
+    if (!options?.ignoreBan && unreachableCache.has(goal, maid.id)) {
+      return false;
+    }
     return Path.findFromMaid(maid, dest, options).ok;
   },
 
@@ -185,5 +198,51 @@ export const Path = {
     options?: PathFindOptions
   ): PathResult {
     return runFind(dim, start, goal, options);
+  },
+
+  /**
+   * 规划并执行跟随；失败返回规划结果或 follow 启动失败。
+   * 使用场景：农作走到目标；Gap 用占位冲量表（待 Phase0b 标定）。
+   */
+  follow(
+    maid: Entity,
+    dest: Vector3 | StandNode,
+    options?: PathFindOptions
+  ): PathResult {
+    const result = Path.findFromMaid(maid, dest, options);
+    if (!result.ok) {
+      return result;
+    }
+    const goal = result.nodes[result.nodes.length - 1];
+    if (!goal) {
+      return { ok: false, nodes: [], edges: [], reason: "empty_path" };
+    }
+    const started = Executor.start(maid, result.edges, goal);
+    if (!started) {
+      return { ...result, ok: false, reason: "follow_start_fail" };
+    }
+    return result;
+  },
+
+  /**
+   * 直接执行已有 PathResult（跳过再规划）。
+   * 使用场景：find 后自定义再 follow。
+   */
+  followResult(maid: Entity, result: PathResult): boolean {
+    if (!result.ok || result.nodes.length === 0) {
+      return false;
+    }
+    const goal = result.nodes[result.nodes.length - 1];
+    return Executor.start(maid, result.edges, goal);
+  },
+
+  /** 取消当前跟随 */
+  cancel(maid: Entity): void {
+    Executor.cancel(maid);
+  },
+
+  /** 是否正在 follow */
+  isFollowing(maid: Entity): boolean {
+    return Executor.isFollowing(maid);
   },
 };
