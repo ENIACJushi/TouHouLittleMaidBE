@@ -2,17 +2,23 @@
 const END_INDEX = 255;
 
 /**
- * 精准目标 Seek 枚举（Task6 Phase 1）。
- * 使用场景：生成 `slot:seek_<n>` / `_quit` 与 `api:reset_target`；脚本门面（Phase 2）再接线。
- * 定稿依据 Phase0：组内仅索敌；`reevaluate_description` + `persist_time:0`；quit 内叠加 `reset_target`。
+ * 默认追逐组件组（历史每档内 short ranged_attack；Task6 从档内剥离）。
+ * 使用场景：仅由脚本 `slot:seek_pursue` / `_quit` 挂卸，不与 slot:seek_n 绑定。
+ */
+const SEEK_PURSUE = "slot:seek_pursue";
+
+/**
+ * 精准目标 Seek 枚举（Task6 Phase 1 + Task7 追逐分离）。
+ * 使用场景：生成 `slot:seek_<n>`（仅索敌）与独立 `slot:seek_pursue`（可换其它追逐实现）。
+ * 定稿：档内仅 NAT；追逐由脚本另调，便于换 melee / move_towards 等。
  */
 export class Seek {
   /**
    * @param {import('../main.js').MaidGenerator} g
    */
   static process(g) {
-    console.log(`添加精准目标 Seek: 0~${END_INDEX}`);
-    // 当前挂载档；-1 表示未挂 Seek（脚本/验收观测用）
+    console.log(`添加精准目标 Seek: 0~${END_INDEX}；追逐组 ${SEEK_PURSUE}（脚本单独挂）`);
+
     g.addProperty("thlm:seek_index", {
       type: "int",
       client_sync: true,
@@ -20,11 +26,27 @@ export class Seek {
       range: [-1, END_INDEX],
     });
 
+    // 默认追逐（与删前配置一致）；后续可再加 slot:seek_pursue_* 变体，由脚本选挂
+    g.addComponentGroup(SEEK_PURSUE, {
+      "minecraft:behavior.ranged_attack": {
+        priority: 6,
+        attack_interval_min: 0.8,
+        attack_interval_max: 0.8,
+        attack_radius: 2.1,
+        attack_radius_min: 0.9,
+      },
+    });
+    g.addEvent(SEEK_PURSUE, {
+      add: { component_groups: [SEEK_PURSUE] },
+    });
+    g.addEvent(`${SEEK_PURSUE}_quit`, {
+      remove: { component_groups: [SEEK_PURSUE] },
+    });
+
     for (let i = 0; i <= END_INDEX; i++) {
       const groupName = `slot:seek_${i}`;
       const quitName = `slot:seek_${i}_quit`;
 
-      // 仅索敌：不捆绑攻击；must_reach 留给日后农作接入
       g.addComponentGroup(groupName, {
         "minecraft:follow_range": { max: 32, value: 32 },
         "minecraft:behavior.nearest_attackable_target": {
@@ -32,7 +54,7 @@ export class Seek {
           must_reach: true,
           must_see: false,
           persist_time: 0,
-          reselect_targets: false,
+          reselect_targets: true,
           within_radius: 32,
           scan_interval: 10,
           entity_types: [
@@ -51,7 +73,7 @@ export class Seek {
         },
       });
 
-      // 装载：只加本组。切换档位前须先 quit（避免多档 NAT 叠挂）
+      // 装载：只加本档 NAT（追逐另由脚本 mountPursue）
       g.addEvent(groupName, {
         sequence: [
           { add: { component_groups: [groupName] } },
@@ -59,7 +81,6 @@ export class Seek {
         ],
       });
 
-      // 卸载：卸组 + 清 index + reset_target（Phase0：仅卸组会残留仇恨）
       g.addEvent(quitName, {
         sequence: [
           { remove: { component_groups: [groupName] } },
@@ -69,7 +90,6 @@ export class Seek {
       });
     }
 
-    // 独立清恨：保留 Seek 组时也可由脚本调用（stamp/release 等）
     g.addEvent("api:reset_target", {
       reset_target: {},
     });

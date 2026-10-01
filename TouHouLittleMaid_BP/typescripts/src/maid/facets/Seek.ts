@@ -99,7 +99,8 @@ export const Seek = {
   },
 
   /**
-   * 挂载 `slot:seek_<id>`；若已有其它档会先 quit（含 reset_target）。
+   * 挂载 `slot:seek_<id>`（仅索敌 NAT）；若已有其它档会先 quit（含 reset_target）。
+   * 追逐须另调 `mountPursue`（不与本事件绑定，便于换追逐实现）。
    * @returns 是否成功
    */
   mount(maid: Entity, seekId: number): boolean {
@@ -114,13 +115,42 @@ export const Seek = {
   },
 
   /**
-   * 卸下当前 Seek（触发 `_quit`，内含 reset_target）；无挂载则 no-op。
+   * 卸下当前 Seek 档（NAT）；不自动卸追逐，请配合 `quitPursue`。
    */
   quit(maid: Entity): void {
     clearIntSlot(maid, SEEK_SLOT, {
       readCurrent: readSeekIndex,
       trackDp: false,
     });
+  },
+
+  /**
+   * 默认追逐事件名（短距 ranged_attack）；后续可扩展其它 pursue 变体事件。
+   * 使用场景：Path.follow Walk 段；业务可改挂其它 `slot:seek_pursue_*`。
+   */
+  PURSUE_DEFAULT: "slot:seek_pursue",
+
+  /**
+   * 挂载追逐组件（与 Seek 档分离；默认同 `PURSUE_DEFAULT`）。
+   * 使用场景：mount(seekId) 之后再调；换实现时传其它事件 id。
+   */
+  mountPursue(maid: Entity, pursueEvent: string = "slot:seek_pursue"): void {
+    try {
+      maid.triggerEvent(pursueEvent);
+    } catch (e) {
+      Logger.warn(TAG, `mountPursue(${pursueEvent}) failed: ${String(e)}`);
+    }
+  },
+
+  /**
+   * 卸下追逐组件（默认 `slot:seek_pursue_quit`）。
+   */
+  quitPursue(maid: Entity, pursueQuitEvent: string = "slot:seek_pursue_quit"): void {
+    try {
+      maid.triggerEvent(pursueQuitEvent);
+    } catch (e) {
+      Logger.warn(TAG, `quitPursue(${pursueQuitEvent}) failed: ${String(e)}`);
+    }
   },
 
   /**

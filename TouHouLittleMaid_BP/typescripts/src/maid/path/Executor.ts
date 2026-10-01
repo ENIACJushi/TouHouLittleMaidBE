@@ -116,6 +116,21 @@ function clearMarker(session: Session): void {
   }
 }
 
+/** 挂 Seek 档 + 默认追逐（脚本分两次，追逐可换实现） */
+function mountSeekWithPursue(maid: Entity, seekId: number): boolean {
+  if (!Seek.mount(maid, seekId)) {
+    return false;
+  }
+  Seek.mountPursue(maid);
+  return true;
+}
+
+/** 卸追逐 + Seek 档 */
+function quitSeekWithPursue(maid: Entity): void {
+  Seek.quitPursue(maid);
+  Seek.quit(maid);
+}
+
 /**
  * 释放 Seek / 移速 / marker；可选写入不可达缓存。
  */
@@ -130,7 +145,7 @@ function teardown(
   const maid = session.maid;
   try {
     if (maid.isValid) {
-      Seek.quit(maid);
+      quitSeekWithPursue(maid);
       Movement.unlock(maid);
     }
   } catch {
@@ -177,7 +192,7 @@ function beginEdge(session: Session): void {
   if (edge.kind === "SprintGap") {
     session.phase = "PrepGap";
     try {
-      Seek.quit(maid);
+      quitSeekWithPursue(maid);
       Seek.resetTarget(maid);
     } catch {
       /* ignore */
@@ -193,8 +208,10 @@ function beginEdge(session: Session): void {
     );
     Seek.stamp(marker, session.seekId);
     if (Seek.getIndex(maid) !== session.seekId) {
-      Seek.mount(maid, session.seekId);
+      mountSeekWithPursue(maid, session.seekId);
     }
+    // 换路点后强制清恨再索敌（reselect + 新 stamp）
+    Seek.resetTarget(maid);
     session.marker = marker;
   } catch (e) {
     failSession(session, `spawn_marker:${String(e)}`);
@@ -286,7 +303,7 @@ function tickInFlight(session: Session): void {
     inFlightCount = Math.max(0, inFlightCount - 1);
     Movement.unlock(maid);
     try {
-      Seek.mount(maid, session.seekId);
+      mountSeekWithPursue(maid, session.seekId);
     } catch {
       /* ignore */
     }
@@ -341,7 +358,7 @@ export const Executor = {
       Logger.warn(TAG, "start: seek 池满");
       return false;
     }
-    if (!Seek.mount(maid, seekId)) {
+    if (!mountSeekWithPursue(maid, seekId)) {
       Seek.free(seekId);
       return false;
     }
