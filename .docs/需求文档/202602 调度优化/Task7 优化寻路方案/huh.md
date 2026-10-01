@@ -1,6 +1,13 @@
 # Task7 脚本寻路（有界 A\* + 冲刺跃谷）
 
-**状态：** 调研草案（已纳入冲刺跃谷）；**依赖 [Task6](../Task6%20精准目标控制/huh.md) 落地后再实现。**
+**状态：** Phase0a 谓词已锁定并落地 `StandableCache`；探针已归档；下一步四类边 + A\*。细节见 [实现计划.md](./实现计划.md)。  
+**依赖：** [Task6](../Task6%20精准目标控制/huh.md) **已完成**。
+
+| 阶段 | 状态 |
+| --- | --- |
+| Phase 0a | **已完成**：公式 §6.2；探针 → [Phase0a-探针归档](./Phase0a-探针归档/README.md)；生产 `maid/path/*` |
+| Phase 0b | 冲量标定（待做） |
+| Phase 1 | 四类边 + A\* / `canReach`（进行中） |
 
 **定位：** 农作等接入 Task6 精准目标的 **刚需**（认领前预判可达）。  
 含 **冲刺跳过空谷**：原版 `navigation.walk` **不会**规划跨空格跃迁；用脚本 `applyImpulse` 执行该边。
@@ -68,6 +75,16 @@
 ### 3.1 节点
 
 可站立格 `(x, y_floor, z)`：支撑面 + 脚/头净空（约 `0.6×1.5`）；避伤害块 / 水。
+
+**判定公式已锁定（G-Player + API；详见 [Phase0a §6.2](./Phase0a-可站立与可穿过测试设计.md)）：**
+
+- `isHazard`：`isLiquid` ∪ lava/fire（水可配置为危险）。  
+- `isPassable`：air ∪ 植物/装饰薄片 ∪ pressure_plate ∪ carpet；**否** solid / glass / leaves / fence / wall。  
+- `isSupport`：`(isSolid ∧ ¬黑名单) ∪ glass ∪ carpet ∪ 关底活板门`；**否** air/liquid/fence·wall（整格）/压力板/开活板门。  
+- `isStandable`：below 可支撑 ∧ foot/head 可穿过 ∧ ¬hazard。  
+
+活板门开/楼梯 → **NavMismatch**（局部站立面，首版禁普通 Walk 或特殊边；中长期脚本挪位）。  
+**后置 TODO：** 栅栏顶部可站，面积随 `north/south/east/west` 连接变化——首版不生成栅栏顶节点。
 
 ### 3.2 边
 
@@ -147,21 +164,6 @@ Gap 段不依赖 `must_reach` 选中沟对面的实体（引擎可能根本选�
 
 ---
 
-## 7. 预期落地（实现时再拆计划）
+## 7. 预期落地
 
-模块建议：
-
-- `path/StandableCache` — 方块缓存  
-- `path/Graph` / `AStar` — 含 `SprintGap` 边  
-- `path/ImpulseTable` — 跃谷冲量表  
-- `path/Executor` — 混合执行状态机  
-- `path/canReach(maid, dest)` — 给农作认领用  
-
-验收：
-
-- [ ] 平走 / Jump1 / Fall  
-- [ ] **宽 2～4 空谷冲刺跃至对岸可站立格**  
-- [ ] Gap 失败不永久占锁  
-- [ ] 双女仆农作不抢点；有沟田块仍可被判达并收割  
-
-标定清单：各 `distClass×dy` 成功率、落点误差、是否磕天花板。
+分阶段与模块清单见 **[实现计划.md](./实现计划.md)**（`maid/path/*`、`EntityMaid.Path`、先 Farm 接线）。

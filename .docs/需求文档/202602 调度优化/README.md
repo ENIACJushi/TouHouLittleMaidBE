@@ -16,12 +16,14 @@
   + 农作注册等其它 topic 接线：随后续农作改造再做
 + [x] Task5 将伤害处理全权交由脚本执行，为护甲和饰品铺路（含替代 `api:lv_*_tame`）
   + 见 [Task5](./Task5%20伤害转移至脚本处理/huh.md)；减伤经 `/scriptevent thlm:test dmg` 等脚本验收通过
-+ [] Task6 精准目标 **控制系统**（暂不接入农作等业务）
++ [x] Task6 精准目标 **控制系统**（暂不接入农作等业务）
   + [huh](./Task6%20精准目标控制/huh.md) / [实现计划](./Task6%20精准目标控制/实现计划.md)
   + 交付：精简 Seek、`thlmt:value` 锁协议、脚本门面、`reset_target`、debug 验收
   + **不改** 现网 `mode:farm` / `Farm.ts` 等；农作接入刚需 Task7
-+ [] Task7 脚本寻路 + 农作接入精准目标（**Task6 完成后**）
-  + [huh](./Task7%20优化寻路方案/huh.md) — 有界 A\*（Walk/Jump1/Fall/**SprintGap 冲量跃谷**）；认领前 `canReach` 再 stamp
++ [] Task7 脚本寻路 + 农作接入精准目标（**Task6 已完成**）
+  + [huh](./Task7%20优化寻路方案/huh.md) / [实现计划](./Task7%20优化寻路方案/实现计划.md)
+  + Phase0a：**谓词已锁定** → [测试设计](./Task7%20优化寻路方案/Phase0a-可站立与可穿过测试设计.md)；探针归档 → [Phase0a-探针归档](./Task7%20优化寻路方案/Phase0a-探针归档/README.md)
+  + 生产：`maid/path`（`StandableCache` / `blockPredicates`）；下一步四类边 + A\*
 + [] 加入背包保留功能
 + [] 加入饰品栏
   + 卡点调研：[饰品栏/huh.md](./饰品栏/huh.md)

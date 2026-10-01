@@ -242,7 +242,7 @@ export class CommandManager {
         }
         Logger.info(TAG, `test unmatched message="${event.message}"`);
         if (typeof pl.sendMessage === "function") {
-            pl.sendMessage(`[Command.test] unknown: "${event.message}" (try seek_help)`);
+            pl.sendMessage(`[Command.test] unknown: "${event.message}" (try *_help)`);
         }
     }
     /**
