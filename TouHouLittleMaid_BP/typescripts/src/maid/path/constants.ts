@@ -23,6 +23,10 @@ export const COST_FALL_BASE = 1;
 export const COST_FALL_PER_Y = 0.3;
 export const COST_SPRINT_GAP = 7;
 
-/** A* 展开 / 耗时上限（后续 AStar 用） */
+/** A* 展开 / 耗时上限 */
 export const ASTAR_MAX_EXPAND = 2000;
-export const ASTAR_MAX_MS = 8;
+/**
+ * A* 墙钟上限（ms）。勿过小：部分平台 Date.now 粒度≈15ms，8ms 会误超时。
+ * 使用场景：单次 find；农作可再收紧或分帧。
+ */
+export const ASTAR_MAX_MS = 50;

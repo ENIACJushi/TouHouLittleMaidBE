@@ -136,7 +136,8 @@ export function aStar(
   let expands = 0;
 
   while (open.size > 0) {
-    if (Date.now() - t0 > maxMs) {
+    // 每 32 次展开再看墙钟，减轻粗粒度 Date.now 误杀
+    if (expands > 0 && expands % 32 === 0 && Date.now() - t0 > maxMs) {
       return { ok: false, nodes: [], edges: [], reason: "timeout" };
     }
     if (expands >= maxExpand) {
