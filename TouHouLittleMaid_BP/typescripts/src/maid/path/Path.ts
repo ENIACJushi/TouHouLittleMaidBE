@@ -8,7 +8,7 @@ import { Dimension, Entity, Vector3 } from "@minecraft/server";
 import { aStar, AStarOptions } from "./AStar";
 import { SEARCH_H, SEARCH_V } from "./constants";
 import { Executor } from "./Executor";
-import { StandableCache } from "./StandableCache";
+import { StandableCache, clampBoundsToDimension } from "./StandableCache";
 import { BlockPos, PathResult, StandableCacheOptions, StandNode } from "./types";
 import { unreachableCache } from "./UnreachableCache";
 
@@ -102,7 +102,11 @@ function runFind(
 ): PathResult {
   const searchH = options?.searchH ?? SEARCH_H;
   const searchV = options?.searchV ?? SEARCH_V;
-  const bounds = buildSearchBounds(start, goal, searchH, searchV);
+  const raw = buildSearchBounds(start, goal, searchH, searchV);
+  const bounds = clampBoundsToDimension(dim, raw.min, raw.max);
+  if (bounds.min.y > bounds.max.y) {
+    return { ok: false, nodes: [], edges: [], reason: "bad_bounds" };
+  }
 
   const cache = new StandableCache(dim, {
     waterAsHazard: options?.waterAsHazard,

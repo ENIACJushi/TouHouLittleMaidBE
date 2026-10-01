@@ -2,7 +2,7 @@
  * 女仆脚本寻路模块入口（Task7）。
  * 使用场景：Path / edges / A* 从本目录扩展；包外可经 EntityMaid.Path。
  */
-export { StandableCache } from "./StandableCache";
+export { StandableCache, clampBoundsToDimension } from "./StandableCache";
 export { expandEdges } from "./edges";
 export type { EdgeGenOptions } from "./edges";
 export { aStar, heuristic } from "./AStar";

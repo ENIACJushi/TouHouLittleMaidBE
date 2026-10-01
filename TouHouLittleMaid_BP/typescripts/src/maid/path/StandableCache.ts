@@ -26,6 +26,40 @@ function floorPos(loc: Vector3): BlockPos {
 }
 
 /**
+ * 将搜索箱 Y 钳到维度可建高度，避免 warmBox 越界抛错。
+ * 使用场景：Path.runFind；heightRange.max 按排他上界处理。
+ */
+export function clampBoundsToDimension(
+  dim: Dimension,
+  min: BlockPos,
+  max: BlockPos
+): { min: BlockPos; max: BlockPos } {
+  let yMin = Math.min(min.y, max.y);
+  let yMax = Math.max(min.y, max.y);
+  try {
+    const hr = dim.heightRange;
+    yMin = Math.max(yMin, hr.min);
+    // max 为排他上界（越界常见于 y === max）
+    yMax = Math.min(yMax, hr.max - 1);
+  } catch {
+    yMin = Math.max(yMin, -64);
+    yMax = Math.min(yMax, 319);
+  }
+  return {
+    min: {
+      x: Math.min(min.x, max.x),
+      y: yMin,
+      z: Math.min(min.z, max.z),
+    },
+    max: {
+      x: Math.max(min.x, max.x),
+      y: yMax,
+      z: Math.max(min.z, max.z),
+    },
+  };
+}
+
+/**
  * 有界搜索箱缓存。
  * 使用场景：一次 Path.find / canReach 内创建，用完丢弃；或同 tick 复用。
  */
@@ -33,7 +67,7 @@ export class StandableCache {
   private readonly dim: Dimension;
   private readonly waterAsHazard: boolean;
   private readonly flags = new Map<string, BlockFlags>();
-  /** 空气占位：世界外 / 未加载当不可过、不可支撑、非 hazard */
+  /** 世界外 / 未加载：不可过、不可支撑、非 hazard */
   private static readonly MISSING: BlockFlags = {
     passable: false,
     support: false,
@@ -56,19 +90,17 @@ export class StandableCache {
   }
 
   /**
-   * 预热轴对齐箱 [min,max]（含端点）。
+   * 预热轴对齐箱 [min,max]（含端点）；自动钳 Y 到 heightRange。
    * 使用场景：A* 开始前一次性扫搜索箱。
    */
   warmBox(min: BlockPos, max: BlockPos): void {
-    const x0 = Math.min(min.x, max.x);
-    const x1 = Math.max(min.x, max.x);
-    const y0 = Math.min(min.y, max.y);
-    const y1 = Math.max(min.y, max.y);
-    const z0 = Math.min(min.z, max.z);
-    const z1 = Math.max(min.z, max.z);
-    for (let y = y0; y <= y1; y++) {
-      for (let x = x0; x <= x1; x++) {
-        for (let z = z0; z <= z1; z++) {
+    const box = clampBoundsToDimension(this.dim, min, max);
+    if (box.min.y > box.max.y) {
+      return;
+    }
+    for (let y = box.min.y; y <= box.max.y; y++) {
+      for (let x = box.min.x; x <= box.max.x; x++) {
+        for (let z = box.min.z; z <= box.max.z; z++) {
           this.getFlags(x, y, z);
         }
       }
@@ -77,6 +109,7 @@ export class StandableCache {
 
   /**
    * 读单格谓词（未命中则 getBlock 计算并写入）。
+   * 越界 / 未加载 → MISSING，不抛 LocationOutOfWorldBoundariesError。
    * 使用场景：边生成 / 净空采样。
    */
   getFlags(x: number, y: number, z: number): BlockFlags {
@@ -85,10 +118,17 @@ export class StandableCache {
     if (hit) {
       return hit;
     }
-    const block = this.dim.getBlock({ x, y, z });
-    const flags = block
-      ? evalBlockFlags(toBlockView(block), { waterAsHazard: this.waterAsHazard })
-      : StandableCache.MISSING;
+    let flags = StandableCache.MISSING;
+    try {
+      const block = this.dim.getBlock({ x, y, z });
+      if (block) {
+        flags = evalBlockFlags(toBlockView(block), {
+          waterAsHazard: this.waterAsHazard,
+        });
+      }
+    } catch {
+      flags = StandableCache.MISSING;
+    }
     this.flags.set(key, flags);
     return flags;
   }
