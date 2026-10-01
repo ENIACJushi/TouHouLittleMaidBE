@@ -4,8 +4,10 @@
  *
  * 路点策略：
  * - 连续 Walk 抽稀（步长 VIA_STEP），Jump1/Fall/段尾保留；
- * - 途经路点平视高度 + pursue_via（触及=0）；终点路点脚位 + 默认追逐；
- * - 触及范围内即视为到达（与追逐半径对齐）。
+ * - **单 marker 实体**：会话内 spawn 一次，换路点只 teleport（Seek 一次锁定，不反复 reset）；
+ * - 途经平视 + pursue_via；**抵达末途经之后、走向终点时**再切 goal 追逐与脚位；
+ * - Gap 仅临时卸 Seek（保留 marker），落地后按下一步角色再挂回；
+ * - 触及范围内即视为到达。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
  */
@@ -96,7 +98,7 @@ type Session = {
   index: number;
   seekId: number;
   marker: Entity | undefined;
-  /** 当前已挂追逐角色；换角色时才 remountPursue */
+  /** 当前追逐角色；仅 via→goal（或反之）时切换组件组 */
   pursueRole: WaypointRole | undefined;
   phase: Phase;
   phaseAt: number;
@@ -238,7 +240,11 @@ function stopTickerIfIdle(): void {
   }
 }
 
-function clearMarker(session: Session): void {
+/**
+ * 销毁会话 marker（仅 teardown）。
+ * 使用场景：Done/Fail/Cancel；换路点不调用。
+ */
+function destroyMarker(session: Session): void {
   const m = session.marker;
   session.marker = undefined;
   if (!m) {
@@ -255,26 +261,56 @@ function clearMarker(session: Session): void {
 }
 
 /**
- * 按角色挂 Seek 档 + 对应追逐（途经 via / 终点 default）。
- * 使用场景：beginStep / Gap 落地后恢复。
+ * 确保会话内唯一 marker：无则 spawn+stamp，有则 teleport。
+ * 使用场景：每个 AI 路点 / Gap 对岸指示。
  */
-function mountSeekWithPursue(
-  maid: Entity,
-  seekId: number,
-  role: WaypointRole,
-  session?: Session
-): boolean {
-  if (!Seek.mount(maid, seekId)) {
+function ensureMarker(session: Session, pos: Vector3): boolean {
+  const maid = session.maid;
+  const existing = session.marker;
+  if (existing?.isValid) {
+    try {
+      existing.teleport(pos);
+      return true;
+    } catch {
+      destroyMarker(session);
+    }
+  }
+  try {
+    const marker = maid.dimension.spawnEntity(
+      Seek.MARKER_TYPE as never,
+      pos
+    );
+    Seek.stamp(marker, session.seekId);
+    session.marker = marker;
+    return true;
+  } catch (e) {
+    Logger.warn(TAG, `ensureMarker spawn failed: ${String(e)}`);
     return false;
   }
-  Seek.mountPursue(maid, pursueEventFor(role));
-  if (session) {
+}
+
+/**
+ * 挂 Seek（若未挂）并按角色切换追逐；不因换点 resetTarget。
+ * 使用场景：AI 段；via→goal 仅在此切换追逐组。
+ */
+function ensureSeek(session: Session, role: WaypointRole): boolean {
+  const maid = session.maid;
+  if (Seek.getIndex(maid) !== session.seekId) {
+    if (!Seek.mount(maid, session.seekId)) {
+      return false;
+    }
+    Seek.mountPursue(maid, pursueEventFor(role));
+    session.pursueRole = role;
+    return true;
+  }
+  if (session.pursueRole !== role) {
+    Seek.mountPursue(maid, pursueEventFor(role));
     session.pursueRole = role;
   }
   return true;
 }
 
-/** 卸追逐 + Seek 档 */
+/** 卸追逐 + Seek 档（保留 marker 实体） */
 function quitSeekWithPursue(maid: Entity): void {
   Seek.quitPursue(maid);
   Seek.quit(maid);
@@ -290,7 +326,7 @@ function teardown(
 ): void {
   session.failReason = reason;
   session.phase = reason === "done" ? "Done" : "Fail";
-  clearMarker(session);
+  destroyMarker(session);
   const maid = session.maid;
   try {
     if (maid.isValid) {
@@ -321,7 +357,7 @@ function succeedSession(session: Session): void {
 }
 
 function advance(session: Session): void {
-  clearMarker(session);
+  // 不销毁 marker：下一步 beginStep 原地 teleport
   session.index++;
   if (session.index >= session.steps.length) {
     succeedSession(session);
@@ -341,33 +377,25 @@ function beginStep(session: Session): void {
   if (step.kind === "gap") {
     session.phase = "PrepGap";
     try {
+      // 冲量前卸 Seek，避免 AI 抢速度；marker 保留并挪到对岸便于指示
       quitSeekWithPursue(maid);
-      Seek.resetTarget(maid);
       session.pursueRole = undefined;
+      ensureMarker(session, eyeOf(step.edge.to));
     } catch {
       /* ignore */
     }
     return;
   }
   session.phase = "FollowAI";
-  const stampPos = step.role === "goal" ? feetOf(step.support) : eyeOf(step.support);
-  try {
-    const marker = maid.dimension.spawnEntity(
-      Seek.MARKER_TYPE as never,
-      stampPos
-    );
-    Seek.stamp(marker, session.seekId);
-    const needRemount =
-      Seek.getIndex(maid) !== session.seekId ||
-      session.pursueRole !== step.role;
-    if (needRemount) {
-      mountSeekWithPursue(maid, session.seekId, step.role, session);
-    }
-    // 换路点后强制清恨再索敌（reselect + 新 stamp）
-    Seek.resetTarget(maid);
-    session.marker = marker;
-  } catch (e) {
-    failSession(session, `spawn_marker:${String(e)}`);
+  const stampPos =
+    step.role === "goal" ? feetOf(step.support) : eyeOf(step.support);
+  if (!ensureMarker(session, stampPos)) {
+    failSession(session, "spawn_marker");
+    return;
+  }
+  // via→goal：抵达末途经后进入终点步时切换追逐；途经之间不重锁
+  if (!ensureSeek(session, step.role)) {
+    failSession(session, "seek_mount");
   }
 }
 
@@ -476,8 +504,7 @@ function tickInFlight(session: Session): void {
   if (onGround && nearSupport(maid, edge.to, ARRIVE_VIA_H)) {
     inFlightCount = Math.max(0, inFlightCount - 1);
     Movement.unlock(maid);
-    // 下一段 beginStep 会按 role 挂追逐；此处先清，避免残留
-    session.pursueRole = undefined;
+    // 下一段 beginStep 会按需 ensureSeek；Gap 期间 pursueRole 已清
     advance(session);
   }
 }
@@ -569,12 +596,7 @@ export const Executor = {
       Logger.warn(TAG, "start: seek 池满");
       return false;
     }
-    const firstRole: WaypointRole =
-      steps[0].kind === "ai" ? steps[0].role : "via";
-    if (!mountSeekWithPursue(maid, seekId, firstRole)) {
-      Seek.free(seekId);
-      return false;
-    }
+    // Seek/marker 在首个 AI beginStep 时挂上；若以 Gap 开头则先卸空跑 Prep
     const session: Session = {
       maidId: maid.id,
       maid,
@@ -582,7 +604,7 @@ export const Executor = {
       index: 0,
       seekId,
       marker: undefined,
-      pursueRole: firstRole,
+      pursueRole: undefined,
       phase: "Idle",
       phaseAt: now(),
       dest,
