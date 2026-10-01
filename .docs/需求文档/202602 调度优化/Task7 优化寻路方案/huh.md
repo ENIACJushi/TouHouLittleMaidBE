@@ -7,7 +7,7 @@
 | --- | --- |
 | Phase 0a | **已完成**：公式 §6.2；探针 → [Phase0a-探针归档](./Phase0a-探针归档/README.md)；生产 `maid/path/*` |
 | Phase 0b | 冲量标定（待做） |
-| Phase 1 | 四类边 + A\* / `canReach`（进行中） |
+| Phase 1 | 四类边 **已完成**（`edges.ts`）；下一步 A\* / `canReach` |
 
 **定位：** 农作等接入 Task6 精准目标的 **刚需**（认领前预判可达）。  
 含 **冲刺跳过空谷**：原版 `navigation.walk` **不会**规划跨空格跃迁；用脚本 `applyImpulse` 执行该边。

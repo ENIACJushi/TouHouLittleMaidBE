@@ -3,6 +3,22 @@
  * 使用场景：Path / edges / A* 从本目录扩展；包外可 `from "maid/path/main"`。
  */
 export { StandableCache } from "./StandableCache";
+export { expandEdges } from "./edges";
+export type { EdgeGenOptions } from "./edges";
+export {
+  ASTAR_MAX_EXPAND,
+  ASTAR_MAX_MS,
+  COST_FALL_BASE,
+  COST_FALL_PER_Y,
+  COST_JUMP1,
+  COST_SPRINT_GAP,
+  COST_WALK,
+  GAP_MAX,
+  GAP_MIN,
+  MAX_FALL,
+  SEARCH_H,
+  SEARCH_V,
+} from "./constants";
 export {
   evalBlockFlags,
   isClosedBottomTrapdoor,
