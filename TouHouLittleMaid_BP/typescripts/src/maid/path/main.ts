@@ -17,10 +17,12 @@ export type { PathFindOptions } from "./Path";
 export { Executor, IN_FLIGHT_MAX } from "./Executor";
 export {
   lookupImpulse,
+  resolveImpulse,
+  feetOfSupport,
   overrideImpulse,
   snapshotImpulseTable,
 } from "./ImpulseTable";
-export type { ImpulseKey, ImpulseVec } from "./ImpulseTable";
+export type { ImpulseKey, ImpulseVec, ImpulsePos } from "./ImpulseTable";
 export { unreachableCache, UnreachableCache, UNREACHABLE_TTL_MS } from "./UnreachableCache";
 export {
   ASTAR_MAX_EXPAND,

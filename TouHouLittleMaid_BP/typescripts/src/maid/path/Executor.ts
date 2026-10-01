@@ -14,7 +14,7 @@ import { config } from "../../controller/Config";
 import { Logger } from "../../controller/Logger";
 import { Movement } from "../facets/Movement";
 import { Seek } from "../facets/Seek";
-import { lookupImpulse } from "./ImpulseTable";
+import { resolveImpulse, feetOfSupport } from "./ImpulseTable";
 import { PathEdge, StandNode } from "./types";
 import { unreachableCache } from "./UnreachableCache";
 
@@ -427,18 +427,22 @@ function doImpulse(session: Session): void {
     return;
   }
   const edge = step.edge;
-  const dx = edge.to.x - edge.from.x;
-  const dz = edge.to.z - edge.from.z;
-  const dist = Math.max(Math.abs(dx), Math.abs(dz));
-  const dy = edge.to.y - edge.from.y;
-  const imp = lookupImpulse(dist, dy);
+  const dxBlocks = edge.to.x - edge.from.x;
+  const dzBlocks = edge.to.z - edge.from.z;
+  const plannedDist = Math.max(Math.abs(dxBlocks), Math.abs(dzBlocks));
+  const plannedDy = edge.to.y - edge.from.y;
+  // 以标定表为参考，按「当前脚位 → 对岸脚位」实际距离缩放
+  const imp = resolveImpulse(maid.location, edge.to, plannedDist, plannedDy);
   if (!imp) {
     failSession(session, "no_impulse");
     return;
   }
-  const len = Math.sqrt(dx * dx + dz * dz) || 1;
-  const vx = (dx / len) * imp.hx;
-  const vz = (dz / len) * imp.hx;
+  const toFeet = feetOfSupport(edge.to);
+  const ddx = toFeet.x - maid.location.x;
+  const ddz = toFeet.z - maid.location.z;
+  const len = Math.sqrt(ddx * ddx + ddz * ddz) || 1;
+  const vx = (ddx / len) * imp.hx;
+  const vz = (ddz / len) * imp.hx;
   try {
     maid.clearVelocity();
     maid.applyImpulse({ x: vx, y: imp.hy, z: vz });
