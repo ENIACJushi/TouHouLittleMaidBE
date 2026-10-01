@@ -2,22 +2,30 @@
 const END_INDEX = 255;
 
 /**
- * 默认追逐组件组（历史每档内 short ranged_attack；Task6 从档内剥离）。
- * 使用场景：仅由脚本 `slot:seek_pursue` / `_quit` 挂卸，不与 slot:seek_n 绑定。
+ * 终点追逐：短距 ranged_attack，有触及距离（历史默认）。
+ * 使用场景：路径终点路点；脚本 `slot:seek_pursue` 挂载。
  */
 const SEEK_PURSUE = "slot:seek_pursue";
 
 /**
+ * 途经追逐：触及定死为 0，迫使贴着路点走完，头部平视途经 marker。
+ * 使用场景：寻路过程中的中间路点；与终点追逐互斥，脚本 `slot:seek_pursue_via` 挂载。
+ */
+const SEEK_PURSUE_VIA = "slot:seek_pursue_via";
+
+/**
  * 精准目标 Seek 枚举（Task6 Phase 1 + Task7 追逐分离）。
- * 使用场景：生成 `slot:seek_<n>`（仅索敌）与独立 `slot:seek_pursue`（可换其它追逐实现）。
- * 定稿：档内仅 NAT；追逐由脚本另调，便于换 melee / move_towards 等。
+ * 使用场景：生成 `slot:seek_<n>`（仅索敌）与独立追逐组（终点 / 途经可换）。
+ * 定稿：档内仅 NAT；追逐由脚本另调。
  */
 export class Seek {
   /**
    * @param {import('../main.js').MaidGenerator} g
    */
   static process(g) {
-    console.log(`添加精准目标 Seek: 0~${END_INDEX}；追逐组 ${SEEK_PURSUE}（脚本单独挂）`);
+    console.log(
+      `添加精准目标 Seek: 0~${END_INDEX}；追逐 ${SEEK_PURSUE} / ${SEEK_PURSUE_VIA}`
+    );
 
     g.addProperty("thlm:seek_index", {
       type: "int",
@@ -26,7 +34,7 @@ export class Seek {
       range: [-1, END_INDEX],
     });
 
-    // 默认追逐（与删前配置一致）；后续可再加 slot:seek_pursue_* 变体，由脚本选挂
+    // 终点追逐：带触及半径，到终点附近即可停
     g.addComponentGroup(SEEK_PURSUE, {
       "minecraft:behavior.ranged_attack": {
         priority: 6,
@@ -36,11 +44,37 @@ export class Seek {
         attack_radius_min: 0.9,
       },
     });
-    g.addEvent(SEEK_PURSUE, {
-      add: { component_groups: [SEEK_PURSUE] },
+    // 途经追逐：触及=0，中间路点要贴紧再切下一段
+    g.addComponentGroup(SEEK_PURSUE_VIA, {
+      "minecraft:behavior.ranged_attack": {
+        priority: 6,
+        attack_interval_min: 0.8,
+        attack_interval_max: 0.8,
+        attack_radius: 0,
+        attack_radius_min: 0,
+      },
     });
+
+    // 挂终点：卸途经，避免双追逐
+    g.addEvent(SEEK_PURSUE, {
+      sequence: [
+        { remove: { component_groups: [SEEK_PURSUE_VIA] } },
+        { add: { component_groups: [SEEK_PURSUE] } },
+      ],
+    });
+    // 挂途经：卸终点
+    g.addEvent(SEEK_PURSUE_VIA, {
+      sequence: [
+        { remove: { component_groups: [SEEK_PURSUE] } },
+        { add: { component_groups: [SEEK_PURSUE_VIA] } },
+      ],
+    });
+    // 卸追逐：两种一并卸（teardown / 换实现前清理）
     g.addEvent(`${SEEK_PURSUE}_quit`, {
-      remove: { component_groups: [SEEK_PURSUE] },
+      remove: { component_groups: [SEEK_PURSUE, SEEK_PURSUE_VIA] },
+    });
+    g.addEvent(`${SEEK_PURSUE_VIA}_quit`, {
+      remove: { component_groups: [SEEK_PURSUE, SEEK_PURSUE_VIA] },
     });
 
     for (let i = 0; i <= END_INDEX; i++) {

@@ -125,14 +125,20 @@ export const Seek = {
   },
 
   /**
-   * 默认追逐事件名（短距 ranged_attack）；后续可扩展其它 pursue 变体事件。
-   * 使用场景：Path.follow Walk 段；业务可改挂其它 `slot:seek_pursue_*`。
+   * 终点追逐事件名（短距 ranged_attack，触及约 0.9～2.1）。
+   * 使用场景：Path.follow 终点路点；对准真实目标。
    */
   PURSUE_DEFAULT: "slot:seek_pursue",
 
   /**
+   * 途经追逐事件名（触及定死为 0）。
+   * 使用场景：Path.follow 中间路点；平视行走，贴紧再切下一段。
+   */
+  PURSUE_VIA: "slot:seek_pursue_via",
+
+  /**
    * 挂载追逐组件（与 Seek 档分离；默认同 `PURSUE_DEFAULT`）。
-   * 使用场景：mount(seekId) 之后再调；换实现时传其它事件 id。
+   * 使用场景：mount(seekId) 之后再调；途经传 `PURSUE_VIA`。事件内会互斥卸另一组。
    */
   mountPursue(maid: Entity, pursueEvent: string = "slot:seek_pursue"): void {
     try {
@@ -143,7 +149,7 @@ export const Seek = {
   },
 
   /**
-   * 卸下追逐组件（默认 `slot:seek_pursue_quit`）。
+   * 卸下追逐组件（默认 `slot:seek_pursue_quit`，同时卸终点+途经两组）。
    */
   quitPursue(maid: Entity, pursueQuitEvent: string = "slot:seek_pursue_quit"): void {
     try {
