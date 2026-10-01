@@ -483,7 +483,7 @@ function tickInFlight(session: Session): void {
 }
 
 /**
- * 世界设置「显示路点」开启时，对尚未完成的 AI 路点刷粒子。
+ * 世界设置「显示路点」开启时，对尚未完成的路点刷粒子（含 Gap 对岸）。
  * 使用场景：tickAll；途经红、终点绿；已走过的路点不再显示。
  */
 function spawnWaypointParticles(session: Session): void {
@@ -495,14 +495,20 @@ function spawnWaypointParticles(session: Session): void {
     return;
   }
   const dim = maid.dimension;
+  const last = session.steps.length - 1;
   for (let i = session.index; i < session.steps.length; i++) {
     const step = session.steps[i];
-    if (step.kind !== "ai") {
-      continue;
+    let pos: Vector3;
+    let isGoal = false;
+    if (step.kind === "ai") {
+      isGoal = step.role === "goal";
+      pos = isGoal ? feetOf(step.support) : eyeOf(step.support);
+    } else {
+      // Gap：对岸支撑为途经/终点标记
+      isGoal = i === last;
+      pos = isGoal ? feetOf(step.edge.to) : eyeOf(step.edge.to);
     }
-    const pos =
-      step.role === "goal" ? feetOf(step.support) : eyeOf(step.support);
-    const particleId = step.role === "goal" ? PARTICLE_GOAL : PARTICLE_VIA;
+    const particleId = isGoal ? PARTICLE_GOAL : PARTICLE_VIA;
     try {
       dim.spawnParticle(particleId as never, pos);
     } catch {
