@@ -1,6 +1,6 @@
 import { world, system } from "@minecraft/server"
 import experiment from "./experiment"
-import { initTest } from "../test/main";
+import { initPathFollow, initTest } from "../test/main";
 import { BlockEvents } from "./events/BlockEvents";
 import { EntityEvents } from "./events/EntityEvents";
 import { ItemEvents } from "./events/ItemEvents";
@@ -30,6 +30,9 @@ if (false) {
   world.sendMessage('§e[Touhou Little Maid] 现在是实验模式。');
   experiment.main();
 }
+
+// Task7 Phase2：Path.follow 冒烟（永久保留）
+initPathFollow();
 
 if (TEST) {
   initTest();
