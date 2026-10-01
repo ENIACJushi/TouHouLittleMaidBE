@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 路径执行器状态机（Task7 Phase2）。
  * 使用场景：Path.follow；Walk/Jump1/Fall 用 Seek+marker；SprintGap 用冲量。
  *
@@ -10,6 +10,7 @@
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
  */
 import { Entity, system, Vector3 } from "@minecraft/server";
+import { config } from "../../controller/Config";
 import { Logger } from "../../controller/Logger";
 import { Movement } from "../facets/Movement";
 import { Seek } from "../facets/Seek";
@@ -18,6 +19,11 @@ import { PathEdge, StandNode } from "./types";
 import { unreachableCache } from "./UnreachableCache";
 
 const TAG = "Path.Executor";
+
+/** 途经路点调试粒子（红色） */
+const PARTICLE_VIA = "touhou_little_maid:path_waypoint_via";
+/** 终点路点调试粒子（绿色） */
+const PARTICLE_GOAL = "touhou_little_maid:path_waypoint_goal";
 
 /** 同时处于 InFlight（冲量飞行）的女仆上限 */
 export const IN_FLIGHT_MAX = 4;
@@ -472,12 +478,42 @@ function tickInFlight(session: Session): void {
   }
 }
 
+/**
+ * 世界设置「显示路点」开启时，对尚未完成的 AI 路点刷粒子。
+ * 使用场景：tickAll；途经红、终点绿；已走过的路点不再显示。
+ */
+function spawnWaypointParticles(session: Session): void {
+  if (!config.path_show_waypoints.value) {
+    return;
+  }
+  const maid = session.maid;
+  if (!maid.isValid) {
+    return;
+  }
+  const dim = maid.dimension;
+  for (let i = session.index; i < session.steps.length; i++) {
+    const step = session.steps[i];
+    if (step.kind !== "ai") {
+      continue;
+    }
+    const pos =
+      step.role === "goal" ? feetOf(step.support) : eyeOf(step.support);
+    const particleId = step.role === "goal" ? PARTICLE_GOAL : PARTICLE_VIA;
+    try {
+      dim.spawnParticle(particleId as never, pos);
+    } catch {
+      /* 粒子缺失或维度异常时忽略 */
+    }
+  }
+}
+
 function tickAll(): void {
   for (const session of [...sessions.values()]) {
     if (!session.maid.isValid) {
       failSession(session, "maid_invalid");
       continue;
     }
+    spawnWaypointParticles(session);
     switch (session.phase) {
       case "FollowAI":
         tickFollowAI(session);

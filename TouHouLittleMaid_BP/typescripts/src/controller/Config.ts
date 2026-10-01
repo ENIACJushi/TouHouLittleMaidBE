@@ -44,6 +44,15 @@ class Config {
     changable: true,
     configName: 'logger_level'
   });
+  /**
+   * 显示寻路路点粒子：途经红、终点绿。
+   * 使用场景：调试 / 观察 Path.follow；默认关闭。
+   */
+  path_show_waypoints = new ConfigItemBoolean({
+    defaultValue: false,
+    changable: true,
+    configName: 'path_show_waypoints'
+  });
 }
 
 abstract class ConfigItem<T> {
