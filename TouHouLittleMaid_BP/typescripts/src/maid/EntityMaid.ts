@@ -25,6 +25,7 @@ import {
   Statues,
   Util,
   Work,
+  Path,
 } from "./facets/main";
 import { fromStr, toLore, toStr } from "./serialize/entityCodec";
 
@@ -82,6 +83,11 @@ export class EntityMaid {
    * 使用场景：Task6 独占锁定；不挂农作业务。
    */
   static Seek = Seek;
+  /**
+   * 脚本寻路（find / canReach；follow 待 Phase2）。
+   * 使用场景：农作认领前可达预判；Walk/Gap 边与执行共用规则。
+   */
+  static Path = Path;
 
   /** 实体 ↔ 字符串 / lore 序列化入口；场景：照片、魂符、胶片等物品持久化 */
   static toStr = toStr;

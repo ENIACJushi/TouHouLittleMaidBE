@@ -1,10 +1,19 @@
 /**
  * 女仆脚本寻路模块入口（Task7）。
- * 使用场景：Path / edges / A* 从本目录扩展；包外可 `from "maid/path/main"`。
+ * 使用场景：Path / edges / A* 从本目录扩展；包外可经 EntityMaid.Path。
  */
 export { StandableCache } from "./StandableCache";
 export { expandEdges } from "./edges";
 export type { EdgeGenOptions } from "./edges";
+export { aStar, heuristic } from "./AStar";
+export type { AStarOptions } from "./AStar";
+export {
+  Path,
+  buildSearchBounds,
+  standNodeFromDest,
+  standNodeFromFeet,
+} from "./Path";
+export type { PathFindOptions } from "./Path";
 export {
   ASTAR_MAX_EXPAND,
   ASTAR_MAX_MS,

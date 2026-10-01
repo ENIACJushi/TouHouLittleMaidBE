@@ -19,6 +19,7 @@ import { Init } from "./init";
 import { Util } from "./util";
 import { Damage } from "./Damage";
 import { Seek } from "./Seek";
+import { Path } from "./Path";
 
 export {
   Owner,
@@ -42,6 +43,7 @@ export {
   Util,
   Damage,
   Seek,
+  Path,
 };
 
 /** 音效类型 / 管理器再导出：仅供 maid 包内；包外请用 EntityMaid.Sound，勿经本文件取用 sound 实现 */
@@ -73,4 +75,5 @@ export const Maid = {
   Util,
   Damage,
   Seek,
+  Path,
 };

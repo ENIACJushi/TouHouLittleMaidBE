@@ -1,13 +1,13 @@
 # Task7 脚本寻路（有界 A\* + 冲刺跃谷）
 
-**状态：** Phase0a 谓词已锁定并落地 `StandableCache`；探针已归档；下一步四类边 + A\*。细节见 [实现计划.md](./实现计划.md)。  
+**状态：** Phase0a 完成；四类边 + A\* / `canReach` 已落地；下一步规划验收或 Phase2 `follow`。细节见 [实现计划.md](./实现计划.md)。  
 **依赖：** [Task6](../Task6%20精准目标控制/huh.md) **已完成**。
 
 | 阶段 | 状态 |
 | --- | --- |
 | Phase 0a | **已完成**：公式 §6.2；探针 → [Phase0a-探针归档](./Phase0a-探针归档/README.md)；生产 `maid/path/*` |
-| Phase 0b | 冲量标定（待做） |
-| Phase 1 | 四类边 **已完成**（`edges.ts`）；下一步 A\* / `canReach` |
+| Phase 0b | 冲量标定（待做；可与 Phase2 Gap 执行并行） |
+| Phase 1 | 四类边 + A\* / `EntityMaid.Path.find|canReach` **已完成**；脚本验收待做 |
 
 **定位：** 农作等接入 Task6 精准目标的 **刚需**（认领前预判可达）。  
 含 **冲刺跳过空谷**：原版 `navigation.walk` **不会**规划跨空格跃迁；用脚本 `applyImpulse` 执行该边。
