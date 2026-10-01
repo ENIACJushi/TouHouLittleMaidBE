@@ -15,7 +15,11 @@ export {
 } from "./Path";
 export type { PathFindOptions } from "./Path";
 export { Executor, IN_FLIGHT_MAX } from "./Executor";
-export { lookupImpulse, overrideImpulse } from "./ImpulseTable";
+export {
+  lookupImpulse,
+  overrideImpulse,
+  snapshotImpulseTable,
+} from "./ImpulseTable";
 export type { ImpulseKey, ImpulseVec } from "./ImpulseTable";
 export { unreachableCache, UnreachableCache, UNREACHABLE_TTL_MS } from "./UnreachableCache";
 export {

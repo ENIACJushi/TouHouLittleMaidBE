@@ -7,5 +7,6 @@ alwaysApply: true
 
 - `TouHouLittleMaid_BP/typescripts/test/path/PathFollowTest.ts` 及 `initPathFollow` 接线是 **Task7 Path.follow 永久回归入口**，后续仍会使用。
 - **禁止删除**该测试、禁止从 `src/main.ts` / `test/main.ts` 卸掉 `initPathFollow()`，也禁止再写「勿提交 / 测完删除」类注释。
-- 归档其它临时探针时，不要误伤 `test/path/`。
+- `PathGapCalibTest` 已归档至 `.docs/.../Phase0b-冲量标定归档/`；复测按该目录 README 临时恢复，勿再常驻 BP。
+- 归档其它临时探针时，不要误伤 `test/path/PathFollowTest.ts`。
 - 命令：`/scriptevent thlm:test path_go|path_cancel|path_status|path_help`。

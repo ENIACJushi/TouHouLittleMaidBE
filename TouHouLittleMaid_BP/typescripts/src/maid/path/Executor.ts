@@ -413,7 +413,7 @@ function tickPrepGap(session: Session): void {
   if (inFlightCount >= IN_FLIGHT_MAX) {
     return;
   }
-  Movement.lock(maid);
+  // 勿 Movement.lock：移速钳为 0 会吃掉 applyImpulse 水平分量
   session.phase = "Impulse";
   session.phaseAt = now();
   doImpulse(session);
