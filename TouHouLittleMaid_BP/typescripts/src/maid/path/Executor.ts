@@ -163,6 +163,26 @@ function faceToward(maid: Entity, lookAt: Vector3): void {
 }
 
 /**
+ * 清掉水平速度，保留竖直分量。
+ * 使用场景：Gap 落地刹停，防惯性滑出对岸垫。
+ */
+function clearHorizontalVelocity(maid: Entity): void {
+  try {
+    const v = maid.getVelocity();
+    if (Math.abs(v.x) < 1e-6 && Math.abs(v.z) < 1e-6) {
+      return;
+    }
+    maid.applyImpulse({ x: -v.x, y: 0, z: -v.z });
+  } catch (e) {
+    try {
+      maid.clearVelocity();
+    } catch {
+      Logger.warn(TAG, `clearHorizontalVelocity failed: ${String(e)}`);
+    }
+  }
+}
+
+/**
  * 是否到达支撑格（相对脚位测距）。
  * @param horizMax 水平容差：途经 / 终点不同
  */
@@ -521,7 +541,6 @@ function doImpulse(session: Session): void {
       `toBlock=${edge.to.x},${edge.to.y},${edge.to.z}`,
       `actualH=${f3(dbg.actualH)}`,
       `targetH=${f3(dbg.targetH)}`,
-      `solveExtra=${f3(dbg.solveExtra)}`,
       `hx=${f3(imp.hx)}`,
       `hy=${f3(imp.hy)}`,
       `hyRaw=${f3(dbg.hyRaw)}`,
@@ -587,6 +606,8 @@ function tickInFlight(session: Session): void {
         `flightMs=${now() - session.phaseAt}`,
       ].join(",")
     );
+    // 落地刹住水平动量，避免滑出垫格（小碰撞箱后续更依赖此点）
+    clearHorizontalVelocity(maid);
     inFlightCount = Math.max(0, inFlightCount - 1);
     Movement.unlock(maid);
     // Gap 保留 Seek；下一段 beginStep 按需 teleport / 切角色
