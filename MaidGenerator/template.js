@@ -129,6 +129,10 @@ export let TEMPLATE = {
           "avoid_water": true,
           "avoid_portals": true
         },
+        // 常态寻路跌落上限 3：避免主动走进更深坑后无法跳回（Task7 §3.1）
+        "minecraft:preferred_path": {
+          "max_fall_blocks": 3
+        },
         "minecraft:movement.basic": { },
         "minecraft:behavior.mount_pathing": {
           "priority": 3,
