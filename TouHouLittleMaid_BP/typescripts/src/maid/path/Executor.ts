@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 路径执行器状态机（Task7 Phase2）。
  * 使用场景：Path.follow；Walk/Jump1/Fall 用 Seek+marker；SprintGap 用冲量。
  *
@@ -16,11 +16,13 @@ import { config } from "../../controller/Config";
 import { Logger } from "../../controller/Logger";
 import { Movement } from "../facets/Movement";
 import { Seek } from "../facets/Seek";
-import { resolveImpulse, feetOfSupport } from "./ImpulseTable";
+import { resolveImpulseEx, feetOfSupport } from "./ImpulseTable";
 import { PathEdge, StandNode } from "./types";
 import { unreachableCache } from "./UnreachableCache";
 
 const TAG = "Path.Executor";
+/** Gap 落点诊断前缀（纯 console，便于 content 抓取） */
+const GAP_LOG = "PATHGAP";
 
 /** 途经路点调试粒子（红色） */
 const PARTICLE_VIA = "touhou_little_maid:path_waypoint_via";
@@ -109,6 +111,15 @@ type Session = {
 const sessions = new Map<string, Session>();
 let tickHandle: number | undefined;
 let inFlightCount = 0;
+
+function f3(n: number): string {
+  return n.toFixed(3);
+}
+
+/** Gap 诊断：只走 console.log */
+function logGap(line: string): void {
+  console.log(`${GAP_LOG}|${line}`);
+}
 
 function now(): number {
   return Date.now();
@@ -476,18 +487,48 @@ function doImpulse(session: Session): void {
   const dzBlocks = edge.to.z - edge.from.z;
   const plannedDist = Math.max(Math.abs(dxBlocks), Math.abs(dzBlocks));
   const plannedDy = edge.to.y - edge.from.y;
-  // hx 由拟合反解（含防滑短瞄）；hy 查桶
-  const imp = resolveImpulse(maid.location, edge.to, plannedDist, plannedDy);
-  if (!imp) {
+  const dbg = resolveImpulseEx(
+    maid.location,
+    edge.to,
+    plannedDist,
+    plannedDy,
+    edge.from
+  );
+  if (!dbg) {
     failSession(session, "no_impulse");
     return;
   }
-  const toFeet = feetOfSupport(edge.to);
+  const { vec: imp, toFeet } = dbg;
   const ddx = toFeet.x - maid.location.x;
   const ddz = toFeet.z - maid.location.z;
   const len = Math.sqrt(ddx * ddx + ddz * ddz) || 1;
   const vx = (ddx / len) * imp.hx;
   const vz = (ddz / len) * imp.hx;
+  const pad = dbg.fromPadFeet;
+  const padOff = pad
+    ? Math.hypot(maid.location.x - pad.x, maid.location.z - pad.z)
+    : NaN;
+  logGap(
+    [
+      "IMPULSE",
+      `i=${session.index}`,
+      `plan=${dbg.plannedDist}:${dbg.plannedDy}`,
+      `from=${f3(dbg.from.x)},${f3(dbg.from.y)},${f3(dbg.from.z)}`,
+      pad
+        ? `fromPad=${f3(pad.x)},${f3(pad.y)},${f3(pad.z)},padOffH=${f3(padOff)}`
+        : "fromPad=-",
+      `toFeet=${f3(toFeet.x)},${f3(toFeet.y)},${f3(toFeet.z)}`,
+      `toBlock=${edge.to.x},${edge.to.y},${edge.to.z}`,
+      `actualH=${f3(dbg.actualH)}`,
+      `targetH=${f3(dbg.targetH)}`,
+      `solveExtra=${f3(dbg.solveExtra)}`,
+      `hx=${f3(imp.hx)}`,
+      `hy=${f3(imp.hy)}`,
+      `hyRaw=${f3(dbg.hyRaw)}`,
+      `dir=${f3(ddx / len)},${f3(ddz / len)}`,
+      `v=${f3(vx)},${f3(imp.hy)},${f3(vz)}`,
+    ].join(",")
+  );
   // 冲量前脚本朝向对岸（不依赖跨沟 Seek 转头）
   faceToward(maid, toFeet);
   try {
@@ -521,6 +562,31 @@ function tickInFlight(session: Session): void {
     onGround = false;
   }
   if (onGround && nearSupport(maid, edge.to, ARRIVE_VIA_H)) {
+    const toFeet = feetOfSupport(edge.to);
+    const loc = maid.location;
+    const errH = Math.hypot(loc.x - toFeet.x, loc.z - toFeet.z);
+    const errV = loc.y - toFeet.y;
+    const jumpDx = toFeet.x - (edge.from.x + 0.5);
+    const jumpDz = toFeet.z - (edge.from.z + 0.5);
+    const jumpLen = Math.hypot(jumpDx, jumpDz) || 1;
+    const along =
+      ((loc.x - toFeet.x) * jumpDx + (loc.z - toFeet.z) * jumpDz) / jumpLen;
+    const lateral =
+      ((loc.x - toFeet.x) * -jumpDz + (loc.z - toFeet.z) * jumpDx) / jumpLen;
+    logGap(
+      [
+        "LAND",
+        `i=${session.index}`,
+        `land=${f3(loc.x)},${f3(loc.y)},${f3(loc.z)}`,
+        `toFeet=${f3(toFeet.x)},${f3(toFeet.y)},${f3(toFeet.z)}`,
+        `toBlock=${edge.to.x},${edge.to.y},${edge.to.z}`,
+        `errH=${f3(errH)}`,
+        `errV=${f3(errV)}`,
+        `along=${f3(along)}`,
+        `lateral=${f3(lateral)}`,
+        `flightMs=${now() - session.phaseAt}`,
+      ].join(",")
+    );
     inFlightCount = Math.max(0, inFlightCount - 1);
     Movement.unlock(maid);
     // Gap 保留 Seek；下一段 beginStep 按需 teleport / 切角色

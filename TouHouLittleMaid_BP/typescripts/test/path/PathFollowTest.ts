@@ -1,6 +1,7 @@
 /**
  * Task7 Phase2：Path.follow 冒烟验收（永久保留，后续回归继续用）。
  * 使用场景：`/scriptevent thlm:test path_go|path_cancel|path_status`。
+ * path_go 会打 PATHGO| 规划摘要；Gap 冲量/落地见 PATHGAP|（Executor）。
  */
 import { Entity, Player, system } from "@minecraft/server";
 import { Logger } from "../../src/controller/Logger";
@@ -9,6 +10,8 @@ import { testCommandRegister } from "../TestCommandRegister";
 
 const TAG = "PathFollow";
 const MAID_TYPE = "thlmm:maid";
+/** path_go 规划诊断前缀（纯 console） */
+const GO_LOG = "PATHGO";
 
 /**
  * follow 冒烟：看向方块为终点，找最近女仆执行 Path.follow。
@@ -27,7 +30,7 @@ export class PathFollowTest {
       source,
       [
         "Task7 Phase2 follow 冒烟",
-        "path_go — 最近女仆 → 看向方块（须先看准目标格）",
+        "path_go — 最近女仆 → 看向方块；控制台搜 PATHGO| / PATHGAP|",
         "path_cancel — 取消最近女仆的 follow",
         "path_status — 是否 isFollowing + Seek 档",
         "建议：先平地 Walk，再含 SprintGap 的沟",
@@ -50,20 +53,64 @@ export class PathFollowTest {
     EntityMaid.Work.set(maid, EntityMaid.Work.idle);
     EntityMaid.Movement.unlock(maid);
     const dest = block.location;
+    const startSnap = { ...maid.location };
     system.runTimeout(() => {
       if (!maid.isValid) {
         this.msg(source, "path_go: 女仆已失效");
         return;
       }
       const result = EntityMaid.Path.follow(maid, dest);
+      const edgeKinds =
+        result.edges.map((e) => e.kind).join(">") || "(none)";
       this.msg(
         source,
         [
           `go maid=${maid.id.slice(0, 8)}… dest=${block.typeId}`,
-          `plan ok=${result.ok} reason=${result.reason ?? "-"} edges=${result.edges.map((e) => e.kind).join(">") || "(none)"}`,
-          result.ok ? "已启动 follow，观察女仆移动" : "FAIL 未启动",
+          `plan ok=${result.ok} reason=${result.reason ?? "-"} edges=${edgeKinds}`,
+          result.ok
+            ? "已启动；抓取 PATHGO|PLAN/EDGE 与 PATHGAP|IMPULSE/LAND"
+            : "FAIL 未启动",
         ].join("\n")
       );
+      console.log(
+        [
+          `${GO_LOG}|PLAN`,
+          `ok=${result.ok}`,
+          `reason=${result.reason ?? "-"}`,
+          `maidId=${maid.id}`,
+          `start=${f3(startSnap.x)},${f3(startSnap.y)},${f3(startSnap.z)}`,
+          `destBlock=${dest.x},${dest.y},${dest.z}`,
+          `edges=${result.edges.length}`,
+          `nodes=${result.nodes.length}`,
+        ].join(",")
+      );
+      for (let i = 0; i < result.edges.length; i++) {
+        const e = result.edges[i];
+        const fromFeet = {
+          x: e.from.x + 0.5,
+          y: e.from.y + 1,
+          z: e.from.z + 0.5,
+        };
+        const toFeet = {
+          x: e.to.x + 0.5,
+          y: e.to.y + 1,
+          z: e.to.z + 0.5,
+        };
+        const h = Math.hypot(toFeet.x - fromFeet.x, toFeet.z - fromFeet.z);
+        console.log(
+          [
+            `${GO_LOG}|EDGE`,
+            `i=${i}`,
+            `kind=${e.kind}`,
+            `from=${e.from.x},${e.from.y},${e.from.z}`,
+            `to=${e.to.x},${e.to.y},${e.to.z}`,
+            `fromFeet=${f3(fromFeet.x)},${f3(fromFeet.y)},${f3(fromFeet.z)}`,
+            `toFeet=${f3(toFeet.x)},${f3(toFeet.y)},${f3(toFeet.z)}`,
+            `h=${f3(h)}`,
+            `dy=${e.to.y - e.from.y}`,
+          ].join(",")
+        );
+      }
     }, 8);
   }
 
@@ -126,6 +173,10 @@ export class PathFollowTest {
     }
     Logger.info(TAG, text);
   }
+}
+
+function f3(n: number): string {
+  return n.toFixed(3);
 }
 
 function dist2(

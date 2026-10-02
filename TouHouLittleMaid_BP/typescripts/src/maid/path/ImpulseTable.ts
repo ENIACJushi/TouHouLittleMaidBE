@@ -2,9 +2,10 @@
  * SprintGap 冲量（Task7 Phase0b 表 + Phase 扫测反解）。
  * 使用场景：Executor Impulse。
  *
- * - hy：仍用 Phase0b 九桶（按 plannedDist/dy），有落差时按实际 Δy 微调。
- * - hx：由平地扫测拟合式反解「目标水平射程」。
- * - 瞄准：起点偏近岸（actualH ≤ 格心距）时短瞄防滑出；偏远岸时不短瞄并略过冲，避免连跳欠冲掉沟。
+ * - 目标落点：始终为对岸支撑格**顶面中心**（feetOfSupport）。
+ * - hx：按「当前脚位 → 格心」精确水平距反解；拟合语义见 FIT / firstTouchSolveExtra。
+ * - hy：Phase0b 九桶（plannedDist/dy），有落差时按实际 Δy 微调。
+ * - 首触地补偿：Phase0c FIT 为滑行终点；重扫首触地 FIT 后可去掉 firstTouchSolveExtra。
  */
 export type ImpulseVec = { hx: number; hy: number };
 
@@ -31,7 +32,9 @@ const TABLE: Record<ImpulseKey, ImpulseVec> = {
 };
 
 /**
- * 平地扫测：H ≈ a·hx + b·hy + c·hx·hy + d（H 为水平落点位移）。
+ * 平地扫测：H ≈ a·hx + b·hy + c·hx·hy + d。
+ * 注意：Phase0c 记录的是首触地后再等 SETTLE_AFTER(10) tick 的滑行终点，
+ * 比 Gap 判定用的「首触地」偏远；反解时需加 firstTouchSolveExtra。
  * 使用场景：hxForHorizontalRange / resolveImpulse。
  */
 const FIT = {
@@ -41,20 +44,47 @@ const FIT = {
   d: -0.107157,
 } as const;
 
-/** 近岸起跳时相对对岸中心的短瞄（格），防滑出垫外 */
-const AIM_SHORT_NEAR = 0.2;
-/** 近岸短瞄相对实际距的下限比例 */
-const AIM_MIN_RATIO_NEAR = 0.88;
-/** 远岸起跳时略过冲（格），补偿拟合误差与连跳偏远 */
-const AIM_OVERSHOOT_FAR = 0.08;
-/** actualH 相对规划格心距超出此值视为「远侧起跳」 */
-const FAR_SIDE_EPS = 0.08;
+/**
+ * Phase0c 滑行终点相对 Gap 首触地的偏长（格）。
+ * 来源：path_go 连跳实测——平地 3/4≈0.31、平地 2≈0.38、下一格≈0.13。
+ * 使用场景：格心距 → FIT 反解射程。
+ */
+const FIRST_TOUCH_EXTRA_FLAT = 0.31;
+/**
+ * 短平跨（dist=2）：0.31 欠冲≈0.19、0.50 过冲≈0.30，取插值≈0.38。
+ * 使用场景：firstTouchSolveExtra。
+ */
+const FIRST_TOUCH_EXTRA_FLAT_SHORT = 0.38;
+const FIRST_TOUCH_EXTRA_DOWN = 0.13;
+/** 上跳暂无独立样本，先与平地同补偿（短跨同 short） */
+const FIRST_TOUCH_EXTRA_UP = 0.31;
+const FIRST_TOUCH_EXTRA_UP_SHORT = 0.38;
+
 /** hy 竖直缩放钳制（有 dy 时） */
 const HY_SCALE_MIN = 0.55;
 const HY_SCALE_MAX = 1.35;
 /** 反解 hx 安全钳制（扫测网格约 0.35～0.80） */
 const HX_MIN = 0.28;
 const HX_MAX = 0.95;
+
+/**
+ * 把「首触地格心距」换成 FIT 语义下的 settle 射程增量。
+ * @param plannedDist 规划水平跨距（2/3/4）
+ * @param plannedDy 规划 Δy
+ * 使用场景：resolveImpulseEx。
+ */
+function firstTouchSolveExtra(plannedDist: number, plannedDy: number): number {
+  const dy = Math.round(plannedDy);
+  const dist = Math.round(plannedDist);
+  const short = dist <= 2;
+  if (dy < 0) {
+    return FIRST_TOUCH_EXTRA_DOWN;
+  }
+  if (dy > 0) {
+    return short ? FIRST_TOUCH_EXTRA_UP_SHORT : FIRST_TOUCH_EXTRA_UP;
+  }
+  return short ? FIRST_TOUCH_EXTRA_FLAT_SHORT : FIRST_TOUCH_EXTRA_FLAT;
+}
 
 function toKey(dist: number, dy: number): ImpulseKey | undefined {
   const d = Math.round(dist) as 2 | 3 | 4;
@@ -119,7 +149,80 @@ export function hxForHorizontalRange(targetH: number, hy: number): number {
 }
 
 /**
- * 按精确起终点解析冲量：hy 查桶（可竖直缩放）；hx 按目标水平距反解。
+ * resolveImpulse 诊断明细。
+ * 使用场景：Executor Gap 日志 / path_go 分析落点。
+ */
+export type ImpulseResolveDebug = {
+  vec: ImpulseVec;
+  from: ImpulsePos;
+  /** 目标落点：对岸格顶面中心 */
+  toFeet: ImpulsePos;
+  /** 起跳格脚位中心（若有 from 支撑）；仅诊断 */
+  fromPadFeet?: ImpulsePos;
+  /** 起点→格心水平距（首触地瞄准） */
+  actualH: number;
+  /** 交给 FIT 反解的射程 = actualH + solveExtra */
+  targetH: number;
+  /** 首触地→Phase0c settle 语义的补偿（格） */
+  solveExtra: number;
+  plannedDist: number;
+  plannedDy: number;
+  hyRaw: number;
+};
+
+/**
+ * 带诊断的冲量解析；失败返回 undefined。
+ * 落点瞄准对岸格心；hx 按「格心距 + 首触地/settle 语义差」反解。
+ * 使用场景：doImpulse 打 PATHGAP 日志。
+ */
+export function resolveImpulseEx(
+  fromPos: ImpulsePos,
+  toSupport: { x: number; y: number; z: number },
+  plannedDist: number,
+  plannedDy: number,
+  fromSupport?: { x: number; y: number; z: number }
+): ImpulseResolveDebug | undefined {
+  const ref = lookupImpulse(plannedDist, plannedDy);
+  if (!ref) {
+    return undefined;
+  }
+  const toFeet = feetOfSupport(toSupport);
+  const fromPadFeet = fromSupport
+    ? feetOfSupport(fromSupport)
+    : undefined;
+  const dy = Math.round(plannedDy);
+  // 瞄准格心；FIT 是 settle 射程，加 firstTouch 补偿后再反解
+  const actualH = horizDist(fromPos, toFeet);
+  const solveExtra = firstTouchSolveExtra(plannedDist, dy);
+  const targetH = Math.max(actualH + solveExtra, 0.5);
+
+  let hy = ref.hy;
+  if (dy !== 0) {
+    const actualV = toFeet.y - fromPos.y;
+    const refV = dy;
+    if (Math.abs(refV) > 1e-3) {
+      const hyScale = clamp(actualV / refV, HY_SCALE_MIN, HY_SCALE_MAX);
+      hy = ref.hy * hyScale;
+    }
+  }
+
+  const hx = hxForHorizontalRange(targetH, hy);
+  return {
+    vec: { hx, hy },
+    from: { x: fromPos.x, y: fromPos.y, z: fromPos.z },
+    toFeet,
+    fromPadFeet,
+    actualH,
+    targetH,
+    solveExtra,
+    plannedDist: Math.round(plannedDist),
+    plannedDy: dy,
+    hyRaw: ref.hy,
+  };
+}
+
+/**
+ * 按精确起终点解析冲量：目标为对岸格心；hy 查桶；hx 反解。
  * @param fromPos 女仆当前脚位（通常 maid.location）
  * @param toSupport 对岸支撑格
  * @param plannedDist 规划边水平跨距（2/3/4），查 hy 桶
@@ -132,42 +235,7 @@ export function resolveImpulse(
   plannedDist: number,
   plannedDy: number
 ): ImpulseVec | undefined {
-  const ref = lookupImpulse(plannedDist, plannedDy);
-  if (!ref) {
-    return undefined;
-  }
-  const toFeet = feetOfSupport(toSupport);
-  const actualH = horizDist(fromPos, toFeet);
-  // 规划格心距（轴对齐跨距 ≈ plannedDist）
-  const nominalH = Math.max(Math.round(plannedDist), 1);
-  // 至少越过对岸近棱再进垫约 0.25（actualH 指中心，近棱约 actualH-0.5）
-  const clearMin = Math.max(actualH - 0.5 + 0.25, 0.5);
-  let targetH: number;
-  if (actualH > nominalH + FAR_SIDE_EPS) {
-    // 远侧起跳：实际更远，禁止再短瞄；略过冲到中心内侧
-    targetH = Math.max(actualH + AIM_OVERSHOOT_FAR, clearMin);
-  } else {
-    // 近侧/格心：短瞄，减轻落到中心后惯性滑出
-    targetH = Math.max(
-      actualH - AIM_SHORT_NEAR,
-      actualH * AIM_MIN_RATIO_NEAR,
-      clearMin
-    );
-  }
-
-  let hy = ref.hy;
-  const dy = Math.round(plannedDy);
-  if (dy !== 0) {
-    const actualV = toFeet.y - fromPos.y;
-    const refV = dy;
-    if (Math.abs(refV) > 1e-3) {
-      const hyScale = clamp(actualV / refV, HY_SCALE_MIN, HY_SCALE_MAX);
-      hy = ref.hy * hyScale;
-    }
-  }
-
-  const hx = hxForHorizontalRange(targetH, hy);
-  return { hx, hy };
+  return resolveImpulseEx(fromPos, toSupport, plannedDist, plannedDy)?.vec;
 }
 
 /**
