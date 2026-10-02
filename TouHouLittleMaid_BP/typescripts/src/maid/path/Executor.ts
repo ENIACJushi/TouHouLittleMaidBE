@@ -6,7 +6,7 @@
  * - 连续 Walk 抽稀（步长 VIA_STEP），Jump1/Fall/段尾保留；
  * - **单 marker 实体**：会话内 spawn 一次，换路点只 teleport（Seek 一次锁定，不反复 reset）；
  * - 途经平视 + pursue_via；**抵达末途经之后、走向终点时**再切 goal 追逐与脚位；
- * - Gap 仅临时卸 Seek（保留 marker），落地后按下一步角色再挂回；
+ * - Gap：**保留 Seek**（卸 Seek 无法消除自身 AI 拉偏，已弃用）；marker TP 对岸；冲量前脚本朝向对岸；
  * - 触及范围内即视为到达。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
@@ -137,6 +137,18 @@ function horizDist(a: Vector3, b: Vector3): number {
   const dx = a.x - b.x;
   const dz = a.z - b.z;
   return Math.sqrt(dx * dx + dz * dz);
+}
+
+/**
+ * 冲量前脚本朝向对岸（teleport + facingLocation）。
+ * 使用场景：doImpulse；跨沟不依赖 Seek/NAT 转头。
+ */
+function faceToward(maid: Entity, lookAt: Vector3): void {
+  try {
+    maid.teleport(maid.location, { facingLocation: lookAt });
+  } catch (e) {
+    Logger.warn(TAG, `faceToward failed: ${String(e)}`);
+  }
 }
 
 /**
@@ -377,10 +389,15 @@ function beginStep(session: Session): void {
   if (step.kind === "gap") {
     session.phase = "PrepGap";
     try {
-      // 冲量前卸 Seek，避免 AI 抢速度；marker 保留并挪到对岸便于指示
-      quitSeekWithPursue(maid);
-      session.pursueRole = undefined;
-      ensureMarker(session, eyeOf(step.edge.to));
+      // Gap 保留 Seek（卸 Seek 已证实不能消除拉偏）；marker 挪到对岸
+      const gapRole: WaypointRole = "via";
+      if (!ensureMarker(session, eyeOf(step.edge.to))) {
+        failSession(session, "spawn_marker");
+        return;
+      }
+      if (!ensureSeek(session, gapRole)) {
+        failSession(session, "seek_mount");
+      }
     } catch {
       /* ignore */
     }
@@ -471,6 +488,8 @@ function doImpulse(session: Session): void {
   const len = Math.sqrt(ddx * ddx + ddz * ddz) || 1;
   const vx = (ddx / len) * imp.hx;
   const vz = (ddz / len) * imp.hx;
+  // 冲量前脚本朝向对岸（不依赖跨沟 Seek 转头）
+  faceToward(maid, toFeet);
   try {
     maid.clearVelocity();
     maid.applyImpulse({ x: vx, y: imp.hy, z: vz });
@@ -504,7 +523,7 @@ function tickInFlight(session: Session): void {
   if (onGround && nearSupport(maid, edge.to, ARRIVE_VIA_H)) {
     inFlightCount = Math.max(0, inFlightCount - 1);
     Movement.unlock(maid);
-    // 下一段 beginStep 会按需 ensureSeek；Gap 期间 pursueRole 已清
+    // Gap 保留 Seek；下一段 beginStep 按需 teleport / 切角色
     advance(session);
   }
 }
@@ -596,7 +615,7 @@ export const Executor = {
       Logger.warn(TAG, "start: seek 池满");
       return false;
     }
-    // Seek/marker 在首个 AI beginStep 时挂上；若以 Gap 开头则先卸空跑 Prep
+    // Seek/marker 在首个 beginStep 挂上（含以 Gap 开头）
     const session: Session = {
       maidId: maid.id,
       maid,

@@ -64,7 +64,8 @@
 
 2. **执行层（混合）**  
    - `Walk` / `Jump1` / `Fall`：路点 / Seek 标记 + 原版 nav（与 Task6 锁协议兼容）。  
-   - `SprintGap`：暂停索敌/移动 AI → `clearVelocity` → 朝向对岸 → **一次** `applyImpulse`（或 `applyKnockback`）→ 轮询落地/到位 → 失败则中止并标不可达 → 成功则跑下一段。
+   - `SprintGap`：marker 对岸 + **保留 Seek** → `clearVelocity` → **脚本朝向对岸** → **一次** `applyImpulse` → 轮询落地/到位 → 失败则中止并标不可达 → 成功则跑下一段。
+     （曾试 Gap 卸 Seek 消拉偏：无效，已弃用。）
 
 3. **标定**  
    冲量不靠理论弹道一次算死；用 **「水平跨距 × 落差 → (vx,vy,vz)」查找表** 游戏内标定（女仆质量/阻力与玩家不同）。项目内已有 `applyImpulse` 先例（如 `PowerPoint`）。
@@ -123,7 +124,7 @@ Idle → FollowWalk(边…) → PrepGap → Impulse → InFlight → Landed → 
 
 要点：
 
-- **进 Gap 前**：女仆须在起跳格附近且 `isOnGround`；`reset_target` / 临时卸 Seek 或锁 `movement`，避免 AI 抢速度。  
+- **进 Gap 前**：女仆须在起跳格附近且 `isOnGround`；冲量前脚本朝向对岸。**不要**为消拉偏而卸 Seek（已证实无效；拉偏来自其它自身 AI）。
 - **Impulse**：`clearVelocity()` 后 **单次** `applyImpulse`（持续每 tick 冲量易与移动叠加速度，社区有相关问题）。  
 - **InFlight**：超时（如 1～2s）或落入虚空/伤害块 → Fail。  
 - **Landed**：脚在 B 的容差内且着地 → 恢复 AI，接下一段。

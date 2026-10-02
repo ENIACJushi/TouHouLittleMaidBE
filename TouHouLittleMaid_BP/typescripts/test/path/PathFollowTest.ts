@@ -30,7 +30,7 @@ export class PathFollowTest {
         "path_go — 最近女仆 → 看向方块（须先看准目标格）",
         "path_cancel — 取消最近女仆的 follow",
         "path_status — 是否 isFollowing + Seek 档",
-        "建议：先平地 Walk；Gap 冲量为占位，可能跳不准",
+        "建议：先平地 Walk，再含 SprintGap 的沟",
       ].join("\n")
     );
   }
