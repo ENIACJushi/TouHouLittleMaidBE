@@ -7,8 +7,12 @@
  * `/scriptevent thlm:test path_imp_stop`
  * `/scriptevent thlm:test path_imp_dump`
  *
+ * 本轮复测（对齐 Gap 生产语义，便于重拟合 FIT、去掉 firstTouchSolveExtra）：
+ * - 落点：**首触地**（leftGround 后再 onGround 立刻记），不再等滑行 settle。
+ * - Seek：挂载并对跑道远端 stamp marker + pursue_via（与 Gap 保留 Seek 一致）。
+ *
  * 流程：搭跑道 → 生成女仆 → 冲量 → 记轨迹/落点 → 清除女仆 → 下一组。
- * 数据打到 content 日志（CSV）；测完可归档，勿当生产逻辑。
+ * 数据打到 content 日志（CSV）；测完归档，勿常驻生产。
  */
 import {
   BlockPermutation,
@@ -31,8 +35,11 @@ const AIR = "minecraft:air";
 const SETTLE_BEFORE = 6;
 /** 最大飞行采样 tick */
 const MAX_AIR_TICKS = 48;
-/** 触地后再采几 tick，确认滑移 */
-const SETTLE_AFTER = 10;
+/**
+ * 首触地后再等几 tick 再记点；复测对齐 Gap 故为 0（立刻记首触地）。
+ * 使用场景：旧 Phase0c 曾用 10，FIT 含滑行，和生产首触地语义不一致。
+ */
+const SETTLE_AFTER = 0;
 /** 采样间隔（tick）；仅存内存，默认不逐条打 TRJ 防日志限流 */
 const SAMPLE_EVERY = 2;
 /** 跑道长度（格，含起跳格） */
@@ -95,6 +102,10 @@ type SweepState =
       jobIndex: number;
       results: TrialResult[];
       maid: Entity | undefined;
+      /** Gap 对齐：Seek 槽位；despawn 时 free */
+      seekId: number | undefined;
+      /** 跑道远端 marker；despawn 时移除 */
+      marker: Entity | undefined;
       phase:
         | "spawn_wait"
         | "impulse_wait"
@@ -129,7 +140,7 @@ export class ImpulseSweepTest {
     this.msg(
       source,
       [
-        "冲量扫测（自动生成/清除女仆）",
+        "冲量扫测（首触地 + 保留 Seek，对齐 Gap）",
         "path_imp_run — 默认 hx0.35~0.80/0.05 hy0.30~0.70/0.10 ×3次",
         "path_imp_run <hxMin> <hxMax> <hxStep> <hyMin> <hyMax> <hyStep> <trials>",
         "path_imp_stop — 中止并清女仆",
@@ -177,6 +188,8 @@ export class ImpulseSweepTest {
       jobIndex: 0,
       results: [],
       maid: undefined,
+      seekId: undefined,
+      marker: undefined,
       phase: "spawn_wait",
       phaseTicks: 0,
       start: undefined,
@@ -186,9 +199,12 @@ export class ImpulseSweepTest {
       settleLeft: undefined,
       handle,
     };
+    this.logData(
+      `META,start,mode=first_touch,seek=on,settleAfter=${SETTLE_AFTER},jobs=${jobs.length}`
+    );
     this.msg(
       source,
-      `开始扫测 jobs=${jobs.length}（${cfg.trials}次/组） origin=${origin.x},${origin.y},${origin.z} dir=${dir.dx},${dir.dz}`
+      `开始扫测 jobs=${jobs.length}（${cfg.trials}次/组） mode=first_touch seek=on origin=${origin.x},${origin.y},${origin.z} dir=${dir.dx},${dir.dz}`
     );
     this.beginJob();
   }
@@ -326,12 +342,38 @@ export class ImpulseSweepTest {
     try {
       EntityMaid.Init.maid(maid);
       EntityMaid.Work.set(maid, EntityMaid.Work.idle);
-      EntityMaid.Seek.quitPursue(maid);
-      EntityMaid.Seek.quit(maid);
       EntityMaid.Movement.unlock(maid);
       EntityMaid.Path.cancel(maid);
     } catch {
       /* init 部分失败仍继续 */
+    }
+    // 对齐 Gap：Seek + 远端 marker（pursue_via），飞行中不卸 Seek
+    const seekId = EntityMaid.Seek.allocate();
+    if (seekId === undefined) {
+      this.msg(st.source, "Seek 槽位已满");
+      this.finish("seek_full");
+      return;
+    }
+    st.seekId = seekId;
+    const markerFeet = {
+      x: feet.x + st.dir.dx * (RUNWAY_LEN - 2),
+      y: feet.y,
+      z: feet.z + st.dir.dz * (RUNWAY_LEN - 2),
+    };
+    try {
+      const marker = st.dim.spawnEntity(
+        EntityMaid.Seek.MARKER_TYPE as never,
+        markerFeet
+      );
+      EntityMaid.Seek.stamp(marker, seekId);
+      st.marker = marker;
+      if (!EntityMaid.Seek.mount(maid, seekId)) {
+        this.msg(st.source, "Seek.mount 失败");
+      } else {
+        EntityMaid.Seek.mountPursue(maid, EntityMaid.Seek.PURSUE_VIA);
+      }
+    } catch (e) {
+      this.msg(st.source, `Seek/marker 失败: ${String(e)}`);
     }
     try {
       maid.teleport(feet, {
@@ -444,7 +486,13 @@ export class ImpulseSweepTest {
         });
       }
       if (st.leftGround && onGround) {
-        if (st.settleLeft === undefined) {
+        if (SETTLE_AFTER <= 0) {
+          // 首触地立刻记点（对齐 Gap LAND）
+          this.recordTrial(st, job, maid.location);
+          st.jobIndex++;
+          st.phase = "despawn_wait";
+          st.phaseTicks = 2;
+        } else if (st.settleLeft === undefined) {
           st.settleLeft = SETTLE_AFTER;
         } else {
           st.settleLeft--;
@@ -546,7 +594,40 @@ export class ImpulseSweepTest {
 
   private despawnMaid(st: Extract<SweepState, { kind: "running" }>): void {
     const maid = st.maid;
+    const marker = st.marker;
+    const seekId = st.seekId;
     st.maid = undefined;
+    st.marker = undefined;
+    st.seekId = undefined;
+    if (maid?.isValid) {
+      try {
+        EntityMaid.Seek.quitPursue(maid);
+        EntityMaid.Seek.quit(maid);
+      } catch {
+        /* ignore */
+      }
+    }
+    if (marker?.isValid) {
+      try {
+        EntityMaid.Seek.release(marker);
+        marker.remove();
+      } catch {
+        try {
+          if (marker.isValid) {
+            marker.kill();
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+    if (seekId !== undefined) {
+      try {
+        EntityMaid.Seek.free(seekId);
+      } catch {
+        /* ignore */
+      }
+    }
     if (!maid) {
       return;
     }

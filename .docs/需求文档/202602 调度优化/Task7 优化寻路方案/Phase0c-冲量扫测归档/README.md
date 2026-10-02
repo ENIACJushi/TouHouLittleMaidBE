@@ -7,9 +7,19 @@
 
 ## 本轮结论（2026-10-02 平地跑道）
 
-- 150 组完成（`hx∈[0.35,0.80]/0.05` × `hy∈[0.30,0.70]/0.10` × 3 trials）
+### 首轮（settle+卸 Seek，已弃用）
+
+- 150 组；`SETTLE_AFTER=10`、卸 Seek
 - 拟合：`H ≈ 3.98·hx + 0.23·hy + 3.06·hx·hy − 0.11`（RMSE≈0.08）
-- 日志：`logs/ContentLog2026-10-02_16-33-05_1.txt`（搜 `PATHIMP|`）
+- 日志：`logs/ContentLog2026-10-02_16-33-05_1.txt`
+- 问题：相对 Gap 首触地偏长 ≈0.25，曾用 `firstTouchSolveExtra` 补偿
+
+### 复测（首触地 + Seek=on，现行）
+
+- 150 组完成；`SETTLE_AFTER=0`、挂 Seek+远端 marker
+- 拟合：`H ≈ 2.960·hx − 0.082·hy + 3.737·hx·hy + 0.192`（RMSE≈0.095）
+- 日志：`logs/ContentLog2026-10-02_19-41-34_1.txt`（搜 `PATHIMP|`）
+- 已写入 `ImpulseTable.ts` 的 `FIT`；不再使用首触地额外补偿
 
 ## 内容
 
@@ -28,4 +38,16 @@
 3. `cd TouHouLittleMaid_BP/typescripts && npx tsc`，重进世界。
 4. 站平地朝向跑道：`/scriptevent thlm:test path_imp_run`；抓取控制台 `PATHIMP|`。
 
+### 本轮复测改动（相对 2026-10-02 归档）
+
+- **首触地**：`SETTLE_AFTER=0`，`leftGround` 后再 `onGround` 立刻记 IMP（对齐 Gap LAND）。
+- **保留 Seek**：spawn 后挂 Seek + 跑道远端 marker + `pursue_via`（对齐 Gap 飞行中 Seek）。
+- 启动日志含 `META,start,mode=first_touch,seek=on`。
+
 正式业务勿常驻本探针；日常 Gap 回归用 `path_go`。与 Phase0b 九桶手标、`PathFollow` 永久冒烟分开。
+
+## 已知未决（归档后）
+
+- 连跳末段 **dist=2 平跨** 相对格心仍常欠冲（`along≈−0.25～−0.5`），短距并非偶发。
+- 已回退「飞行卸 Seek / DOWN_SOLVE_SCALE」试修；现行：格心瞄准 + 本复测 FIT + 落地清水平动量。
+- 后续诊断方案见同级目录 `短距Gap欠冲诊断/README.md`。
