@@ -1,9 +1,10 @@
 /**
- * SprintGap 冲量表（Task7 Phase0b / Phase2）。
- * 使用场景：Executor Impulse；值来自 Phase0b 游戏内标定（见归档）。
+ * SprintGap 冲量（Task7 Phase0b 表 + Phase 扫测反解）。
+ * 使用场景：Executor Impulse。
  *
- * 标定约定：起跳/对岸均为**格心**，水平参考距 = distClass（2/3/4）。
- * 运行时用实际脚位到对岸脚位的水平距，对标定 hx（及有落差时的 hy）做比例缩放。
+ * - hy：仍用 Phase0b 九桶（按 plannedDist/dy），有落差时按实际 Δy 微调。
+ * - hx：由平地扫测拟合式反解「目标水平射程」。
+ * - 瞄准：起点偏近岸（actualH ≤ 格心距）时短瞄防滑出；偏远岸时不短瞄并略过冲，避免连跳欠冲掉沟。
  */
 export type ImpulseVec = { hx: number; hy: number };
 
@@ -14,8 +15,8 @@ export type ImpulseKey = `${2 | 3 | 4}:${-1 | 0 | 1}`;
 export type ImpulsePos = { x: number; y: number; z: number };
 
 /**
- * 运行时冲量表（Phase0b 游戏内标定，单格对岸 + 稳定期无 slip）。
- * 使用场景：lookupImpulse / resolveImpulse。
+ * Phase0b 九桶：主要提供 hy；hx 列仅作调试/归档参考，resolve 不再直接用。
+ * 使用场景：lookupImpulse / resolveImpulse 取 hy。
  */
 const TABLE: Record<ImpulseKey, ImpulseVec> = {
   "2:0": { hx: 0.44, hy: 0.42 },
@@ -29,9 +30,31 @@ const TABLE: Record<ImpulseKey, ImpulseVec> = {
   "4:-1": { hx: 0.74, hy: 0.35 },
 };
 
-/** 缩放钳制，避免靠边起跳时冲量过猛/过弱 */
-const SCALE_MIN = 0.55;
-const SCALE_MAX = 1.35;
+/**
+ * 平地扫测：H ≈ a·hx + b·hy + c·hx·hy + d（H 为水平落点位移）。
+ * 使用场景：hxForHorizontalRange / resolveImpulse。
+ */
+const FIT = {
+  a: 3.980481,
+  b: 0.232573,
+  c: 3.056441,
+  d: -0.107157,
+} as const;
+
+/** 近岸起跳时相对对岸中心的短瞄（格），防滑出垫外 */
+const AIM_SHORT_NEAR = 0.2;
+/** 近岸短瞄相对实际距的下限比例 */
+const AIM_MIN_RATIO_NEAR = 0.88;
+/** 远岸起跳时略过冲（格），补偿拟合误差与连跳偏远 */
+const AIM_OVERSHOOT_FAR = 0.08;
+/** actualH 相对规划格心距超出此值视为「远侧起跳」 */
+const FAR_SIDE_EPS = 0.08;
+/** hy 竖直缩放钳制（有 dy 时） */
+const HY_SCALE_MIN = 0.55;
+const HY_SCALE_MAX = 1.35;
+/** 反解 hx 安全钳制（扫测网格约 0.35～0.80） */
+const HX_MIN = 0.28;
+const HX_MAX = 0.95;
 
 function toKey(dist: number, dy: number): ImpulseKey | undefined {
   const d = Math.round(dist) as 2 | 3 | 4;
@@ -55,7 +78,11 @@ function horizDist(a: ImpulsePos, b: ImpulsePos): number {
 /**
  * 对岸支撑格顶面脚位（与 Executor feetOf 一致）。
  */
-export function feetOfSupport(support: { x: number; y: number; z: number }): ImpulsePos {
+export function feetOfSupport(support: {
+  x: number;
+  y: number;
+  z: number;
+}): ImpulsePos {
   return {
     x: support.x + 0.5,
     y: support.y + 1,
@@ -67,7 +94,10 @@ export function feetOfSupport(support: { x: number; y: number; z: number }): Imp
  * 查表；非法桶返回 undefined。
  * 使用场景：标定 / 调试；正式起跳请用 resolveImpulse。
  */
-export function lookupImpulse(dist: number, dy: number): ImpulseVec | undefined {
+export function lookupImpulse(
+  dist: number,
+  dy: number
+): ImpulseVec | undefined {
   const key = toKey(dist, dy);
   if (!key) {
     return undefined;
@@ -76,12 +106,25 @@ export function lookupImpulse(dist: number, dy: number): ImpulseVec | undefined 
 }
 
 /**
- * 按实际起跳位置解析冲量：以规划桶标定值为参考，按实际水平距缩放。
+ * 由目标水平射程与 hy 反解 hx（平地拟合）。
+ * 使用场景：resolveImpulse；诊断。
+ */
+export function hxForHorizontalRange(targetH: number, hy: number): number {
+  const den = FIT.a + FIT.c * hy;
+  if (Math.abs(den) < 1e-6) {
+    return HX_MIN;
+  }
+  const hx = (targetH - FIT.b * hy - FIT.d) / den;
+  return clamp(hx, HX_MIN, HX_MAX);
+}
+
+/**
+ * 按精确起终点解析冲量：hy 查桶（可竖直缩放）；hx 按目标水平距反解。
  * @param fromPos 女仆当前脚位（通常 maid.location）
  * @param toSupport 对岸支撑格
- * @param plannedDist 规划边水平跨距（2/3/4），作标定参考距与查表键
+ * @param plannedDist 规划边水平跨距（2/3/4），查 hy 桶
  * @param plannedDy 规划边 Δy（-1/0/1）
- * 使用场景：Executor doImpulse；连续跳跃时起点未必在格心。
+ * 使用场景：Executor doImpulse。
  */
 export function resolveImpulse(
   fromPos: ImpulsePos,
@@ -95,25 +138,36 @@ export function resolveImpulse(
   }
   const toFeet = feetOfSupport(toSupport);
   const actualH = horizDist(fromPos, toFeet);
-  const refH = Math.max(Math.round(plannedDist), 1);
-  // 水平：实际距 / 标定距（格心距 ≈ distClass）
-  const hxScale = clamp(actualH / refH, SCALE_MIN, SCALE_MAX);
+  // 规划格心距（轴对齐跨距 ≈ plannedDist）
+  const nominalH = Math.max(Math.round(plannedDist), 1);
+  // 至少越过对岸近棱再进垫约 0.25（actualH 指中心，近棱约 actualH-0.5）
+  const clearMin = Math.max(actualH - 0.5 + 0.25, 0.5);
+  let targetH: number;
+  if (actualH > nominalH + FAR_SIDE_EPS) {
+    // 远侧起跳：实际更远，禁止再短瞄；略过冲到中心内侧
+    targetH = Math.max(actualH + AIM_OVERSHOOT_FAR, clearMin);
+  } else {
+    // 近侧/格心：短瞄，减轻落到中心后惯性滑出
+    targetH = Math.max(
+      actualH - AIM_SHORT_NEAR,
+      actualH * AIM_MIN_RATIO_NEAR,
+      clearMin
+    );
+  }
 
-  // 竖直：有规划落差时按实际 Δy 相对 |plannedDy| 微调；平跳保持标定 hy
-  let hyScale = 1;
+  let hy = ref.hy;
   const dy = Math.round(plannedDy);
   if (dy !== 0) {
     const actualV = toFeet.y - fromPos.y;
-    const refV = dy; // 格心到格心竖直差 ≈ dy
+    const refV = dy;
     if (Math.abs(refV) > 1e-3) {
-      hyScale = clamp(actualV / refV, SCALE_MIN, SCALE_MAX);
+      const hyScale = clamp(actualV / refV, HY_SCALE_MIN, HY_SCALE_MAX);
+      hy = ref.hy * hyScale;
     }
   }
 
-  return {
-    hx: ref.hx * hxScale,
-    hy: ref.hy * hyScale,
-  };
+  const hx = hxForHorizontalRange(targetH, hy);
+  return { hx, hy };
 }
 
 /**

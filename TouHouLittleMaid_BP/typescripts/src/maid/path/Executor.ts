@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 路径执行器状态机（Task7 Phase2）。
  * 使用场景：Path.follow；Walk/Jump1/Fall 用 Seek+marker；SprintGap 用冲量。
  *
@@ -476,7 +476,7 @@ function doImpulse(session: Session): void {
   const dzBlocks = edge.to.z - edge.from.z;
   const plannedDist = Math.max(Math.abs(dxBlocks), Math.abs(dzBlocks));
   const plannedDy = edge.to.y - edge.from.y;
-  // 以标定表为参考，按「当前脚位 → 对岸脚位」实际距离缩放
+  // hx 由拟合反解（含防滑短瞄）；hy 查桶
   const imp = resolveImpulse(maid.location, edge.to, plannedDist, plannedDy);
   if (!imp) {
     failSession(session, "no_impulse");
