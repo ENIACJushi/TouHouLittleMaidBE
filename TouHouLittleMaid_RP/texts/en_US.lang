@@ -121,6 +121,8 @@ message.tlm.config.logger_level.name=Log Level
 message.tlm.config.logger_level.description=0:NONE 1:ERROR 2:WARN 3: INFO 4: DEBUG
 message.tlm.config.path_show_waypoints.name=Show Path Waypoints
 message.tlm.config.path_show_waypoints.description=When enabled, spawn particles at maid path waypoints: red for via, green for goal
+message.tlm.config.path_show_trail.name=Show Path Trail
+message.tlm.config.path_show_trail.description=When enabled, spawn a blue particle at the maid each tick during follow; particles last about 10 seconds for path/landing debug
 message.tlm.config.skin_pack.name=Skin Pack
 message.tlm.config.skin_pack.description=(Legacy) Paste converter JSON for old resource-only packs, e.g. {"skin":[{"count":20}],"chair":[{"count":10}]}. New packs auto-register via the generated behavior pack.
 

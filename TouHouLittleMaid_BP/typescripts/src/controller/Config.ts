@@ -53,6 +53,15 @@ class Config {
     changable: true,
     configName: 'path_show_waypoints'
   });
+  /**
+   * 显示寻路轨迹粒子：每 tick 在女仆位置刷蓝色点，留存约 10s。
+   * 使用场景：与 path_show_waypoints 并列，调试落点 / path_go；默认关闭。
+   */
+  path_show_trail = new ConfigItemBoolean({
+    defaultValue: false,
+    changable: true,
+    configName: 'path_show_trail'
+  });
 }
 
 abstract class ConfigItem<T> {

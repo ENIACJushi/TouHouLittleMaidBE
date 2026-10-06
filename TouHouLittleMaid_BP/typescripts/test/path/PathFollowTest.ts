@@ -34,6 +34,7 @@ export class PathFollowTest {
         "path_cancel — 取消最近女仆的 follow",
         "path_status — 是否 isFollowing + Seek 档",
         "建议：先平地 Walk，再含 SprintGap 的沟",
+        "可视化：管理界面可开关「显示路点」「显示寻路轨迹」",
       ].join("\n")
     );
   }

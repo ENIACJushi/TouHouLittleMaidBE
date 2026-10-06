@@ -28,6 +28,11 @@ const GAP_LOG = "PATHGAP";
 const PARTICLE_VIA = "touhou_little_maid:path_waypoint_via";
 /** 终点路点调试粒子（绿色） */
 const PARTICLE_GOAL = "touhou_little_maid:path_waypoint_goal";
+/**
+ * follow 轨迹粒子（蓝色，留存约 10s）。
+ * 使用场景：path_go / Path.follow 每 tick 在女仆脚位采样。
+ */
+const PARTICLE_TRAIL = "touhou_little_maid:path_trail";
 
 /** 同时处于 InFlight（冲量飞行）的女仆上限 */
 export const IN_FLIGHT_MAX = 4;
@@ -650,12 +655,37 @@ function spawnWaypointParticles(session: Session): void {
   }
 }
 
+/**
+ * 每 tick 在女仆当前位置刷蓝色轨迹点（留存约 10s）。
+ * 使用场景：path_show_trail 开启时；path_go / follow 落点可视化。
+ */
+function spawnTrailParticle(session: Session): void {
+  if (!config.path_show_trail.value) {
+    return;
+  }
+  const maid = session.maid;
+  if (!maid.isValid) {
+    return;
+  }
+  try {
+    const loc = maid.location;
+    maid.dimension.spawnParticle(PARTICLE_TRAIL as never, {
+      x: loc.x,
+      y: loc.y + 0.1,
+      z: loc.z,
+    });
+  } catch {
+    /* 粒子缺失或维度异常时忽略 */
+  }
+}
+
 function tickAll(): void {
   for (const session of [...sessions.values()]) {
     if (!session.maid.isValid) {
       failSession(session, "maid_invalid");
       continue;
     }
+    spawnTrailParticle(session);
     spawnWaypointParticles(session);
     switch (session.phase) {
       case "FollowAI":
