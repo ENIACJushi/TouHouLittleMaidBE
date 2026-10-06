@@ -6,7 +6,7 @@
  * - 连续 Walk 抽稀（步长 VIA_STEP），Jump1/Fall/段尾保留；
  * - **单 marker 实体**：会话内 spawn 一次，换路点只 teleport（Seek 一次锁定，不反复 reset）；
  * - 途经平视 + pursue_via；**抵达末途经之后、走向终点时**再切 goal 追逐与脚位；
- * - Gap：**保留 Seek**（卸 Seek 无法消除自身 AI 拉偏，已弃用）；marker TP 对岸；冲量前脚本朝向对岸；
+ * - Gap：**保留 Seek**；marker 对岸脚位沿跳向偏出碰撞半径(0.3)再抬高(1.5)；冲量前脚本朝向对岸；
  * - 触及范围内即视为到达。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
@@ -57,6 +57,16 @@ const ARRIVE_V = 1.6;
  * 使用场景：中间路点平视，避免低头盯脚边。
  */
 const EYE_OFFSET_FROM_FEET = 1.2;
+/**
+ * 女仆水平碰撞半径（collision_box width 0.6 的一半）。
+ * 使用场景：Gap 对岸 marker 沿跳向再偏出，避免与落地躯体重叠互推。
+ */
+const MAID_COLLISION_RADIUS = 0.3;
+/**
+ * Gap marker 相对对岸脚位再抬高的高度（格）。
+ * 使用场景：配合水平偏置，躲开落点实体体积。
+ */
+const GAP_MARKER_UP = 1.5;
 
 const AI_EDGE_TIMEOUT_MS = 12_000;
 const FLIGHT_TIMEOUT_MS = 1_500;
@@ -147,6 +157,23 @@ function feetOf(support: StandNode): Vector3 {
 function eyeOf(support: StandNode): Vector3 {
   const feet = feetOf(support);
   return { x: feet.x, y: feet.y + EYE_OFFSET_FROM_FEET, z: feet.z };
+}
+
+/**
+ * Gap 对岸 Seek marker 位置：对岸脚位沿跳向偏出女仆碰撞半径，再抬高。
+ * 使用场景：beginStep Gap；避免 marker 落在落地躯干内导致冲量欠冲。
+ */
+function gapMarkerPos(edge: PathEdge): Vector3 {
+  const from = feetOf(edge.from);
+  const to = feetOf(edge.to);
+  const dx = to.x - from.x;
+  const dz = to.z - from.z;
+  const len = Math.sqrt(dx * dx + dz * dz) || 1;
+  return {
+    x: to.x + (dx / len) * MAID_COLLISION_RADIUS,
+    y: to.y + GAP_MARKER_UP,
+    z: to.z + (dz / len) * MAID_COLLISION_RADIUS,
+  };
 }
 
 function horizDist(a: Vector3, b: Vector3): number {
@@ -425,9 +452,9 @@ function beginStep(session: Session): void {
   if (step.kind === "gap") {
     session.phase = "PrepGap";
     try {
-      // Gap 保留 Seek（卸 Seek 已证实不能消除拉偏）；marker 挪到对岸
+      // Gap：marker 沿跳向偏出碰撞半径并抬高，避免与落地重叠
       const gapRole: WaypointRole = "via";
-      if (!ensureMarker(session, eyeOf(step.edge.to))) {
+      if (!ensureMarker(session, gapMarkerPos(step.edge))) {
         failSession(session, "spawn_marker");
         return;
       }
@@ -642,9 +669,9 @@ function spawnWaypointParticles(session: Session): void {
       isGoal = step.role === "goal";
       pos = isGoal ? feetOf(step.support) : eyeOf(step.support);
     } else {
-      // Gap：对岸支撑为途经/终点标记
+      // Gap：粒子与 Seek marker 同偏置，便于对照
       isGoal = i === last;
-      pos = isGoal ? feetOf(step.edge.to) : eyeOf(step.edge.to);
+      pos = gapMarkerPos(step.edge);
     }
     const particleId = isGoal ? PARTICLE_GOAL : PARTICLE_VIA;
     try {
