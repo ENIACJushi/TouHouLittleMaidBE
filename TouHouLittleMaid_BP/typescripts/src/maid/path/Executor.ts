@@ -7,6 +7,7 @@
  * - **单 marker 实体**：会话内 spawn 一次，换路点只 teleport（Seek 一次锁定，不反复 reset）；
  * - 途经平视 + pursue_via；**抵达末途经之后、走向终点时**再切 goal 追逐与脚位；
  * - Gap：**保留 Seek**；marker 对岸脚位沿跳向偏出碰撞半径(0.3)再抬高(1.5)；冲量前脚本朝向对岸；
+ * - Gap 腾空：FIT 预计落点，曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
  * - 触及范围内即视为到达。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
@@ -16,7 +17,12 @@ import { config } from "../../controller/Config";
 import { Logger } from "../../controller/Logger";
 import { Movement } from "../facets/Movement";
 import { Seek } from "../facets/Seek";
-import { resolveImpulseEx, feetOfSupport } from "./ImpulseTable";
+import {
+  resolveImpulseEx,
+  feetOfSupport,
+  predictHorizontalRange,
+  horizontalRangePerHx,
+} from "./ImpulseTable";
 import { PathEdge, StandNode } from "./types";
 import { unreachableCache } from "./UnreachableCache";
 
@@ -71,6 +77,11 @@ const GAP_MARKER_UP = 1.5;
 const AI_EDGE_TIMEOUT_MS = 12_000;
 const FLIGHT_TIMEOUT_MS = 1_500;
 const PREP_TIMEOUT_MS = 3_000;
+/**
+ * 腾空预计落点与目标的曼哈顿距离阈值（格）；超过则本 tick 做 xz 修正。
+ * 使用场景：tickInFlight / tryAirCorrect。
+ */
+const AIR_CORRECT_MANHATTAN = 0.1;
 
 type Phase =
   | "Idle"
@@ -104,6 +115,24 @@ type FollowStep =
     };
 
 /**
+ * Gap 腾空修正状态：起飞快照 + 有效水平冲量（随修正更新）。
+ * 使用场景：InFlight 每 tick FIT 预计落点并 xz 修正。
+ */
+type GapAirState = {
+  /** 起跳时脚位 */
+  from: Vector3;
+  /** 目标对岸脚位（格心） */
+  toFeet: Vector3;
+  /** 当前有效水平冲量大小（初始为起跳 hx，修正后更新） */
+  hx: number;
+  /** 起跳竖直冲量（修正不改 hy） */
+  hy: number;
+  /** 水平预测方向（单位向量，随修正朝向目标更新） */
+  dirX: number;
+  dirZ: number;
+};
+
+/**
  * 单女仆跟随会话。
  * 使用场景：sessions map；tick 驱动。
  */
@@ -121,6 +150,8 @@ type Session = {
   phaseAt: number;
   dest: StandNode;
   failReason?: string;
+  /** Gap 腾空中才有；落地 / 失败清除 */
+  gapAir?: GapAirState;
 };
 
 const sessions = new Map<string, Session>();
@@ -192,6 +223,82 @@ function faceToward(maid: Entity, lookAt: Vector3): void {
   } catch (e) {
     Logger.warn(TAG, `faceToward failed: ${String(e)}`);
   }
+}
+
+/**
+ * 腾空中按 FIT 预计落点，曼哈顿误差过大则 xz 冲量修正。
+ * 使用场景：tickInFlight（未落地时每 tick）；无单次/全程 Δhx 上限。
+ */
+function tryAirCorrect(session: Session): void {
+  const air = session.gapAir;
+  if (!air) {
+    return;
+  }
+  const maid = session.maid;
+  const loc = maid.location;
+  const { from, toFeet } = air;
+  const alreadyH = Math.hypot(loc.x - from.x, loc.z - from.z);
+  const predH = predictHorizontalRange(air.hx, air.hy);
+  const remainPred = predH - alreadyH;
+  const predLandX = loc.x + air.dirX * remainPred;
+  const predLandZ = loc.z + air.dirZ * remainPred;
+  const manh =
+    Math.abs(predLandX - toFeet.x) + Math.abs(predLandZ - toFeet.z);
+  if (manh <= AIR_CORRECT_MANHATTAN) {
+    return;
+  }
+
+  const wantX = toFeet.x - loc.x;
+  const wantZ = toFeet.z - loc.z;
+  const predRemainX = air.dirX * remainPred;
+  const predRemainZ = air.dirZ * remainPred;
+  const errX = wantX - predRemainX;
+  const errZ = wantZ - predRemainZ;
+  const errH = Math.hypot(errX, errZ);
+  if (errH < 1e-6) {
+    return;
+  }
+  const den = horizontalRangePerHx(air.hy);
+  if (Math.abs(den) < 1e-6) {
+    return;
+  }
+  // 误差水平距 / ∂H∂hx → Δhx；方向沿「目标剩余 − 预计剩余」
+  const dHx = errH / den;
+  const ix = (errX / errH) * dHx;
+  const iz = (errZ / errH) * dHx;
+  try {
+    maid.applyImpulse({ x: ix, y: 0, z: iz });
+  } catch (e) {
+    Logger.warn(TAG, `tryAirCorrect impulse failed: ${String(e)}`);
+    return;
+  }
+
+  // 修正后模型对准当前→目标，供下一 tick 再估（hx 不钳制，与「无 Δhx 上限」一致）
+  const distNeed = Math.hypot(wantX, wantZ);
+  if (distNeed > 1e-6) {
+    air.dirX = wantX / distNeed;
+    air.dirZ = wantZ / distNeed;
+    // H(hx,hy)=a·hx+b·hy+c·hx·hy+d → hx=(H − (b·hy+d)) / (a+c·hy)
+    air.hx =
+      (alreadyH + distNeed - predictHorizontalRange(0, air.hy)) / den;
+  } else {
+    air.hx += dHx;
+  }
+
+  logGap(
+    [
+      "AIR_CORRECT",
+      `i=${session.index}`,
+      `manh=${f3(manh)}`,
+      `pred=${f3(predLandX)},${f3(predLandZ)}`,
+      `toFeet=${f3(toFeet.x)},${f3(toFeet.z)}`,
+      `alreadyH=${f3(alreadyH)}`,
+      `remainPred=${f3(remainPred)}`,
+      `dHx=${f3(dHx)}`,
+      `v=${f3(ix)},0,${f3(iz)}`,
+      `hxNow=${f3(air.hx)}`,
+    ].join(",")
+  );
 }
 
 /**
@@ -424,6 +531,7 @@ function failSession(session: Session, reason: string): void {
   if (session.phase === "InFlight") {
     inFlightCount = Math.max(0, inFlightCount - 1);
   }
+  session.gapAir = undefined;
   teardown(session, reason, { ban: true, log: "Fail" });
 }
 
@@ -589,6 +697,19 @@ function doImpulse(session: Session): void {
     failSession(session, `impulse:${String(e)}`);
     return;
   }
+  // 腾空修正快照：FIT 预计落点相对此状态递推
+  session.gapAir = {
+    from: {
+      x: maid.location.x,
+      y: maid.location.y,
+      z: maid.location.z,
+    },
+    toFeet: { x: toFeet.x, y: toFeet.y, z: toFeet.z },
+    hx: imp.hx,
+    hy: imp.hy,
+    dirX: ddx / len,
+    dirZ: ddz / len,
+  };
   inFlightCount++;
   session.phase = "InFlight";
   session.phaseAt = now();
@@ -603,6 +724,7 @@ function tickInFlight(session: Session): void {
   const edge = step.edge;
   if (now() - session.phaseAt > FLIGHT_TIMEOUT_MS) {
     Movement.unlock(maid);
+    session.gapAir = undefined;
     failSession(session, "flight_timeout");
     return;
   }
@@ -611,6 +733,11 @@ function tickInFlight(session: Session): void {
     onGround = maid.isOnGround;
   } catch {
     onGround = false;
+  }
+  // 未落地：每 tick 按 FIT 预计落点做 xz 修正
+  if (!onGround) {
+    tryAirCorrect(session);
+    return;
   }
   if (onGround && nearSupport(maid, edge.to, ARRIVE_VIA_H)) {
     const toFeet = feetOfSupport(edge.to);
@@ -640,6 +767,7 @@ function tickInFlight(session: Session): void {
     );
     // 落地刹住水平动量，避免滑出垫格（小碰撞箱后续更依赖此点）
     clearHorizontalVelocity(maid);
+    session.gapAir = undefined;
     inFlightCount = Math.max(0, inFlightCount - 1);
     Movement.unlock(maid);
     // Gap 保留 Seek；下一段 beginStep 按需 teleport / 切角色

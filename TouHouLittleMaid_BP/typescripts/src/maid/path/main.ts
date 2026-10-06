@@ -19,6 +19,9 @@ export {
   lookupImpulse,
   resolveImpulse,
   feetOfSupport,
+  predictHorizontalRange,
+  horizontalRangePerHx,
+  hxForHorizontalRange,
   overrideImpulse,
   snapshotImpulseTable,
 } from "./ImpulseTable";

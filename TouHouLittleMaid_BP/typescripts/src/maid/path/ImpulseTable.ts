@@ -99,11 +99,27 @@ export function lookupImpulse(
 }
 
 /**
+ * 首触地水平射程正算：H ≈ a·hx + b·hy + c·hx·hy + d。
+ * 使用场景：Gap 腾空预计落点；与 hxForHorizontalRange 互逆。
+ */
+export function predictHorizontalRange(hx: number, hy: number): number {
+  return FIT.a * hx + FIT.b * hy + FIT.c * hx * hy + FIT.d;
+}
+
+/**
+ * FIT 对 hx 的偏导（∂H/∂hx = a + c·hy），用于腾空误差→Δhx。
+ * 使用场景：Executor 空中 xz 修正。
+ */
+export function horizontalRangePerHx(hy: number): number {
+  return FIT.a + FIT.c * hy;
+}
+
+/**
  * 由目标水平射程与 hy 反解 hx（首触地拟合）。
  * 使用场景：resolveImpulse；诊断。
  */
 export function hxForHorizontalRange(targetH: number, hy: number): number {
-  const den = FIT.a + FIT.c * hy;
+  const den = horizontalRangePerHx(hy);
   if (Math.abs(den) < 1e-6) {
     return HX_MIN;
   }
