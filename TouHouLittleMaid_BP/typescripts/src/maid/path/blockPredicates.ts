@@ -178,13 +178,17 @@ export function isHazard(view: BlockView, ctx?: PredicateContext): boolean {
  * isPassable：身位可占。
  * 不可穿：solid / glass / leaves / fence / wall；活板门/楼梯不靠本式一刀切（仍给保守默认）。
  */
+/**
+ * isPassable：身位格净空（脚/头）。
+ * 顺序：isSolid 先于 plantThin（引擎标 solid 的作物不可当净空）。
+ */
 export function isPassable(view: BlockView): boolean {
   if (view.isAir) {
     return true;
   }
   const id = shortId(view.typeId);
 
-  // 明确不可穿
+  // 明确不可过：isSolid 优先于 plantThin
   if (view.isSolid) {
     return false;
   }
@@ -195,13 +199,11 @@ export function isPassable(view: BlockView): boolean {
     return false;
   }
 
-  // NavMismatch：保守 — 关底活板门身可过（薄板），开/楼梯交给特殊边，身位默认不可当普通净空
+  // NavMismatch：楼梯/梯子/脚手架/活板门身位默认不可当普通净空
   if (id.includes("stairs") || id.includes("ladder") || id.includes("scaffolding")) {
     return false;
   }
   if (id.includes("trapdoor")) {
-    // 关底：薄地板，身在其上格；本格（活板门格）通常脚不占同一格。
-    // 若脚/头查询落到活板门格：关底可视为可过薄片，开则侧板挡一部分——首版一律 false 防锁死。
     return false;
   }
 
@@ -214,8 +216,7 @@ export function isPassable(view: BlockView): boolean {
     return false;
   }
 
-  // 默认：非 solid 且未列入黑名单 → 可过（火把等漏网）
-  // 但玻璃/叶已否；余下如 sugar_cane 等：农作相关可后扩白名单
+  // 默认：非 solid 且未列入黑名单 → 可过
   return !view.isSolid;
 }
 
@@ -267,6 +268,11 @@ export function isSupport(view: BlockView): boolean {
   // 树叶：G-Player 主干按不可靠支撑处理（isSolid=false）；不当地板
   if (id.includes("leaves")) {
     return false;
+  }
+
+  // 耕地：Bedrock 上 isSolid 常为 false，但仍是整格可站顶面（农作必依）
+  if (id.includes("farmland")) {
+    return true;
   }
 
   if (view.isSolid) {

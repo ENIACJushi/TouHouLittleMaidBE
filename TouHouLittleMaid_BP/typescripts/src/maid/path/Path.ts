@@ -40,15 +40,20 @@ function floor3(v: Vector3): BlockPos {
 }
 
 /**
- * 脚部位姿 → 支撑格 StandNode；不可站返回 undefined。
- * 使用场景：女仆当前位置作起点。
+ * 脚部位姿 → 支撑格 StandNode。
+ * 常规：支撑在 floor(feet).y - 1；回退：脚略陷入支撑格时试 floor(feet) 本身。
+ * 使用场景：女仆当前位置作起点；田间脚陷耕地常见。
  */
 export function standNodeFromFeet(
   cache: StandableCache,
   feet: Vector3
 ): StandNode | undefined {
   const f = floor3(feet);
-  return cache.tryStandNode(f.x, f.y - 1, f.z);
+  const above = cache.tryStandNode(f.x, f.y - 1, f.z);
+  if (above) {
+    return above;
+  }
+  return cache.tryStandNode(f.x, f.y, f.z);
 }
 
 /**

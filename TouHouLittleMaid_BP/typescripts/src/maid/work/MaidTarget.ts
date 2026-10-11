@@ -17,8 +17,8 @@ const workHandlers: Partial<Record<number, WorkHandler>> = {
       Farm.search(maid, range, force);
     },
     step(maid) {
-      const target = maid.target;
-      if (target !== undefined) Farm.acquire(target, maid);
+      // Phase3：单目标 Path.follow 收尾 / 再派下一格（无 thlmt:farm）
+      Farm.onSchedulePulse(maid);
     },
   },
   [Work.sugar_cane]: {
@@ -85,8 +85,21 @@ export class MaidTarget {
   /**
    * 因为不能穿墙攻击，使用脚本定时获取目标
    * 竖直方向最大高度差为 5 格；事件每 3 秒触发一次
+   * Farm：自管 Path.follow，只脉冲一次（避免三次全图扫描）
    */
   static stepEvent(maid: Entity, work: number): void {
+    if (work === Work.farm) {
+      system.runTimeout(() => {
+        try {
+          if (maid?.isValid) {
+            workHandlers[work]?.step?.(maid);
+          }
+        } catch {
+          /* 实体可能已失效 */
+        }
+      }, 1);
+      return;
+    }
     for (let i = 0; i < 3; i++) {
       system.runTimeout(() => {
         try {

@@ -142,10 +142,14 @@ export const Work = {
             maid.triggerEvent(this.getEventName(maid, type, false));
           }
         } break;
-        // 耕地模式
+        // 耕地模式：不再挂 mode:farm NAT；单目标由 Path.follow / Seek 指定
         case Work.farm: {
           if (!Pose.isSitting(maid)) {
-            maid.triggerEvent("api:mode_farm");
+            try {
+              maid.triggerEvent("api:mode_quit_farm");
+            } catch {
+              /* 可能本就未挂 farm 组件组 */
+            }
           }
         } break;
         // 甘蔗模式
