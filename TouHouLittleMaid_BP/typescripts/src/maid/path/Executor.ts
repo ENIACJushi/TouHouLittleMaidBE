@@ -24,6 +24,7 @@ import {
   horizontalRangePerHx,
 } from "./ImpulseTable";
 import { PathEdge, StandNode } from "./types";
+import { invalidateReachabilityGoal } from "./ReachabilityField";
 import { unreachableCache } from "./UnreachableCache";
 
 const TAG = "Path.Executor";
@@ -532,6 +533,14 @@ function failSession(session: Session, reason: string): void {
     inFlightCount = Math.max(0, inFlightCount - 1);
   }
   session.gapAir = undefined;
+  // 方案 C：Fail 丢掉该终点可达集，避免假阳性继续认领
+  try {
+    if (session.maid.isValid) {
+      invalidateReachabilityGoal(session.maid.dimension.id, session.dest);
+    }
+  } catch {
+    /* ignore */
+  }
   teardown(session, reason, { ban: true, log: "Fail" });
 }
 

@@ -8,6 +8,8 @@ import { Dimension, Entity, Vector3 } from "@minecraft/server";
 import { aStar, AStarOptions } from "./AStar";
 import { SEARCH_H, SEARCH_V } from "./constants";
 import { Executor } from "./Executor";
+import { isReachableInField } from "./ReachabilityField";
+import { acquireSharedStandable } from "./SharedStandable";
 import { StandableCache, clampBoundsToDimension } from "./StandableCache";
 import { BlockPos, PathResult, StandableCacheOptions, StandNode } from "./types";
 import { unreachableCache } from "./UnreachableCache";
@@ -22,6 +24,11 @@ export type PathFindOptions = AStarOptions &
     searchH?: number;
     /** 竖直半高；默认 SEARCH_V */
     searchV?: number;
+    /**
+     * canReach：忽略共享可达场，强制 A*。
+     * 使用场景：抽检对照；默认 false（有场则先查场）。
+     */
+    ignoreReachField?: boolean;
   };
 
 function floor3(v: Vector3): BlockPos {
@@ -108,23 +115,27 @@ function runFind(
     return { ok: false, nodes: [], edges: [], reason: "bad_bounds" };
   }
 
-  const cache = new StandableCache(dim, {
+  // 方案 D：同 ROI 短窗内复用 warm
+  const lease = acquireSharedStandable(dim, bounds.min, bounds.max, {
     waterAsHazard: options?.waterAsHazard,
   });
-  cache.warmBox(bounds.min, bounds.max);
+  try {
+    const cache = lease.cache;
+    // warm 后再确认起终点仍可站（与缓存一致）
+    if (!cache.isStandableBelow(start.x, start.y, start.z)) {
+      return { ok: false, nodes: [], edges: [], reason: "bad_start" };
+    }
+    if (!cache.isStandableBelow(goal.x, goal.y, goal.z)) {
+      return { ok: false, nodes: [], edges: [], reason: "bad_goal" };
+    }
 
-  // warm 后再确认起终点仍可站（与缓存一致）
-  if (!cache.isStandableBelow(start.x, start.y, start.z)) {
-    return { ok: false, nodes: [], edges: [], reason: "bad_start" };
+    return aStar(cache, start, goal, {
+      ...options,
+      bounds,
+    });
+  } finally {
+    lease.release();
   }
-  if (!cache.isStandableBelow(goal.x, goal.y, goal.z)) {
-    return { ok: false, nodes: [], edges: [], reason: "bad_goal" };
-  }
-
-  return aStar(cache, start, goal, {
-    ...options,
-    bounds,
-  });
 }
 
 /**
@@ -172,6 +183,7 @@ export const Path = {
    * 是否可达（仅看 PathResult.ok）。
    * 使用场景：认领过滤；与 find 共用规则。
    * 若目标在短时不可达缓存中则直接 false（可 ignoreBan）。
+   * 若已有共享可达场覆盖该 goal，则先查场（ignoreReachField 时跳过）。
    */
   canReach(
     maid: Entity,
@@ -187,6 +199,15 @@ export const Path = {
     }
     if (!options?.ignoreBan && unreachableCache.has(goal, maid.id)) {
       return false;
+    }
+    if (!options?.ignoreReachField) {
+      const start = standNodeFromFeet(probe, maid.location);
+      if (start) {
+        const hit = isReachableInField(maid.dimension.id, start, goal);
+        if (hit !== undefined) {
+          return hit;
+        }
+      }
     }
     return Path.findFromMaid(maid, dest, options).ok;
   },

@@ -16,6 +16,25 @@ export {
 export type { PathFindOptions } from "./Path";
 export { Executor, IN_FLIGHT_MAX } from "./Executor";
 export {
+  acquireSharedStandable,
+  invalidateSharedStandable,
+  sharedStandableKey,
+  sharedStandableStats,
+  SHARED_STANDABLE_TTL_MS,
+} from "./SharedStandable";
+export type { SharedStandableLease } from "./SharedStandable";
+export {
+  ensureReachabilityField,
+  isReachableInField,
+  invalidateReachabilityField,
+  invalidateReachabilityGoal,
+  buildRoiAround,
+  reachabilityFieldStats,
+  REACH_FIELD_TTL_MS,
+  REACH_FIELD_MAX_STANDS,
+} from "./ReachabilityField";
+export type { ReachRoi, ReachFieldEnsureOptions } from "./ReachabilityField";
+export {
   lookupImpulse,
   resolveImpulse,
   feetOfSupport,
