@@ -464,6 +464,10 @@ function ensureMarker(session: Session, pos: Vector3): boolean {
       pos
     );
     Seek.stamp(marker, session.seekId);
+    // thlmt:visible 默认 false；仅生成时按「显示路点」开一次即可
+    if (config.path_show_waypoints.value) {
+      marker.setProperty("thlmt:visible", true);
+    }
     session.marker = marker;
     return true;
   } catch (e) {

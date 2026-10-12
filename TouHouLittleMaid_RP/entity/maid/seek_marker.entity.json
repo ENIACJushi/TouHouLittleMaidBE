@@ -1,0 +1,26 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "thlmt:seek_marker",
+      "min_engine_version": "1.8.0",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/seek_marker"
+      },
+      "geometry": {
+        "default": "geometry.touhou_little_maid.seek_marker"
+      },
+      "scripts": {
+        "scale": "0.35"
+      },
+      "render_controllers": [
+        {
+          "controller.render.maid_target": "q.property('thlmt:visible')"
+        }
+      ]
+    }
+  }
+}

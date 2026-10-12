@@ -45,7 +45,7 @@ class Config {
     configName: 'logger_level'
   });
   /**
-   * 显示寻路路点粒子：途经红、终点绿。
+   * 显示寻路路点：粒子（途经红、终点绿）；开启时新建 seek_marker 会带 thlmt:visible。
    * 使用场景：调试 / 观察 Path.follow；默认关闭。
    */
   path_show_waypoints = new ConfigItemBoolean({

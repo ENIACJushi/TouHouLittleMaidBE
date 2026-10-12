@@ -11,6 +11,11 @@
           "default": -1,
           "range": [-1, 255],
           "client_sync": true
+        },
+        "thlmt:visible": {
+          "type": "bool",
+          "default": false,
+          "client_sync": true
         }
       }
     },
