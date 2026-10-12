@@ -36,22 +36,35 @@ export class Seek {
 
     // 终点追逐：带触及半径，到终点附近即可停
     g.addComponentGroup(SEEK_PURSUE, {
-      "minecraft:behavior.ranged_attack": {
-        priority: 6,
-        attack_interval_min: 0.8,
-        attack_interval_max: 0.8,
-        attack_radius: 2.1,
-        attack_radius_min: 0.9,
+      // "minecraft:behavior.ranged_attack": {
+      //   priority: 6,
+      //   attack_interval_min: 0.8,
+      //   attack_interval_max: 0.8,
+      //   attack_radius: 2.1,
+      //   attack_radius_min: 0.9,
+      // },
+
+      // 使用远攻组件会导致女仆在越过沟后短暂的往回走而掉下沟，使用近战就不会出现这种问题
+      "minecraft:behavior.melee_attack": {
+        "priority": 6,
+        "reach_multiplier": 9, // 实体半径×reach_multiplier
+        "cooldown_time": 0.8
       },
     });
     // 途经追逐：触及=0，中间路点要贴紧再切下一段
     g.addComponentGroup(SEEK_PURSUE_VIA, {
-      "minecraft:behavior.ranged_attack": {
-        priority: 6,
-        attack_interval_min: 0.8,
-        attack_interval_max: 0.8,
-        attack_radius: 0,
-        attack_radius_min: 0,
+      // "minecraft:behavior.ranged_attack": {
+      //   priority: 6,
+      //   attack_interval_min: 0.8,
+      //   attack_interval_max: 0.8,
+      //   attack_radius: 0,
+      //   attack_radius_min: 0,
+      // },
+      // 使用远攻组件会导致女仆在越过沟后短暂的往回走而掉下沟，使用近战就不会出现这种问题
+      "minecraft:behavior.melee_attack": {
+        "priority": 6,
+        "reach_multiplier": 0,
+        "cooldown_time": 0.8
       },
     });
 
