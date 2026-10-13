@@ -13,8 +13,9 @@ export {
   standNodeFromDest,
   standNodeFromFeet,
 } from "./Path";
-export type { PathFindOptions } from "./Path";
+export type { PathFindOptions, PathFollowOptions } from "./Path";
 export { Executor, IN_FLIGHT_MAX } from "./Executor";
+export type { ExecutorStartOptions } from "./Executor";
 export {
   acquireSharedStandable,
   invalidateSharedStandable,
@@ -76,6 +77,8 @@ export type {
   BlockPos,
   PathEdge,
   PathEdgeKind,
+  PathFollowCompleteInfo,
+  PathFollowCompleteReason,
   PathResult,
   StandableCacheOptions,
   StandNode,

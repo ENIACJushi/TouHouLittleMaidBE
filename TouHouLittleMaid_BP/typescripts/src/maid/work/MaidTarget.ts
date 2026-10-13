@@ -17,7 +17,7 @@ const workHandlers: Partial<Record<number, WorkHandler>> = {
       Farm.search(maid, range, force);
     },
     step(maid) {
-      // Phase3：单目标 Path.follow 收尾 / 再派下一格（无 thlmt:farm）
+      // Phase3：正常收尾走 Path.onComplete；脉冲仅兜底孤儿 job + 空闲补派
       Farm.onSchedulePulse(maid);
     },
   },

@@ -11,7 +11,13 @@ import { Executor } from "./Executor";
 import { isReachableInField } from "./ReachabilityField";
 import { acquireSharedStandable } from "./SharedStandable";
 import { StandableCache, clampBoundsToDimension } from "./StandableCache";
-import { BlockPos, PathResult, StandableCacheOptions, StandNode } from "./types";
+import {
+  BlockPos,
+  PathFollowCompleteInfo,
+  PathResult,
+  StandableCacheOptions,
+  StandNode,
+} from "./types";
 import { unreachableCache } from "./UnreachableCache";
 
 /**
@@ -30,6 +36,18 @@ export type PathFindOptions = AStarOptions &
      */
     ignoreReachField?: boolean;
   };
+
+/**
+ * Path.follow / followResult 选项（规划选项 + 执行回调）。
+ * 使用场景：Farm 到位 acquire；冒烟测试打 PATHDONE|。
+ */
+export type PathFollowOptions = PathFindOptions & {
+  /**
+   * follow 结束回调（done / fail / cancel）。
+   * 在 session 已拆除后于下一 tick 调用，避免与 Executor tick 重入。
+   */
+  onComplete?: (info: PathFollowCompleteInfo) => void;
+};
 
 function floor3(v: Vector3): BlockPos {
   return {
@@ -237,7 +255,7 @@ export const Path = {
   follow(
     maid: Entity,
     dest: Vector3 | StandNode,
-    options?: PathFindOptions
+    options?: PathFollowOptions
   ): PathResult {
     const result = Path.findFromMaid(maid, dest, options);
     if (!result.ok) {
@@ -247,7 +265,9 @@ export const Path = {
     if (!goal) {
       return { ok: false, nodes: [], edges: [], reason: "empty_path" };
     }
-    const started = Executor.start(maid, result.edges, goal);
+    const started = Executor.start(maid, result.edges, goal, {
+      onComplete: options?.onComplete,
+    });
     if (!started) {
       return { ...result, ok: false, reason: "follow_start_fail" };
     }
@@ -258,12 +278,18 @@ export const Path = {
    * 直接执行已有 PathResult（跳过再规划）。
    * 使用场景：find 后自定义再 follow。
    */
-  followResult(maid: Entity, result: PathResult): boolean {
+  followResult(
+    maid: Entity,
+    result: PathResult,
+    options?: Pick<PathFollowOptions, "onComplete">
+  ): boolean {
     if (!result.ok || result.nodes.length === 0) {
       return false;
     }
     const goal = result.nodes[result.nodes.length - 1];
-    return Executor.start(maid, result.edges, goal);
+    return Executor.start(maid, result.edges, goal, {
+      onComplete: options?.onComplete,
+    });
   },
 
   /** 取消当前跟随 */

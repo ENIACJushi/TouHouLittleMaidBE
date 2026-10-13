@@ -47,7 +47,7 @@ export class Seek {
       // 使用远攻组件会导致女仆在越过沟后短暂的往回走而掉下沟，使用近战就不会出现这种问题
       "minecraft:behavior.melee_attack": {
         "priority": 6,
-        "reach_multiplier": 9, // 实体半径×reach_multiplier
+        "reach_multiplier": 10, // 实体半径（0.3）×reach_multiplier=实际距离(3)
         "cooldown_time": 0.8
       },
     });

@@ -1,9 +1,10 @@
 /**
  * Task7 Phase2：Path.follow 冒烟验收（永久保留，后续回归继续用）。
- * 使用场景：`/scriptevent thlm:test path_go|path_cancel|path_status`。
- * path_go 会打 PATHGO| 规划摘要；Gap 冲量/落地见 PATHGAP|（Executor）。
+ * 使用场景：`/scriptevent thlm:test path_go|path_cancel|path_status|path_help`。
+ * path_go 会打 PATHGO| 规划摘要与 PATHDONE| 完成回调；Gap 见 PATHGAP|（Executor）。
+ * AI 路点抵达：Executor 监听近战命中 seek_marker（无需本测试开探针）。
  */
-import { Entity, Player, system } from "@minecraft/server";
+import {Entity, Player, system, world} from "@minecraft/server";
 import { Logger } from "../../src/controller/Logger";
 import { EntityMaid } from "../../src/maid/EntityMaid";
 import { testCommandRegister } from "../TestCommandRegister";
@@ -12,6 +13,8 @@ const TAG = "PathFollow";
 const MAID_TYPE = "thlmm:maid";
 /** path_go 规划诊断前缀（纯 console） */
 const GO_LOG = "PATHGO";
+/** Path.onComplete 诊断前缀 */
+const DONE_LOG = "PATHDONE";
 
 /**
  * follow 冒烟：看向方块为终点，找最近女仆执行 Path.follow。
@@ -30,9 +33,10 @@ export class PathFollowTest {
       source,
       [
         "Task7 Phase2 follow 冒烟",
-        "path_go — 最近女仆 → 看向方块；控制台搜 PATHGO| / PATHGAP|",
+        "path_go — 最近女仆 → 看向方块；控制台搜 PATHGO| / PATHDONE| / PATHGAP|",
         "path_cancel — 取消最近女仆的 follow",
         "path_status — 是否 isFollowing + Seek 档",
+        "抵达：近战命中 seek_marker → Done（再打 PATHDONE）",
         "建议：先平地 Walk，再含 SprintGap 的沟",
         "可视化：管理界面可开关「显示路点」「显示寻路轨迹」",
       ].join("\n")
@@ -55,12 +59,31 @@ export class PathFollowTest {
     EntityMaid.Movement.unlock(maid);
     const dest = block.location;
     const startSnap = { ...maid.location };
+    const t0 = Date.now();
     system.runTimeout(() => {
       if (!maid.isValid) {
         this.msg(source, "path_go: 女仆已失效");
         return;
       }
-      const result = EntityMaid.Path.follow(maid, dest);
+      const result = EntityMaid.Path.follow(maid, dest, {
+        onComplete: (info) => {
+          const dt = Date.now() - t0;
+          console.log(
+            [
+              `${DONE_LOG}|COMPLETE`,
+              `reason=${info.reason}`,
+              `detail=${info.detail}`,
+              `maidId=${info.maidId}`,
+              `dest=${info.dest.x},${info.dest.y},${info.dest.z}`,
+              `dtMs=${dt}`,
+            ].join(",")
+          );
+          this.msg(
+            source,
+            `PATHDONE reason=${info.reason} detail=${info.detail} dt=${dt}ms`
+          );
+        },
+      });
       const edgeKinds =
         result.edges.map((e) => e.kind).join(">") || "(none)";
       this.msg(
@@ -69,7 +92,7 @@ export class PathFollowTest {
           `go maid=${maid.id.slice(0, 8)}… dest=${block.typeId}`,
           `plan ok=${result.ok} reason=${result.reason ?? "-"} edges=${edgeKinds}`,
           result.ok
-            ? "已启动；抓取 PATHGO|PLAN/EDGE 与 PATHGAP|IMPULSE/LAND"
+            ? "已启动；走到终点近战后应见 PATHDONE reason=done"
             : "FAIL 未启动",
         ].join("\n")
       );

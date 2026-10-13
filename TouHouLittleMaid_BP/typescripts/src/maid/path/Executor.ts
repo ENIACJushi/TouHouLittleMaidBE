@@ -8,24 +8,48 @@
  * - 途经平视 + pursue_via；**抵达末途经之后、走向终点时**再切 goal 追逐与脚位；
  * - Gap：**保留 Seek**；marker 对岸脚位沿跳向偏出碰撞半径(0.3)再抬高(1.5)；冲量前脚本朝向对岸；
  * - Gap 腾空：FIT 预计落点，曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
- * - 触及范围内即视为到达。
+ * - AI 路点：女仆近战命中本会话 seek_marker 即 advance / Done（不用脚本距离判抵达）。
+ * - Gap 起跳/落地仍用支撑格距离（冲量段无有效近战抵达语义）。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
  */
-import { Entity, system, Vector3 } from "@minecraft/server";
+import {
+  Entity,
+  EntityHitEntityAfterEvent,
+  system,
+  Vector3,
+  world,
+} from "@minecraft/server";
 import { config } from "../../controller/Config";
 import { Logger } from "../../controller/Logger";
 import { Movement } from "../facets/Movement";
-import { Seek } from "../facets/Seek";
+import { Seek, SEEK_MARKER_TYPE } from "../facets/Seek";
 import {
   resolveImpulseEx,
   feetOfSupport,
   predictHorizontalRange,
   horizontalRangePerHx,
 } from "./ImpulseTable";
-import { PathEdge, StandNode } from "./types";
+import {
+  PathEdge,
+  PathFollowCompleteInfo,
+  PathFollowCompleteReason,
+  StandNode,
+} from "./types";
 import { invalidateReachabilityGoal } from "./ReachabilityField";
 import { unreachableCache } from "./UnreachableCache";
+
+/**
+ * Executor.start 可选参数。
+ * 使用场景：Path.follow 把 onComplete 透传进来。
+ */
+export type ExecutorStartOptions = {
+  /**
+   * follow 结束回调；session 拆除后下一 tick 调用。
+   * 使用场景：Farm 到位 acquire；勿在回调内同步再进同一 maid 的 tick 路径。
+   */
+  onComplete?: (info: PathFollowCompleteInfo) => void;
+};
 
 const TAG = "Path.Executor";
 /** Gap 落点诊断前缀（纯 console，便于 content 抓取） */
@@ -50,14 +74,12 @@ export const IN_FLIGHT_MAX = 4;
  */
 const VIA_STEP = 16;
 
-/** 途经到达水平容差（触及≈0，略放宽抖动） */
-const ARRIVE_VIA_H = 0.75;
 /**
- * 终点到达水平容差：对齐 slot:seek_pursue 的 attack_radius(2.1)。
- * 使用场景：引擎因触及停下时脚本仍判 Done。
+ * Gap 起跳/落地用的水平容差（途经紧贴）。
+ * 使用场景：tickPrepGap / tickInFlight；AI 路点抵达改由近战命中判定。
  */
-const ARRIVE_GOAL_H = 2.0;
-/** 到达竖直容差 */
+const ARRIVE_VIA_H = 0.75;
+/** Gap 起跳/落地竖直容差 */
 const ARRIVE_V = 1.6;
 /**
  * 途经 marker 相对脚位的眼高偏移（女仆 collision height≈1.5）。
@@ -153,6 +175,16 @@ type Session = {
   failReason?: string;
   /** Gap 腾空中才有；落地 / 失败清除 */
   gapAir?: GapAirState;
+  /**
+   * 结束回调（可选）；teardown 后延后调用。
+   * 使用场景：Farm / 测试订阅到位，而非轮询 isFollowing。
+   */
+  onComplete?: (info: PathFollowCompleteInfo) => void;
+  /**
+   * 本会话 entityHitEntity 回调（subscribe 时用 entities:[maid] 限定攻击者）。
+   * 使用场景：AI 路点抵达；teardown 时 unsubscribe。
+   */
+  hitHandler?: (ev: EntityHitEntityAfterEvent) => void;
 };
 
 const sessions = new Map<string, Session>();
@@ -323,8 +355,8 @@ function clearHorizontalVelocity(maid: Entity): void {
 }
 
 /**
- * 是否到达支撑格（相对脚位测距）。
- * @param horizMax 水平容差：途经 / 终点不同
+ * 是否靠近支撑格脚位（仅 Gap 起跳/落地用）。
+ * @param horizMax 水平容差
  */
 function nearSupport(
   maid: Entity,
@@ -337,10 +369,6 @@ function nearSupport(
     return false;
   }
   return Math.abs(loc.y - target.y) <= ARRIVE_V;
-}
-
-function arriveHorizFor(role: WaypointRole): number {
-  return role === "goal" ? ARRIVE_GOAL_H : ARRIVE_VIA_H;
 }
 
 function pursueEventFor(role: WaypointRole): string {
@@ -413,6 +441,9 @@ function ensureTicker(): void {
   }, 2);
 }
 
+/**
+ * 无会话时卸 ticker。
+ */
 function stopTickerIfIdle(): void {
   if (sessions.size > 0) {
     return;
@@ -421,6 +452,85 @@ function stopTickerIfIdle(): void {
     system.clearRun(tickHandle);
     tickHandle = undefined;
   }
+}
+
+/**
+ * 为会话注册近战命中：仅该女仆作为 damagingEntity 时回调。
+ * 使用场景：start；options.entities 避免全图 entityHitEntity。
+ */
+function bindHitListener(session: Session): void {
+  if (session.hitHandler) {
+    return;
+  }
+  const maidId = session.maidId;
+  const handler = (ev: EntityHitEntityAfterEvent) => {
+    onSeekMarkerHit(session, ev);
+  };
+  session.hitHandler = handler;
+  try {
+    world.afterEvents.entityHitEntity.subscribe(handler, {
+      entities: [session.maid],
+    });
+  } catch (e) {
+    session.hitHandler = undefined;
+    Logger.warn(TAG, `bindHitListener maid=${maidId}: ${String(e)}`);
+  }
+}
+
+/**
+ * 卸本会话命中订阅。
+ * 使用场景：teardown。
+ */
+function unbindHitListener(session: Session): void {
+  const handler = session.hitHandler;
+  session.hitHandler = undefined;
+  if (!handler) {
+    return;
+  }
+  try {
+    world.afterEvents.entityHitEntity.unsubscribe(handler);
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
+ * 近战命中 seek_marker：本会话 FollowAI 下命中己方 marker 则 advance。
+ * 使用场景：bindHitListener 回调（已按女仆 Entity 过滤）。
+ */
+function onSeekMarkerHit(
+  session: Session,
+  ev: EntityHitEntityAfterEvent
+): void {
+  // 订阅可能在 teardown 后仍入队一帧
+  if (!sessions.has(session.maidId) || session.phase !== "FollowAI") {
+    return;
+  }
+  const hit = ev.hitEntity;
+  if (!hit?.isValid || hit.typeId !== SEEK_MARKER_TYPE) {
+    return;
+  }
+  const marker = session.marker;
+  if (!marker?.isValid || marker.id !== hit.id) {
+    return;
+  }
+  const maidId = session.maidId;
+  const markerId = hit.id;
+  // 下一 tick 推进，避免与引擎攻击回调重入
+  system.run(() => {
+    const s = sessions.get(maidId);
+    if (!s || s.phase !== "FollowAI") {
+      return;
+    }
+    if (!s.marker?.isValid || s.marker.id !== markerId) {
+      return;
+    }
+    const step = s.steps[s.index];
+    if (!step || step.kind !== "ai") {
+      return;
+    }
+    advance(s);
+  });
 }
 
 /**
@@ -504,7 +614,75 @@ function quitSeekWithPursue(maid: Entity): void {
 }
 
 /**
- * 释放 Seek / 移速 / marker；可选写入不可达缓存。
+ * teardown 的 reason 字符串 → 回调粗分枚举。
+ * 使用场景：onComplete；cancel / done 特判，其余一律 fail。
+ */
+function toCompleteReason(reason: string): PathFollowCompleteReason {
+  if (reason === "done") {
+    return "done";
+  }
+  if (reason === "cancel") {
+    return "cancel";
+  }
+  return "fail";
+}
+
+/**
+ * 在 session 已从 map 拆除后，下一 tick 安全调用 onComplete。
+ * 使用场景：避免 Farm.assignNext 与当前 Executor tick 重入。
+ */
+function scheduleComplete(
+  session: Session,
+  reason: string
+): void {
+  const cb = session.onComplete;
+  if (!cb) {
+    return;
+  }
+  const info: PathFollowCompleteInfo = {
+    reason: toCompleteReason(reason),
+    detail: reason,
+    dest: { ...session.dest },
+    maidId: session.maidId,
+  };
+  system.run(() => {
+    try {
+      cb(info);
+    } catch (e) {
+      Logger.warn(TAG, `onComplete: ${String(e)}`);
+    }
+  });
+}
+
+/**
+ * 无步骤即到位：不建 session，仍走 onComplete(done)。
+ * 使用场景：A* 起终点同格（edges 空）；与「已在近处」语义一致。
+ */
+function scheduleImmediateDone(
+  maidId: string,
+  dest: StandNode,
+  onComplete?: (info: PathFollowCompleteInfo) => void
+): void {
+  if (!onComplete) {
+    return;
+  }
+  const info: PathFollowCompleteInfo = {
+    reason: "done",
+    detail: "empty_path",
+    dest: { ...dest },
+    maidId,
+  };
+  system.run(() => {
+    try {
+      onComplete(info);
+    } catch (e) {
+      Logger.warn(TAG, `onComplete(empty): ${String(e)}`);
+    }
+  });
+}
+
+/**
+ * 释放 Seek / 移速 / marker；可选写入不可达缓存；推送 onComplete。
  */
 function teardown(
   session: Session,
@@ -527,9 +705,11 @@ function teardown(
   if (opts.ban) {
     unreachableCache.add(session.dest, session.maidId);
   }
+  unbindHitListener(session);
   sessions.delete(session.maidId);
   Logger.info(TAG, `${opts.log} maid=${session.maidId} reason=${reason}`);
   stopTickerIfIdle();
+  scheduleComplete(session, reason);
 }
 
 function failSession(session: Session, reason: string): void {
@@ -601,17 +781,13 @@ function beginStep(session: Session): void {
 }
 
 function tickFollowAI(session: Session): void {
-  const maid = session.maid;
   const step = session.steps[session.index];
   if (step.kind !== "ai") {
     return;
   }
+  // 抵达由 onSeekMarkerHit（近战命中 marker）驱动；此处只做超时
   if (now() - session.phaseAt > AI_EDGE_TIMEOUT_MS) {
     failSession(session, "ai_timeout");
-    return;
-  }
-  if (nearSupport(maid, step.support, arriveHorizFor(step.role))) {
-    advance(session);
   }
 }
 
@@ -883,16 +1059,23 @@ export const Executor = {
    * 开始跟随已规划路径；同女仆已有会话则先 cancel。
    * @returns 是否成功启动
    */
-  start(maid: Entity, edges: PathEdge[], dest: StandNode): boolean {
+  start(
+    maid: Entity,
+    edges: PathEdge[],
+    dest: StandNode,
+    options?: ExecutorStartOptions
+  ): boolean {
     if (!maid.isValid) {
       return false;
     }
     if (edges.length === 0) {
+      scheduleImmediateDone(maid.id, dest, options?.onComplete);
       return true;
     }
     Executor.cancel(maid);
     const steps = buildFollowSteps(edges);
     if (steps.length === 0) {
+      scheduleImmediateDone(maid.id, dest, options?.onComplete);
       return true;
     }
     const seekId = Seek.allocate();
@@ -912,9 +1095,11 @@ export const Executor = {
       phase: "Idle",
       phaseAt: now(),
       dest,
+      onComplete: options?.onComplete,
     };
     sessions.set(maid.id, session);
     ensureTicker();
+    bindHitListener(session);
     beginStep(session);
     return sessions.has(maid.id);
   },

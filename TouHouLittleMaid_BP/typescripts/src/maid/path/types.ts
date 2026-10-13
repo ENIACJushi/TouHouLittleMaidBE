@@ -51,6 +51,30 @@ export type PathResult = {
 };
 
 /**
+ * Path.follow 结束原因（会话拆除后推给调用方）。
+ * 使用场景：Farm.onFollowComplete；与「轮询 isFollowing」解耦。
+ */
+export type PathFollowCompleteReason = "done" | "fail" | "cancel";
+
+/**
+ * Path.follow 完成回调载荷。
+ * 使用场景：teardown 后下一 tick 调用 onComplete。
+ */
+export type PathFollowCompleteInfo = {
+  /** 粗分：成功 / 失败 / 取消 */
+  reason: PathFollowCompleteReason;
+  /**
+   * 细分原因字符串（如 done / timeout / maid_invalid / cancel）。
+   * 使用场景：日志与 Fail 分支诊断。
+   */
+  detail: string;
+  /** 本次 follow 的终点支撑格 */
+  dest: StandNode;
+  /** 女仆 entity.id（回调时实体可能已失效） */
+  maidId: string;
+};
+
+/**
  * StandableCache 构造选项。
  * 使用场景：农作搜索箱；waterAsHazard 默认 true（对齐 avoid_water）。
  */

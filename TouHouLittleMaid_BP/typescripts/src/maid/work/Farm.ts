@@ -1,7 +1,8 @@
 // @ts-nocheck
 /**
  * 耕地农作（Phase3）：不再刷 thlmt:farm。
- * 扫描只收集坐标 → 为该女仆选下一个可达点 → Path.follow（seek_marker）→ 到位后对方块 acquire。
+ * 扫描只收集坐标 → 为该女仆选下一个可达点 → Path.follow（seek_marker）→
+ * 由 Path onComplete(done) 推送到位后再对方块 acquire（不再靠轮询距离收尾）。
  */
 import {
   Entity,
@@ -20,6 +21,10 @@ import {
   ensureReachabilityField,
 } from "../path/ReachabilityField";
 import { SpeedController } from "./SpeedController";
+
+/**
+ * @typedef {import("../path/types").PathFollowCompleteInfo} PathFollowCompleteInfo
+ */
 
 const TAG = "Farm";
 /** 女仆当前农作任务（JSON：x,y,z,kind,crop?） */
@@ -445,9 +450,13 @@ export class Farm {
       this.pauseFarmNat(maid);
       this.claimCell(maid, t);
       this.writeJob(maid, t);
+      const expected = t;
       const result = EntityMaid.Path.follow(maid, dest, {
         searchH: h,
         searchV: SEARCH_V,
+        onComplete: (info) => {
+          Farm.onFollowComplete(maid, expected, info);
+        },
       });
       if (!result.ok) {
         this.releaseCell(maid, t);
@@ -457,6 +466,66 @@ export class Farm {
       return true;
     }
     return false;
+  }
+
+  /**
+   * Path.follow 结束：done 则 acquire；fail/cancel 只释锁。
+   * 使用场景：assignNext 注册的 onComplete；用 expected 防「换任务后旧 cancel」误清新 job。
+   * @param {Entity} maid
+   * @param {FarmTask} expected 启动 follow 时认领的任务
+   * @param {PathFollowCompleteInfo} info
+   */
+  static onFollowComplete(maid, expected, info) {
+    if (!maid?.isValid) {
+      return;
+    }
+    if (EntityMaid.Work.get(maid) !== EntityMaid.Work.farm) {
+      return;
+    }
+    const job = this.readJob(maid);
+    if (
+      !job ||
+      job.x !== expected.x ||
+      job.y !== expected.y ||
+      job.z !== expected.z ||
+      job.kind !== expected.kind
+    ) {
+      // 已被新任务覆盖或已清掉：忽略（常见于 start 替换旧会话的 cancel）
+      return;
+    }
+
+    if (info.reason === "done") {
+      try {
+        this.acquireAt(maid, job);
+      } catch (e) {
+        Logger.warn(TAG, `acquireAt(onComplete): ${String(e)}`);
+      }
+    } else {
+      Logger.info(
+        TAG,
+        `follow ${info.reason} detail=${info.detail} job=${job.x},${job.y},${job.z}`
+      );
+    }
+
+    this.releaseCell(maid, job);
+    this.writeJob(maid, undefined);
+
+    // done / fail：继续派下一格；cancel：不自动派（玩家取消 / 模式切换）
+    if (info.reason === "cancel") {
+      return;
+    }
+    if (EntityMaid.Pose.isSitting(maid)) {
+      return;
+    }
+    if (EntityMaid.Path.isFollowing(maid)) {
+      return;
+    }
+    const tasks = this.collectTasks(maid, Farm.claimRange);
+    if (tasks.length > 0) {
+      this.assignNext(maid, tasks, Farm.claimRange);
+    } else {
+      SpeedController.afterSearch(maid, 0, Farm.maxLack, Farm.minCount);
+    }
   }
 
   /**
@@ -472,7 +541,7 @@ export class Farm {
     }
     const curJob = this.readJob(maid);
     if (curJob) {
-      // 有未完成任务：交给 onSchedulePulse 收尾
+      // 有未完成任务：交给 onSchedulePulse / onFollowComplete 收尾
       return;
     }
 
@@ -508,8 +577,8 @@ export class Farm {
   }
 
   /**
-   * 调度脉冲：follow 中等待；结束后 acquire 并选下一个。
-   * 使用场景：MaidTarget.stepEvent（farm）。
+   * 调度脉冲：follow 中等待；无会话时兜底清孤儿 job 并补派。
+   * 使用场景：MaidTarget.stepEvent（farm）。正常收尾已由 onFollowComplete 推送。
    */
   static onSchedulePulse(maid) {
     if (!maid?.isValid) {
@@ -524,20 +593,26 @@ export class Farm {
       return;
     }
 
+    // 兜底：回调丢失 / 脚本重载后残留 job
     const job = this.readJob(maid);
     if (job) {
       if (this.nearTask(maid, job)) {
         try {
           this.acquireAt(maid, job);
         } catch (e) {
-          Logger.warn(TAG, `acquireAt: ${String(e)}`);
+          Logger.warn(TAG, `acquireAt(pulse): ${String(e)}`);
         }
+      } else {
+        Logger.warn(
+          TAG,
+          `orphan job cleared without acquire @${job.x},${job.y},${job.z}`
+        );
       }
       this.releaseCell(maid, job);
       this.writeJob(maid, undefined);
     }
 
-    // 立刻找下一个（轻量：用 claimRange 扫描）
+    // 空闲补派（轻量：用 claimRange 扫描）
     if (!EntityMaid.Pose.isSitting(maid)) {
       const tasks = this.collectTasks(maid, Farm.claimRange);
       if (tasks.length > 0) {
