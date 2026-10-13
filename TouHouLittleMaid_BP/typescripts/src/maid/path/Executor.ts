@@ -181,7 +181,7 @@ type Session = {
    */
   onComplete?: (info: PathFollowCompleteInfo) => void;
   /**
-   * 本会话 entityHitEntity 回调（subscribe 时用 entities:[maid] 限定攻击者）。
+   * 本会话 entityHitEntity 回调（subscribe 时用 entities:[maid] 限定攻击方；已验证有效）。
    * 使用场景：AI 路点抵达；teardown 时 unsubscribe。
    */
   hitHandler?: (ev: EntityHitEntityAfterEvent) => void;
@@ -457,6 +457,8 @@ function stopTickerIfIdle(): void {
 /**
  * 为会话注册近战命中：仅该女仆作为 damagingEntity 时回调。
  * 使用场景：start；options.entities 避免全图 entityHitEntity。
+ * 已验证：entityHitEntity 的 EntityEventOptions.entities 滤的是攻击方（damagingEntity），
+ * 不是 hitEntity；传入本会话女仆即可只收其近战命中。
  */
 function bindHitListener(session: Session): void {
   if (session.hitHandler) {
@@ -468,6 +470,7 @@ function bindHitListener(session: Session): void {
   };
   session.hitHandler = handler;
   try {
+    // entities = 攻击方女仆（已实测，非被击中方）
     world.afterEvents.entityHitEntity.subscribe(handler, {
       entities: [session.maid],
     });

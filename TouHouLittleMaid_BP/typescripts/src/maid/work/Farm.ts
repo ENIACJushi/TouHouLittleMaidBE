@@ -577,8 +577,9 @@ export class Farm {
   }
 
   /**
-   * 调度脉冲：follow 中等待；无会话时兜底清孤儿 job 并补派。
-   * 使用场景：MaidTarget.stepEvent（farm）。正常收尾已由 onFollowComplete 推送。
+   * 调度脉冲：follow 中等待；仅在 near 时兜底 acquire。
+   * 使用场景：MaidTarget.stepEvent（farm）。正常收尾由 onFollowComplete 推送。
+   * 注意：!near 时不得清 job——Done 后 onComplete 可能尚未入队，且近战触及可宽于 nearTask。
    */
   static onSchedulePulse(maid) {
     if (!maid?.isValid) {
@@ -593,20 +594,16 @@ export class Farm {
       return;
     }
 
-    // 兜底：回调丢失 / 脚本重载后残留 job
     const job = this.readJob(maid);
     if (job) {
-      if (this.nearTask(maid, job)) {
-        try {
-          this.acquireAt(maid, job);
-        } catch (e) {
-          Logger.warn(TAG, `acquireAt(pulse): ${String(e)}`);
-        }
-      } else {
-        Logger.warn(
-          TAG,
-          `orphan job cleared without acquire @${job.x},${job.y},${job.z}`
-        );
+      // 只兜底「已靠近」：未靠近交给 onFollowComplete，避免抢清 job 漏收割
+      if (!this.nearTask(maid, job)) {
+        return;
+      }
+      try {
+        this.acquireAt(maid, job);
+      } catch (e) {
+        Logger.warn(TAG, `acquireAt(pulse): ${String(e)}`);
       }
       this.releaseCell(maid, job);
       this.writeJob(maid, undefined);
