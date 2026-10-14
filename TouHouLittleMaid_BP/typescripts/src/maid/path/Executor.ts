@@ -5,7 +5,7 @@
  * 路点策略：
  * - 连续 Walk 抽稀（步长 VIA_STEP），Jump1/Fall/段尾保留；
  * - **单 marker 实体**：会话内 spawn 一次，换路点只 teleport（Seek 一次锁定，不反复 reset）；
- * - 途经平视 + pursue_via；**抵达末途经之后、走向终点时**再切 goal 追逐与脚位；
+ * - 途经平视 + pursue_via；via→via 抵达后 quit+重挂 via melee 刷新追逐；末途经后再切 goal；
  * - Gap：**保留 Seek**；marker 对岸脚位沿跳向偏出碰撞半径(0.3)再抬高(1.5)；冲量前脚本朝向对岸；
  * - Gap 腾空：FIT 预计落点，曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
  * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_H）即 advance（避免贴脸互推）。
@@ -598,7 +598,7 @@ function ensureMarker(session: Session, pos: Vector3): boolean {
 
 /**
  * 挂 Seek（若未挂）并按角色切换追逐；不因换点 resetTarget。
- * 使用场景：AI 段；via→goal 仅在此切换追逐组。
+ * 使用场景：AI 段；via→goal 切追逐组；via→via 也 quit+重挂 via melee，避免抵达后短暂丢目标。
  */
 function ensureSeek(session: Session, role: WaypointRole): boolean {
   const maid = session.maid;
@@ -613,6 +613,12 @@ function ensureSeek(session: Session, role: WaypointRole): boolean {
   if (session.pursueRole !== role) {
     Seek.mountPursue(maid, pursueEventFor(role));
     session.pursueRole = role;
+    return true;
+  }
+  // 途经→途经：事件里「已有 via 组再 add」常不刷新；先卸再挂重载 melee_attack
+  if (role === "via") {
+    Seek.quitPursue(maid);
+    Seek.mountPursue(maid, Seek.PURSUE_VIA);
   }
   return true;
 }
