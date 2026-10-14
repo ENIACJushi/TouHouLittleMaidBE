@@ -131,8 +131,8 @@ export const Seek = {
   PURSUE_DEFAULT: "slot:seek_pursue",
 
   /**
-   * 途经追逐事件名（melee_attack，reach_multiplier=0，贴紧再切段）。
-   * 使用场景：Path.follow 中间路点；命中 marker 后切下一段。
+   * 途经追逐事件名（melee_attack，reach_multiplier=0，贴紧行走）。
+   * 使用场景：Path.follow 中间路点；脚本近距离判抵达后切段（不靠攻击事件）。
    */
   PURSUE_VIA: "slot:seek_pursue_via",
 

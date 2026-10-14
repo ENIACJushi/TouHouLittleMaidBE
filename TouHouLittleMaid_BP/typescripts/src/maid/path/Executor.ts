@@ -8,7 +8,8 @@
  * - 途经平视 + pursue_via；**抵达末途经之后、走向终点时**再切 goal 追逐与脚位；
  * - Gap：**保留 Seek**；marker 对岸脚位沿跳向偏出碰撞半径(0.3)再抬高(1.5)；冲量前脚本朝向对岸；
  * - Gap 腾空：FIT 预计落点，曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
- * - AI 路点：女仆近战命中本会话 seek_marker 即 advance / Done（不用脚本距离判抵达）。
+ * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_H）即 advance（避免贴脸互推）。
+ * - AI 终点：近战命中本会话 seek_marker 即 Done。
  * - Gap 起跳/落地仍用支撑格距离（冲量段无有效近战抵达语义）。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
@@ -75,11 +76,11 @@ export const IN_FLIGHT_MAX = 4;
 const VIA_STEP = 16;
 
 /**
- * Gap 起跳/落地用的水平容差（途经紧贴）。
- * 使用场景：tickPrepGap / tickInFlight；AI 路点抵达改由近战命中判定。
+ * 途经到达水平容差（触及≈0，略放宽抖动）。
+ * 使用场景：AI via 路点；Gap 起跳/落地（tickPrepGap / tickInFlight）。
  */
 const ARRIVE_VIA_H = 0.75;
-/** Gap 起跳/落地竖直容差 */
+/** 途经 / Gap 到达竖直容差 */
 const ARRIVE_V = 1.6;
 /**
  * 途经 marker 相对脚位的眼高偏移（女仆 collision height≈1.5）。
@@ -355,7 +356,8 @@ function clearHorizontalVelocity(maid: Entity): void {
 }
 
 /**
- * 是否靠近支撑格脚位（仅 Gap 起跳/落地用）。
+ * 是否靠近支撑格脚位。
+ * 使用场景：AI via 抵达；Gap 起跳/落地。
  * @param horizMax 水平容差
  */
 function nearSupport(
@@ -498,8 +500,8 @@ function unbindHitListener(session: Session): void {
 }
 
 /**
- * 近战命中 seek_marker：本会话 FollowAI 下命中己方 marker 则 advance。
- * 使用场景：bindHitListener 回调（已按女仆 Entity 过滤）。
+ * 近战命中 seek_marker：仅终点（goal）FollowAI 下命中己方 marker 则 advance/Done。
+ * 使用场景：bindHitListener 回调；途经 via 仍由 tickFollowAI 距离判定，忽略命中。
  */
 function onSeekMarkerHit(
   session: Session,
@@ -517,6 +519,11 @@ function onSeekMarkerHit(
   if (!marker?.isValid || marker.id !== hit.id) {
     return;
   }
+  const cur = session.steps[session.index];
+  // 途经不靠攻击切段，避免贴脸互推；仅终点用命中
+  if (!cur || cur.kind !== "ai" || cur.role !== "goal") {
+    return;
+  }
   const maidId = session.maidId;
   const markerId = hit.id;
   // 下一 tick 推进，避免与引擎攻击回调重入
@@ -529,7 +536,7 @@ function onSeekMarkerHit(
       return;
     }
     const step = s.steps[s.index];
-    if (!step || step.kind !== "ai") {
+    if (!step || step.kind !== "ai" || step.role !== "goal") {
       return;
     }
     advance(s);
@@ -784,13 +791,18 @@ function beginStep(session: Session): void {
 }
 
 function tickFollowAI(session: Session): void {
+  const maid = session.maid;
   const step = session.steps[session.index];
   if (step.kind !== "ai") {
     return;
   }
-  // 抵达由 onSeekMarkerHit（近战命中 marker）驱动；此处只做超时
   if (now() - session.phaseAt > AI_EDGE_TIMEOUT_MS) {
     failSession(session, "ai_timeout");
+    return;
+  }
+  // 途经：距离抵达（恢复旧逻辑）；终点：等 onSeekMarkerHit
+  if (step.role === "via" && nearSupport(maid, step.support, ARRIVE_VIA_H)) {
+    advance(session);
   }
 }
 

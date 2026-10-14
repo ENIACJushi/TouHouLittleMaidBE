@@ -2,7 +2,7 @@
  * Task7 Phase2：Path.follow 冒烟验收（永久保留，后续回归继续用）。
  * 使用场景：`/scriptevent thlm:test path_go|path_cancel|path_status|path_help`。
  * path_go 会打 PATHGO| 规划摘要与 PATHDONE| 完成回调；Gap 见 PATHGAP|（Executor）。
- * AI 路点抵达：Executor 监听近战命中 seek_marker（无需本测试开探针）。
+ * 抵达：途经用距离；终点近战命中 seek_marker → Done。
  */
 import {Entity, Player, system, world} from "@minecraft/server";
 import { Logger } from "../../src/controller/Logger";
@@ -36,7 +36,7 @@ export class PathFollowTest {
         "path_go — 最近女仆 → 看向方块；控制台搜 PATHGO| / PATHDONE| / PATHGAP|",
         "path_cancel — 取消最近女仆的 follow",
         "path_status — 是否 isFollowing + Seek 档",
-        "抵达：近战命中 seek_marker → Done（再打 PATHDONE）",
+        "抵达：途经=距离；终点=近战命中 seek_marker → PATHDONE",
         "建议：先平地 Walk，再含 SprintGap 的沟",
         "可视化：管理界面可开关「显示路点」「显示寻路轨迹」",
       ].join("\n")
