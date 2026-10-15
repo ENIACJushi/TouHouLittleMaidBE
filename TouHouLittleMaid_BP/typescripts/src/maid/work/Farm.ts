@@ -421,6 +421,7 @@ export class Farm {
       .sort((a, b) => a.d2 - b.d2);
 
     for (const { t } of ranked) {
+      // 规划仍用作物格坐标（standNodeFromDest→下方耕地）；终点 marker 由 Executor 打在作物格心
       const dest = { x: t.x, y: t.y, z: t.z };
       let ok = false;
       try {

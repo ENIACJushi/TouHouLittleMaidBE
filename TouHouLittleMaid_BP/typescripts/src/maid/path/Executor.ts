@@ -5,7 +5,8 @@
  * 路点策略：
  * - 连续 Walk 抽稀（步长 VIA_STEP），Jump1/Fall/段尾保留；
  * - **单 marker 实体**：会话内 spawn 一次，换路点只 teleport（Seek 一次锁定，不反复 reset）；
- * - 途经平视 + pursue_via；via→via 抵达后 quit+重挂 via melee 刷新追逐；末途经后再切 goal；
+ * - 途经平视 + pursue_via；via→via 抵达后 quit+重挂 via melee 刷新追逐；
+ * - 终点 marker 在支撑格上方一格中心（作物格心），避免贴耕地顶面导致 NAT 丢锁；
  * - Gap：**保留 Seek**；marker 对岸脚位沿跳向偏出碰撞半径(0.3)再抬高(1.5)；冲量前脚本朝向对岸；
  * - Gap 腾空：FIT 预计落点，曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
  * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_H）即 advance（避免贴脸互推）。
@@ -206,12 +207,24 @@ function now(): number {
 }
 
 /**
- * 脚位（支撑顶面中心）：终点路点 / Gap 到达判定用。
+ * 脚位（支撑顶面中心）：Gap 起跳/落地与距离判定用。
  */
 function feetOf(support: StandNode): Vector3 {
   return {
     x: support.x + 0.5,
     y: support.y + 1,
+    z: support.z + 0.5,
+  };
+}
+
+/**
+ * 终点 marker：支撑格上方一格的体心（农作即作物方块中心）。
+ * 使用场景：goal 路点 stamp；脚位贴耕地顶面时引擎易丢锁。
+ */
+function goalMarkerOf(support: StandNode): Vector3 {
+  return {
+    x: support.x + 0.5,
+    y: support.y + 1.5,
     z: support.z + 0.5,
   };
 }
@@ -785,7 +798,7 @@ function beginStep(session: Session): void {
   }
   session.phase = "FollowAI";
   const stampPos =
-    step.role === "goal" ? feetOf(step.support) : eyeOf(step.support);
+    step.role === "goal" ? goalMarkerOf(step.support) : eyeOf(step.support);
   if (!ensureMarker(session, stampPos)) {
     failSession(session, "spawn_marker");
     return;
@@ -1005,7 +1018,7 @@ function spawnWaypointParticles(session: Session): void {
     let isGoal = false;
     if (step.kind === "ai") {
       isGoal = step.role === "goal";
-      pos = isGoal ? feetOf(step.support) : eyeOf(step.support);
+      pos = isGoal ? goalMarkerOf(step.support) : eyeOf(step.support);
     } else {
       // Gap：粒子与 Seek marker 同偏置，便于对照
       isGoal = i === last;
