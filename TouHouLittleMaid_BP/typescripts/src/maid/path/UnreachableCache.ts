@@ -54,6 +54,37 @@ export class UnreachableCache {
   clear(): void {
     this.map.clear();
   }
+
+  /**
+   * 枚举未过期 ban 终点支撑格（无维度信息，由调用方按当前维刷粒子）。
+   * 使用场景：ReachViz「显示路点」品红粒子。
+   */
+  listActiveDests(): StandNode[] {
+    const now = Date.now();
+    const out: StandNode[] = [];
+    for (const [k, e] of this.map) {
+      if (now > e.expiry) {
+        this.map.delete(k);
+        continue;
+      }
+      const bar = k.indexOf("|");
+      if (bar < 0) {
+        continue;
+      }
+      const coords = k.slice(bar + 1).split(",");
+      if (coords.length !== 3) {
+        continue;
+      }
+      const x = Number(coords[0]);
+      const y = Number(coords[1]);
+      const z = Number(coords[2]);
+      if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) {
+        continue;
+      }
+      out.push({ x, y, z });
+    }
+    return out;
+  }
 }
 
 /** 进程内单例，供 Path / Executor 共用 */

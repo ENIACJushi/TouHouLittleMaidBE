@@ -38,7 +38,7 @@ export class PathFollowTest {
         "path_status — 是否 isFollowing + Seek 档",
         "抵达：途经=距离；终点=近战命中 seek_marker → PATHDONE",
         "建议：先平地 Walk，再含 SprintGap 的沟",
-        "可视化：管理界面可开关「显示路点」「显示寻路轨迹」",
+        "可视化：显示路点=红/绿路点+青绿可达+黄(可站未达)+品红ban；另有轨迹开关",
       ].join("\n")
     );
   }

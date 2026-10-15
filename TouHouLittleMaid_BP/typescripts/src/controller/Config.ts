@@ -3,6 +3,7 @@ import { lang } from "../libs/ScarletToolKit"
 import { ActionFormData, MessageFormData, ModalFormData } from "@minecraft/server-ui";
 import { LoggerLevel } from "./Logger";
 import { ManageForm } from "./ManageForm";
+import { setReachVizEnabled } from "../maid/path/ReachViz";
 
 // 计分项名称
 const SCORE_NAME = "thlmconfig";
@@ -45,13 +46,18 @@ class Config {
     configName: 'logger_level'
   });
   /**
-   * 显示寻路路点：粒子（途经红、终点绿）；开启时新建 seek_marker 会带 thlmt:visible。
-   * 使用场景：调试 / 观察 Path.follow；默认关闭。
+   * 显示寻路路点与可达表：途经红、终点绿；可达青绿（覆盖可站∩可达）；
+   * 可站但未进场黄；不可达 ban 品红；开启时新建 seek_marker 带 thlmt:visible。
+   * 使用场景：调试 Path.follow / ReachabilityField；默认关闭。
    */
   path_show_waypoints = new ConfigItemBoolean({
     defaultValue: false,
     changable: true,
-    configName: 'path_show_waypoints'
+    configName: 'path_show_waypoints',
+    // 初始化/变更时挂卸可视化，无常驻轮询
+    onChange: (on) => {
+      setReachVizEnabled(on);
+    },
   });
   /**
    * 显示寻路轨迹粒子：每 tick 在女仆位置刷蓝色点，留存约 10s。
@@ -69,12 +75,23 @@ abstract class ConfigItem<T> {
   defaultValue: T;
   changable: boolean = false;
   configName: string = '';
+  /**
+   * 值变更回调（初始化读计分板与面板 set 都会触发）。
+   * 使用场景：path_show_waypoints → 挂/卸 ReachViz，避免轮询。
+   */
+  onChange?: (value: T) => void;
 
-  constructor (data: {defaultValue: T, changable: boolean, configName: string}) {
+  constructor (data: {
+    defaultValue: T;
+    changable: boolean;
+    configName: string;
+    onChange?: (value: T) => void;
+  }) {
     this.value = data.defaultValue;
     this.defaultValue = data.defaultValue;
     this.changable = data.changable;
     this.configName = data.configName;
+    this.onChange = data.onChange;
   }
   
   abstract set(value: number|boolean): void;
@@ -100,6 +117,11 @@ class ConfigItemBoolean extends ConfigItem<boolean> {
     // 更新计分板
     var scoreboard = world.scoreboard.getObjective(SCORE_NAME);
     scoreboard?.setScore(this.configName, value_ ? 1 : 0);
+    try {
+      this.onChange?.(value_);
+    } catch {
+      /* 副作用失败不影响写盘 */
+    }
   }
 }
 

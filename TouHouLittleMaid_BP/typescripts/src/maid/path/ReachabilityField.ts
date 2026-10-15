@@ -406,6 +406,52 @@ export function reachabilityFieldStats(): {
   return { fields: fields.size, totalGoals, totalBuildCount };
 }
 
+/**
+ * 解析站立格键 `"x,y,z"`；非法则 undefined。
+ */
+function parseNodeKey(key: string): StandNode | undefined {
+  const p = key.split(",");
+  if (p.length !== 3) {
+    return undefined;
+  }
+  const x = Number(p[0]);
+  const y = Number(p[1]);
+  const z = Number(p[2]);
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) {
+    return undefined;
+  }
+  return { x, y, z };
+}
+
+/**
+ * 枚举未过期可达场中的站立支撑格（各 goal 的 R(g) 并集）。
+ * 使用场景：ReachViz「显示路点」青绿粒子。
+ */
+export function listReachabilityStands(dimId: string): StandNode[] {
+  const now = Date.now();
+  sweepExpired(now);
+  const seen = new Set<string>();
+  const out: StandNode[] = [];
+  for (const rec of fields.values()) {
+    if (rec.dimId !== dimId || now > rec.expires) {
+      continue;
+    }
+    for (const set of rec.byGoal.values()) {
+      for (const k of set) {
+        if (seen.has(k)) {
+          continue;
+        }
+        seen.add(k);
+        const n = parseNodeKey(k);
+        if (n) {
+          out.push(n);
+        }
+      }
+    }
+  }
+  return out;
+}
+
 /** 测试用清空 */
 export function clearReachabilityFieldForTest(): void {
   fields.clear();

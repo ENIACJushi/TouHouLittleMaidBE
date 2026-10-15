@@ -4,7 +4,7 @@
  */
 import { Dimension } from "@minecraft/server";
 import { StandableCache, clampBoundsToDimension } from "./StandableCache";
-import { BlockPos, StandableCacheOptions } from "./types";
+import { BlockPos, StandableCacheOptions, StandNode } from "./types";
 
 /** 共享 Standable 默认存活（毫秒） */
 export const SHARED_STANDABLE_TTL_MS = 3_000;
@@ -187,6 +187,59 @@ export function sharedStandableStats(): {
     totalRefCount += rec.refCount;
   }
   return { leases: leases.size, totalWarmCount, totalRefCount };
+}
+
+/**
+ * 仅枚举与观察者视野箱相交的可站支撑格（不截断数量）。
+ * 使用场景：ReachViz 黄色层；excludeKeys 跳过已在可达场内的格（只刷青绿）。
+ */
+export function listSharedStandablesNear(
+  dimId: string,
+  center: { x: number; y: number; z: number },
+  viewH: number,
+  viewV: number,
+  excludeKeys?: Set<string>
+): StandNode[] {
+  const now = Date.now();
+  sweepExpired(now);
+  const x0 = Math.floor(center.x - viewH);
+  const x1 = Math.floor(center.x + viewH);
+  const y0 = Math.floor(center.y - viewV - 1);
+  const y1 = Math.floor(center.y + viewV - 1);
+  const z0 = Math.floor(center.z - viewH);
+  const z1 = Math.floor(center.z + viewH);
+  const seen = new Set<string>();
+  const out: StandNode[] = [];
+  for (const rec of leases.values()) {
+    if (rec.dimId !== dimId || now > rec.expires) {
+      continue;
+    }
+    const minX = Math.max(rec.min.x, x0);
+    const maxX = Math.min(rec.max.x, x1);
+    const minY = Math.max(rec.min.y, y0);
+    const maxY = Math.min(rec.max.y, y1);
+    const minZ = Math.max(rec.min.z, z0);
+    const maxZ = Math.min(rec.max.z, z1);
+    if (minX > maxX || minY > maxY || minZ > maxZ) {
+      continue;
+    }
+    for (let y = minY; y <= maxY; y++) {
+      for (let x = minX; x <= maxX; x++) {
+        for (let z = minZ; z <= maxZ; z++) {
+          const k = `${x},${y},${z}`;
+          if (excludeKeys?.has(k) || seen.has(k)) {
+            continue;
+          }
+          if (!rec.cache.isStandableBelow(x, y, z)) {
+            continue;
+          }
+          seen.add(k);
+          out.push({ x, y, z });
+        }
+      }
+    }
+  }
+  return out;
 }
 
 /** 测试用：清空全部租约 */
