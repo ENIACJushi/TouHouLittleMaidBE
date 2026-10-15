@@ -134,7 +134,14 @@ function paintAroundPlayer(
   );
   spawnAll(dim, PARTICLE_STAND, standOnly);
   spawnLayer(dim, PARTICLE_REACH, reach, ox, oy, oz);
-  spawnLayer(dim, PARTICLE_BAN, unreachableCache.listActiveDests(), ox, oy, oz);
+  spawnLayer(
+    dim,
+    PARTICLE_BAN,
+    unreachableCache.listActiveDests(dimId),
+    ox,
+    oy,
+    oz
+  );
 }
 
 function paintAll(): void {

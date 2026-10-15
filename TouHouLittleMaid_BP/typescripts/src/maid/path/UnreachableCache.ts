@@ -14,27 +14,42 @@ export const UNREACHABLE_TTL_MS = 30_000;
 type Entry = { expiry: number };
 
 /**
- * (可选 maidId + 目标格) → 过期时间。
- * 使用场景：Executor Fail；查询时顺带清过期。
+ * (维度 + 可选 maidId + 目标格) → 过期时间。
+ * 使用场景：Executor Fail；查询时顺带清过期；按维隔离避免跨维误 ban。
  */
 export class UnreachableCache {
   private readonly map = new Map<string, Entry>();
 
-  private key(maidId: string | undefined, dest: StandNode): string {
-    return `${maidId ?? "*"}|${blockKey(dest)}`;
+  /**
+   * 缓存键：dimId|maidId|x,y,z（dimId / maidId 均不含 `|`）。
+   */
+  private key(
+    dimId: string,
+    maidId: string | undefined,
+    dest: StandNode
+  ): string {
+    return `${dimId}|${maidId ?? "*"}|${blockKey(dest)}`;
   }
 
   /**
    * 标记不可达。
+   * @param dimId 目标所在维度 id
    * @param ttlMs 默认 30s
    */
-  add(dest: StandNode, maidId?: string, ttlMs: number = UNREACHABLE_TTL_MS): void {
-    this.map.set(this.key(maidId, dest), { expiry: Date.now() + ttlMs });
+  add(
+    dimId: string,
+    dest: StandNode,
+    maidId?: string,
+    ttlMs: number = UNREACHABLE_TTL_MS
+  ): void {
+    this.map.set(this.key(dimId, maidId, dest), {
+      expiry: Date.now() + ttlMs,
+    });
   }
 
-  /** 是否仍在 ban 期内 */
-  has(dest: StandNode, maidId?: string): boolean {
-    const k = this.key(maidId, dest);
+  /** 是否仍在 ban 期内（同维度） */
+  has(dimId: string, dest: StandNode, maidId?: string): boolean {
+    const k = this.key(dimId, maidId, dest);
     const e = this.map.get(k);
     if (!e) {
       return false;
@@ -47,8 +62,8 @@ export class UnreachableCache {
   }
 
   /** 手动解除 */
-  remove(dest: StandNode, maidId?: string): void {
-    this.map.delete(this.key(maidId, dest));
+  remove(dimId: string, dest: StandNode, maidId?: string): void {
+    this.map.delete(this.key(dimId, maidId, dest));
   }
 
   clear(): void {
@@ -56,31 +71,42 @@ export class UnreachableCache {
   }
 
   /**
-   * 枚举未过期 ban 终点支撑格（无维度信息，由调用方按当前维刷粒子）。
+   * 枚举指定维度内未过期 ban 终点支撑格（按坐标去重）。
    * 使用场景：ReachViz「显示路点」品红粒子。
    */
-  listActiveDests(): StandNode[] {
+  listActiveDests(dimId: string): StandNode[] {
     const now = Date.now();
+    const seen = new Set<string>();
     const out: StandNode[] = [];
+    const prefix = `${dimId}|`;
     for (const [k, e] of this.map) {
       if (now > e.expiry) {
         this.map.delete(k);
         continue;
       }
-      const bar = k.indexOf("|");
-      if (bar < 0) {
+      if (!k.startsWith(prefix)) {
         continue;
       }
-      const coords = k.slice(bar + 1).split(",");
-      if (coords.length !== 3) {
+      // dimId|maidId|x,y,z → 取最后一段坐标
+      const lastBar = k.lastIndexOf("|");
+      if (lastBar < 0) {
         continue;
       }
-      const x = Number(coords[0]);
-      const y = Number(coords[1]);
-      const z = Number(coords[2]);
+      const coords = k.slice(lastBar + 1);
+      if (seen.has(coords)) {
+        continue;
+      }
+      const parts = coords.split(",");
+      if (parts.length !== 3) {
+        continue;
+      }
+      const x = Number(parts[0]);
+      const y = Number(parts[1]);
+      const z = Number(parts[2]);
       if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) {
         continue;
       }
+      seen.add(coords);
       out.push({ x, y, z });
     }
     return out;

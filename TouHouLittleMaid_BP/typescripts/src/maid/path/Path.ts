@@ -220,7 +220,10 @@ export const Path = {
     if (!goal) {
       return false;
     }
-    if (!options?.ignoreBan && unreachableCache.has(goal, maid.id)) {
+    if (
+      !options?.ignoreBan &&
+      unreachableCache.has(maid.dimension.id, goal, maid.id)
+    ) {
       return false;
     }
     if (!options?.ignoreReachField) {

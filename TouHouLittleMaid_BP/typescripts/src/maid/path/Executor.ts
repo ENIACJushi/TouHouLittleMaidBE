@@ -165,6 +165,11 @@ type Session = {
   maidId: string;
   /** 启动时实体引用；每 tick 查 isValid */
   maid: Entity;
+  /**
+   * 启动时所在维度 id；Fail 写 ban 用。
+   * 使用场景：teardown 时实体可能已失效，不能再读 maid.dimension。
+   */
+  dimId: string;
   steps: FollowStep[];
   index: number;
   seekId: number;
@@ -732,7 +737,7 @@ function teardown(
   }
   Seek.free(session.seekId);
   if (opts.ban) {
-    unreachableCache.add(session.dest, session.maidId);
+    unreachableCache.add(session.dimId, session.dest, session.maidId);
   }
   unbindHitListener(session);
   sessions.delete(session.maidId);
@@ -1121,6 +1126,7 @@ export const Executor = {
     const session: Session = {
       maidId: maid.id,
       maid,
+      dimId: maid.dimension.id,
       steps,
       index: 0,
       seekId,
