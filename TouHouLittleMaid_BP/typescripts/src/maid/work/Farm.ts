@@ -22,6 +22,7 @@ import {
   activityCircleOf,
   isInsideActivityCircle,
 } from "../path/field/activityCircle";
+import { hasFieldUnknown, noteFieldUnknown } from "../path/field/fieldUnknown";
 import {
   classifyFieldClaim,
   ensureStandHeight,
@@ -400,6 +401,7 @@ export class Farm {
    * 跟随中主人已退出世界时，以女仆脚下为中心选目标。
    * 场还没建完或场牌暂停：这一拍停下，不改去更远的格，也不记成走不到。
    * 走路失败后短时间内不再走路去同一格，不改场。人已经站在旁边时仍当场收种。
+   * 找路结果是「不知道」时，给这名女仆记一次短的未知，不改场。
    * @returns 是否已派出 follow 或已经就地收种
    */
   static assignNext(maid, tasks, _range = Farm.claimRange) {
@@ -407,6 +409,9 @@ export class Farm {
       return false;
     }
     if (EntityMaid.Path.isFollowing(maid)) {
+      return false;
+    }
+    if (hasFieldUnknown(maid)) {
       return false;
     }
     const circleState = activityCircleOf(maid);
@@ -464,6 +469,7 @@ export class Farm {
       if (!planned.ok) {
         EntityMaid.Path.allowHomeReturn(maid);
         if (planned.reason === "field_unknown") {
+          noteFieldUnknown(maid);
           return false;
         }
         continue;
