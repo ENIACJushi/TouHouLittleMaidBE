@@ -295,6 +295,10 @@ export class MaidScheduleEvents {
     if (Pose.isSitting(maid)) {
       return;
     }
+    // 这次寻路还没结束（含算路、平走、跳、跨沟、滞空）时不拉回家
+    if (EntityMaid.Path.isHomeReturnSuppressed(maid)) {
+      return;
+    }
     // NPC的家半径为 2
     let homeRadius = EntityMaid.Work.get(maid) === -1 ? 2 : HOME_RADIUS;
 

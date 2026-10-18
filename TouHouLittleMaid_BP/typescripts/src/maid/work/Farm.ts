@@ -438,8 +438,10 @@ export class Farm {
         return true;
       }
 
+      EntityMaid.Path.suppressHomeReturn(maid);
       const planned = reversiblePathResult(dim, start, goal);
       if (!planned.ok) {
+        EntityMaid.Path.allowHomeReturn(maid);
         if (planned.reason === "field_unknown") {
           return false;
         }
@@ -456,6 +458,7 @@ export class Farm {
         },
       });
       if (!started) {
+        EntityMaid.Path.allowHomeReturn(maid);
         this.releaseCell(maid, t);
         this.writeJob(maid, undefined);
         continue;

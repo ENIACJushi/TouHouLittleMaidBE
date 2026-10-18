@@ -641,7 +641,32 @@ function ensureSeek(session: Session, role: WaypointRole): boolean {
   return true;
 }
 
-/** 卸追逐 + Seek 档（保留 marker 实体） */
+/** 这次寻路还没结束的女仆。回家传送要等抵达、取消或走路失败。 */
+const homeReturnSuppress = new Set<string>();
+
+/**
+ * 从这次开始寻路起，不执行回家传送。
+ * 使用场景：Path.follow / 耕地出发找路；平走、跳、跨沟和滞空都算在内。
+ */
+export function suppressHomeReturn(maidId: string): void {
+  homeReturnSuppress.add(maidId);
+}
+
+/**
+ * 这次寻路结束，恢复回家传送。
+ * 使用场景：抵达、取消、走路失败，或这次没有真正出发。
+ */
+export function allowHomeReturn(maidId: string): void {
+  homeReturnSuppress.delete(maidId);
+}
+
+/**
+ * 这次寻路是否还没结束。
+ * 使用场景：tryReturnHome。会话还在时也算，避免只清了集合却还在走。
+ */
+export function isHomeReturnSuppressed(maidId: string): boolean {
+  return homeReturnSuppress.has(maidId) || sessions.has(maidId);
+}
 function quitSeekWithPursue(maid: Entity): void {
   Seek.quitPursue(maid);
   Seek.quit(maid);
@@ -741,6 +766,7 @@ function teardown(
   }
   unbindHitListener(session);
   sessions.delete(session.maidId);
+  allowHomeReturn(session.maidId);
   Logger.info(TAG, `${opts.log} maid=${session.maidId} reason=${reason}`);
   stopTickerIfIdle();
   scheduleComplete(session, reason);
@@ -1107,18 +1133,23 @@ export const Executor = {
     if (!maid.isValid) {
       return false;
     }
+    suppressHomeReturn(maid.id);
     if (edges.length === 0) {
+      allowHomeReturn(maid.id);
       scheduleImmediateDone(maid.id, dest, options?.onComplete);
       return true;
     }
     Executor.cancel(maid);
+    suppressHomeReturn(maid.id);
     const steps = buildFollowSteps(edges);
     if (steps.length === 0) {
+      allowHomeReturn(maid.id);
       scheduleImmediateDone(maid.id, dest, options?.onComplete);
       return true;
     }
     const seekId = Seek.allocate();
     if (seekId === undefined) {
+      allowHomeReturn(maid.id);
       Logger.warn(TAG, "start: seek 池满");
       return false;
     }

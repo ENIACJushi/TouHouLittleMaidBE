@@ -7,7 +7,7 @@
 import { Dimension, Entity, Vector3 } from "@minecraft/server";
 import { aStar, AStarOptions } from "./AStar";
 import { SEARCH_H, SEARCH_V } from "./constants";
-import { Executor } from "./Executor";
+import { Executor, isHomeReturnSuppressed, suppressHomeReturn, allowHomeReturn } from "./Executor";
 import { isReachableInField } from "./ReachabilityField";
 import { acquireSharedStandable } from "./SharedStandable";
 import { StandableCache, clampBoundsToDimension } from "./StandableCache";
@@ -254,24 +254,29 @@ export const Path = {
   /**
    * 规划并执行跟随；失败返回规划结果或 follow 启动失败。
    * 使用场景：农作走到目标；Gap 用占位冲量表（待 Phase0b 标定）。
+   * 从这次算出路开始就不回家，直到抵达、取消或走路失败。
    */
   follow(
     maid: Entity,
     dest: Vector3 | StandNode,
     options?: PathFollowOptions
   ): PathResult {
+    suppressHomeReturn(maid.id);
     const result = Path.findFromMaid(maid, dest, options);
     if (!result.ok) {
+      allowHomeReturn(maid.id);
       return result;
     }
     const goal = result.nodes[result.nodes.length - 1];
     if (!goal) {
+      allowHomeReturn(maid.id);
       return { ok: false, nodes: [], edges: [], reason: "empty_path" };
     }
     const started = Executor.start(maid, result.edges, goal, {
       onComplete: options?.onComplete,
     });
     if (!started) {
+      allowHomeReturn(maid.id);
       return { ...result, ok: false, reason: "follow_start_fail" };
     }
     return result;
@@ -303,5 +308,29 @@ export const Path = {
   /** 是否正在 follow */
   isFollowing(maid: Entity): boolean {
     return Executor.isFollowing(maid);
+  },
+
+  /**
+   * 这次寻路开始，回家传送先停。
+   * 使用场景：耕地在 follow 之前就要沿可逆邻居找路。
+   */
+  suppressHomeReturn(maid: Entity): void {
+    suppressHomeReturn(maid.id);
+  },
+
+  /**
+   * 这次没有出发，或已经抵达、取消、失败。
+   * 使用场景：与 suppressHomeReturn 成对；执行器结束时也会调用。
+   */
+  allowHomeReturn(maid: Entity): void {
+    allowHomeReturn(maid.id);
+  },
+
+  /**
+   * 寻路或走路还没结束时，不要拉回家。
+   * 使用场景：家模式的回家事件。
+   */
+  isHomeReturnSuppressed(maid: Entity): boolean {
+    return isHomeReturnSuppressed(maid.id);
   },
 };
