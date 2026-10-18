@@ -6,6 +6,7 @@
  * 场牌只有可认领或暂停。建区块、合并、删边探测、出发找路各用各的一拍上限。
  */
 import { Dimension, system } from "@minecraft/server";
+import { heuristic } from "../AStar";
 import { StandableCache } from "../StandableCache";
 import {
   COST_FALL_BASE,
@@ -977,8 +978,92 @@ export function reversiblePathResult(
 }
 
 /**
+ * 出发找路的开放集条目。f 小的先展开。
+ * 使用场景：findReversiblePath。斜向和直线代价不同，不能按层平铺。
+ */
+type FieldOpenItem = { key: string; f: number; g: number };
+
+/**
+ * 按 f 升序的小堆。规模受出发找路上限约束。
+ * 使用场景：只给 findReversiblePath，不和一次性 A* 的堆混用。
+ */
+class FieldOpenHeap {
+  private readonly data: FieldOpenItem[] = [];
+
+  get size(): number {
+    return this.data.length;
+  }
+
+  push(item: FieldOpenItem): void {
+    this.data.push(item);
+    this.siftUp(this.data.length - 1);
+  }
+
+  pop(): FieldOpenItem | undefined {
+    const top = this.data[0];
+    const last = this.data.pop();
+    if (!top || !last) {
+      return top;
+    }
+    if (this.data.length === 0) {
+      return top;
+    }
+    this.data[0] = last;
+    this.siftDown(0);
+    return top;
+  }
+
+  private siftUp(index: number): void {
+    let i = index;
+    while (i > 0) {
+      const parent = (i - 1) >> 1;
+      if (!this.worse(this.data[parent], this.data[i])) {
+        break;
+      }
+      this.swap(parent, i);
+      i = parent;
+    }
+  }
+
+  private siftDown(index: number): void {
+    const n = this.data.length;
+    let i = index;
+    for (;;) {
+      const left = i * 2 + 1;
+      const right = left + 1;
+      let best = i;
+      if (left < n && this.worse(this.data[best], this.data[left])) {
+        best = left;
+      }
+      if (right < n && this.worse(this.data[best], this.data[right])) {
+        best = right;
+      }
+      if (best === i) {
+        break;
+      }
+      this.swap(i, best);
+      i = best;
+    }
+  }
+
+  /** a 比 b 更不该先弹出 */
+  private worse(a: FieldOpenItem, b: FieldOpenItem): boolean {
+    if (a.f !== b.f) {
+      return a.f > b.f;
+    }
+    return a.g > b.g;
+  }
+
+  private swap(i: number, j: number): void {
+    const tmp = this.data[i];
+    this.data[i] = this.data[j];
+    this.data[j] = tmp;
+  }
+}
+
+/**
  * 沿可逆邻居找一条路。这一拍只用出发找路自己的上限。
- * 使用场景：以后出发前。农作尚未改为调用它。
+ * 使用场景：耕地等出发前。按八方向代价先走靠近目标的落脚点，避免斜向把整圈铺满。
  */
 export function findReversiblePath(
   dim: Dimension,
@@ -1006,16 +1091,31 @@ export function findReversiblePath(
     }
     return { kind: "unreachable" };
   }
-  const queue: Leaf[] = [start];
+  const startKey = posKey(start.x, start.y, start.z);
+  const open = new FieldOpenHeap();
+  const gScore = new Map<string, number>([[startKey, 0]]);
   const prev = new Map<string, string>();
-  const seen = new Set<string>([posKey(start.x, start.y, start.z)]);
+  const expanded = new Set<string>();
+  open.push({ key: startKey, g: 0, f: heuristic(start, goal) });
   let found: Leaf | undefined;
-  while (queue.length > 0 && budget > 0) {
-    const cur = queue.shift();
-    if (!cur) {
+  while (open.size > 0 && budget > 0) {
+    const item = open.pop();
+    if (!item) {
       break;
     }
+    if (expanded.has(item.key)) {
+      continue;
+    }
+    const knownG = gScore.get(item.key);
+    if (knownG === undefined || item.g > knownG) {
+      continue;
+    }
+    const cur = leafFromKey(rec, item.key);
+    if (!cur) {
+      return { kind: "unknown" };
+    }
     budget -= 1;
+    expanded.add(item.key);
     rereadLeaf(dim, rec, cur);
     const live = findLeaf(rec, cur.x, cur.y, cur.z);
     if (!live || live.fieldId !== goal.fieldId) {
@@ -1029,22 +1129,33 @@ export function findReversiblePath(
       found = live;
       break;
     }
+    const liveKey = posKey(live.x, live.y, live.z);
     for (const step of live.steps) {
       const next = findLeaf(rec, step.x, step.y, step.z);
       if (!next || next.fieldId !== live.fieldId) {
         continue;
       }
       const key = posKey(next.x, next.y, next.z);
-      if (seen.has(key)) {
+      if (expanded.has(key)) {
         continue;
       }
-      seen.add(key);
-      prev.set(key, posKey(live.x, live.y, live.z));
-      queue.push(next);
+      const tentative = item.g + edgeFromStep(live, step).cost;
+      const prevG = gScore.get(key);
+      if (prevG !== undefined && tentative >= prevG) {
+        continue;
+      }
+      gScore.set(key, tentative);
+      prev.set(key, liveKey);
+      open.push({
+        key,
+        g: tentative,
+        f: tentative + heuristic(next, goal),
+      });
     }
   }
   if (!found) {
-    return queue.length > 0 ? { kind: "unknown" } : { kind: "unreachable" };
+    const pendingOpen = openHasPending(open, expanded, gScore);
+    return pendingOpen ? { kind: "unknown" } : { kind: "unreachable" };
   }
   const nodes: StandNode[] = [];
   let cursor: string | undefined = posKey(found.x, found.y, found.z);
@@ -1059,6 +1170,37 @@ export function findReversiblePath(
   }
   nodes.reverse();
   return { kind: "path", nodes };
+}
+
+/**
+ * 开放集里还有没展开、且仍是当前最优 g 的落脚点。
+ * 使用场景：预算用尽时分清「还没找完」和「已经没有路」。
+ */
+function openHasPending(
+  open: FieldOpenHeap,
+  expanded: Set<string>,
+  gScore: Map<string, number>
+): boolean {
+  while (open.size > 0) {
+    const item = open.pop();
+    if (!item || expanded.has(item.key)) {
+      continue;
+    }
+    const knownG = gScore.get(item.key);
+    if (knownG !== undefined && item.g <= knownG) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * 用坐标键取回落脚点。
+ * 使用场景：出发找路从开放集回到叶子。
+ */
+function leafFromKey(rec: DimRec, key: string): Leaf | undefined {
+  const parts = key.split(",");
+  return findLeaf(rec, Number(parts[0]), Number(parts[1]), Number(parts[2]));
 }
 
 /**
