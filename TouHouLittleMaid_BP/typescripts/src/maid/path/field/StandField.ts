@@ -13,6 +13,7 @@ import {
   COST_JUMP1,
   COST_SPRINT_GAP,
   COST_WALK,
+  COST_WALK_DIAG,
 } from "../constants";
 import { BlockPos, PathEdge, PathResult, StandNode } from "../types";
 import {
@@ -394,7 +395,7 @@ function stepSetKey(step: ReversibleStep): string {
 }
 
 /**
- * 重读这一格能不能站，以及同一行、同一列上的可逆邻居。
+ * 重读这一格能不能站，以及可逆邻居（含斜向平走；跨沟仍只沿正方向）。
  * 使用场景：出发找路扩展到这个落脚点时。认领不调用。
  */
 function rereadLeaf(dim: Dimension, rec: DimRec, leaf: Leaf): void {
@@ -933,7 +934,14 @@ function edgeFromStep(
   if (step.kind === "SprintGap") {
     return { kind: "SprintGap", from, to, cost: COST_SPRINT_GAP };
   }
-  return { kind: "Walk", from, to, cost: COST_WALK };
+  const diagonal =
+    Math.abs(to.x - from.x) === 1 && Math.abs(to.z - from.z) === 1;
+  return {
+    kind: "Walk",
+    from,
+    to,
+    cost: diagonal ? COST_WALK_DIAG : COST_WALK,
+  };
 }
 
 /**

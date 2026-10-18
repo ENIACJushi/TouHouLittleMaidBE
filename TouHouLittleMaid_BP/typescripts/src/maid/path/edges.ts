@@ -10,6 +10,7 @@ import {
   COST_JUMP1,
   COST_SPRINT_GAP,
   COST_WALK,
+  COST_WALK_DIAG,
   GAP_MAX,
   GAP_MIN,
   MAX_FALL,
@@ -17,12 +18,20 @@ import {
 import { StandableCache } from "./StandableCache";
 import { BlockPos, PathEdge, StandNode } from "./types";
 
-/** 四向水平（首版不做对角 Walk/Jump） */
+/** 四向水平。跳上、落下、跨沟只用这些方向。 */
 const CARDINAL: ReadonlyArray<Readonly<{ dx: number; dz: number }>> = [
   { dx: 1, dz: 0 },
   { dx: -1, dz: 0 },
   { dx: 0, dz: 1 },
   { dx: 0, dz: -1 },
+];
+
+/** 斜向平走。代价 √2；两侧身位都必须能过，避免擦角。 */
+const DIAGONAL: ReadonlyArray<Readonly<{ dx: number; dz: number }>> = [
+  { dx: 1, dz: 1 },
+  { dx: 1, dz: -1 },
+  { dx: -1, dz: 1 },
+  { dx: -1, dz: -1 },
 ];
 
 /** Gap 落差优先序：平跳 → 下一格 → 上一格 */
@@ -195,7 +204,40 @@ export function expandEdges(
     }
   }
 
+  // 斜向只做同高度平走。跳上、落下、跨沟仍走正方向。
+  for (const { dx, dz } of DIAGONAL) {
+    const tx = from.x + dx;
+    const tz = from.z + dz;
+    const ty = from.y;
+    if (!inBounds({ x: tx, y: ty, z: tz }, bounds)) {
+      continue;
+    }
+    if (!diagonalCornerClear(cache, from, dx, dz)) {
+      continue;
+    }
+    const to = cache.tryStandNode(tx, ty, tz);
+    if (to) {
+      out.push(edge("Walk", from, to, COST_WALK_DIAG));
+    }
+  }
+
   return out;
+}
+
+/**
+ * 斜向一步会擦过两侧格子。两侧在脚和头的高度都得能穿过。
+ * 使用场景：斜向平走，避免从墙角穿过去。
+ */
+function diagonalCornerClear(
+  cache: StandableCache,
+  from: StandNode,
+  dx: number,
+  dz: number
+): boolean {
+  return (
+    bodyClear(cache, from.x + dx, from.y, from.z) &&
+    bodyClear(cache, from.x, from.y, from.z + dz)
+  );
 }
 
 /**

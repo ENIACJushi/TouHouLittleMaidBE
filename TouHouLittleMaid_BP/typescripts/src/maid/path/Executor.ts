@@ -3,7 +3,7 @@
  * 使用场景：Path.follow；Walk/Jump1/Fall 用 Seek+marker；SprintGap 用冲量。
  *
  * 路点策略：
- * - 连续 Walk 抽稀（步长 VIA_STEP），Jump1/Fall/段尾保留；
+ * - 同一方向的连续 Walk 抽稀（步长 VIA_STEP），换向的拐角、Jump1/Fall/段尾保留；
  * - **单 marker 实体**：会话内 spawn 一次，换路点只 teleport（Seek 一次锁定，不反复 reset）；
  * - 途经平视 + pursue_via；via→via 抵达后 quit+重挂 via melee 刷新追逐；
  * - 终点 marker 在支撑格上方若干格的中心（耕地 1 格即作物；甘蔗 2 格即要砍的那节）；
@@ -477,8 +477,16 @@ function pursueEventFor(role: WaypointRole): string {
 }
 
 /**
- * 连续 Walk 边中保留哪些 `to` 下标（0-based）；段尾必留。
- * 使用场景：buildFollowSteps 抽稀。
+ * 平走的水平方向。斜向和正向分开记，拐角不能抽掉。
+ * 使用场景：只合并同一方向的连续平走。
+ */
+function walkDir(edge: PathEdge): string {
+  return `${edge.to.x - edge.from.x},${edge.to.z - edge.from.z}`;
+}
+
+/**
+ * 同一方向的连续 Walk 边中保留哪些 `to` 下标（0-based）；段尾必留。
+ * 使用场景：buildFollowSteps 抽稀。换方向必须留下拐角。
  */
 function sparsifyWalkIndices(walkCount: number): number[] {
   if (walkCount <= 0) {
@@ -508,7 +516,12 @@ function buildFollowSteps(edges: PathEdge[]): FollowStep[] {
     }
     if (edge.kind === "Walk") {
       let j = i;
-      while (j < edges.length && edges[j].kind === "Walk") {
+      const dir = walkDir(edge);
+      while (
+        j < edges.length &&
+        edges[j].kind === "Walk" &&
+        walkDir(edges[j]) === dir
+      ) {
         j++;
       }
       const walkEdges = edges.slice(i, j);

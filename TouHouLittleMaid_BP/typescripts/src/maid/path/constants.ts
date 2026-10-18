@@ -17,6 +17,8 @@ export const GAP_MAX = 4;
 
 /** 边代价 */
 export const COST_WALK = 1;
+/** 斜向平走：水平一格对角线，长度 √2。 */
+export const COST_WALK_DIAG = Math.SQRT2;
 export const COST_JUMP1 = 1.3;
 /** Fall：基础 + 每下落 1 格 */
 export const COST_FALL_BASE = 1;

@@ -2,7 +2,7 @@
  * 有界 A*（Task7 Phase1）。
  * 使用场景：Path.find / canReach；邻居来自 expandEdges（含 SprintGap）。
  */
-import { ASTAR_MAX_EXPAND, ASTAR_MAX_MS } from "./constants";
+import { ASTAR_MAX_EXPAND, ASTAR_MAX_MS, COST_WALK, COST_WALK_DIAG } from "./constants";
 import { EdgeGenOptions, expandEdges } from "./edges";
 import { StandableCache } from "./StandableCache";
 import { PathEdge, PathResult, StandNode } from "./types";
@@ -12,11 +12,15 @@ function nodeKey(n: StandNode): string {
 }
 
 /**
- * 启发：曼哈顿水平 + |Δy|（代价下界；Gap 更贵故仍可采纳）。
- * 使用场景：A* f = g + h。
+ * 启发：八方向水平（直线 1、斜向 √2）+ |Δy|。
+ * 使用场景：A* f = g + h。斜向平走代价是 √2，曼哈顿会高估。
  */
 export function heuristic(a: StandNode, b: StandNode): number {
-  return Math.abs(a.x - b.x) + Math.abs(a.z - b.z) + Math.abs(a.y - b.y);
+  const dx = Math.abs(a.x - b.x);
+  const dz = Math.abs(a.z - b.z);
+  const diag = Math.min(dx, dz);
+  const straight = dx + dz - 2 * diag;
+  return straight * COST_WALK + diag * COST_WALK_DIAG + Math.abs(a.y - b.y);
 }
 
 /** 开放集最小堆条目 */
