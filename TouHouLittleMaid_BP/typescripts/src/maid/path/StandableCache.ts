@@ -9,6 +9,7 @@ import { Block, Dimension, Vector3 } from "@minecraft/server";
 import {
   evalBlockFlags,
   isStandableAt,
+  isSunkSupport,
   toBlockView,
 } from "./blockPredicates";
 import { BlockFlags, BlockPos, StandableCacheOptions, StandNode } from "./types";
@@ -166,6 +167,22 @@ export class StandableCache {
       return undefined;
     }
     return { x, y, z };
+  }
+
+  /**
+   * 这一格是不是「脚会陷进去」的支撑（耕地）。
+   * 使用场景：standNodeFromFeet 决定落脚点取所在格还是下一格。
+   */
+  isSunkSupportBlock(x: number, y: number, z: number): boolean {
+    try {
+      const block = this.dim.getBlock({ x, y, z });
+      if (!block) {
+        return false;
+      }
+      return isSunkSupport(toBlockView(block));
+    } catch {
+      return false;
+    }
   }
 
   /**

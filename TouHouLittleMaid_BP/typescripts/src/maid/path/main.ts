@@ -71,6 +71,7 @@ export {
   isNavMismatch,
   isPassable,
   isStandableAt,
+  isSunkSupport,
   isSupport,
   toBlockView,
 } from "./blockPredicates";

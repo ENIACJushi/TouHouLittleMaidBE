@@ -221,6 +221,17 @@ export function isPassable(view: BlockView): boolean {
 }
 
 /**
+ * 顶面低于整格，脚会陷进这一格本身。
+ * 使用场景：脚下落脚点唯一算法；耕地是这种支撑，完整方块不是。
+ */
+export function isSunkSupport(view: BlockView): boolean {
+  if (!isSupport(view)) {
+    return false;
+  }
+  return shortId(view.typeId).includes("farmland");
+}
+
+/**
  * isSupport：顶面可当整格站立面。
  * 否：air/liquid/fence·wall（整格；顶部可站 TODO）/压力板/开活板门。
  */

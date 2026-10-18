@@ -58,20 +58,20 @@ function floor3(v: Vector3): BlockPos {
 }
 
 /**
- * 脚部位姿 → 支撑格 StandNode。
- * 常规：支撑在 floor(feet).y - 1；回退：脚略陷入支撑格时试 floor(feet) 本身。
- * 使用场景：女仆当前位置作起点；田间脚陷耕地常见。
+ * 脚部位姿 → 支撑格。全项目只走这一条。
+ * 脚所在格顶面低于整格（耕地）且能站：落脚点就是这一格。
+ * 否则人站在下面那块完整方块顶上：落脚点是下一格。
+ * 使用场景：女仆起点；锚点和作物下方的土也要先换成脚位再调用。
  */
 export function standNodeFromFeet(
   cache: StandableCache,
   feet: Vector3
 ): StandNode | undefined {
   const f = floor3(feet);
-  const above = cache.tryStandNode(f.x, f.y - 1, f.z);
-  if (above) {
-    return above;
+  if (cache.isSunkSupportBlock(f.x, f.y, f.z)) {
+    return cache.tryStandNode(f.x, f.y, f.z);
   }
-  return cache.tryStandNode(f.x, f.y, f.z);
+  return cache.tryStandNode(f.x, f.y - 1, f.z);
 }
 
 /**

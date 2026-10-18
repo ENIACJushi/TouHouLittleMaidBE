@@ -1,6 +1,7 @@
 import { world, system } from "@minecraft/server"
 import experiment from "./experiment"
 import { initPathFollow, initTest } from "../test/main";
+import { initStandField } from "./maid/path/field/tick";
 import { BlockEvents } from "./events/BlockEvents";
 import { EntityEvents } from "./events/EntityEvents";
 import { ItemEvents } from "./events/ItemEvents";
@@ -30,6 +31,9 @@ if (false) {
   world.sendMessage('§e[Touhou Little Maid] 现在是实验模式。');
   experiment.main();
 }
+
+// Task7：落脚点表每拍维护（建区块、合并、删边、丢掉静置区块）
+initStandField();
 
 // Task7 Phase2：Path.follow 冒烟（永久保留）
 initPathFollow();

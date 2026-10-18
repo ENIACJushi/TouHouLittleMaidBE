@@ -7,6 +7,11 @@
 import {Entity, Player, system, world} from "@minecraft/server";
 import { Logger } from "../../src/controller/Logger";
 import { EntityMaid } from "../../src/maid/EntityMaid";
+import {
+  debugPumpStandField,
+  listChunkFieldNodes,
+  peekStandField,
+} from "../../src/maid/path/field/StandField";
 import { testCommandRegister } from "../TestCommandRegister";
 
 const TAG = "PathFollow";
@@ -25,6 +30,7 @@ export class PathFollowTest {
     testCommandRegister.register("path_go", (s) => this.go(s));
     testCommandRegister.register("path_cancel", (s) => this.cancel(s));
     testCommandRegister.register("path_status", (s) => this.status(s));
+    testCommandRegister.register("path_field", (s) => this.field(s));
     Logger.info(TAG, "registered path_go/cancel/status");
   }
 
@@ -36,6 +42,7 @@ export class PathFollowTest {
         "path_go — 最近女仆 → 看向方块；控制台搜 PATHGO| / PATHDONE| / PATHGAP|",
         "path_cancel — 取消最近女仆的 follow",
         "path_status — 是否 isFollowing + Seek 档",
+        "path_field — 看向的方块所在区块，按落脚点表建场并打粒子",
         "抵达：途经=距离；终点=近战命中 seek_marker → PATHDONE",
         "建议：先平地 Walk，再含 SprintGap 的沟",
         "可视化：显示路点=红/绿路点+青绿可达+黄(可站未达)+品红ban；另有轨迹开关",
@@ -157,6 +164,51 @@ export class PathFollowTest {
     this.msg(
       source,
       `following=${EntityMaid.Path.isFollowing(maid)} seek=${EntityMaid.Seek.getIndex(maid)}`
+    );
+  }
+
+  /**
+   * 看向方块所在区块，按拍预算连建若干拍，并在落脚点上打粒子。
+   * 青绿：场牌可认领。品红：这一拍还不能认领。
+   */
+  private field(source: Entity): void {
+    const block = this.lookBlock(source);
+    if (!block) {
+      this.msg(source, "path_field: 请看向方块");
+      return;
+    }
+    const pos = block.location;
+    debugPumpStandField(source.dimension, pos.x, pos.y, pos.z, 40);
+    const nodes = listChunkFieldNodes(source.dimension, pos.x, pos.z);
+    let claimable = 0;
+    for (const node of nodes) {
+      const particle = node.claimable
+        ? "touhou_little_maid:path_reach_field"
+        : "touhou_little_maid:path_unreachable";
+      try {
+        source.dimension.spawnParticle(particle as never, {
+          x: node.x + 0.5,
+          y: node.y + 1.05,
+          z: node.z + 0.5,
+        });
+      } catch {
+        /* 粒子未加载时仍保留下面的文字 */
+      }
+      if (node.claimable) {
+        claimable += 1;
+      }
+    }
+    const here = peekStandField(source.dimension, pos.x, pos.y, pos.z);
+    const at = peekStandField(source.dimension, pos.x, pos.y - 1, pos.z);
+    const shown = here ?? at;
+    this.msg(
+      source,
+      [
+        `落脚点 ${nodes.length}，可认领 ${claimable}`,
+        shown
+          ? `看向 ${shown.x},${shown.y},${shown.z} 场 ${shown.fieldId} ${shown.claimable ? "可认领" : "暂停"} 邻居 ${shown.steps.length}`
+          : "看向的这一格还没有落脚点",
+      ].join("\n")
     );
   }
 
