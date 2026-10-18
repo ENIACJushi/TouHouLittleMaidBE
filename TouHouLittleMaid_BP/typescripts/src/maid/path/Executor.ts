@@ -8,7 +8,7 @@
  * - 途经平视 + pursue_via；via→via 抵达后 quit+重挂 via melee 刷新追逐；
  * - 终点 marker 在支撑格上方一格中心（作物格心），避免贴耕地顶面导致 NAT 丢锁；
  * - Gap：**保留 Seek**；marker 对岸脚位沿跳向偏出碰撞半径(0.3)再抬高(1.5)；冲量前脚本朝向对岸；
- * - Gap 腾空：FIT 预计落点，曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
+ * - Gap 腾空：用当前速度积分落点（按起跳 FIT 缩放），曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
  * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_H）即 advance（避免贴脸互推）。
  * - AI 终点：近战命中本会话 seek_marker 即 Done。
  * - Gap 起跳/落地仍用支撑格距离（冲量段无有效近战抵达语义）。
@@ -106,6 +106,15 @@ const PREP_TIMEOUT_MS = 3_000;
  * 使用场景：tickInFlight / tryAirCorrect。
  */
 const AIR_CORRECT_MANHATTAN = 0.1;
+/**
+ * 把当前速度积成落点时用的生物腾空一步。
+ * 使用场景：tryAirCorrect。总射程会再缩放到起跳 FIT，这里只提供弧线形状。
+ */
+const AIR_GRAVITY = 0.08;
+const AIR_DRAG_Y = 0.98;
+const AIR_DRAG_H = 0.91;
+/** 飞行阶段 1.5 秒，积分不超过两秒。 */
+const AIR_SIM_TICKS = 40;
 
 type Phase =
   | "Idle"
@@ -139,19 +148,19 @@ type FollowStep =
     };
 
 /**
- * Gap 腾空修正状态：起飞快照 + 有效水平冲量（随修正更新）。
- * 使用场景：InFlight 每 tick FIT 预计落点并 xz 修正。
+ * Gap 腾空修正状态：起飞快照。落点按当前速度积分，hx/hy 只用来把积分缩放到起跳 FIT。
+ * 使用场景：InFlight 每 tick 预计落点并 xz 修正。
  */
 type GapAirState = {
   /** 起跳时脚位 */
   from: Vector3;
   /** 目标对岸脚位（格心） */
   toFeet: Vector3;
-  /** 当前有效水平冲量大小（初始为起跳 hx，修正后更新） */
+  /** 起跳水平冲量。读不到速度时仍作「总射程 − 已飞距离」的退路 */
   hx: number;
   /** 起跳竖直冲量（修正不改 hy） */
   hy: number;
-  /** 水平预测方向（单位向量，随修正朝向目标更新） */
+  /** 起跳水平方向（单位向量）。读不到速度时沿这个方向估剩余射程 */
   dirX: number;
   dirZ: number;
 };
@@ -277,8 +286,63 @@ function faceToward(maid: Entity, lookAt: Vector3): void {
 }
 
 /**
- * 腾空中按 FIT 预计落点，曼哈顿误差过大则 xz 冲量修正。
+ * 按当前速度积分，直到脚位落回目标高度。
+ * 使用场景：tryAirCorrect 估计落点；速度已被顶掉时落点就在当前位置附近。
+ */
+function simulateLanding(
+  loc: Vector3,
+  vel: Vector3,
+  targetY: number
+): { x: number; z: number } {
+  let x = loc.x;
+  let y = loc.y;
+  let z = loc.z;
+  let vx = vel.x;
+  let vy = vel.y;
+  let vz = vel.z;
+  if (y <= targetY && vy <= 0) {
+    return { x, z };
+  }
+  for (let i = 0; i < AIR_SIM_TICKS; i++) {
+    const px = x;
+    const py = y;
+    const pz = z;
+    x += vx;
+    y += vy;
+    z += vz;
+    vy = (vy - AIR_GRAVITY) * AIR_DRAG_Y;
+    vx *= AIR_DRAG_H;
+    vz *= AIR_DRAG_H;
+    if (py >= targetY && y <= targetY) {
+      const span = py - y;
+      const t = span > 1e-6 ? (py - targetY) / span : 1;
+      return { x: px + (x - px) * t, z: pz + (z - pz) * t };
+    }
+  }
+  return { x, z };
+}
+
+/**
+ * 起跳冲量的积分射程相对 FIT 的比例。
+ * 使用场景：把「当前速度积分」缩放到和起跳拟合同一把尺，正常跨沟不会一离地就修正。
+ */
+function launchFitScale(hx: number, hy: number): number {
+  const sim = simulateLanding(
+    { x: 0, y: 0, z: 0 },
+    { x: hx, y: hy, z: 0 },
+    0
+  );
+  const simH = Math.hypot(sim.x, sim.z);
+  if (simH < 1e-4) {
+    return 1;
+  }
+  return predictHorizontalRange(hx, hy) / simH;
+}
+
+/**
+ * 腾空中按当前速度预计落点，曼哈顿误差过大则 xz 冲量修正。
  * 使用场景：tickInFlight（未落地时每 tick）；无单次/全程 Δhx 上限。
+ * 读不到速度时仍用「起跳 FIT 总射程 − 已飞距离」。
  */
 function tryAirCorrect(session: Session): void {
   const air = session.gapAir;
@@ -289,10 +353,29 @@ function tryAirCorrect(session: Session): void {
   const loc = maid.location;
   const { from, toFeet } = air;
   const alreadyH = Math.hypot(loc.x - from.x, loc.z - from.z);
-  const predH = predictHorizontalRange(air.hx, air.hy);
-  const remainPred = predH - alreadyH;
-  const predLandX = loc.x + air.dirX * remainPred;
-  const predLandZ = loc.z + air.dirZ * remainPred;
+  let predLandX: number;
+  let predLandZ: number;
+  let velX = 0;
+  let velY = 0;
+  let velZ = 0;
+  let usedVelocity = false;
+  try {
+    const vel = maid.getVelocity();
+    velX = vel.x;
+    velY = vel.y;
+    velZ = vel.z;
+    const scale = launchFitScale(air.hx, air.hy);
+    const raw = simulateLanding(loc, vel, toFeet.y);
+    predLandX = loc.x + (raw.x - loc.x) * scale;
+    predLandZ = loc.z + (raw.z - loc.z) * scale;
+    usedVelocity = true;
+  } catch {
+    const predH = predictHorizontalRange(air.hx, air.hy);
+    const remainPred = predH - alreadyH;
+    predLandX = loc.x + air.dirX * remainPred;
+    predLandZ = loc.z + air.dirZ * remainPred;
+  }
+  const remainPred = Math.hypot(predLandX - loc.x, predLandZ - loc.z);
   const manh =
     Math.abs(predLandX - toFeet.x) + Math.abs(predLandZ - toFeet.z);
   if (manh <= AIR_CORRECT_MANHATTAN) {
@@ -301,8 +384,8 @@ function tryAirCorrect(session: Session): void {
 
   const wantX = toFeet.x - loc.x;
   const wantZ = toFeet.z - loc.z;
-  const predRemainX = air.dirX * remainPred;
-  const predRemainZ = air.dirZ * remainPred;
+  const predRemainX = predLandX - loc.x;
+  const predRemainZ = predLandZ - loc.z;
   const errX = wantX - predRemainX;
   const errZ = wantZ - predRemainZ;
   const errH = Math.hypot(errX, errZ);
@@ -324,18 +407,6 @@ function tryAirCorrect(session: Session): void {
     return;
   }
 
-  // 修正后模型对准当前→目标，供下一 tick 再估（hx 不钳制，与「无 Δhx 上限」一致）
-  const distNeed = Math.hypot(wantX, wantZ);
-  if (distNeed > 1e-6) {
-    air.dirX = wantX / distNeed;
-    air.dirZ = wantZ / distNeed;
-    // H(hx,hy)=a·hx+b·hy+c·hx·hy+d → hx=(H − (b·hy+d)) / (a+c·hy)
-    air.hx =
-      (alreadyH + distNeed - predictHorizontalRange(0, air.hy)) / den;
-  } else {
-    air.hx += dHx;
-  }
-
   logGap(
     [
       "AIR_CORRECT",
@@ -345,9 +416,9 @@ function tryAirCorrect(session: Session): void {
       `toFeet=${f3(toFeet.x)},${f3(toFeet.z)}`,
       `alreadyH=${f3(alreadyH)}`,
       `remainPred=${f3(remainPred)}`,
+      `vel=${usedVelocity ? `${f3(velX)},${f3(velY)},${f3(velZ)}` : "-"}`,
       `dHx=${f3(dHx)}`,
       `v=${f3(ix)},0,${f3(iz)}`,
-      `hxNow=${f3(air.hx)}`,
     ].join(",")
   );
 }
