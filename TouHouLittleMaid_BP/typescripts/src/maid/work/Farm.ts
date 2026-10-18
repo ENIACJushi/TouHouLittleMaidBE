@@ -591,9 +591,10 @@ export class Farm {
   }
 
   /**
-   * 调度脉冲：follow 中等待；仅在 near 时兜底 acquire。
+   * 调度脉冲：follow 中、以及走完通知还没跑时，都不要收割。
    * 使用场景：MaidTarget.stepEvent（farm）。正常收尾由 onFollowComplete 推送。
-   * 注意：!near 时不得清 job——Done 后 onComplete 可能尚未入队，且近战触及可宽于 nearTask。
+   * 通知已经丢了、人又在格子旁边时，才由这里补一次 acquire。
+   * 注意：!near 时不得清 job，近战触及可宽于 nearTask。
    */
   static onSchedulePulse(maid) {
     if (!maid?.isValid) {
@@ -604,6 +605,10 @@ export class Farm {
     }
 
     if (EntityMaid.Path.isFollowing(maid)) {
+      return;
+    }
+    // 跟随已结束，走完通知下一帧才收。这一拍不要抢收，也不要改派。
+    if (EntityMaid.Path.hasPendingComplete(maid)) {
       return;
     }
 

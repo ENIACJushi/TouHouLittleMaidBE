@@ -296,6 +296,14 @@ export const Path = {
   },
 
   /**
+   * 走完通知已排进下一帧，还没调用。
+   * 使用场景：农作心跳。这段时间不要抢先收割或改派。
+   */
+  hasPendingComplete(maid: Entity): boolean {
+    return Executor.hasPendingComplete(maid);
+  },
+
+  /**
    * 这次寻路开始，回家传送先停。
    * 使用场景：耕地在 follow 之前就要沿可逆邻居找路。
    */

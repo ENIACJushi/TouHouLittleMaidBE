@@ -781,6 +781,27 @@ function toCompleteReason(reason: string): PathFollowCompleteReason {
 }
 
 /**
+ * 已经排进下一帧、但还没调用的 onComplete 次数。
+ * 使用场景：这一帧 isFollowing 已是 false，心跳不要抢先收割。
+ */
+const pendingComplete = new Map<string, number>();
+
+/** 记下一次尚未执行的完成通知。 */
+function markPendingComplete(maidId: string): void {
+  pendingComplete.set(maidId, (pendingComplete.get(maidId) ?? 0) + 1);
+}
+
+/** 完成通知已返回（含抛错）。 */
+function clearPendingComplete(maidId: string): void {
+  const left = (pendingComplete.get(maidId) ?? 1) - 1;
+  if (left <= 0) {
+    pendingComplete.delete(maidId);
+  } else {
+    pendingComplete.set(maidId, left);
+  }
+}
+
+/**
  * 在 session 已从 map 拆除后，下一 tick 安全调用 onComplete。
  * 使用场景：避免 Farm.assignNext 与当前 Executor tick 重入。
  */
@@ -798,11 +819,14 @@ function scheduleComplete(
     dest: { ...session.dest },
     maidId: session.maidId,
   };
+  markPendingComplete(session.maidId);
   system.run(() => {
     try {
       cb(info);
     } catch (e) {
       Logger.warn(TAG, `onComplete: ${String(e)}`);
+    } finally {
+      clearPendingComplete(session.maidId);
     }
   });
 }
@@ -825,11 +849,14 @@ function scheduleImmediateDone(
     dest: { ...dest },
     maidId,
   };
+  markPendingComplete(maidId);
   system.run(() => {
     try {
       onComplete(info);
     } catch (e) {
       Logger.warn(TAG, `onComplete(empty): ${String(e)}`);
+    } finally {
+      clearPendingComplete(maidId);
     }
   });
 }
@@ -1278,6 +1305,14 @@ export const Executor = {
 
   isFollowing(maid: Entity): boolean {
     return sessions.has(maid.id);
+  },
+
+  /**
+   * 完成通知已排进下一帧，尚未调用。
+   * 使用场景：耕地心跳。跟随已经结束，但 onComplete 还没收割。
+   */
+  hasPendingComplete(maid: Entity): boolean {
+    return (pendingComplete.get(maid.id) ?? 0) > 0;
   },
 
   activeCount(): number {

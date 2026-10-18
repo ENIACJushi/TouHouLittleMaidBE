@@ -412,6 +412,10 @@ export function createCropRoute(options: CropRouteOptions) {
       if (EntityMaid.Path.isFollowing(maid)) {
         return;
       }
+      // 跟随已结束，走完通知下一帧才收。这一拍不要抢收，也不要改派。
+      if (EntityMaid.Path.hasPendingComplete(maid)) {
+        return;
+      }
       const job = readJob(maid);
       if (job) {
         if (!nearCrop(maid, job)) {
