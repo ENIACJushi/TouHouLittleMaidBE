@@ -142,21 +142,24 @@ export function isNavMismatch(view: BlockView): boolean {
 }
 
 /**
- * 关闭且底装的活板门 → 薄支撑（≈地毯）。
- * 使用场景：isSupport 特例；开活板门 / 顶装不归此。
+ * 关闭的活板门装在哪一面。读不到 open_bit / upside_down_bit 时不算关闭。
+ * 使用场景：顶装当整格落脚点；底装身位可占用，落脚点记在下一格。
  */
-export function isClosedBottomTrapdoor(view: BlockView): boolean {
+function closedTrapdoorMount(view: BlockView): "top" | "bottom" | undefined {
   const id = shortId(view.typeId);
   if (!id.includes("trapdoor")) {
-    return false;
+    return undefined;
   }
   const st = view.states;
   if (!st) {
-    return false;
+    return undefined;
   }
   const open = st["open_bit"] === true || st["open_bit"] === 1;
+  if (open) {
+    return undefined;
+  }
   const upside = st["upside_down_bit"] === true || st["upside_down_bit"] === 1;
-  return !open && !upside;
+  return upside ? "top" : "bottom";
 }
 
 /**
@@ -176,12 +179,9 @@ export function isHazard(view: BlockView, ctx?: PredicateContext): boolean {
 }
 
 /**
- * isPassable：身位可占。
- * 不可穿：solid / glass / leaves / fence / wall；活板门/楼梯不靠本式一刀切（仍给保守默认）。
- */
-/**
  * isPassable：身位格净空（脚/头）。
  * 顺序：isSolid 先于 plantThin（引擎标 solid 的作物不可当净空）。
+ * 关闭的底装活板门可以占用；顶装和打开的不能穿。
  */
 export function isPassable(view: BlockView): boolean {
   if (view.isAir) {
@@ -200,12 +200,14 @@ export function isPassable(view: BlockView): boolean {
     return false;
   }
 
-  // NavMismatch：楼梯/梯子/脚手架/活板门身位默认不可当普通净空
+  // 楼梯/梯子/脚手架身位不当地板净空。活板门单独看开合。
   if (id.includes("stairs") || id.includes("ladder") || id.includes("scaffolding")) {
     return false;
   }
+  // 关闭底装：碰撞贴在格底，这一格可以站人。顶装和打开的都不能穿。
+  const trapdoorMount = closedTrapdoorMount(view);
   if (id.includes("trapdoor")) {
-    return false;
+    return trapdoorMount === "bottom";
   }
 
   if (isPlantThin(id) || isDecorThin(id)) {
@@ -234,7 +236,7 @@ export function isSunkSupport(view: BlockView): boolean {
 
 /**
  * isSupport：顶面可当整格站立面。
- * 否：air/liquid/fence·wall（整格；顶部可站 TODO）/压力板/开活板门。
+ * 否：air/liquid/fence·wall（整格；顶部可站 TODO）/压力板/打开的活板门/底装关闭的活板门。
  */
 export function isSupport(view: BlockView): boolean {
   if (view.isAir || view.isLiquid) {
@@ -257,11 +259,11 @@ export function isSupport(view: BlockView): boolean {
     return false;
   }
 
-  // 关底活板门 ≈ 地毯薄支撑
-  if (isClosedBottomTrapdoor(view)) {
+  // 关闭顶装：顶部是整格落脚面，落脚点就是这一格。
+  if (closedTrapdoorMount(view) === "top") {
     return true;
   }
-  // 其它活板门 / 楼梯 / 梯子：非整格支撑
+  // 底装关闭、打开，以及楼梯/梯子：这一格本身不是落脚点。
   if (
     id.includes("trapdoor") ||
     id.includes("stairs") ||
@@ -325,7 +327,7 @@ export function isStandableAt(
   if (!foot.passable || !head.passable) {
     return false;
   }
-  // 关底活板门：support=true 且 navMismatch=true → 允许（≈地毯）
-  // 开活板门/楼梯等：support=false，已在上方否决
+  // 顶装关闭的活板门 support=true，落脚点就是这一格。
+  // 底装关闭的活板门 support=false，人站在这一格里时，落脚点是下一格。
   return true;
 }

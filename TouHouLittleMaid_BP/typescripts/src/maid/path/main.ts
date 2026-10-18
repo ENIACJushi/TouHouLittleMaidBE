@@ -45,7 +45,6 @@ export {
 } from "./constants";
 export {
   evalBlockFlags,
-  isClosedBottomTrapdoor,
   isHazard,
   isNavMismatch,
   isPassable,
