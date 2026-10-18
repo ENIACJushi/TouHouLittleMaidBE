@@ -25,8 +25,8 @@ const workHandlers: Partial<Record<number, WorkHandler>> = {
     search(maid, range = 6) {
       SugarCane.search(maid, range);
     },
-    acquire(event) {
-      SugarCane.acquire(event.hitEntity, event.damagingEntity);
+    step(maid) {
+      SugarCane.onSchedulePulse(maid);
     },
   },
   [Work.melon]: {
@@ -34,11 +34,7 @@ const workHandlers: Partial<Record<number, WorkHandler>> = {
       Melon.search(maid, range);
     },
     step(maid) {
-      const target = maid.target;
-      if (target !== undefined) Melon.acquire(target, maid);
-    },
-    acquire(event) {
-      Melon.acquire(event.hitEntity, event.damagingEntity);
+      Melon.onSchedulePulse(maid);
     },
   },
   [Work.cocoa]: {
@@ -46,8 +42,7 @@ const workHandlers: Partial<Record<number, WorkHandler>> = {
       Cocoa.search(maid, range);
     },
     step(maid) {
-      const target = maid.target;
-      if (target !== undefined) Cocoa.acquire(target, maid);
+      Cocoa.onSchedulePulse(maid);
     },
   },
 };
@@ -58,21 +53,9 @@ const workHandlers: Partial<Record<number, WorkHandler>> = {
  */
 export class MaidTarget {
   /**
-   * 标志物取得（命中目标实体）
+   * 命中 thlmt 标记。耕地、甘蔗、瓜、可可已不再靠标记收菜。
    */
-  static targetAcquire(event: EntityHitEntityAfterEvent): void {
-    const target = event.hitEntity;
-    switch (target.typeId.substring(6)) {
-      case "sugar_cane":
-        workHandlers[Work.sugar_cane]?.acquire?.(event);
-        break;
-      case "melon":
-        workHandlers[Work.melon]?.acquire?.(event);
-        break;
-      default:
-        break;
-    }
-  }
+  static targetAcquire(_event: EntityHitEntityAfterEvent): void {}
 
   /**
    * 寻找目标点
@@ -85,10 +68,15 @@ export class MaidTarget {
   /**
    * 因为不能穿墙攻击，使用脚本定时获取目标
    * 竖直方向最大高度差为 5 格；事件每 3 秒触发一次
-   * Farm：自管 Path.follow，只脉冲一次（避免三次全图扫描）
+   * 耕地、甘蔗、瓜、可可自管 Path.follow，只脉冲一次（避免三次全图扫描）
    */
   static stepEvent(maid: Entity, work: number): void {
-    if (work === Work.farm) {
+    if (
+      work === Work.farm ||
+      work === Work.sugar_cane ||
+      work === Work.melon ||
+      work === Work.cocoa
+    ) {
       system.runTimeout(() => {
         try {
           if (maid?.isValid) {

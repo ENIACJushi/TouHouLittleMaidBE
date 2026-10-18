@@ -53,6 +53,7 @@ export class MaidScheduleEvents {
     // 农业扫描
     switch (work) {
       case EntityMaid.Work.farm:
+      case EntityMaid.Work.sugar_cane:
       case EntityMaid.Work.melon:
       case EntityMaid.Work.cocoa:
         MaidTarget.stepEvent(maid, work);
