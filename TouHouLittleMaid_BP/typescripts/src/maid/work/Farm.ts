@@ -17,6 +17,7 @@ import { EntityMaid } from "../EntityMaid";
 import { FarmBlocks } from "../../../data/FarmBlocks/main";
 import { StandableCache } from "../path/StandableCache";
 import { standNodeFromFeet } from "../path/Path";
+import { unreachableCache } from "../path/UnreachableCache";
 import {
   activityCircleOf,
   isInsideActivityCircle,
@@ -396,9 +397,9 @@ export class Farm {
   /**
    * 同一可认领场、且目标在活动圈内，才选点，再沿可逆邻居出发。
    * 圈外的格子可以当路绕过去，但不能认领。NPC 不寻路。
-   * NPC 不寻路。跟随中主人已退出世界时，以女仆脚下为中心选目标。
+   * 跟随中主人已退出世界时，以女仆脚下为中心选目标。
    * 场还没建完或场牌暂停：这一拍停下，不改去更远的格，也不记成走不到。
-   * 身边能收的、占用、走完再收，仍走原来的流程。
+   * 走路失败后短时间内不再走路去同一格，不改场。人已经站在旁边时仍当场收种。
    * @returns 是否已派出 follow 或已经就地收种
    */
   static assignNext(maid, tasks, _range = Farm.claimRange) {
@@ -451,6 +452,11 @@ export class Farm {
           this.releaseCell(maid, t);
         }
         return true;
+      }
+
+      // 超时、堵住、路点名额用完：只跳过这名女仆的这一格，场不动
+      if (unreachableCache.has(dim.id, goal, maid.id)) {
+        continue;
       }
 
       EntityMaid.Path.suppressHomeReturn(maid);

@@ -1,6 +1,6 @@
 /**
  * 不可达短时缓存（Task7）。
- * 使用场景：Path.follow Fail / canReach 失败后短 ban，避免死循环重试。
+ * 使用场景：Path.follow Fail 后短 ban；耕地选点读取，避免同一女仆立刻再走同一格。不改场编号。
  */
 import { StandNode } from "./types";
 
