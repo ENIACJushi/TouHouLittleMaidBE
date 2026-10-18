@@ -1,7 +1,7 @@
 // @ts-nocheck
 /**
  * 耕地农作（Phase3）：不再刷 thlmt:farm。
- * 扫描只收集坐标 → 为该女仆选下一个可达点 → Path.follow（seek_marker）→
+ * 扫描只收集坐标 → 同一可认领场才选点 → 沿可逆邻居 Path.follow →
  * 由 Path onComplete(done) 推送到位后再对方块 acquire（不再靠轮询距离收尾）。
  */
 import {
@@ -15,11 +15,13 @@ import { Vector } from "../../libs/VectorMC";
 import { Logger } from "../../controller/Logger";
 import { EntityMaid } from "../EntityMaid";
 import { FarmBlocks } from "../../../data/FarmBlocks/main";
-import { SEARCH_H, SEARCH_V } from "../path/constants";
+import { StandableCache } from "../path/StandableCache";
+import { standNodeFromFeet } from "../path/Path";
 import {
-  buildRoiAround,
-  ensureReachabilityField,
-} from "../path/ReachabilityField";
+  classifyFieldClaim,
+  ensureStandHeight,
+  reversiblePathResult,
+} from "../path/field/StandField";
 import { SpeedController } from "./SpeedController";
 
 /**
@@ -388,10 +390,12 @@ export class Farm {
   }
 
   /**
-   * 建可达场并选最近可达任务，启动 Path.follow。
-   * @returns 是否已派出 follow
+   * 同一可认领场才选点，再沿可逆邻居出发。
+   * 场还没建完或场牌暂停：这一拍停下，不改去更远的格，也不记成走不到。
+   * 身边能收的、占用、走完再收，仍走原来的流程。
+   * @returns 是否已派出 follow 或已经就地收种
    */
-  static assignNext(maid, tasks, range = Farm.claimRange) {
+  static assignNext(maid, tasks, _range = Farm.claimRange) {
     if (!maid?.isValid || tasks.length === 0) {
       return false;
     }
@@ -400,20 +404,12 @@ export class Farm {
     }
 
     const dim = maid.dimension;
-    const loc = maid.location;
-    const anchor = {
-      x: Math.floor(loc.x),
-      y: Math.floor(loc.y) - 1,
-      z: Math.floor(loc.z),
-    };
-    const h = Math.max(range, SEARCH_H);
-    const roi = buildRoiAround(anchor, h, SEARCH_V);
-    const goals = tasks.map((t) => this.goalStandOfTask(t));
-    try {
-      ensureReachabilityField(dim, roi, goals);
-    } catch (e) {
-      Logger.warn(TAG, `ensureField: ${String(e)}`);
+    const probe = new StandableCache(dim);
+    const start = standNodeFromFeet(probe, maid.location);
+    if (!start) {
+      return false;
     }
+    ensureStandHeight(dim, start.x, start.y, start.z);
 
     const ranked = tasks
       .filter((t) => this.isCellFreeFor(maid, t))
@@ -421,19 +417,13 @@ export class Farm {
       .sort((a, b) => a.d2 - b.d2);
 
     for (const { t } of ranked) {
-      // 规划仍用作物格坐标（standNodeFromDest→下方耕地）；终点 marker 由 Executor 打在作物格心
-      const dest = { x: t.x, y: t.y, z: t.z };
-      let ok = false;
-      try {
-        ok = EntityMaid.Path.canReach(maid, dest, {
-          searchH: h,
-          searchV: SEARCH_V,
-        });
-      } catch (e) {
-        Logger.warn(TAG, `canReach: ${String(e)}`);
-        continue;
+      const goal = this.goalStandOfTask(t);
+      ensureStandHeight(dim, goal.x, goal.y, goal.z);
+      const claim = classifyFieldClaim(dim, start, goal);
+      if (claim === "unready") {
+        return false;
       }
-      if (!ok) {
+      if (claim !== "same") {
         continue;
       }
 
@@ -448,18 +438,24 @@ export class Farm {
         return true;
       }
 
+      const planned = reversiblePathResult(dim, start, goal);
+      if (!planned.ok) {
+        if (planned.reason === "field_unknown") {
+          return false;
+        }
+        continue;
+      }
+
       this.pauseFarmNat(maid);
       this.claimCell(maid, t);
       this.writeJob(maid, t);
       const expected = t;
-      const result = EntityMaid.Path.follow(maid, dest, {
-        searchH: h,
-        searchV: SEARCH_V,
+      const started = EntityMaid.Path.followResult(maid, planned, {
         onComplete: (info) => {
           Farm.onFollowComplete(maid, expected, info);
         },
       });
-      if (!result.ok) {
+      if (!started) {
         this.releaseCell(maid, t);
         this.writeJob(maid, undefined);
         continue;

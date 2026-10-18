@@ -1,13 +1,20 @@
 /**
  * 共享落脚点表和可达场。
- * 使用场景：反复寻路的工作共用这一份；农作还没接上来，现有 Path.find 不动。
+ * 使用场景：反复寻路的工作共用这一份。耕地认领只比场编号，出发再沿可逆邻居找路。
  *
  * 维度 → 区块 → 坐标直查。叶子只记能不能站（在表里就表示能站）、可逆邻居、场编号。
  * 场牌只有可认领或暂停。建区块、合并、删边探测、出发找路各用各的一拍上限。
  */
 import { Dimension, system } from "@minecraft/server";
 import { StandableCache } from "../StandableCache";
-import { BlockPos, StandNode } from "../types";
+import {
+  COST_FALL_BASE,
+  COST_FALL_PER_Y,
+  COST_JUMP1,
+  COST_SPRINT_GAP,
+  COST_WALK,
+} from "../constants";
+import { BlockPos, PathEdge, PathResult, StandNode } from "../types";
 import {
   FIELD_BUILD_NODES_PER_TICK,
   FIELD_CHUNK_IDLE_MS,
@@ -19,6 +26,15 @@ import { ReversibleKind, ReversibleStep, reversibleSteps } from "./reversibleSte
 
 /** 区块边长（格） */
 const CHUNK = 16;
+
+/**
+ * 认领时两点的关系。
+ * same：场牌可认领且编号相同。
+ * different：两边都已建完，但不是同一场，或目标不能站。
+ * unready：要用的那一层还没建完。
+ * paused：场牌暂停，这场先不选，别的场还可以选。
+ */
+export type FieldClaim = "same" | "different" | "unready" | "paused";
 
 /** 出发找路的三种结果 */
 export type FieldFindResult =
@@ -842,12 +858,114 @@ export function sameClaimableField(
   a: BlockPos,
   b: BlockPos
 ): boolean {
-  const left = peekStandField(dim, a.x, a.y, a.z);
-  const right = peekStandField(dim, b.x, b.y, b.z);
-  if (!left || !right) {
+  return classifyFieldClaim(dim, a, b) === "same";
+}
+
+/**
+ * 这一层是否已经扫完。没扫完不能把「还没有叶子」当成走不到。
+ * 使用场景：classifyFieldClaim。
+ */
+function layerReady(rec: DimRec, x: number, y: number, z: number): boolean {
+  const chunk = rec.chunks.get(chunkMapKey(x, z));
+  if (!chunk || chunk.pendingY.length > 0) {
     return false;
   }
-  return left.claimable && right.claimable && left.fieldId === right.fieldId;
+  return chunk.scannedY.has(y);
+}
+
+/**
+ * 认领前比较脚下和目标。不沿路重读。
+ * 使用场景：耕地选点。unready 这一拍不要改去更远的格。
+ */
+export function classifyFieldClaim(
+  dim: Dimension,
+  a: BlockPos,
+  b: BlockPos
+): FieldClaim {
+  const rec = dims.get(dim.id);
+  if (!rec) {
+    return "unready";
+  }
+  const ax = Math.floor(a.x);
+  const ay = Math.floor(a.y);
+  const az = Math.floor(a.z);
+  const bx = Math.floor(b.x);
+  const by = Math.floor(b.y);
+  const bz = Math.floor(b.z);
+  if (!layerReady(rec, ax, ay, az) || !layerReady(rec, bx, by, bz)) {
+    return "unready";
+  }
+  const left = findLeaf(rec, ax, ay, az);
+  const right = findLeaf(rec, bx, by, bz);
+  if (!left || !right) {
+    return "different";
+  }
+  const plaque = rec.plaques.get(left.fieldId);
+  if (!plaque?.claimable) {
+    return "paused";
+  }
+  if (left.fieldId !== right.fieldId) {
+    return "different";
+  }
+  return "same";
+}
+
+/**
+ * 把可逆路上的一步换成执行器认识的边。落下 1 仍写成 Fall。
+ * 使用场景：reversiblePathResult。
+ */
+function edgeFromStep(
+  from: StandNode,
+  step: ReversibleStep
+): PathEdge {
+  const to = { x: step.x, y: step.y, z: step.z };
+  if (step.kind === "Jump1") {
+    return { kind: "Jump1", from, to, cost: COST_JUMP1 };
+  }
+  if (step.kind === "Fall1") {
+    return {
+      kind: "Fall",
+      from,
+      to,
+      cost: COST_FALL_BASE + COST_FALL_PER_Y,
+    };
+  }
+  if (step.kind === "SprintGap") {
+    return { kind: "SprintGap", from, to, cost: COST_SPRINT_GAP };
+  }
+  return { kind: "Walk", from, to, cost: COST_WALK };
+}
+
+/**
+ * 场编号一致之后，沿可逆邻居找出给执行器走的边。
+ * 使用场景：耕地出发。unknown 不写不可达；unreachable 也不拆场。
+ */
+export function reversiblePathResult(
+  dim: Dimension,
+  from: StandNode,
+  to: StandNode
+): PathResult {
+  const found = findReversiblePath(dim, from, to);
+  if (found.kind === "unknown") {
+    return { ok: false, nodes: [], edges: [], reason: "field_unknown" };
+  }
+  if (found.kind === "unreachable") {
+    return { ok: false, nodes: [], edges: [], reason: "field_unreachable" };
+  }
+  const edges: PathEdge[] = [];
+  for (let i = 0; i < found.nodes.length - 1; i++) {
+    const cur = found.nodes[i];
+    const next = found.nodes[i + 1];
+    const view = peekStandField(dim, cur.x, cur.y, cur.z);
+    const step = view?.steps.find(
+      (item) => item.x === next.x && item.y === next.y && item.z === next.z
+    );
+    if (!step) {
+      return { ok: false, nodes: [], edges: [], reason: "field_unknown" };
+    }
+    edges.push(edgeFromStep(cur, step));
+  }
+  return { ok: true, nodes: found.nodes, edges };
 }
 
 /**
