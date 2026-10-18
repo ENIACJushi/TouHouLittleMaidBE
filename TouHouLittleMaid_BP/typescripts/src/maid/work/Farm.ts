@@ -214,6 +214,42 @@ export class Farm {
   }
 
   /**
+   * 背包里现有物品的类型。不扣数量。
+   * 使用场景：空耕地选点前，对照这块土能种的种子。
+   */
+  static backpackTypeIds(maid) {
+    const have = new Set();
+    const container = EntityMaid.Backpack.getContainer(maid);
+    if (container === undefined) {
+      return have;
+    }
+    for (let i = 0; i < container.size; i++) {
+      const item = container.getItem(i);
+      if (item !== undefined && item.amount > 0) {
+        have.add(item.typeId);
+      }
+    }
+    return have;
+  }
+
+  /**
+   * 这块土对应的种子，背包里是否至少有一种。
+   * 使用场景：没有种子的空耕地不当目标。收割不走这里。
+   */
+  static landHasSeed(have, landTypeId) {
+    const seeds = FarmBlocks.getInstance().getLand(landTypeId);
+    if (seeds === undefined) {
+      return false;
+    }
+    for (const seed of seeds) {
+      if (have.has(seed)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * 给定种子名称，种植一个作物。
    */
   static plantSeed(maid, location, seedName, landName) {
@@ -370,6 +406,7 @@ export class Farm {
     }
     const tasks = [];
     let count = 0;
+    const seedsOnHand = this.backpackTypeIds(maid);
 
     for (let ix = 0; ix < range; ix = ix > 0 ? -ix : 2 - ix) {
       let blockVolume = new BlockVolume(
@@ -411,7 +448,11 @@ export class Farm {
               z: Math.floor(blockLocation.z),
               kind: "plant",
             };
-            if (!this.isPlantCooling(dimension.id, task)) {
+            // 没有能种在这块土上的种子：不占候选名额，也不出发
+            if (
+              !this.isPlantCooling(dimension.id, task) &&
+              this.landHasSeed(seedsOnHand, block.typeId)
+            ) {
               tasks.push(task);
               count++;
             }
@@ -450,6 +491,25 @@ export class Farm {
   }
 
   /**
+   * 补种任务在出发前再对一次背包。扫描和选点之间种子可能被拿走。
+   * 使用场景：assignNext。收割任务直接通过。
+   */
+  static plantTaskHasSeed(maid, task, have) {
+    if (task.kind !== "plant") {
+      return true;
+    }
+    const land = maid.dimension.getBlock({
+      x: task.x,
+      y: task.y - 1,
+      z: task.z,
+    });
+    if (land === undefined) {
+      return false;
+    }
+    return this.landHasSeed(have, land.typeId);
+  }
+
+  /**
    * 同一可认领场、且目标在活动圈内，才选点，再沿可逆邻居出发。
    * 圈外的格子可以当路绕过去，但不能认领。NPC 不寻路。
    * 跟随中主人已退出世界时，以女仆脚下为中心选目标。
@@ -483,8 +543,9 @@ export class Farm {
     }
     ensureStandHeight(dim, start.x, start.y, start.z);
 
+    const seedsOnHand = this.backpackTypeIds(maid);
     const ranked = tasks
-      .filter((t) => this.isCellFreeFor(maid, t))
+      .filter((t) => this.isCellFreeFor(maid, t) && this.plantTaskHasSeed(maid, t, seedsOnHand))
       .map((t) => ({ t, d2: this.dist2Maid(maid, t) }))
       .sort((a, b) => a.d2 - b.d2);
 
