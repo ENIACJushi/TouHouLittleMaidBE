@@ -17,6 +17,7 @@ import { GeneralBulletColor } from "../../danmaku/shapes/bullets/general_bullet/
 import { GeneralBulletType } from "../../danmaku/shapes/bullets/general_bullet/GeneralBulletType";
 import { MaidTarget } from "../work/MaidTarget";
 import { maidInteractEvents } from "./MaidInteractEvents";
+import { noteMaidBeat } from "./MaidPresence";
 
 const HOME_RADIUS = 32;
 /**
@@ -30,6 +31,7 @@ export class MaidScheduleEvents {
     const STEP_MAX = 1000;
     let maid = event.entity;
     if (maid === undefined) return;
+    noteMaidBeat(maid);
 
     ///// 步数计算 一步3秒 /////
     let healStep = maid.getDynamicProperty("step") as number | undefined;

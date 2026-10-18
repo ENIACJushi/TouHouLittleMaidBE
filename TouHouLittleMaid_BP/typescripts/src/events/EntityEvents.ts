@@ -281,5 +281,6 @@ export class EntityEvents {
     });
     // 订阅时世界中已有女仆不会再触发 entityLoad，补一次扫描
     MaidEvents.lifeCycle.scanLoadedMaids();
+    MaidEvents.lifeCycle.startPresenceWatch();
   }
 }

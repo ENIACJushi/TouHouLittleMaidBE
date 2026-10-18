@@ -19,6 +19,7 @@ import * as Tool from "../../libs/ScarletToolKit";
 import * as UI from "../ui/MaidUI";
 import { MaidTarget } from "../work/MaidTarget";
 import { isInteractContainerBlock } from "../../../data/BadContainerBlocks";
+import { invalidateMaid } from "./MaidPresence";
 
 /** 与原先 JSON interact cooldown 0.2s 对齐 */
 const SIT_TOGGLE_COOLDOWN_TICKS = 4;
@@ -156,6 +157,7 @@ export class MaidInteractEvents {
     }
     if (maid.dimension.spawnItem(output_item, owner.location) !== undefined) {
       // 清除女仆
+      invalidateMaid(maid.id, "photo");
       EntityMaid.Pick.set(maid, false); // 避免捡完东西被消除
       maid.triggerEvent("despawn");
     }
@@ -359,6 +361,7 @@ export class MaidInteractEvents {
     let lore = EntityMaid.toLore(maid);
 
     // 清除女仆
+    invalidateMaid(maid.id, "smart_slab");
     EntityMaid.Pick.set(maid, false); // 避免捡完东西被消除
     maid.triggerEvent("despawn");
 

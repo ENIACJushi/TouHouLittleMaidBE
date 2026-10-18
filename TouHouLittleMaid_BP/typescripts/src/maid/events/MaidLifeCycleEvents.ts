@@ -12,6 +12,7 @@ import { Logger } from "../../controller/Logger";
 import { VO } from "../../libs/VectorMC";
 import { DP } from "../../libs/DynamicPropertyInterface";
 import { MaidSoundType } from "../sound/main";
+import { invalidateMaid, startMaidPresenceWatch } from "./MaidPresence";
 
 const TAG = "MaidLifeCycle";
 /** 女仆实体 typeId；订阅 hurt/die 时用 entityTypes 限定以降低回调量 */
@@ -51,6 +52,14 @@ export class MaidLifeCycleEvents {
     } catch (e) {
       Logger.debug(TAG, `onLoad 失败: ${e}`);
     }
+  }
+
+  /**
+   * 挂上 thlmm:t 超时核对。
+   * 使用场景：实体事件注册时调用一次。
+   */
+  startPresenceWatch(): void {
+    startMaidPresenceWatch();
   }
 
   /**
@@ -117,6 +126,13 @@ export class MaidLifeCycleEvents {
   onDied(event: EntityDieAfterEvent): void {
     const maid = event.deadEntity;
     try {
+      if (maid?.id) {
+        invalidateMaid(maid.id, "death");
+      }
+    } catch {
+      // 实体已经读不到 id 时，交给定时兜底
+    }
+    try {
       if (!maid.isValid) {
         return;
       }
@@ -167,6 +183,11 @@ export class MaidLifeCycleEvents {
   onDeath(event: DataDrivenEntityTriggerAfterEvent) {
     let maid = event.entity;
     if (maid === undefined) return;
+    try {
+      invalidateMaid(maid.id, "death");
+    } catch {
+      // id 读不到时交给定时兜底
+    }
 
     let lore = EntityMaid.toLore(maid, false);
     let output_item = new ItemStack("touhou_little_maid:film", 1);
