@@ -1078,6 +1078,51 @@ export function listChunkFieldNodes(
 }
 
 /**
+ * 列出观察者附近已经写下的落脚点。
+ * 使用场景：显示路点时刷粒子。不新建落脚点。
+ */
+export function listStandFieldNear(
+  dim: Dimension,
+  origin: BlockPos,
+  horiz: number,
+  vert: number
+): FieldLeafView[] {
+  const rec = dims.get(dim.id);
+  if (!rec) {
+    return [];
+  }
+  const minX = Math.floor(origin.x - horiz);
+  const maxX = Math.floor(origin.x + horiz);
+  const minY = Math.floor(origin.y - vert);
+  const maxY = Math.floor(origin.y + vert);
+  const minZ = Math.floor(origin.z - horiz);
+  const maxZ = Math.floor(origin.z + horiz);
+  const cx0 = Math.floor(minX / CHUNK);
+  const cx1 = Math.floor(maxX / CHUNK);
+  const cz0 = Math.floor(minZ / CHUNK);
+  const cz1 = Math.floor(maxZ / CHUNK);
+  const out: FieldLeafView[] = [];
+  for (let cx = cx0; cx <= cx1; cx++) {
+    for (let cz = cz0; cz <= cz1; cz++) {
+      const chunk = rec.chunks.get(`${cx},${cz}`);
+      if (!chunk) {
+        continue;
+      }
+      for (const leaf of chunk.nodes.values()) {
+        if (leaf.x < minX || leaf.x > maxX || leaf.z < minZ || leaf.z > maxZ) {
+          continue;
+        }
+        if (leaf.y < minY || leaf.y > maxY) {
+          continue;
+        }
+        out.push(leafView(rec, leaf));
+      }
+    }
+  }
+  return out;
+}
+
+/**
  * 每拍继续没做完的建区块、合并和删边探测，并丢掉静置区块。
  * 使用场景：initStandField 挂上的间隔。circles 是这一拍各女仆的活动圈。
  */

@@ -46,9 +46,9 @@ class Config {
     configName: 'logger_level'
   });
   /**
-   * 显示寻路路点与可达表：途经红、终点绿；可达青绿（覆盖可站∩可达）；
-   * 可站但未进场黄；不可达 ban 品红；开启时新建 seek_marker 带 thlmt:visible。
-   * 使用场景：调试 Path.follow / ReachabilityField；默认关闭。
+   * 显示寻路路点与落脚点表：途经红、终点绿；可认领青绿；还不能认领黄；
+   * 走路失败短回避品红；开启时新建 seek_marker 带 thlmt:visible。
+   * 使用场景：调试 Path.follow 和新的落脚点表；默认关闭。
    */
   path_show_waypoints = new ConfigItemBoolean({
     defaultValue: false,

@@ -18,27 +18,6 @@ export { Executor, IN_FLIGHT_MAX } from "./Executor";
 export type { ExecutorStartOptions } from "./Executor";
 export { setReachVizEnabled } from "./ReachViz";
 export {
-  acquireSharedStandable,
-  invalidateSharedStandable,
-  sharedStandableKey,
-  sharedStandableStats,
-  listSharedStandablesNear,
-  SHARED_STANDABLE_TTL_MS,
-} from "./SharedStandable";
-export type { SharedStandableLease } from "./SharedStandable";
-export {
-  ensureReachabilityField,
-  isReachableInField,
-  invalidateReachabilityField,
-  invalidateReachabilityGoal,
-  buildRoiAround,
-  reachabilityFieldStats,
-  listReachabilityStands,
-  REACH_FIELD_TTL_MS,
-  REACH_FIELD_MAX_STANDS,
-} from "./ReachabilityField";
-export type { ReachRoi, ReachFieldEnsureOptions } from "./ReachabilityField";
-export {
   lookupImpulse,
   resolveImpulse,
   feetOfSupport,

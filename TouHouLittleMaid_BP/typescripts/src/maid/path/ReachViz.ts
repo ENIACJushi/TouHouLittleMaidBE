@@ -1,19 +1,18 @@
 /**
- * 可达相关表的粒子可视化（受「显示路点」开关控制）。
- * 使用场景：调试 ReachabilityField / SharedStandable / UnreachableCache。
+ * 落脚点表的粒子可视化（受「显示路点」开关控制）。
+ * 使用场景：调试新的落脚点表和走路失败短回避。
  *
  * 性能：无轮询；仅在配置初始化/变更时由 Config 调用 setReachVizEnabled。
  * 开启后才挂刷粒子 interval；关闭立即 clearRun。
  *
  * 颜色：
- * - 青绿 path_reach_field：可达场 R(g) 并集（可站且可达只刷此色）
- * - 黄色 path_standable：可站但不在可达场内的格
- * - 品红 path_unreachable：不可达 ban 终点
+ * - 青绿 path_reach_field：场牌可认领的落脚点
+ * - 黄色 path_standable：已经写下、这一拍还不能认领的落脚点
+ * - 品红 path_unreachable：走路失败的短回避终点
  * （路点红/绿、轨迹蓝仍由 Executor 负责）
  */
 import { Dimension, system, world } from "@minecraft/server";
-import { listReachabilityStands } from "./ReachabilityField";
-import { listSharedStandablesNear } from "./SharedStandable";
+import { listStandFieldNear } from "./field/StandField";
 import { unreachableCache } from "./UnreachableCache";
 import { StandNode } from "./types";
 
@@ -55,7 +54,7 @@ function inView(
 
 /**
  * 直接刷粒子（调用方已裁剪，不抽稀）。
- * 使用场景：黄层 listSharedStandablesNear 已按视野箱全量返回。
+ * 使用场景：视野内的落脚点。
  */
 function spawnAll(
   dim: Dimension,
@@ -90,10 +89,6 @@ function spawnLayer(
   );
 }
 
-function nodeKey(n: StandNode): string {
-  return `${n.x},${n.y},${n.z}`;
-}
-
 function stopPaintLoop(): void {
   if (paintHandle === undefined) {
     return;
@@ -112,8 +107,8 @@ function startPaintLoop(): void {
 }
 
 /**
- * 对一名玩家所在维度刷三层表粒子。
- * 可站且可达 → 只青绿；黄仅「可站减去可达」。
+ * 对一名玩家附近刷落脚点表。
+ * 青绿：可认领。黄：已写下但还不能认领。品红：走路失败短回避。
  */
 function paintAroundPlayer(
   dim: Dimension,
@@ -121,23 +116,23 @@ function paintAroundPlayer(
   oy: number,
   oz: number
 ): void {
-  const dimId = dim.id;
-  const reach = listReachabilityStands(dimId);
-  const reachKeys = new Set(reach.map(nodeKey));
-  // 黄层：查询侧已按视野箱裁切且全量返回，避免二次 inView / 数量截断
-  const standOnly = listSharedStandablesNear(
-    dimId,
-    { x: ox, y: oy, z: oz },
-    VIEW_H,
-    VIEW_V,
-    reachKeys
-  );
-  spawnAll(dim, PARTICLE_STAND, standOnly);
-  spawnLayer(dim, PARTICLE_REACH, reach, ox, oy, oz);
+  const leaves = listStandFieldNear(dim, { x: ox, y: oy, z: oz }, VIEW_H, VIEW_V);
+  const claimable: StandNode[] = [];
+  const paused: StandNode[] = [];
+  for (const leaf of leaves) {
+    const node = { x: leaf.x, y: leaf.y, z: leaf.z };
+    if (leaf.claimable) {
+      claimable.push(node);
+    } else {
+      paused.push(node);
+    }
+  }
+  spawnAll(dim, PARTICLE_REACH, claimable);
+  spawnAll(dim, PARTICLE_STAND, paused);
   spawnLayer(
     dim,
     PARTICLE_BAN,
-    unreachableCache.listActiveDests(dimId),
+    unreachableCache.listActiveDests(dim.id),
     ox,
     oy,
     oz
