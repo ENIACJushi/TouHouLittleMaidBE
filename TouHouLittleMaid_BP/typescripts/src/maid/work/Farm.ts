@@ -112,17 +112,6 @@ export class Farm {
     }
   }
 
-  /**
-   * 卸 mode:farm NAT（农作改由 Seek/Path，不再用家族索敌）。
-   */
-  static pauseFarmNat(maid) {
-    try {
-      maid.triggerEvent("api:mode_quit_farm");
-    } catch {
-      /* ignore */
-    }
-  }
-
   static claimCell(maid, task) {
     cellClaims.set(this.taskKey(maid.dimension.id, task), maid.id);
   }
@@ -475,7 +464,6 @@ export class Farm {
         continue;
       }
 
-      this.pauseFarmNat(maid);
       this.claimCell(maid, t);
       this.writeJob(maid, t);
       const expected = t;
@@ -562,7 +550,6 @@ export class Farm {
     if (!maid?.isValid) {
       return;
     }
-    this.pauseFarmNat(maid);
     if (EntityMaid.Path.isFollowing(maid)) {
       return;
     }
@@ -615,7 +602,6 @@ export class Farm {
     if (EntityMaid.Work.get(maid) !== EntityMaid.Work.farm) {
       return;
     }
-    this.pauseFarmNat(maid);
 
     if (EntityMaid.Path.isFollowing(maid)) {
       return;

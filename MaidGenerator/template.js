@@ -644,81 +644,6 @@ export let TEMPLATE = {
         },
         "minecraft:behavior.panic": { "priority": 4, "speed_multiplier": 0 }
       },
-      // 农耕
-      "mode:farm":{
-        "minecraft:follow_range": { "max": 32, "value": 32 },
-        "minecraft:behavior.nearest_attackable_target": {
-          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 5.0,
-          "reselect_targets": false, "within_radius": 32, "scan_interval": 20, "target_search_height": 2,
-          "entity_types": [
-            {
-              "filters": { "all_of": [
-                  {"test": "is_family","subject": "other","value": "thlmt:farm"}
-                ] },
-              "max_dist": 32, "must_see": false
-            }
-          ]
-        },
-        "minecraft:behavior.ranged_attack": {
-          "priority": 6,
-          "speed_multiplier": 0.8,
-          "attack_interval_min": 0.8,
-          "attack_interval_max": 0.8,
-          "attack_radius": 1.9,
-          "attack_radius_min": 0
-        }
-      },
-      // 甘蔗
-      "mode:sugar_cane":{
-        "minecraft:follow_range": { "max": 32, "value": 32 },
-        "minecraft:behavior.nearest_attackable_target": {
-          "priority": 7, "must_reach": true, "must_see": false,
-          "reselect_targets": true, "within_radius": 32, "scan_interval": 10,
-          "entity_types": [ { "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:sugar_cane"} ] }, "max_dist": 32, "must_see": false } ]
-        },
-        "minecraft:behavior.melee_attack": { "priority": 6, "speed_multiplier": 1, "cooldown_time": 1.0,"reach_multiplier": 3 }
-      },
-      // 瓜类
-      "mode:melon":{
-        "minecraft:follow_range": { "max": 32, "value": 32 },
-        "minecraft:behavior.nearest_attackable_target": {
-          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 5.0,
-          "reselect_targets": false, "within_radius": 32, "scan_interval": 20,
-          "entity_types": [ {
-            "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:melon"} ] },
-            "max_dist": 32,
-            "must_see": false
-          } ]
-        },
-        "minecraft:behavior.ranged_attack": {
-          "priority": 6,
-          "attack_interval_min": 0.8,
-          "attack_interval_max": 0.8,
-          "attack_radius": 2.1,
-          "attack_radius_min": 0.9
-        }
-      },
-      // 可可豆
-      "mode:cocoa": {
-        "minecraft:follow_range": { "max": 32, "value": 32 },
-        "minecraft:behavior.nearest_attackable_target": {
-          "priority": 7, "must_reach": true, "must_see": false, "persist_time": 3.0,
-          "reselect_targets": false, "within_radius": 32, "scan_interval": 20, "target_search_height": 4,
-          "entity_types": [ {
-            "filters": { "all_of": [ {"test": "is_family","subject": "other","value": "thlmt:cocoa"} ] },
-            "max_dist": 32,
-            "must_see": false
-          } ]
-        },
-        "minecraft:behavior.ranged_attack": {
-          "priority": 6,
-          "attack_interval_min": 0.8,
-          "attack_interval_max": 0.8,
-          "attack_radius": 2.1,
-          "attack_radius_min": 0.9
-        }
-      },
-
       ///// 背包类别 /////
       "backpack:default_sneaking":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 6, "restrict_to_owner": true} },
       "backpack:small_sneaking":{ "minecraft:inventory":{ "container_type": "inventory", "inventory_size": 12, "restrict_to_owner": true} },
@@ -1313,19 +1238,6 @@ export let TEMPLATE = {
         "add": {"component_groups": ["mode:danmaku_attack", "mode:searching_danmaku_attack"]}
       },
       "api:mode_quit_danmaku_attack"  :{"sequence": [{"remove": {"component_groups": ["mode:danmaku_attack", "mode:danmaku_attack_sit", "mode:searching_danmaku_attack"]}}]},
-      // 耕地模式：站起状态时添加组件
-      "api:mode_farm": { "add": {"component_groups": ["mode:farm"]} },
-      "api:mode_quit_farm"  :{"sequence": [{"remove": {"component_groups": ["mode:farm"]}}]},
-      // 甘蔗模式：站起状态时添加组件
-      "api:mode_sugar_cane": { "add": {"component_groups": ["mode:sugar_cane"]} },
-      "api:mode_quit_sugar_cane": {"sequence": [{"remove": {"component_groups": ["mode:sugar_cane"]}, "set_property":{"thlm:work": 4}}]},
-      // 瓜类模式：站起状态时添加组件
-      "api:mode_melon": { "add": {"component_groups": ["mode:melon"]} },
-      "api:mode_quit_melon": { "sequence": [{"remove": {"component_groups": ["mode:melon"]}, "set_property":{"thlm:work": 5}}]},
-      // 可可模式：站起状态时添加组件
-      "api:mode_cocoa": {"add": {"component_groups": ["mode:cocoa"]} },
-      "api:mode_quit_cocoa": {"sequence": [{"remove": {"component_groups": ["mode:cocoa"]}, "set_property":{"thlm:work": 6}}]},
-
       //// 拾物模式 ////
       "api:mode_pick": {
         "add": {"component_groups": ["mode:pick"]},

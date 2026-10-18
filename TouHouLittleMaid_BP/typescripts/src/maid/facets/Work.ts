@@ -116,7 +116,11 @@ export const Work = {
    * 设置工作模式
    */
   set(maid: Entity, type: number): void {
-    maid.triggerEvent(this.getEventName(maid, this.get(maid), true));
+    const prev = this.get(maid);
+    // 耕地、甘蔗、瓜、可可没有行为组件，离开时不必发退出事件
+    if (!this.isScriptWork(prev)) {
+      maid.triggerEvent(this.getEventName(maid, prev, true));
+    }
     // 有些工作模式存在相同的组件，延迟修改避免删除
     system.runTimeout(() => {
       // 工作属性由脚本写入；坐下相关组件由脚本按姿态选择事件，不再走 JSON 过滤器
@@ -142,34 +146,12 @@ export const Work = {
             maid.triggerEvent(this.getEventName(maid, type, false));
           }
         } break;
-        // 耕地模式：不再挂 mode:farm NAT；单目标由 Path.follow / Seek 指定
-        case Work.farm: {
-          if (!Pose.isSitting(maid)) {
-            try {
-              maid.triggerEvent("api:mode_quit_farm");
-            } catch {
-              /* 可能本就未挂 farm 组件组 */
-            }
-          }
-        } break;
-        // 甘蔗模式
-        case Work.sugar_cane: {
-          if (!Pose.isSitting(maid)) {
-            maid.triggerEvent("api:mode_sugar_cane");
-          }
-        } break;
-        // 瓜类模式
-        case Work.melon: {
-          if (!Pose.isSitting(maid)) {
-            maid.triggerEvent("api:mode_melon");
-          }
-        } break;
-        // 可可
-        case Work.cocoa: {
-          if (!Pose.isSitting(maid)) {
-            maid.triggerEvent("api:mode_cocoa");
-          }
-        } break;
+        // 耕地、甘蔗、瓜、可可没有行为组件，目标由脚本寻路指定
+        case Work.farm:
+        case Work.sugar_cane:
+        case Work.melon:
+        case Work.cocoa:
+          break;
         // 默认
         default:
           maid.triggerEvent(this.getEventName(maid, type, false));
@@ -183,7 +165,23 @@ export const Work = {
    * 离开工作模式
    */
   quit(maid: Entity): void {
-    maid.triggerEvent(this.getEventName(maid, this.get(maid), true));
+    const type = this.get(maid);
+    if (this.isScriptWork(type)) {
+      return;
+    }
+    maid.triggerEvent(this.getEventName(maid, type, true));
+  },
+  /**
+   * 这四种工作没有行为组件，走路和收成由脚本负责。
+   * 使用场景：切换、坐下、站起时跳过已经删除的模式事件。
+   */
+  isScriptWork(type: number): boolean {
+    return (
+      type === this.farm ||
+      type === this.sugar_cane ||
+      type === this.melon ||
+      type === this.cocoa
+    );
   },
   /**
    * 进入工作模式 用来恢复站立状态的工作

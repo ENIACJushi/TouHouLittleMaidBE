@@ -391,18 +391,6 @@ export class MaidInteractEvents {
       case EntityMaid.Work.attack:
         EntityMaid.Work.quit(maid);
         break; // 取消近战模式
-      case EntityMaid.Work.farm:
-        EntityMaid.Work.quit(maid);
-        break; // 退出农作模式
-      case EntityMaid.Work.sugar_cane:
-        EntityMaid.Work.quit(maid);
-        break; // 退出甘蔗模式
-      case EntityMaid.Work.melon:
-        EntityMaid.Work.quit(maid);
-        break; // 退出瓜类模式
-      case EntityMaid.Work.cocoa:
-        EntityMaid.Work.quit(maid);
-        break; // 退出可可模式
     }
 
     // 拾物模式
@@ -424,18 +412,6 @@ export class MaidInteractEvents {
       case EntityMaid.Work.attack:
         EntityMaid.Work.enter(maid, EntityMaid.Work.attack);
         break; // 恢复近战模式
-      case EntityMaid.Work.farm:
-        EntityMaid.Work.enter(maid, EntityMaid.Work.farm);
-        break; // 恢复农作模式
-      case EntityMaid.Work.sugar_cane:
-        EntityMaid.Work.enter(maid, EntityMaid.Work.sugar_cane);
-        break; // 恢复甘蔗模式
-      case EntityMaid.Work.melon:
-        EntityMaid.Work.enter(maid, EntityMaid.Work.melon);
-        break; // 恢复瓜类模式
-      case EntityMaid.Work.cocoa:
-        EntityMaid.Work.enter(maid, EntityMaid.Work.cocoa);
-        break; // 恢复可可模式
     }
     MaidTarget.search(maid, 15, true);
 
