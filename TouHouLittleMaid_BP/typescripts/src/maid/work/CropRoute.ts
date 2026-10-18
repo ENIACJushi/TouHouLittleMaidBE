@@ -63,7 +63,7 @@ export type CropRouteOptions = {
   acquireAt(maid: Entity, task: CropTask): void;
 };
 
-/** 与 Farm.nearTask 相同：人已经在作物旁边就当场动手 */
+/** 与 Farm.nearTask 相同。出发不再靠它当场收；调度脉冲丢了通知时仍用它补一次。 */
 const NEAR_H = 2.5;
 const NEAR_V = 5;
 
@@ -347,15 +347,7 @@ export function createCropRoute(options: CropRouteOptions) {
       if (!isInsideActivityCircle(circle, dim.id, task.x, task.z)) {
         continue;
       }
-      if (nearCrop(maid, task)) {
-        claimCell(maid, task);
-        try {
-          options.acquireAt(maid, task);
-        } finally {
-          releaseCell(maid, task);
-        }
-        return true;
-      }
+      // 人已经在作物旁边也不当场收。先走终点追逐，避免没转向就把身后的作物收掉。
 
       const stands =
         options.standDrop === undefined

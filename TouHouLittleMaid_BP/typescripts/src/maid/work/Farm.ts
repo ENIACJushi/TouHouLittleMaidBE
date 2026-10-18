@@ -563,16 +563,7 @@ export class Farm {
         continue;
       }
 
-      // 已在触及范围：直接 acquire，不再 follow
-      if (this.nearTask(maid, t)) {
-        this.claimCell(maid, t);
-        try {
-          this.acquireAt(maid, t);
-        } finally {
-          this.releaseCell(maid, t);
-        }
-        return true;
-      }
+      // 人已经在作物旁边也不当场收。先 follow，终点等近战；距离兜底在执行器里延后。
 
       // 超时、堵住、路点名额用完：只跳过这名女仆的这一格，场不动
       if (unreachableCache.has(dim.id, goal, maid.id)) {

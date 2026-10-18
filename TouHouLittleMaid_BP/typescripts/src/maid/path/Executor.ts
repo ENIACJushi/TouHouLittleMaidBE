@@ -10,7 +10,7 @@
  * - Gap：**保留 Seek**；marker 对岸脚位沿跳向偏出碰撞半径(0.3)再抬高(1.5)；冲量前脚本朝向对岸；
  * - Gap 腾空：用当前速度积分落点（按起跳 FIT 缩放），曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
  * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_H）即 advance（避免贴脸互推）。
- * - AI 终点：近战命中本会话 seek_marker 即 Done。
+ * - AI 终点：近战命中本会话 seek_marker 即 Done。进入终点距离后先等几秒，这段里仍以打中为准；到点还没打中才按距离结束。
  * - Gap 起跳/落地仍用支撑格距离（冲量段无有效近战抵达语义）。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
@@ -85,6 +85,16 @@ const VIA_STEP = 16;
  * 使用场景：AI via 路点；Gap 起跳/落地（tickPrepGap / tickInFlight）。
  */
 const ARRIVE_VIA_H = 0.75;
+/**
+ * 终点水平距离（格）。与耕地、甘蔗、瓜、可可「人已经在作物旁边」同一圈。
+ * 使用场景：进入这一圈后不立刻结束，先留给近战转向并打中路点。
+ */
+const ARRIVE_GOAL_H = 2.5;
+/**
+ * 进入终点距离后再等多久，才允许按距离结束。
+ * 使用场景：给近战留时间。打中路点仍立刻结束，不必等满。
+ */
+const GOAL_RANGE_GRACE_MS = 3000;
 /** 途经 / Gap 到达竖直容差 */
 const ARRIVE_V = 1.6;
 /**
@@ -205,6 +215,11 @@ type Session = {
    * 使用场景：甘蔗为 2，实体落在要砍的那节里。
    */
   goalBlocksAbove: number;
+  /**
+   * 第一次进入终点距离的时刻。离开范围就清掉。
+   * 使用场景：终点 FollowAI。未满 GOAL_RANGE_GRACE_MS 时只接受近战命中。
+   */
+  goalRangeSince?: number;
   /**
    * 本会话 entityHitEntity 回调（subscribe 时用 entities:[maid] 限定攻击方；已验证有效）。
    * 使用场景：AI 路点抵达；teardown 时 unsubscribe。
@@ -832,36 +847,6 @@ function scheduleComplete(
 }
 
 /**
- * 无步骤即到位：不建 session，仍走 onComplete(done)。
- * 使用场景：A* 起终点同格（edges 空）；与「已在近处」语义一致。
- */
-function scheduleImmediateDone(
-  maidId: string,
-  dest: StandNode,
-  onComplete?: (info: PathFollowCompleteInfo) => void
-): void {
-  if (!onComplete) {
-    return;
-  }
-  const info: PathFollowCompleteInfo = {
-    reason: "done",
-    detail: "empty_path",
-    dest: { ...dest },
-    maidId,
-  };
-  markPendingComplete(maidId);
-  system.run(() => {
-    try {
-      onComplete(info);
-    } catch (e) {
-      Logger.warn(TAG, `onComplete(empty): ${String(e)}`);
-    } finally {
-      clearPendingComplete(maidId);
-    }
-  });
-}
-
-/**
  * 释放 Seek / 移速 / marker；可选写入不可达缓存；推送 onComplete。
  */
 function teardown(
@@ -941,6 +926,7 @@ function beginStep(session: Session): void {
     return;
   }
   session.phase = "FollowAI";
+  session.goalRangeSince = undefined;
   const stampPos =
     step.role === "goal" ? goalMarkerOf(step.support, session.goalBlocksAbove) : eyeOf(step.support);
   if (!ensureMarker(session, stampPos)) {
@@ -963,8 +949,22 @@ function tickFollowAI(session: Session): void {
     failSession(session, "ai_timeout");
     return;
   }
-  // 途经：距离抵达（恢复旧逻辑）；终点：等 onSeekMarkerHit
+  // 途经：距离抵达（恢复旧逻辑）
   if (step.role === "via" && nearSupport(maid, step.support, ARRIVE_VIA_H)) {
+    advance(session);
+    return;
+  }
+  // 终点：先进范围只记时刻。近战打中仍走 onSeekMarkerHit，不必等满。
+  if (step.role !== "goal") {
+    return;
+  }
+  if (!nearSupport(maid, step.support, ARRIVE_GOAL_H)) {
+    session.goalRangeSince = undefined;
+    return;
+  }
+  const since = session.goalRangeSince ?? now();
+  session.goalRangeSince = since;
+  if (now() - since >= GOAL_RANGE_GRACE_MS) {
     advance(session);
   }
 }
@@ -1247,19 +1247,14 @@ export const Executor = {
       return false;
     }
     suppressHomeReturn(maid.id);
-    if (edges.length === 0) {
-      allowHomeReturn(maid.id);
-      scheduleImmediateDone(maid.id, dest, options?.onComplete);
-      return true;
-    }
     Executor.cancel(maid);
     suppressHomeReturn(maid.id);
-    const steps = buildFollowSteps(edges);
-    if (steps.length === 0) {
-      allowHomeReturn(maid.id);
-      scheduleImmediateDone(maid.id, dest, options?.onComplete);
-      return true;
-    }
+    const built = buildFollowSteps(edges);
+    // 已经站在终点格时没有边。仍挂终点追逐，让她先转向打路点，而不是立刻当抵达。
+    const steps: FollowStep[] =
+      built.length > 0
+        ? built
+        : [{ kind: "ai", support: dest, role: "goal" }];
     const seekId = Seek.allocate();
     if (seekId === undefined) {
       allowHomeReturn(maid.id);
