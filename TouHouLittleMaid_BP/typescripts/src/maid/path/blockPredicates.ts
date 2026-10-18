@@ -113,6 +113,7 @@ function isPlantThin(id: string): boolean {
       "beetroot",
       "sweet_berry",
       "nether_wart",
+      "reeds",
     ]) || id.endsWith("_sapling")
   );
 }

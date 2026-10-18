@@ -40,6 +40,11 @@ export type PathFollowOptions = PathFindOptions & {
    * 在 session 已拆除后于下一 tick 调用，避免与 Executor tick 重入。
    */
   onComplete?: (info: PathFollowCompleteInfo) => void;
+  /**
+   * 终点实体在落脚点上方第几格。默认 1。
+   * 使用场景：甘蔗传 2。
+   */
+  goalBlocksAbove?: number;
 };
 
 function floor3(v: Vector3): BlockPos {
@@ -252,6 +257,7 @@ export const Path = {
     }
     const started = Executor.start(maid, result.edges, goal, {
       onComplete: options?.onComplete,
+      goalBlocksAbove: options?.goalBlocksAbove,
     });
     if (!started) {
       allowHomeReturn(maid.id);
@@ -267,7 +273,7 @@ export const Path = {
   followResult(
     maid: Entity,
     result: PathResult,
-    options?: Pick<PathFollowOptions, "onComplete">
+    options?: Pick<PathFollowOptions, "onComplete" | "goalBlocksAbove">
   ): boolean {
     if (!result.ok || result.nodes.length === 0) {
       return false;
@@ -275,6 +281,7 @@ export const Path = {
     const goal = result.nodes[result.nodes.length - 1];
     return Executor.start(maid, result.edges, goal, {
       onComplete: options?.onComplete,
+      goalBlocksAbove: options?.goalBlocksAbove,
     });
   },
 

@@ -48,6 +48,17 @@ export type CropRouteOptions = {
   lackStep: number;
   minCount: number;
   claimRange: number;
+  /**
+   * 落脚点在任务格下方第几格。
+   * 使用场景：甘蔗和耕地一样走正下方的土；要砍的是土上方第二格，所以是 2。
+   * 不填则仍在任务格四邻里选落脚点（瓜、可可）。
+   */
+  standDrop?: number;
+  /**
+   * 终点实体在落脚点上方第几格。默认 1，和耕地的作物格一致。
+   * 使用场景：甘蔗传 2。
+   */
+  goalBlocksAbove?: number;
   collect(maid: Entity, range: number): CropTask[];
   acquireAt(maid: Entity, task: CropTask): void;
 };
@@ -274,9 +285,12 @@ export function createCropRoute(options: CropRouteOptions) {
         return true;
       }
 
-      const stands = standsBeside(probe, task).sort(
-        (a, b) => dist2(maid, a.x, a.z) - dist2(maid, b.x, b.z)
-      );
+      const stands =
+        options.standDrop === undefined
+          ? standsBeside(probe, task).sort(
+              (a, b) => dist2(maid, a.x, a.z) - dist2(maid, b.x, b.z)
+            )
+          : [{ x: task.x, y: task.y - options.standDrop, z: task.z }];
       let picked: StandNode | undefined;
       let waiting = false;
       for (const goal of stands) {
@@ -320,6 +334,7 @@ export function createCropRoute(options: CropRouteOptions) {
       writeJob(maid, task);
       const expected = task;
       const started = EntityMaid.Path.followResult(maid, planned, {
+        goalBlocksAbove: options.goalBlocksAbove,
         onComplete: (info) => {
           onFollowComplete(maid, expected, info);
         },

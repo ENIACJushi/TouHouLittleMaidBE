@@ -6,7 +6,7 @@ import { createCropRoute } from "./CropRoute";
 
 /**
  * 甘蔗。扫描规则仍是「只砍土上方第二格」。
- * 走到旁边的落脚点后再砍。不再使用标记实体和索敌。
+ * 落脚点和耕地一样在正下方的土上，终点实体放在要砍的那节里。
  */
 export class SugarCane {
   static maxLack = 2; // 进入慢扫描的连续缺目标次数
@@ -138,6 +138,10 @@ const sugarRoute = createCropRoute({
   lackStep: SugarCane.lackStep,
   minCount: SugarCane.minCount,
   claimRange: SugarCane.claimRange,
+  /** 耕地是作物下方 1 格；甘蔗要砍的高一格，落脚点在任务格下方 2 格 */
+  standDrop: 2,
+  /** 终点实体落在要砍的那节，比耕地的作物格再高 1 格 */
+  goalBlocksAbove: 2,
   collect: (maid, range) => SugarCane.collectTasks(maid, range),
   acquireAt: (maid, task) => SugarCane.acquireAt(maid, task),
 });

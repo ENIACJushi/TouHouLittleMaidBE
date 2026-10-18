@@ -6,7 +6,7 @@
  * - 连续 Walk 抽稀（步长 VIA_STEP），Jump1/Fall/段尾保留；
  * - **单 marker 实体**：会话内 spawn 一次，换路点只 teleport（Seek 一次锁定，不反复 reset）；
  * - 途经平视 + pursue_via；via→via 抵达后 quit+重挂 via melee 刷新追逐；
- * - 终点 marker 在支撑格上方一格中心（作物格心），避免贴耕地顶面导致 NAT 丢锁；
+ * - 终点 marker 在支撑格上方若干格的中心（耕地 1 格即作物；甘蔗 2 格即要砍的那节）；
  * - Gap：**保留 Seek**；marker 对岸脚位沿跳向偏出碰撞半径(0.3)再抬高(1.5)；冲量前脚本朝向对岸；
  * - Gap 腾空：用当前速度积分落点（按起跳 FIT 缩放），曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
  * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_H）即 advance（避免贴脸互推）。
@@ -50,6 +50,11 @@ export type ExecutorStartOptions = {
    * 使用场景：Farm 到位 acquire；勿在回调内同步再进同一 maid 的 tick 路径。
    */
   onComplete?: (info: PathFollowCompleteInfo) => void;
+  /**
+   * 终点实体在落脚点上方第几格。默认 1，和耕地的作物格一致。
+   * 使用场景：甘蔗要砍的是土上方第二格，传 2。
+   */
+  goalBlocksAbove?: number;
 };
 
 const TAG = "Path.Executor";
@@ -196,6 +201,11 @@ type Session = {
    */
   onComplete?: (info: PathFollowCompleteInfo) => void;
   /**
+   * 终点实体在落脚点上方第几格。缺省按 1。
+   * 使用场景：甘蔗为 2，实体落在要砍的那节里。
+   */
+  goalBlocksAbove: number;
+  /**
    * 本会话 entityHitEntity 回调（subscribe 时用 entities:[maid] 限定攻击方；已验证有效）。
    * 使用场景：AI 路点抵达；teardown 时 unsubscribe。
    */
@@ -231,13 +241,14 @@ function feetOf(support: StandNode): Vector3 {
 }
 
 /**
- * 终点 marker：支撑格上方一格的体心（农作即作物方块中心）。
+ * 终点 marker 在支撑格上方第 blocksAbove 格的体心。
+ * 耕地是 1（作物格）。甘蔗要砍的是再高一格，所以是 2。
  * 使用场景：goal 路点 stamp；脚位贴耕地顶面时引擎易丢锁。
  */
-function goalMarkerOf(support: StandNode): Vector3 {
+function goalMarkerOf(support: StandNode, blocksAbove: number): Vector3 {
   return {
     x: support.x + 0.5,
-    y: support.y + 1.5,
+    y: support.y + blocksAbove + 0.5,
     z: support.z + 0.5,
   };
 }
@@ -891,7 +902,7 @@ function beginStep(session: Session): void {
   }
   session.phase = "FollowAI";
   const stampPos =
-    step.role === "goal" ? goalMarkerOf(step.support) : eyeOf(step.support);
+    step.role === "goal" ? goalMarkerOf(step.support, session.goalBlocksAbove) : eyeOf(step.support);
   if (!ensureMarker(session, stampPos)) {
     failSession(session, "spawn_marker");
     return;
@@ -1111,7 +1122,7 @@ function spawnWaypointParticles(session: Session): void {
     let isGoal = false;
     if (step.kind === "ai") {
       isGoal = step.role === "goal";
-      pos = isGoal ? goalMarkerOf(step.support) : eyeOf(step.support);
+      pos = isGoal ? goalMarkerOf(step.support, session.goalBlocksAbove) : eyeOf(step.support);
     } else {
       // Gap：粒子与 Seek marker 同偏置，便于对照
       isGoal = i === last;
@@ -1229,6 +1240,7 @@ export const Executor = {
       phaseAt: now(),
       dest,
       onComplete: options?.onComplete,
+      goalBlocksAbove: options?.goalBlocksAbove ?? 1,
     };
     sessions.set(maid.id, session);
     ensureTicker();
