@@ -18,6 +18,10 @@ import { FarmBlocks } from "../../../data/FarmBlocks/main";
 import { StandableCache } from "../path/StandableCache";
 import { standNodeFromFeet } from "../path/Path";
 import {
+  activityCircleOf,
+  isInsideActivityCircle,
+} from "../path/field/activityCircle";
+import {
   classifyFieldClaim,
   ensureStandHeight,
   reversiblePathResult,
@@ -390,7 +394,9 @@ export class Farm {
   }
 
   /**
-   * 同一可认领场才选点，再沿可逆邻居出发。
+   * 同一可认领场、且目标在活动圈内，才选点，再沿可逆邻居出发。
+   * 圈外的格子可以当路绕过去，但不能认领。NPC 不寻路。
+   * NPC 不寻路。跟随中主人已退出世界时，以女仆脚下为中心选目标。
    * 场还没建完或场牌暂停：这一拍停下，不改去更远的格，也不记成走不到。
    * 身边能收的、占用、走完再收，仍走原来的流程。
    * @returns 是否已派出 follow 或已经就地收种
@@ -402,6 +408,12 @@ export class Farm {
     if (EntityMaid.Path.isFollowing(maid)) {
       return false;
     }
+    const circleState = activityCircleOf(maid);
+    if (circleState.kind !== "circle") {
+      // NPC 不寻路。主人不在时活动圈已改到女仆脚下，这里只会剩 none
+      return false;
+    }
+    const circle = circleState.circle;
 
     const dim = maid.dimension;
     const probe = new StandableCache(dim);
@@ -417,6 +429,9 @@ export class Farm {
       .sort((a, b) => a.d2 - b.d2);
 
     for (const { t } of ranked) {
+      if (!isInsideActivityCircle(circle, dim.id, t.x, t.z)) {
+        continue;
+      }
       const goal = this.goalStandOfTask(t);
       ensureStandHeight(dim, goal.x, goal.y, goal.z);
       const claim = classifyFieldClaim(dim, start, goal);
