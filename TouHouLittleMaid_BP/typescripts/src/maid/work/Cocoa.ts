@@ -121,6 +121,21 @@ export class Cocoa {
   static onSchedulePulse(maid) {
     cocoaRoute.onSchedulePulse(maid);
   }
+
+  /** 离开可可或人失效时解开占用。使用场景：MaidTarget。 */
+  static abandon(maid) {
+    cocoaRoute.abandon(maid);
+  }
+
+  /** 人已不在世界里。使用场景：MaidTarget。 */
+  static markStale(ownerId) {
+    cocoaRoute.markStale(ownerId);
+  }
+
+  /** 再次加载后清残留任务。使用场景：thlmm:t。 */
+  static settle(maid) {
+    cocoaRoute.settle(maid);
+  }
 }
 
 /** 可可走共享认领。 */

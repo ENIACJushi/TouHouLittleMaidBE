@@ -127,6 +127,21 @@ export class SugarCane {
   static onSchedulePulse(maid) {
     sugarRoute.onSchedulePulse(maid);
   }
+
+  /** 离开甘蔗或人失效时解开占用。使用场景：MaidTarget。 */
+  static abandon(maid) {
+    sugarRoute.abandon(maid);
+  }
+
+  /** 人已不在世界里。使用场景：MaidTarget。 */
+  static markStale(ownerId) {
+    sugarRoute.markStale(ownerId);
+  }
+
+  /** 再次加载后清残留任务。使用场景：thlmm:t。 */
+  static settle(maid) {
+    sugarRoute.settle(maid);
+  }
 }
 
 /** 甘蔗走共享认领。放在类后面，避免初始化时方法还没挂上。 */

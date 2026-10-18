@@ -137,6 +137,21 @@ export class Melon {
   static onSchedulePulse(maid) {
     melonRoute.onSchedulePulse(maid);
   }
+
+  /** 离开瓜或人失效时解开占用。使用场景：MaidTarget。 */
+  static abandon(maid) {
+    melonRoute.abandon(maid);
+  }
+
+  /** 人已不在世界里。使用场景：MaidTarget。 */
+  static markStale(ownerId) {
+    melonRoute.markStale(ownerId);
+  }
+
+  /** 再次加载后清残留任务。使用场景：thlmm:t。 */
+  static settle(maid) {
+    melonRoute.settle(maid);
+  }
 }
 
 /** 瓜走共享认领。 */

@@ -1,4 +1,4 @@
-import { Entity, EntityHitEntityAfterEvent, system } from "@minecraft/server";
+import { Entity, EntityHitEntityAfterEvent, system, world } from "@minecraft/server";
 import { pointInArea_3D } from "../../libs/ScarletToolKit";
 import { EntityMaid } from "../EntityMaid";
 import { Work } from "../facets/Work";
@@ -63,6 +63,64 @@ export class MaidTarget {
   static search(maid: Entity, range = 6, force = false): void {
     const handler = workHandlers[EntityMaid.Work.get(maid)];
     handler?.search(maid, range, force);
+  }
+
+  /**
+   * 离开某个脚本农作模式时解开占用并清掉任务。
+   * 使用场景：Work.set 的模式变更回调，且前后模式不同。
+   */
+  static leaveWork(maid: Entity, prev: number): void {
+    switch (prev) {
+      case Work.farm:
+        Farm.abandon(maid);
+        break;
+      case Work.sugar_cane:
+        SugarCane.abandon(maid);
+        break;
+      case Work.melon:
+        Melon.abandon(maid);
+        break;
+      case Work.cocoa:
+        Cocoa.abandon(maid);
+        break;
+      default:
+        break;
+    }
+  }
+
+  /**
+   * 女仆失效：人还在就当场清任务，人不在就先放开格子。
+   * 使用场景：死亡、拍照、魂符收回、thlmm:t 超时。
+   */
+  static onMaidInvalid(id: string): void {
+    let maid: Entity | undefined;
+    try {
+      maid = world.getEntity(id);
+    } catch {
+      maid = undefined;
+    }
+    if (maid?.isValid) {
+      Farm.abandon(maid);
+      SugarCane.abandon(maid);
+      Melon.abandon(maid);
+      Cocoa.abandon(maid);
+      return;
+    }
+    Farm.markStale(id);
+    SugarCane.markStale(id);
+    Melon.markStale(id);
+    Cocoa.markStale(id);
+  }
+
+  /**
+   * 卸载后又收到 thlmm:t：清掉没写掉的农作任务。
+   * 使用场景：日程定时事件里，先于本拍收割。
+   */
+  static settleReturned(maid: Entity): void {
+    Farm.settle(maid);
+    SugarCane.settle(maid);
+    Melon.settle(maid);
+    Cocoa.settle(maid);
   }
 
   /**

@@ -79,7 +79,7 @@ export function invalidateMaid(id: string, reason: MaidInvalidReason): void {
 
 /**
  * 订阅女仆失效。返回退订函数。
- * 使用场景：以后解农作占用。现在还没有订阅者。
+ * 使用场景：MaidEvents 里解开农作占用。失效很少发生，监听里不要做全图扫描。
  */
 export function onMaidInvalid(listener: MaidInvalidListener): () => void {
   listeners.add(listener);

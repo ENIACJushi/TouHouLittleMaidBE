@@ -32,6 +32,7 @@ export class MaidScheduleEvents {
     let maid = event.entity;
     if (maid === undefined) return;
     noteMaidBeat(maid);
+    MaidTarget.settleReturned(maid);
 
     ///// 步数计算 一步3秒 /////
     let healStep = maid.getDynamicProperty("step") as number | undefined;

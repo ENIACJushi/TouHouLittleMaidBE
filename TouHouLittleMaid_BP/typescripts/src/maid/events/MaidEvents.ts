@@ -5,6 +5,7 @@ import {MaidScheduleEvents} from "./MaidScheduleEvents";
 import { Work } from "../facets/Work";
 import { MaidTarget } from "../work/MaidTarget";
 import type { EntityHitEntityAfterEvent } from "@minecraft/server";
+import { onMaidInvalid } from "./MaidPresence";
 
 export namespace MaidEvents {
   export const interact = maidInteractEvents;
@@ -18,5 +19,13 @@ export namespace MaidEvents {
   }
 }
 
-// 工作模式变更后索敌：在 events 层接线，保持 facets/Work 不依赖 work 模块
-Work.setOnWorkChanged((maid) => MaidTarget.search(maid, 15));
+// 工作模式变更后：先放下旧农作任务，再为新模式索敌。facets/Work 不依赖 work 模块。
+Work.setOnWorkChanged((maid, prev, next) => {
+  if (prev !== next) {
+    MaidTarget.leaveWork(maid, prev);
+  }
+  MaidTarget.search(maid, 15);
+});
+onMaidInvalid((info) => {
+  MaidTarget.onMaidInvalid(info.id);
+});

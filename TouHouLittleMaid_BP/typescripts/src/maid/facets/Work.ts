@@ -4,7 +4,7 @@ import { Pose } from "./Pose";
 import { MaidSoundType, Sound } from "./Sound";
 
 /** 工作模式变更后的可选回调（由 events 引导注册，避免 facets → work） */
-let onWorkChanged: ((maid: Entity) => void) | undefined;
+let onWorkChanged: ((maid: Entity, prev: number, next: number) => void) | undefined;
 
 /**
  * 工作模式（行为对齐 EntityMaid.Work）
@@ -13,7 +13,9 @@ export const Work = {
   /**
    * 注册工作模式变更后回调（如索敌）；由 events 引导在启动时调用一次
    */
-  setOnWorkChanged(handler: ((maid: Entity) => void) | undefined): void {
+  setOnWorkChanged(
+    handler: ((maid: Entity, prev: number, next: number) => void) | undefined
+  ): void {
     onWorkChanged = handler;
   },
   AMOUNT: 7, // 总数（包含空闲）
@@ -158,7 +160,7 @@ export const Work = {
           break;
       }
       // 设置工作状态后，立即开始寻找目标（具体逻辑由 events 注册的回调提供）
-      onWorkChanged?.(maid);
+      onWorkChanged?.(maid, prev, type);
     }, 1);
   },
   /**

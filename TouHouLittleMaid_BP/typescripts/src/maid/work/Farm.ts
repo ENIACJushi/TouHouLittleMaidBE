@@ -56,6 +56,8 @@ type FarmTask = {
 
 /** 格占用：cellKey → maidId，避免双女仆同奔一格 */
 const cellClaims = new Map();
+/** 人已卸载、任务动态属性还没清掉的女仆 id */
+const staleJobIds = new Set();
 /** 补种冷却：cellKey → expiryMs */
 const plantCooldown = new Map();
 
@@ -123,6 +125,69 @@ export class Farm {
     const k = this.taskKey(maid.dimension.id, task);
     if (cellClaims.get(k) === maid.id) {
       cellClaims.delete(k);
+    }
+  }
+
+  /**
+   * 放开这名女仆占着的每一格。人不在了也能按 id 做。
+   * 使用场景：切模式、走路结束时人已失效、失效通知。
+   */
+  static releaseOwner(ownerId) {
+    for (const [key, id] of cellClaims) {
+      if (id === ownerId) {
+        cellClaims.delete(key);
+      }
+    }
+  }
+
+  /**
+   * 人还在时清掉农作任务并放开格子。正在走的路会取消。
+   * 使用场景：离开耕地模式；死亡、拍照、魂符收回时实体仍可读。
+   */
+  static abandon(maid) {
+    if (!maid?.isValid) {
+      try {
+        if (maid) {
+          this.markStale(maid.id);
+        }
+      } catch {
+        // id 也读不到时，只能等失效通知按 id 放开
+      }
+      return;
+    }
+    this.releaseOwner(maid.id);
+    this.writeJob(maid, undefined);
+    try {
+      EntityMaid.Path.cancel(maid);
+    } catch (e) {
+      Logger.warn(TAG, `abandon cancel: ${String(e)}`);
+    }
+  }
+
+  /**
+   * 人已经不在世界里：先放开格子，等她再被加载时清任务。
+   * 使用场景：thlmm:t 超时，或走路回调时实体已失效。
+   */
+  static markStale(ownerId) {
+    this.releaseOwner(ownerId);
+    staleJobIds.add(ownerId);
+  }
+
+  /**
+   * 卸载后又加载：清掉上次没写掉的任务。
+   * 使用场景：thlmm:t 到来时，先于本拍收割。
+   */
+  static settle(maid) {
+    if (!maid?.isValid || !staleJobIds.has(maid.id)) {
+      return;
+    }
+    staleJobIds.delete(maid.id);
+    this.releaseOwner(maid.id);
+    this.writeJob(maid, undefined);
+    try {
+      EntityMaid.Path.cancel(maid);
+    } catch (e) {
+      Logger.warn(TAG, `settle cancel: ${String(e)}`);
     }
   }
 
@@ -492,9 +557,28 @@ export class Farm {
    */
   static onFollowComplete(maid, expected, info) {
     if (!maid?.isValid) {
+      try {
+        if (maid) {
+          this.markStale(maid.id);
+        }
+      } catch {
+        // 实体 id 不可读
+      }
       return;
     }
     if (EntityMaid.Work.get(maid) !== EntityMaid.Work.farm) {
+      this.releaseCell(maid, expected);
+      this.releaseOwner(maid.id);
+      const left = this.readJob(maid);
+      if (
+        left &&
+        left.x === expected.x &&
+        left.y === expected.y &&
+        left.z === expected.z &&
+        left.kind === expected.kind
+      ) {
+        this.writeJob(maid, undefined);
+      }
       return;
     }
     const job = this.readJob(maid);

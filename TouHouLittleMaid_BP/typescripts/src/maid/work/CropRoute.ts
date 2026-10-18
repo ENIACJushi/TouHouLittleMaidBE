@@ -122,6 +122,8 @@ function nearCrop(maid: Entity, task: CropTask): boolean {
 export function createCropRoute(options: CropRouteOptions) {
   /** 作物格 → 女仆 id */
   const cellClaims = new Map<string, string>();
+  /** 人已卸载、任务动态属性还没清掉的女仆 id */
+  const staleJobIds = new Set<string>();
 
   function cellKey(dimId: string, task: CropTask): string {
     return `${dimId}|${task.x},${task.y},${task.z}`;
@@ -169,6 +171,69 @@ export function createCropRoute(options: CropRouteOptions) {
     }
   }
 
+  /**
+   * 放开这名女仆占着的每一格。人不在了也能按 id 做。
+   * 使用场景：切模式、失效通知、走路回调时实体已失效。
+   */
+  function releaseOwner(ownerId: string): void {
+    for (const [key, id] of cellClaims) {
+      if (id === ownerId) {
+        cellClaims.delete(key);
+      }
+    }
+  }
+
+  /**
+   * 人还在时清掉任务并放开格子。正在走的路会取消。
+   * 使用场景：离开这个农作模式；死亡、拍照、魂符收回时实体仍可读。
+   */
+  function abandonMaid(maid: Entity): void {
+    if (!maid?.isValid) {
+      try {
+        if (maid) {
+          markStaleMaid(maid.id);
+        }
+      } catch {
+        // id 也读不到
+      }
+      return;
+    }
+    releaseOwner(maid.id);
+    writeJob(maid, undefined);
+    try {
+      EntityMaid.Path.cancel(maid);
+    } catch (e) {
+      Logger.warn(options.tag, `abandon cancel: ${String(e)}`);
+    }
+  }
+
+  /**
+   * 人已经不在世界里：先放开格子，等她再被加载时清任务。
+   * 使用场景：thlmm:t 超时，或走路回调时实体已失效。
+   */
+  function markStaleMaid(ownerId: string): void {
+    releaseOwner(ownerId);
+    staleJobIds.add(ownerId);
+  }
+
+  /**
+   * 卸载后又加载：清掉上次没写掉的任务。
+   * 使用场景：thlmm:t 到来时，先于本拍收割。
+   */
+  function settleMaid(maid: Entity): void {
+    if (!maid?.isValid || !staleJobIds.has(maid.id)) {
+      return;
+    }
+    staleJobIds.delete(maid.id);
+    releaseOwner(maid.id);
+    writeJob(maid, undefined);
+    try {
+      EntityMaid.Path.cancel(maid);
+    } catch (e) {
+      Logger.warn(options.tag, `settle cancel: ${String(e)}`);
+    }
+  }
+
   function isCellFreeFor(maid: Entity, task: CropTask): boolean {
     const owner = cellClaims.get(cellKey(maid.dimension.id, task));
     return owner === undefined || owner === maid.id;
@@ -188,6 +253,13 @@ export function createCropRoute(options: CropRouteOptions) {
     info: PathFollowCompleteInfo
   ): void {
     if (!maid?.isValid) {
+      try {
+        if (maid) {
+          markStaleMaid(maid.id);
+        }
+      } catch {
+        // 实体 id 不可读
+      }
       return;
     }
     if (EntityMaid.Work.get(maid) !== options.workId) {
@@ -442,6 +514,27 @@ export function createCropRoute(options: CropRouteOptions) {
           );
         }
       }
+    },
+    /**
+     * 清掉这名女仆在本模式上的任务和格子占用。
+     * 使用场景：切走这个模式；失效时人还读得到。
+     */
+    abandon(maid: Entity): void {
+      abandonMaid(maid);
+    },
+    /**
+     * 人已经不在时先放开格子。
+     * 使用场景：失效通知 reason 为 missing，或走路回调时实体已失效。
+     */
+    markStale(ownerId: string): void {
+      markStaleMaid(ownerId);
+    },
+    /**
+     * 再次加载后清掉残留任务。
+     * 使用场景：thlmm:t。
+     */
+    settle(maid: Entity): void {
+      settleMaid(maid);
     },
   };
 }
