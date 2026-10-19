@@ -2,7 +2,7 @@
  * 女仆生成原始文件
  **/
 export let TEMPLATE = {
-  "format_version": "1.18.10",
+  "format_version": "1.26.30",
   "minecraft:entity": {
     "description": {
       "identifier": "thlmm:maid", "is_spawnable": true, "is_summonable": true, "is_experimental": false,
@@ -82,17 +82,20 @@ export let TEMPLATE = {
         // 移速数值由脚本 EntityMaid.Movement / Level.properties.movement 写入，此处仅注册组件
         "minecraft:movement"     : { "value": 0 },
         "minecraft:physics"      : { },
-        "minecraft:pushable"     : { "is_pushable": true, "is_pushable_by_piston": true },
+        // 1.26.10 起 pushable 拆成两个组件；空对象表示可被实体 / 活塞推动
+        "minecraft:pushable_by_entity": { },
+        "minecraft:pushable_by_block": { },
         "minecraft:attack"       : { "damage": 6 },
         "minecraft:balloonable"  : { "mass": 0.8 },
         "minecraft:breathable"   : { "total_supply": 15, "suffocate_time": 0 },
         "minecraft:is_hidden_when_invisible": { },
         "minecraft:conditional_bandwidth_optimization": { },
         // 占用 look/move：停下并注视；priority 须高于 follow/stroll，否则会被抢走 move 而提前结束
+        // 1.26.30 起 look_time 只接受 {min,max}，数组 [2,4] 会让整份实体加载失败
         "minecraft:behavior.look_at_player": {
           "priority": 7,
           "look_distance": 4.0,
-          "look_time": [ 2, 4 ],
+          "look_time": { "min": 2, "max": 4 },
           "probability": 1,
           "control_flags": [ "look" ],
         },
@@ -108,7 +111,7 @@ export let TEMPLATE = {
         "minecraft:behavior.beg": {
           "priority": 6,
           "look_distance": 6,
-          "look_time": [ 2, 4 ],
+          "look_time": { "min": 2, "max": 4 },
           "items": [ "cake" ],
           "control_flags": [ "look" ]
         },
@@ -229,6 +232,8 @@ export let TEMPLATE = {
               "cooldown": 2.5,
               "use_item": false,
               "hurt_item": 1,
+              // 1.26.0 起 swing 默认 true，显式 false 保持交互时玩家不挥臂
+              "swing": false,
               "interact_text": "action.interact.camera",
               "vibration": "none",
               "on_interact": {
@@ -247,6 +252,7 @@ export let TEMPLATE = {
             {
               "cooldown": 2.5,
               "use_item": false,
+              "swing": false,
               "interact_text": "action.interact.smart_slab",
               "vibration": "none",
               "on_interact": {
@@ -265,6 +271,7 @@ export let TEMPLATE = {
             {
               "cooldown": 1.5,
               "use_item": false,
+              "swing": false,
               "interact_text": "action.interact.tlm.hug",
               "vibration": "none",
               "on_interact": {
@@ -283,6 +290,7 @@ export let TEMPLATE = {
             {
               "cooldown": 2.5,
               "use_item": false,
+              "swing": false,
               "interact_text": "action.interact.thlm.npc",
               "vibration": "none",
               "on_interact": {
@@ -300,7 +308,7 @@ export let TEMPLATE = {
             // 坐下/站起改由脚本 beforeEvents.playerInteractWithEntity 处理
             // 更换背包 无
             {
-              "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
+              "cooldown": 0, "use_item": true, "swing": false, "play_sounds": "pop", "vibration": "none",
               "interact_text": "action.interact.maid_backpack_carry",
               "on_interact": {
                 "filters": {"all_of": [
@@ -313,7 +321,7 @@ export let TEMPLATE = {
             },
             // 更换背包 小
             {
-              "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
+              "cooldown": 0, "use_item": true, "swing": false, "play_sounds": "pop", "vibration": "none",
               "interact_text": "action.interact.maid_backpack_carry",
               "on_interact": {
                 "filters": {"all_of": [
@@ -326,7 +334,7 @@ export let TEMPLATE = {
             },
             // 更换背包 中
             {
-              "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
+              "cooldown": 0, "use_item": true, "swing": false, "play_sounds": "pop", "vibration": "none",
               "interact_text": "action.interact.maid_backpack_carry",
               "on_interact": {
                 "filters": {"all_of": [
@@ -339,7 +347,7 @@ export let TEMPLATE = {
             },
             // 更换背包 大
             {
-              "cooldown": 0, "use_item": true, "play_sounds": "pop", "vibration": "none",
+              "cooldown": 0, "use_item": true, "swing": false, "play_sounds": "pop", "vibration": "none",
               "interact_text": "action.interact.maid_backpack_carry",
               "on_interact": {
                 "filters": {"all_of": [
@@ -776,6 +784,7 @@ export let TEMPLATE = {
               "cooldown": 2.5,
               "use_item": false,
               "hurt_item": 1,
+              "swing": false,
               "vibration": "none",
               "on_interact": {
                 "filters": {
@@ -818,12 +827,13 @@ export let TEMPLATE = {
         "minecraft:nameable": { "always_show": false, "allow_name_tag_renaming": false},
         "minecraft:physics": { "has_collision": true, "has_gravity": true, "push_towards_closest_space": false },
         "minecraft:persistent": { },
-        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false },
+        // push_mode none：不可被其它实体推；不挂 pushable_by_block 则不可被活塞推
+        "minecraft:pushable_by_entity": { "presets": [ { "push_mode": "none" } ] },
         "minecraft:home": { },
         "minecraft:behavior.look_at_player": {
           "priority": 5,
           "look_distance": 4.0,
-          "look_time": [ 2, 4 ],
+          "look_time": { "min": 2, "max": 4 },
           "probability": 1,
           "control_flags": [ "look" ],
         },
@@ -873,7 +883,7 @@ export let TEMPLATE = {
         "minecraft:collision_box": { "width": 0, "height": 0},
         "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
         "minecraft:persistent": { },
-        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false }
+        "minecraft:pushable_by_entity": { "presets": [ { "push_mode": "none" } ] }
       },
       "thlmm:garage_kit_un_solid":{
         "minecraft:type_family": { "family": ["thlm:garage_kit_un_solid"] },
@@ -890,7 +900,7 @@ export let TEMPLATE = {
         "minecraft:collision_box": { "width": 0, "height": 0},
         "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
         "minecraft:persistent": { },
-        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false }
+        "minecraft:pushable_by_entity": { "presets": [ { "push_mode": "none" } ] }
       },
       "thlmm:garage_kit_solid":{
         "minecraft:type_family": { "family": ["thlm:garage_kit_solid"] },
@@ -899,7 +909,7 @@ export let TEMPLATE = {
         "minecraft:collision_box": { "width": 0, "height": 0},
         "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
         "minecraft:persistent": { },
-        "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false }
+        "minecraft:pushable_by_entity": { "presets": [ { "push_mode": "none" } ] }
       }
     },
     "components": {
@@ -909,7 +919,7 @@ export let TEMPLATE = {
       "minecraft:collision_box": { "width": 0, "height": 0},
       "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
       "minecraft:persistent": { },
-      "minecraft:pushable": { "is_pushable": false, "is_pushable_by_piston": false }
+      "minecraft:pushable_by_entity": { "presets": [ { "push_mode": "none" } ] }
     },
     "events": {
       ///// 基础事件 /////
