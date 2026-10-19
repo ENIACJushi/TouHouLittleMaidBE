@@ -82,8 +82,23 @@ export let TEMPLATE = {
         // 移速数值由脚本 EntityMaid.Movement / Level.properties.movement 写入，此处仅注册组件
         "minecraft:movement"     : { "value": 0 },
         "minecraft:physics"      : { },
-        // 1.26.10 起 pushable 拆成两个组件；空对象表示可被实体 / 活塞推动
-        "minecraft:pushable_by_entity": { },
+        // 1.26.10 起 pushable 拆成两个组件。第一条预设命中 seek_marker 时不互推，其余实体仍用默认推动。
+        "minecraft:pushable_by_entity": {
+          "presets": [
+            {
+              "filters": {
+                "any_of": [
+                  { "test": "is_family", "subject": "other", "value": "seek_marker" },
+                  { "test": "is_family", "subject": "other", "value": "thlmt:seek_marker" }
+                ]
+              },
+              "push_mode": "none",
+              "push_scale_self": 0,
+              "push_scale_other": 0
+            },
+            { "push_mode": "default" }
+          ]
+        },
         "minecraft:pushable_by_block": { },
         "minecraft:attack"       : { "damage": 6 },
         "minecraft:balloonable"  : { "mass": 0.8 },
@@ -365,46 +380,56 @@ export let TEMPLATE = {
       // 非潜行交互 坐下/站起/命名
       "thlmm:maid_tame_sit":{
         "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": true },
+        // 1.26.30 起感知条件必须放进 subsensors；原先 sensor_range 6 对应水平、竖直都是 6
         "minecraft:entity_sensor": {
-          "sensor_range": 6,
           "relative_range": false,
-          "minimum_count": 1,
-          "maximum_count": 2,
-          "event_filters": {
-            "all_of":[
-              {
-                "all_of": [
-                  {"test": "is_owner","subject": "other","value": true},
-                  {"test": "is_sneaking","subject": "other","value": true}
+          "subsensors": [
+            {
+              "range": [ 6, 6 ],
+              "minimum_count": 1,
+              "maximum_count": 2,
+              "event_filters": {
+                "all_of":[
+                  {
+                    "all_of": [
+                      {"test": "is_owner","subject": "other","value": true},
+                      {"test": "is_sneaking","subject": "other","value": true}
+                    ]
+                  },
+                  { "test": "distance_to_nearest_player", "subject" : "self", "operator": "<", "value" : 7}
                 ]
               },
-              { "test": "distance_to_nearest_player", "subject" : "self", "operator": "<", "value" : 7}
-            ]
-          },
-          "event": "thlmm:i"
+              "event": "thlmm:i"
+            }
+          ]
         }
       },
       // 潜行交互 打开背包/不可命名
       "thlmm:maid_tame_inventory":{
         "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": false },
+        // 1.26.30 起感知条件必须放进 subsensors；原先 sensor_range 6 对应水平、竖直都是 6
         "minecraft:entity_sensor": {
-          "sensor_range": 6,
           "relative_range": false,
-          "minimum_count": 1,
-          "maximum_count": 2,
-          "event_filters": {
-            "any_of":[
-              {
-                "all_of": [
-                  {"test": "is_owner","subject": "other","value": true},
-                  {"test": "is_sneaking","subject": "other","value": false},
-                  {"test": "has_container_open", "subject": "other", "value": false}
+          "subsensors": [
+            {
+              "range": [ 6, 6 ],
+              "minimum_count": 1,
+              "maximum_count": 2,
+              "event_filters": {
+                "any_of":[
+                  {
+                    "all_of": [
+                      {"test": "is_owner","subject": "other","value": true},
+                      {"test": "is_sneaking","subject": "other","value": false},
+                      {"test": "has_container_open", "subject": "other", "value": false}
+                    ]
+                  },
+                  { "test": "distance_to_nearest_player", "subject" : "self", "operator": ">", "value" : 7}
                 ]
               },
-              { "test": "distance_to_nearest_player", "subject" : "self", "operator": ">", "value" : 7}
-            ]
-          },
-          "event": "thlmm:s"
+              "event": "thlmm:s"
+            }
+          ]
         }
       },
 
@@ -815,11 +840,11 @@ export let TEMPLATE = {
                 "event": "despawn",
                 "target": "self"
               },
-              "deals_damage": false
+              "deals_damage": "no"
             },
             {
               "cause": "all",
-              "deals_damage": false
+              "deals_damage": "no"
             }
           ]
         },
@@ -879,7 +904,7 @@ export let TEMPLATE = {
           "family": ["thlm:statues"]
         },
         "minecraft:knockback_resistance": { "value": 1.0 },
-        "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+        "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": "no" } ] },
         "minecraft:collision_box": { "width": 0, "height": 0},
         "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
         "minecraft:persistent": { },
@@ -896,7 +921,7 @@ export let TEMPLATE = {
           }
         },
         "minecraft:knockback_resistance": { "value": 1.0 },
-        "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+        "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": "no" } ] },
         "minecraft:collision_box": { "width": 0, "height": 0},
         "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
         "minecraft:persistent": { },
@@ -905,7 +930,7 @@ export let TEMPLATE = {
       "thlmm:garage_kit_solid":{
         "minecraft:type_family": { "family": ["thlm:garage_kit_solid"] },
         "minecraft:knockback_resistance": { "value": 1.0 },
-        "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": false } ] },
+        "minecraft:damage_sensor": { "triggers": [ { "cause": "all", "deals_damage": "no" } ] },
         "minecraft:collision_box": { "width": 0, "height": 0},
         "minecraft:physics": { "has_collision": false, "has_gravity": false, "push_towards_closest_space": false },
         "minecraft:persistent": { },

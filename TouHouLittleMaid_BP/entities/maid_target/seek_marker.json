@@ -1,5 +1,5 @@
 {
-  "format_version": "1.12.0",
+  "format_version": "1.26.30",
   "minecraft:entity": {
     "description": {
       "identifier": "thlmt:seek_marker",
@@ -29,12 +29,17 @@
         "family": ["thlmt:seek_marker", "seek_marker"]
       },
       "minecraft:damage_sensor": {
-        "triggers": [{ "cause": "all", "deals_damage": false }]
+        "triggers": [{ "cause": "all", "deals_damage": "no" }]
       },
       "minecraft:collision_box": { "width": 0.0, "height": 0.0 },
-      "minecraft:pushable": {
-        "is_pushable": false,
-        "is_pushable_by_piston": false
+      "minecraft:pushable_by_entity": {
+        "presets": [
+          {
+            "push_mode": "none",
+            "push_scale_self": 0,
+            "push_scale_other": 0
+          }
+        ]
       },
       "minecraft:persistent": {},
       "minecraft:knockback_resistance": { "value": 1.0 },
