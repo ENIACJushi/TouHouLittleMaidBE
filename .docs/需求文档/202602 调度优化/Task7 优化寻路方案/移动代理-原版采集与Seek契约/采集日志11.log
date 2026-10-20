@@ -1,0 +1,35 @@
+
+[Scripting][inform]-PATHPJUMP|META,arm,maxTicks=300
+
+[Scripting][inform]-§e[TLM]§7[PathPJump] §r已武装：请跳一次（站定最佳）；超时 15s
+
+[Scripting][inform]-PATHPJUMP|TAKEOFF,vx=0.000,vy=0.420,vz=0.000,vxz=0.000,isJumping=1
+
+[Scripting][inform]-§e[TLM]§7[PathPJump] §r起飞 vy=0.420 vxz=0.000，采空中峰…
+
+[Scripting][inform]-PATHPJUMP|SMPL,t=2,vx=0.000,vy=0.333,vz=0.000,onG=0
+
+[Scripting][inform]-PATHPJUMP|SMPL,t=3,vx=0.000,vy=0.248,vz=0.000,onG=0
+
+[Scripting][inform]-PATHPJUMP|SMPL,t=4,vx=0.000,vy=0.165,vz=0.000,onG=0
+
+[Scripting][inform]-PATHPJUMP|SMPL,t=5,vx=0.000,vy=0.083,vz=0.000,onG=0
+
+[Scripting][inform]-PATHPJUMP|SMPL,t=6,vx=0.000,vy=0.003,vz=0.000,onG=0
+
+[Scripting][inform]-PATHPJUMP|SMPL,t=7,vx=0.000,vy=-0.075,vz=0.000,onG=0
+
+[Scripting][inform]-PATHPJUMP|SMPL,t=8,vx=0.000,vy=-0.152,vz=0.000,onG=0
+
+[Scripting][inform]-PATHPJUMP|SMPL,t=9,vx=0.000,vy=-0.228,vz=0.000,onG=0
+
+[Scripting][inform]-PATHPJUMP|SMPL,t=10,vx=0.000,vy=-0.302,vz=0.000,onG=0
+
+[Scripting][inform]-PATHPJUMP|SMPL,t=11,vx=0.000,vy=-0.374,vz=0.000,onG=0
+
+[Scripting][inform]-PATHPJUMP|SMPL,t=12,vx=0.000,vy=-0.121,vz=0.000,onG=1
+
+[Scripting][inform]-PATHPJUMP|SUM,hy=0.420,peakVy=0.420,takeoffVxz=0.000,airTicks=12,moving=0,vx=0.000,vy=0.420,vz=0.000
+
+[Scripting][inform]-§e[TLM]§7[PathPJump] §r完成 hy=0.420 peakVy=0.420 vxz=0.000；path_proxy Jump1 将用此 hy
+

@@ -45,6 +45,8 @@ export class MaidLifeCycleEvents {
       if (!maid.isValid || maid.typeId !== MAID_TYPE_ID) {
         return;
       }
+      // 代理运动中退档可能导致 script_movement 残留；按 DP 旗恢复站立寻路
+      EntityMaid.Movement.recoverScriptMoveResidual(maid);
       if (!isSpawn) {
         // 非首次生成时，检查皮肤包（首次生成有自己的随机皮肤逻辑）
         this.refreshUnregisteredSkin(maid);

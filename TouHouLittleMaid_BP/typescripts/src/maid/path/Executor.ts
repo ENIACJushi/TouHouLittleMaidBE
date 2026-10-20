@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 路径执行器状态机（Task7 Phase2）。
  * 使用场景：Path.follow；Walk/Jump1/Fall 用 Seek+marker；SprintGap 用冲量。
  *
@@ -996,7 +996,7 @@ function tickPrepGap(session: Session): void {
   if (inFlightCount >= IN_FLIGHT_MAX) {
     return;
   }
-  // 勿 Movement.lock：移速钳为 0 会吃掉 applyImpulse 水平分量
+  // movement=0 不吃 applyImpulse；代理段可用 Movement.disableAutonomous（含 lock）
   session.phase = "Impulse";
   session.phaseAt = now();
   doImpulse(session);

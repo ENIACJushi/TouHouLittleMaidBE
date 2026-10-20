@@ -182,6 +182,30 @@ export let TEMPLATE = {
           "track_target": true
         }
       },
+      /**
+       * 脚本冲量代理时的移动属性（对齐坐下禁自主走，但保持站立碰撞箱）。
+       * 使用场景：Path 代理 / MovementProxyTest；脚本侧另 Movement.lock（movement=0 不吃冲量）。
+       */
+      "thlmm:maid_basic_script_movement":{
+        "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
+        "minecraft:water_movement": { "drag_factor": 0.9 },
+        "minecraft:jump.static": { },
+        "minecraft:can_climb": { },
+        "minecraft:navigation.walk": {
+          "can_walk": false
+        },
+        "minecraft:behavior.random_stroll": {
+          "priority": 9,
+          "speed_multiplier": 0.0
+        },
+        "minecraft:movement.basic": { },
+        "minecraft:behavior.mount_pathing": {
+          "priority": 3,
+          "speed_multiplier": 0.0,
+          "target_dist": 0,
+          "track_target": true
+        }
+      },
       // 抱起时移动属性 其实是取消碰撞箱
       "thlmm:maid_basic_hug_movement":{
         "minecraft:collision_box": { "width": 0, "height": 0 },
@@ -980,6 +1004,7 @@ export let TEMPLATE = {
             "thlmm:maid_basic",
             "thlmm:maid_basic_stand_movement",
             "thlmm:maid_basic_sit_movement",
+            "thlmm:maid_basic_script_movement",
             "thlmm:maid_wild",
             "environment:simple",
             "backpack:default",
@@ -996,6 +1021,7 @@ export let TEMPLATE = {
             "thlmm:maid_basic",
             "thlmm:maid_basic_stand_movement",
             "thlmm:maid_basic_sit_movement",
+            "thlmm:maid_basic_script_movement",
             "thlmm:maid_wild",
             "environment:simple",
             "backpack:default",
@@ -1011,6 +1037,7 @@ export let TEMPLATE = {
             "thlmm:maid_basic",
             "thlmm:maid_basic_stand_movement",
             "thlmm:maid_basic_sit_movement",
+            "thlmm:maid_basic_script_movement",
             "thlmm:maid_wild",
             "environment:simple",
             "backpack:default",
@@ -1031,6 +1058,7 @@ export let TEMPLATE = {
                 "thlmm:maid_basic",
                 "thlmm:maid_basic_stand_movement",
                 "thlmm:maid_basic_sit_movement",
+                "thlmm:maid_basic_script_movement",
                 "thlmm:maid_wild",
                 "environment:simple",
                 "backpack:default",
@@ -1103,8 +1131,11 @@ export let TEMPLATE = {
       // 抱起，与坐下完全相同
       "thlmm:j" :{
         "sequence": [
-          { // 切换移动属性
-            "remove": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]},
+          { // 切换移动属性（含退出脚本代理组）
+            "remove": { "component_groups": [
+              "thlmm:maid_basic_stand_movement",
+              "thlmm:maid_basic_script_movement"
+            ]},
             "add": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
           },
           { // 不处于家模式，还需要取消主人跟随
@@ -1190,8 +1221,11 @@ export let TEMPLATE = {
       // 坐下
       "thlmm:v":{
         "sequence": [
-          { // 切换移动属性
-            "remove": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]},
+          { // 切换移动属性（含退出脚本代理组）
+            "remove": { "component_groups": [
+              "thlmm:maid_basic_stand_movement",
+              "thlmm:maid_basic_script_movement"
+            ]},
             "add": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
           },
           { // 不处于家模式，还需要取消主人跟随
@@ -1210,9 +1244,12 @@ export let TEMPLATE = {
       // 站起
       "thlmm:w":{
         "sequence": [
-          { // 切换移动属性
+          { // 切换移动属性（含退出脚本代理组）
             "add": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]},
-            "remove": { "component_groups": [ "thlmm:maid_basic_sit_movement" ]}
+            "remove": { "component_groups": [
+              "thlmm:maid_basic_sit_movement",
+              "thlmm:maid_basic_script_movement"
+            ]}
           },
           { // 不处于家模式，还需要恢复主人跟随
             "filters": { "test": "bool_property", "domain": "thlm:home", "subject": "self", "value": false },
@@ -1224,6 +1261,25 @@ export let TEMPLATE = {
             "add": { "component_groups": [ "mode:danmaku_attack" ]},
             "remove": { "component_groups": [ "mode:danmaku_attack_sit" ] } }
         ]
+      },
+      /**
+       * 进入脚本冲量移动：禁原版寻路/闲逛（同坐下 can_walk:false），保持站立外形。
+       * 使用场景：EntityMaid.Movement.disableAutonomous。
+       */
+      "api:script_move_on":{
+        "remove": { "component_groups": [
+          "thlmm:maid_basic_stand_movement",
+          "thlmm:maid_basic_sit_movement"
+        ]},
+        "add": { "component_groups": [ "thlmm:maid_basic_script_movement" ]}
+      },
+      /**
+       * 退出脚本冲量移动：恢复站立寻路组。
+       * 使用场景：EntityMaid.Movement.enableAutonomous。
+       */
+      "api:script_move_off":{
+        "remove": { "component_groups": [ "thlmm:maid_basic_script_movement" ]},
+        "add": { "component_groups": [ "thlmm:maid_basic_stand_movement" ]}
       },
       "thlmm:0" :{ "add": { "component_groups": [ "init_failed" ] } }, // Spawn
       "thlmm:1" :{}, // smart slab

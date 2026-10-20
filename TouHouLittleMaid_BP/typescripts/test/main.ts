@@ -2,6 +2,7 @@ import { BulletTest } from "./danmaku/BulletTest";
 import { MovementCaptureTest } from "./path/MovementCaptureTest";
 import { MovementProxyTest } from "./path/MovementProxyTest";
 import { PathFollowTest } from "./path/PathFollowTest";
+import { PlayerJumpCaptureTest } from "./path/PlayerJumpCaptureTest";
 
 /**
  * 弹幕等杂项测试（依赖 main.ts TEST 开关）
@@ -27,8 +28,16 @@ export function initMovementCapture() {
 
 /**
  * Walk/Jump1 冲量代理原型（临时；对照 PATHMOV）
- * 使用场景：path_proxy_run；控制台搜 PATHPROXY|
+ * 使用场景：path_proxy_run / path_proxy_tune；控制台搜 PATHPROXY|
  */
 export function initMovementProxy() {
   new MovementProxyTest();
+}
+
+/**
+ * 玩家起跳冲量采集（临时；供代理 hy）
+ * 使用场景：path_pjump；控制台搜 PATHPJUMP|
+ */
+export function initPlayerJumpCapture() {
+  new PlayerJumpCaptureTest();
 }
