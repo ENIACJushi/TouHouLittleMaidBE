@@ -1,6 +1,11 @@
 import { world, system } from "@minecraft/server"
 import experiment from "./experiment"
-import { initPathFollow, initTest } from "../test/main";
+import {
+  initMovementCapture,
+  initMovementProxy,
+  initPathFollow,
+  initTest,
+} from "../test/main";
 import { initStandField } from "./maid/path/field/tick";
 import { BlockEvents } from "./events/BlockEvents";
 import { EntityEvents } from "./events/EntityEvents";
@@ -37,6 +42,11 @@ initStandField();
 
 // Task7 Phase2：Path.follow 冒烟（永久保留）
 initPathFollow();
+
+// Task7：Walk/Jump1 原版运动采集（临时；测完归档卸线）
+initMovementCapture();
+// Task7：Walk/Jump1 冲量代理原型（临时；对照 PATHMOV）
+initMovementProxy();
 
 if (TEST) {
   initTest();

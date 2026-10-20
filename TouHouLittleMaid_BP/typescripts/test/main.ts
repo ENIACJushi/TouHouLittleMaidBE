@@ -1,4 +1,6 @@
 import { BulletTest } from "./danmaku/BulletTest";
+import { MovementCaptureTest } from "./path/MovementCaptureTest";
+import { MovementProxyTest } from "./path/MovementProxyTest";
 import { PathFollowTest } from "./path/PathFollowTest";
 
 /**
@@ -13,4 +15,20 @@ export function initTest() {
  */
 export function initPathFollow() {
   new PathFollowTest();
+}
+
+/**
+ * Walk/Jump1 原版运动采集（临时；测完归档卸线，勿卸 initPathFollow）
+ * 使用场景：path_mov_run；控制台搜 PATHMOV|
+ */
+export function initMovementCapture() {
+  new MovementCaptureTest();
+}
+
+/**
+ * Walk/Jump1 冲量代理原型（临时；对照 PATHMOV）
+ * 使用场景：path_proxy_run；控制台搜 PATHPROXY|
+ */
+export function initMovementProxy() {
+  new MovementProxyTest();
 }
