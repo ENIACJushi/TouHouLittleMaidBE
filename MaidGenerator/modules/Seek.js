@@ -14,9 +14,15 @@ const SEEK_PURSUE = "slot:seek_pursue";
 const SEEK_PURSUE_VIA = "slot:seek_pursue_via";
 
 /**
+ * 脚本代理目视：仅 look_at_target（look），无 move/jump。
+ * 使用场景：冲量代理段挂载；与追逐组互斥；脚本 `slot:seek_look`。
+ */
+const SEEK_LOOK = "slot:seek_look";
+
+/**
  * 精准目标 Seek 枚举（Task6 Phase 1 + Task7 追逐分离）。
  * 使用场景：生成 `slot:seek_<n>`（仅索敌）与独立追逐组（终点 / 途经可换）。
- * 定稿：档内仅 NAT；追逐由脚本另调。
+ * 定稿：档内仅 NAT；追逐由脚本另调；脚本代理另挂目视组。
  */
 export class Seek {
   /**
@@ -24,7 +30,7 @@ export class Seek {
    */
   static process(g) {
     console.log(
-      `添加精准目标 Seek: 0~${END_INDEX}；追逐 ${SEEK_PURSUE} / ${SEEK_PURSUE_VIA}`
+      `添加精准目标 Seek: 0~${END_INDEX}；追逐 ${SEEK_PURSUE} / ${SEEK_PURSUE_VIA}；目视 ${SEEK_LOOK}`
     );
 
     g.addProperty("thlm:seek_index", {
@@ -84,21 +90,41 @@ export class Seek {
       },
     });
 
-    // 挂终点：卸途经，避免双追逐
+    // 脚本代理目视（仅转头）
+    g.addComponentGroup(SEEK_LOOK, {
+      "minecraft:behavior.look_at_target": {
+        priority: 6,
+        look_distance: 32,
+        probability: 1,
+        control_flags: ["look"],
+      },
+    });
+    // 挂目视：卸两种追逐，避免与 melee/move 叠层
+    g.addEvent(SEEK_LOOK, {
+      sequence: [
+        { remove: { component_groups: [SEEK_PURSUE, SEEK_PURSUE_VIA] } },
+        { add: { component_groups: [SEEK_LOOK] } },
+      ],
+    });
+    g.addEvent(`${SEEK_LOOK}_quit`, {
+      remove: { component_groups: [SEEK_LOOK] },
+    });
+
+    // 挂终点：卸途经 + 目视，避免双追逐 / 双 look
     g.addEvent(SEEK_PURSUE, {
       sequence: [
-        { remove: { component_groups: [SEEK_PURSUE_VIA] } },
+        { remove: { component_groups: [SEEK_PURSUE_VIA, SEEK_LOOK] } },
         { add: { component_groups: [SEEK_PURSUE] } },
       ],
     });
-    // 挂途经：卸终点
+    // 挂途经：卸终点 + 目视
     g.addEvent(SEEK_PURSUE_VIA, {
       sequence: [
-        { remove: { component_groups: [SEEK_PURSUE] } },
+        { remove: { component_groups: [SEEK_PURSUE, SEEK_LOOK] } },
         { add: { component_groups: [SEEK_PURSUE_VIA] } },
       ],
     });
-    // 卸追逐：两种一并卸（teardown / 换实现前清理）
+    // 卸追逐：两种一并卸（teardown / 换实现前清理）；不卸目视（由 quitLook 管）
     g.addEvent(`${SEEK_PURSUE}_quit`, {
       remove: { component_groups: [SEEK_PURSUE, SEEK_PURSUE_VIA] },
     });

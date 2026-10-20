@@ -137,8 +137,14 @@ export const Seek = {
   PURSUE_VIA: "slot:seek_pursue_via",
 
   /**
+   * 脚本代理目视事件名（仅 look_at_target / look，无 move）。
+   * 使用场景：冲量代理段；与追逐互斥。
+   */
+  LOOK: "slot:seek_look",
+
+  /**
    * 挂载追逐组件（与 Seek 档分离；默认同 `PURSUE_DEFAULT`）。
-   * 使用场景：mount(seekId) 之后再调；途经传 `PURSUE_VIA`。事件内会互斥卸另一组。
+   * 使用场景：mount(seekId) 之后再调；途经传 `PURSUE_VIA`。事件内会互斥卸另一组与目视组。
    */
   mountPursue(maid: Entity, pursueEvent: string = "slot:seek_pursue"): void {
     try {
@@ -156,6 +162,30 @@ export const Seek = {
       maid.triggerEvent(pursueQuitEvent);
     } catch (e) {
       Logger.warn(TAG, `quitPursue(${pursueQuitEvent}) failed: ${String(e)}`);
+    }
+  },
+
+  /**
+   * 挂载脚本代理目视组（仅转头；事件内会卸追逐）。
+   * 使用场景：mount(seekId) 之后、冲量驱动期间。
+   */
+  mountLook(maid: Entity): void {
+    try {
+      maid.triggerEvent(Seek.LOOK);
+    } catch (e) {
+      Logger.warn(TAG, `mountLook failed: ${String(e)}`);
+    }
+  },
+
+  /**
+   * 卸下脚本代理目视组。
+   * 使用场景：代理 teardown；切回原版追逐前由 mountPursue 互斥卸也可。
+   */
+  quitLook(maid: Entity): void {
+    try {
+      maid.triggerEvent(`${Seek.LOOK}_quit`);
+    } catch (e) {
+      Logger.warn(TAG, `quitLook failed: ${String(e)}`);
     }
   },
 

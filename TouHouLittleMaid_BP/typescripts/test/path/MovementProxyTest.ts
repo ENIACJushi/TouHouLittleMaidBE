@@ -48,11 +48,6 @@ const WALK_LEN = 10;
 const JUMP1_APPROACH = 4;
 const JUMP1_PAD_LEN = 3;
 /**
- * 每隔几 tick 对 goal facingLocation（须 keepVelocity，否则会清速）。
- * 使用场景：途中维持朝向；配合侧向抵消。
- */
-const FACE_EVERY = 4;
-/**
  * 距上台沿多远起跳（沿跑道，格）。
  * 使用场景：shouldJump。
  */
@@ -529,11 +524,15 @@ export class MovementProxyTest {
       }
       if (job.vanillaPursue) {
         EntityMaid.Seek.mountPursue(maid, EntityMaid.Seek.PURSUE_VIA);
+      } else {
+        // 冲量代理：只挂目视，之后不由脚本改朝向
+        EntityMaid.Seek.mountLook(maid);
       }
     } catch (e) {
       this.msg(st.source, `Seek/marker 失败: ${String(e)}`);
     }
 
+    // 起跑只对朝向一次；途中由 look_at_target 控头
     try {
       maid.teleport(startFeet, {
         facingLocation: {
@@ -844,17 +843,6 @@ export class MovementProxyTest {
     const loc = maid.location;
     const hDist = Math.hypot(loc.x - goal.x, loc.z - goal.z);
 
-    if (st.trackTicks % FACE_EVERY === 0) {
-      try {
-        maid.teleport(loc, {
-          facingLocation: { x: goal.x, y: goal.y, z: goal.z },
-          keepVelocity: true,
-        });
-      } catch {
-        /* ignore */
-      }
-    }
-
     if (hDist <= ARRIVE_H) {
       if (Math.hypot(latX, latZ) > 1e-4) {
         try {
@@ -1155,6 +1143,7 @@ export class MovementProxyTest {
     if (maid?.isValid) {
       try {
         EntityMaid.Seek.quitPursue(maid);
+        EntityMaid.Seek.quitLook(maid);
         EntityMaid.Seek.quit(maid);
       } catch {
         /* ignore */
