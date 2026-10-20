@@ -48,7 +48,15 @@ export class Seek {
       "minecraft:behavior.melee_attack": {
         "priority": 6,
         "reach_multiplier": 10, // 实体半径（0.3）×reach_multiplier=实际距离(3)
-        "cooldown_time": 0.8
+        "cooldown_time": 0.8,
+        "control_flags": [ "move", "jump" ]
+      },
+      // 保证在索敌失效时也能看向目标
+      "minecraft:behavior.look_at_target": {
+        priority: 6,
+        look_distance: 32,
+        probability: 1,
+        control_flags: [ "look" ],
       },
     });
     // 途经追逐：触及=0，中间路点要贴紧再切下一段
@@ -64,7 +72,15 @@ export class Seek {
       "minecraft:behavior.melee_attack": {
         "priority": 6,
         "reach_multiplier": 0,
-        "cooldown_time": 0.8
+        "cooldown_time": 0.8,
+        "control_flags": [ "move", "jump" ]
+      },
+      // 保证在索敌失效时也能看向目标
+      "minecraft:behavior.look_at_target": {
+        priority: 6,
+        look_distance: 32,
+        probability: 1,
+        control_flags: [ "look" ],
       },
     });
 
@@ -98,7 +114,7 @@ export class Seek {
         "minecraft:follow_range": { max: 32, value: 32 },
         "minecraft:behavior.nearest_attackable_target": {
           priority: 7,
-          must_reach: true,
+          must_reach: false,
           must_see: false,
           persist_time: 0,
           reselect_targets: true,
