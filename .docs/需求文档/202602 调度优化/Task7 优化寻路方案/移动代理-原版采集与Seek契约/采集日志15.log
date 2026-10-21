@@ -1,0 +1,61 @@
+
+23:55:14[Scripting][inform]-§e[TLM]§7[PathFollow] §rgo maid=-1262720… dest=minecraft:pale_oak_planks
+plan ok=true reason=- edges=Walk>SprintGap
+已启动；走到终点近战后应见 PATHDONE reason=done
+
+
+23:55:14[Scripting][inform]-PATHGO|PLAN,ok=true,reason=-,maidId=-12627203850187,start=-59.500,-56.000,134.500,destBlock=-65,-57,134,edges=2,nodes=3
+
+
+23:55:14[Scripting][inform]-PATHGO|EDGE,i=0,kind=Walk,from=-60,-57,134,to=-61,-57,134,fromFeet=-59.500,-56.000,134.500,toFeet=-60.500,-56.000,134.500,h=1.000,dy=0
+
+
+23:55:14[Scripting][inform]-PATHGO|EDGE,i=1,kind=SprintGap,from=-61,-57,134,to=-65,-57,134,fromFeet=-60.500,-56.000,134.500,toFeet=-64.500,-56.000,134.500,h=4.000,dy=0
+
+
+23:55:26[Scripting][inform]-§e[TLM]§7[Path.Executor] §rScriptFollow enter maid=-12627203850187 i=0 role=via cruise=0.135
+
+
+23:55:26[Scripting][inform]-§e[TLM]§7[Path.Executor] §rScriptFollow done maid=-12627203850187 i=0 ticks=4
+
+
+23:55:26[Scripting][inform]-PATHGAP|IMPULSE,i=1,plan=4:0,from=-59.783,-56.000,134.500,fromPad=-60.500,-56.000,134.500,padOffH=0.717,toFeet=-64.500,-56.000,134.500,toBlock=-65,-57,134,actualH=4.717,targetH=4.717,hx=0.932,hy=0.520,hyRaw=0.520,dir=-1.000,0.000,v=-0.932,0.520,0.000
+
+
+23:55:26[Scripting][inform]-PATHGAP|AIR_CORRECT,i=1,manh=1.086,pred=-65.586,134.500,toFeet=-64.500,134.500,alreadyH=0.932,remainPred=4.872,vel=-0.932,0.520,0.000,dHx=0.222,v=0.222,0,0.000
+
+
+23:55:26[Scripting][inform]-PATHGAP|AIR_CORRECT,i=1,manh=1.983,pred=-62.517,134.500,toFeet=-64.500,134.500,alreadyH=1.480,remainPred=1.254,vel=-0.261,0.344,0.000,dHx=0.405,v=-0.405,0,0.000
+
+
+23:55:27[Scripting][inform]-PATHGAP|AIR_CORRECT,i=1,manh=0.484,pred=-64.984,134.500,toFeet=-64.500,134.500,alreadyH=2.707,remainPred=2.495,vel=-0.584,0.175,0.000,dHx=0.099,v=0.099,0,0.000
+
+
+23:55:27[Scripting][inform]-PATHGAP|AIR_CORRECT,i=1,manh=0.234,pred=-64.734,134.500,toFeet=-64.500,134.500,alreadyH=3.534,remainPred=1.417,vel=-0.394,0.013,0.000,dHx=0.048,v=0.048,0,0.000
+
+
+23:55:27[Sound][verbose]-No sound found for block type 'normal' and event type 'fly'
+
+
+23:55:27[Scripting][inform]-PATHGAP|AIR_CORRECT,i=1,manh=0.194,pred=-64.694,134.500,toFeet=-64.500,134.500,alreadyH=4.128,remainPred=0.783,vel=-0.283,-0.143,0.000,dHx=0.040,v=0.040,0,0.000
+
+
+23:55:27[Scripting][inform]-PATHGAP|AIR_CORRECT,i=1,manh=0.174,pred=-64.674,134.500,toFeet=-64.500,134.500,alreadyH=4.544,remainPred=0.347,vel=-0.198,-0.292,0.000,dHx=0.035,v=0.035,0,0.000
+
+
+23:55:27[Sound][verbose]-No sound found for block type 'normal' and event type 'fly'
+
+
+23:55:27[Scripting][inform]-PATHGAP|AIR_CORRECT,i=1,manh=0.164,pred=-64.664,134.500,toFeet=-64.500,134.500,alreadyH=4.821,remainPred=0.061,vel=-0.132,-0.436,0.000,dHx=0.034,v=0.034,0,0.000
+
+
+23:55:27[Scripting][inform]-PATHGAP|LAND,i=1,land=-64.769,-56.000,134.500,toFeet=-64.500,-56.000,134.500,toBlock=-65,-57,134,errH=0.269,errV=0.000,along=0.269,lateral=0.000,flightMs=799,arrive=reach_cone
+
+
+23:55:27[Scripting][inform]-§e[TLM]§7[Path.Executor] §rDone maid=-12627203850187 reason=done
+
+
+23:55:27[Scripting][inform]-PATHDONE|COMPLETE,reason=done,detail=done,maidId=-12627203850187,dest=-65,-57,134,dtMs=13857
+
+
+23:55:27[Scripting][inform]-§e[TLM]§7[PathFollow] §rPATHDONE reason=done detail=done dt=13857ms
