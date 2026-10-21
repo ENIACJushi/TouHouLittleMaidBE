@@ -45,6 +45,8 @@ export {
   JUMP1_PLANNED_DIST,
   JUMP1_PLANNED_DY,
   JUMP1_MIN_TARGET_H,
+  JUMP1_ALONG_MIN_FACTOR,
+  JUMP1_ALONG_MAX_FACTOR,
   defaultDriveParams,
   readDefMovement,
   faceOnce,

@@ -8,11 +8,11 @@
  * - 途经平视 + pursue_via；via→via 抵达后 quit+重挂 via melee 刷新追逐；
  * - 终点 marker 在支撑格上方若干格的中心（耕地 1 格即作物；甘蔗 2 格即要砍的那节）；
  * - Gap Prep：Seek 追逐走上跳沿；Impulse 起切脚本代理段（见下）；
- * - Gap 冲量段（对齐代理运动实现方案 §1）：`disableAutonomous`；`mountLook`；
- *   冲量前 **只一次** facing（`keepVelocity`）；落地 `Arrive.checkScriptArrive`（触及+视线锥）；
+ * - Gap 冲量段（`ScriptDrive`）：`enterScriptProxy`；一次 `faceOnce`；落地 `checkScriptArrive`；
  * - Gap 腾空：用当前速度积分落点（按起跳 FIT 缩放），曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
  * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_H）即 advance（避免贴脸互推）。
  * - AI 终点：近战命中本会话 seek_marker 即 Done。进入终点距离后先等几秒，这段里仍以打中为准；到点还没打中才按距离结束。
+ * - AI 路点超时：切 `ScriptFollow`（巡航 + 可选 Jump1 + reach_cone），不再直接 Fail。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
  */
@@ -25,7 +25,6 @@ import {
 } from "@minecraft/server";
 import { config } from "../../controller/Config";
 import { Logger } from "../../controller/Logger";
-import { Movement } from "../facets/Movement";
 import { Seek, SEEK_MARKER_TYPE } from "../facets/Seek";
 import { checkScriptArrive } from "./Arrive";
 import {
@@ -34,6 +33,20 @@ import {
   predictHorizontalRange,
   horizontalRangePerHx,
 } from "./ImpulseTable";
+import {
+  applyJump1Impulse,
+  CardinalDir,
+  defaultDriveParams,
+  DriveParams,
+  enterScriptProxy,
+  faceOnce,
+  JUMP1_ALONG_MAX_FACTOR,
+  JUMP1_ALONG_MIN_FACTOR,
+  PLAYER_JUMP_HY,
+  readDefMovement,
+  restoreMaidMovement,
+  tickWalkDrive,
+} from "./ScriptDrive";
 import {
   PathEdge,
   PathFollowCompleteInfo,
@@ -136,11 +149,28 @@ const AIR_SIM_TICKS = 40;
 type Phase =
   | "Idle"
   | "FollowAI"
+  | "ScriptFollow"
   | "PrepGap"
   | "Impulse"
   | "InFlight"
   | "Done"
   | "Fail";
+
+/**
+ * AI 超时后的脚本回退状态。
+ * 使用场景：phase=ScriptFollow；冲量走完当前 AI 路点。
+ */
+type ScriptFollowState = {
+  params: DriveParams;
+  dir: CardinalDir;
+  goalFeet: Vector3;
+  /** 目标支撑顶面 y（Jump1 窗）；平地可与 goalFeet.y-1 同量级 */
+  goalSupportY: number;
+  jumped: boolean;
+  jumpedAtTick: number | undefined;
+  jumpAttempts: number;
+  tickCount: number;
+};
 
 /**
  * 路点角色：途经平视 / 终点对准。
@@ -223,11 +253,28 @@ type Session = {
    */
   goalRangeSince?: number;
   /**
+   * AI 超时切入的脚本回退；离开 ScriptFollow 时清空。
+   * 使用场景：tickScriptFollow。
+   */
+  scriptFollow?: ScriptFollowState;
+  /**
    * 本会话 entityHitEntity 回调（subscribe 时用 entities:[maid] 限定攻击方；已验证有效）。
    * 使用场景：AI 路点抵达；teardown 时 unsubscribe。
    */
   hitHandler?: (ev: EntityHitEntityAfterEvent) => void;
 };
+
+/** 脚本回退单路点超时（ms） */
+const SCRIPT_FOLLOW_TIMEOUT_MS = 10_000;
+/** 脚本回退最多 Jump1 次数 */
+const SCRIPT_JUMP_MAX = 2;
+const SCRIPT_JUMP_RETRY_TICKS = 12;
+/**
+ * 脚本回退爬升：距目标脚位水平距落在此闭区间才允许 Jump1（格）。
+ * 使用场景：太远尚在平走过近则已可贴上台；非失败用例拟合。
+ */
+const SCRIPT_JUMP_HDIST_MIN = 0.9;
+const SCRIPT_JUMP_HDIST_MAX = 2.2;
 
 const sessions = new Map<string, Session>();
 let tickHandle: number | undefined;
@@ -299,65 +346,6 @@ function horizDist(a: Vector3, b: Vector3): number {
   const dx = a.x - b.x;
   const dz = a.z - b.z;
   return Math.sqrt(dx * dx + dz * dz);
-}
-
-/**
- * 冲量前脚本朝向对岸（teleport + facingLocation + keepVelocity）。
- * 使用场景：doImpulse 一次；之后由 mountLook 控头，不再改朝向。
- */
-function faceToward(maid: Entity, lookAt: Vector3): void {
-  try {
-    maid.teleport(maid.location, {
-      facingLocation: lookAt,
-      keepVelocity: true,
-    });
-  } catch (e) {
-    Logger.warn(TAG, `faceToward failed: ${String(e)}`);
-  }
-}
-
-/**
- * 恢复原版站立移速：若在脚本禁走中则 enableAutonomous，否则 unlock。
- * 使用场景：Gap 落地 / 飞行超时 / teardown。
- */
-function restoreMaidMovement(maid: Entity): void {
-  try {
-    if (Movement.isScriptMoveActive(maid)) {
-      Movement.enableAutonomous(maid);
-    } else {
-      Movement.unlock(maid);
-    }
-  } catch {
-    /* ignore */
-  }
-}
-
-/**
- * Gap 冲量段切入脚本代理：禁走 + 卸追逐挂目视；marker 挪到对岸脚位对齐视线锥目标。
- * 使用场景：doImpulse 起跳前；与 MovementProxy 契约一致。
- */
-function enterGapScriptProxy(session: Session, toFeet: Vector3): void {
-  const maid = session.maid;
-  try {
-    Movement.disableAutonomous(maid);
-  } catch {
-    /* ignore */
-  }
-  try {
-    Seek.quitPursue(maid);
-    Seek.mountLook(maid);
-    session.pursueRole = undefined;
-  } catch (e) {
-    Logger.warn(TAG, `enterGapScriptProxy seek: ${String(e)}`);
-  }
-  // 目视目标与抵达判定同一点（对岸脚位），避免偏置 marker 导致锥失败
-  if (session.marker?.isValid) {
-    try {
-      session.marker.teleport(toFeet);
-    } catch {
-      /* ignore */
-    }
-  }
 }
 
 /**
@@ -958,6 +946,7 @@ function beginStep(session: Session): void {
   }
   const step = session.steps[session.index];
   session.phaseAt = now();
+  session.scriptFollow = undefined;
   if (step.kind === "gap") {
     session.phase = "PrepGap";
     try {
@@ -989,6 +978,59 @@ function beginStep(session: Session): void {
   }
 }
 
+/**
+ * 指向目标的 cardinal（取主轴）。
+ * 使用场景：ScriptFollow 巡航方向。
+ */
+function cardinalToward(from: Vector3, to: Vector3): CardinalDir {
+  const dx = to.x - from.x;
+  const dz = to.z - from.z;
+  if (Math.abs(dx) >= Math.abs(dz)) {
+    return { dx: dx === 0 ? 1 : dx > 0 ? 1 : -1, dz: 0 };
+  }
+  return { dx: 0, dz: dz === 0 ? 1 : dz > 0 ? 1 : -1 };
+}
+
+/**
+ * AI 路点超时：切脚本冲量回退（不立刻 Fail）。
+ * 使用场景：tickFollowAI；对齐实验设计 §5.2。
+ */
+function enterScriptFollow(session: Session): void {
+  const step = session.steps[session.index];
+  if (step.kind !== "ai") {
+    failSession(session, "ai_timeout");
+    return;
+  }
+  const maid = session.maid;
+  const goalFeet = feetOf(step.support);
+  // 须在 disableAutonomous 前读定义移速
+  const defMov = readDefMovement(maid);
+  const params = defaultDriveParams(defMov);
+  const lookAt =
+    step.role === "goal"
+      ? goalMarkerOf(step.support, session.goalBlocksAbove)
+      : goalFeet;
+  enterScriptProxy(maid, { marker: session.marker, lookAtFeet: lookAt });
+  session.pursueRole = undefined;
+  faceOnce(maid, lookAt);
+  session.scriptFollow = {
+    params,
+    dir: cardinalToward(maid.location, goalFeet),
+    goalFeet,
+    goalSupportY: step.support.y,
+    jumped: false,
+    jumpedAtTick: undefined,
+    jumpAttempts: 0,
+    tickCount: 0,
+  };
+  session.phase = "ScriptFollow";
+  session.phaseAt = now();
+  Logger.info(
+    TAG,
+    `ScriptFollow enter maid=${session.maidId} i=${session.index} role=${step.role} cruise=${params.targetCruise.toFixed(3)}`
+  );
+}
+
 function tickFollowAI(session: Session): void {
   const maid = session.maid;
   const step = session.steps[session.index];
@@ -996,7 +1038,7 @@ function tickFollowAI(session: Session): void {
     return;
   }
   if (now() - session.phaseAt > AI_EDGE_TIMEOUT_MS) {
-    failSession(session, "ai_timeout");
+    enterScriptFollow(session);
     return;
   }
   // 途经：距离抵达（恢复旧逻辑）
@@ -1017,6 +1059,115 @@ function tickFollowAI(session: Session): void {
   if (now() - since >= GOAL_RANGE_GRACE_MS) {
     advance(session);
   }
+}
+
+/**
+ * 脚本回退：巡航 + 可选 Jump1；抵达 checkScriptArrive。
+ * 使用场景：AI 超时后；空中不补水平。
+ */
+function tickScriptFollow(session: Session): void {
+  const sf = session.scriptFollow;
+  const step = session.steps[session.index];
+  if (!sf || step.kind !== "ai") {
+    failSession(session, "script_follow_bad_state");
+    return;
+  }
+  const maid = session.maid;
+  if (now() - session.phaseAt > SCRIPT_FOLLOW_TIMEOUT_MS) {
+    restoreMaidMovement(maid);
+    session.scriptFollow = undefined;
+    failSession(session, "script_follow_timeout");
+    return;
+  }
+  sf.tickCount += 1;
+
+  const reachH = step.role === "goal" ? ARRIVE_GOAL_H : ARRIVE_VIA_H;
+  if (
+    checkScriptArrive(maid, sf.goalFeet, {
+      reachH,
+      requireOnGround: true,
+    })
+  ) {
+    restoreMaidMovement(maid);
+    session.scriptFollow = undefined;
+    Logger.info(
+      TAG,
+      `ScriptFollow done maid=${session.maidId} i=${session.index} ticks=${sf.tickCount}`
+    );
+    advance(session);
+    return;
+  }
+
+  let onGround = false;
+  try {
+    onGround = maid.isOnGround;
+  } catch {
+    onGround = false;
+  }
+  if (!onGround) {
+    return;
+  }
+
+  let vx = 0;
+  let vz = 0;
+  try {
+    const v = maid.getVelocity();
+    vx = v.x;
+    vz = v.z;
+  } catch {
+    /* keep */
+  }
+  const alongVel = vx * sf.dir.dx + vz * sf.dir.dz;
+  const loc = maid.location;
+  const hDist = Math.hypot(loc.x - sf.goalFeet.x, loc.z - sf.goalFeet.z);
+
+  // 需爬升：低台、水平距在窗内、巡航带内 → Jump1（空中不补）
+  if (
+    sf.jumpAttempts < SCRIPT_JUMP_MAX &&
+    loc.y < sf.goalSupportY + 0.9 &&
+    hDist >= SCRIPT_JUMP_HDIST_MIN &&
+    hDist <= SCRIPT_JUMP_HDIST_MAX
+  ) {
+    if (
+      sf.jumped &&
+      sf.jumpedAtTick !== undefined &&
+      sf.tickCount - sf.jumpedAtTick >= SCRIPT_JUMP_RETRY_TICKS
+    ) {
+      sf.jumped = false;
+    }
+    const alongMin = sf.params.targetCruise * JUMP1_ALONG_MIN_FACTOR;
+    const alongMax = sf.params.targetCruise * JUMP1_ALONG_MAX_FACTOR;
+    if (!sf.jumped && alongVel >= alongMin && alongVel <= alongMax) {
+      const toSupport = {
+        x: step.support.x,
+        y: step.support.y,
+        z: step.support.z,
+      };
+      const fromSupport = {
+        x: Math.floor(loc.x),
+        y: Math.floor(loc.y) - 1,
+        z: Math.floor(loc.z),
+      };
+      const info = applyJump1Impulse(maid, {
+        toSupport,
+        fromSupport,
+        hy: PLAYER_JUMP_HY,
+        hySrc: "player_default",
+      });
+      if (info) {
+        sf.jumped = true;
+        sf.jumpedAtTick = sf.tickCount;
+        sf.jumpAttempts += 1;
+      }
+      return;
+    }
+  }
+
+  // 方向可随相对位置刷新（拐弯后回退）
+  sf.dir = cardinalToward(loc, sf.goalFeet);
+  tickWalkDrive(maid, sf.dir, sf.goalFeet, sf.params, {
+    arriveH: reachH,
+  });
 }
 
 function tickPrepGap(session: Session): void {
@@ -1106,8 +1257,9 @@ function doImpulse(session: Session): void {
     ].join(",")
   );
   // 脚本代理段：禁走 + look-only；一次 facing（keepVelocity）后冲量
-  enterGapScriptProxy(session, toFeet);
-  faceToward(maid, toFeet);
+  enterScriptProxy(maid, { marker: session.marker, lookAtFeet: toFeet });
+  session.pursueRole = undefined;
+  faceOnce(maid, toFeet);
   try {
     maid.clearVelocity();
     maid.applyImpulse({ x: vx, y: imp.hy, z: vz });
@@ -1268,6 +1420,9 @@ function tickAll(): void {
     switch (session.phase) {
       case "FollowAI":
         tickFollowAI(session);
+        break;
+      case "ScriptFollow":
+        tickScriptFollow(session);
         break;
       case "PrepGap":
         tickPrepGap(session);
