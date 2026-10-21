@@ -132,11 +132,15 @@ const GAP_MARKER_UP = 1.5;
 /** 单 AI 路点硬超时（最后兜底） */
 const AI_EDGE_TIMEOUT_MS = 12_000;
 /**
- * 无正确 marker 目标连续满这么多游戏 tick → 切脚本。
- * 使用场景：首次选不中与中途丢目标同一阈值；用 currentTick，不受墙钟/降 tick 影响。
- * 约覆盖 NAT scan_interval(10) + 余量，避免起索敌瞬间误切。
+ * 本 AI 步从未拿到正确 marker 目标：连续空满这么多游戏 tick → 切脚本。
+ * 使用场景：起索敌 / 选不中；约覆盖 NAT scan_interval(10) + 余量。
  */
-const AI_NO_TARGET_HOLD_TICKS = 35;
+const AI_NO_TARGET_FIRST_HOLD_TICKS = 35;
+/**
+ * 本 AI 步曾有正确目标后又丢：连续空满这么多游戏 tick → 切脚本。
+ * 使用场景：中途丢 target；比首次短，避免卡在「有过再丢」的空窗。
+ */
+const AI_NO_TARGET_LOST_HOLD_TICKS = 11;
 /**
  * 水平距无实质靠近连续超过此时长（游戏 tick）→ 切脚本（卡死但仍可能有 target）。
  * 使用场景：人为堵路 / 原版绕不过；不必等满 AI_EDGE_TIMEOUT。50 tick ≈ 原 2.5s@20TPS。
@@ -277,6 +281,11 @@ type Session = {
    * 使用场景：tickFollowAI `ai_no_target`。
    */
   aiNoTargetSinceTick?: number;
+  /**
+   * 本 AI 步是否曾挂上正确 marker 目标（决定空窗用首次 35 还是丢目标 11）。
+   * 使用场景：tickFollowAI `ai_no_target`；beginStep / 切入 ScriptFollow 时清空。
+   */
+  aiHadSeekTarget?: boolean;
   /**
    * 无进展窗口：起点水平距与起始 `system.currentTick`。
    * 使用场景：tickFollowAI `ai_stall`。
@@ -981,6 +990,7 @@ function beginStep(session: Session): void {
   session.phaseAt = now();
   session.scriptFollow = undefined;
   session.aiNoTargetSinceTick = undefined;
+  session.aiHadSeekTarget = undefined;
   session.aiStallRefH = undefined;
   session.aiStallSinceTick = undefined;
   if (step.kind === "gap") {
@@ -1066,6 +1076,7 @@ function enterScriptFollow(session: Session, reason: string): void {
   session.pursueRole = undefined;
   faceOnce(maid, lookAt);
   session.aiNoTargetSinceTick = undefined;
+  session.aiHadSeekTarget = undefined;
   session.aiStallRefH = undefined;
   session.aiStallSinceTick = undefined;
   session.scriptFollow = {
@@ -1109,14 +1120,18 @@ function shouldEarlyScriptFollow(session: Session): string | undefined {
     return undefined;
   }
 
-  // 1) 无正确目标：连续空 ≥35 游戏 tick（首次与丢目标同一阈值）
+  // 1) 无正确目标：首次空 ≥35 tick；曾有 target 再丢 ≥11 tick
   if (hasSeekMarkerTarget(maid, session.marker)) {
+    session.aiHadSeekTarget = true;
     session.aiNoTargetSinceTick = undefined;
   } else {
     const tick = system.currentTick;
     const sinceTick = session.aiNoTargetSinceTick ?? tick;
     session.aiNoTargetSinceTick = sinceTick;
-    if (tick - sinceTick >= AI_NO_TARGET_HOLD_TICKS) {
+    const hold = session.aiHadSeekTarget
+      ? AI_NO_TARGET_LOST_HOLD_TICKS
+      : AI_NO_TARGET_FIRST_HOLD_TICKS;
+    if (tick - sinceTick >= hold) {
       return "ai_no_target";
     }
   }
