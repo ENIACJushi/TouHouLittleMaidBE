@@ -12,8 +12,8 @@
  * - Gap 腾空：用当前速度积分落点（按起跳 FIT 缩放），曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
  * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_H）即 advance（避免贴脸互推）。
  * - AI 终点：近战命中本会话 seek_marker 即 Done。进入终点距离后先等几秒，这段里仍以打中为准；到点还没打中才按距离结束。
- * - AI→脚本回退：无正确目标 / 水平距无进展 / 整段超时 → `ScriptFollow`
- *   （现行 NAT `must_reach:false` 供农作近距锁目标；失败信号用脚本侧观测，不改实体 JSON）。
+ * - AI→脚本回退：无正确目标 / 水平距无进展 / 整段超时 → `ScriptFollow`；
+ *   FollowAI 挂严格 NAT（`must_reach:true`），脚本代理挂宽松 NAT（`must_reach:false`）。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
  */
@@ -132,20 +132,16 @@ const GAP_MARKER_UP = 1.5;
 /** 单 AI 路点硬超时（最后兜底） */
 const AI_EDGE_TIMEOUT_MS = 12_000;
 /**
- * NAT 选敌宽限：过后再判定「无正确目标」。
- * 使用场景：scan_interval≈10 tick；给引擎起索敌的时间。
+ * 无正确 marker 目标连续满这么多游戏 tick → 切脚本。
+ * 使用场景：首次选不中与中途丢目标同一阈值；用 currentTick，不受墙钟/降 tick 影响。
+ * 约覆盖 NAT scan_interval(10) + 余量，避免起索敌瞬间误切。
  */
-const AI_ACQUIRE_GRACE_MS = 1_500;
+const AI_NO_TARGET_HOLD_TICKS = 35;
 /**
- * 无正确目标需持续多久才切脚本（防瞬时空窗误触发）。
- * 使用场景：对齐 §5.2「选不中 / 丢目标」；marker 已 stamp 但 maid.target 对不上。
+ * 水平距无实质靠近连续超过此时长（游戏 tick）→ 切脚本（卡死但仍可能有 target）。
+ * 使用场景：人为堵路 / 原版绕不过；不必等满 AI_EDGE_TIMEOUT。50 tick ≈ 原 2.5s@20TPS。
  */
-const AI_NO_TARGET_HOLD_MS = 800;
-/**
- * 水平距无实质靠近超过此时长 → 切脚本（卡死但仍可能有 target）。
- * 使用场景：人为堵路 / 原版绕不过；不必等满 AI_EDGE_TIMEOUT。
- */
-const AI_STALL_MS = 2_500;
+const AI_STALL_HOLD_TICKS = 50;
 /** 判定「有进展」：相对窗口起点水平距至少缩短这么多（格） */
 const AI_STALL_IMPROVE_H = 0.25;
 const FLIGHT_TIMEOUT_MS = 1_500;
@@ -277,16 +273,16 @@ type Session = {
    */
   scriptFollow?: ScriptFollowState;
   /**
-   * 首次发现无正确 Seek 目标的时刻；恢复正确目标则清空。
-   * 使用场景：tickFollowAI 提早回退。
+   * 无正确 marker 目标空窗起始的 system.currentTick；有目标则清空。
+   * 使用场景：tickFollowAI `ai_no_target`。
    */
-  aiNoTargetSince?: number;
+  aiNoTargetSinceTick?: number;
   /**
-   * 无进展窗口：起点水平距与起始时刻。
-   * 使用场景：tickFollowAI stall 判定。
+   * 无进展窗口：起点水平距与起始 `system.currentTick`。
+   * 使用场景：tickFollowAI `ai_stall`。
    */
   aiStallRefH?: number;
-  aiStallSince?: number;
+  aiStallSinceTick?: number;
   /**
    * 本会话 entityHitEntity 回调（subscribe 时用 entities:[maid] 限定攻击方；已验证有效）。
    * 使用场景：AI 路点抵达；teardown 时 unsubscribe。
@@ -984,9 +980,9 @@ function beginStep(session: Session): void {
   const step = session.steps[session.index];
   session.phaseAt = now();
   session.scriptFollow = undefined;
-  session.aiNoTargetSince = undefined;
+  session.aiNoTargetSinceTick = undefined;
   session.aiStallRefH = undefined;
-  session.aiStallSince = undefined;
+  session.aiStallSinceTick = undefined;
   if (step.kind === "gap") {
     session.phase = "PrepGap";
     try {
@@ -1069,9 +1065,9 @@ function enterScriptFollow(session: Session, reason: string): void {
   enterScriptProxy(maid, { marker: session.marker, lookAtFeet: lookAt });
   session.pursueRole = undefined;
   faceOnce(maid, lookAt);
-  session.aiNoTargetSince = undefined;
+  session.aiNoTargetSinceTick = undefined;
   session.aiStallRefH = undefined;
-  session.aiStallSince = undefined;
+  session.aiStallSinceTick = undefined;
   session.scriptFollow = {
     params,
     dir: cardinalToward(maid.location, goalFeet),
@@ -1100,7 +1096,6 @@ function shouldEarlyScriptFollow(session: Session): string | undefined {
   if (step.kind !== "ai") {
     return undefined;
   }
-  const elapsed = now() - session.phaseAt;
   const loc = maid.location;
   const goalFeet = feetOf(step.support);
   const hDist = Math.hypot(loc.x - goalFeet.x, loc.z - goalFeet.z);
@@ -1108,33 +1103,33 @@ function shouldEarlyScriptFollow(session: Session): string | undefined {
   // 已近到可 AI 抵达窗内：勿因瞬态丢 target 抢切
   const nearH = step.role === "goal" ? ARRIVE_GOAL_H : ARRIVE_VIA_H;
   if (hDist <= nearH) {
-    session.aiNoTargetSince = undefined;
+    session.aiNoTargetSinceTick = undefined;
     session.aiStallRefH = undefined;
-    session.aiStallSince = undefined;
+    session.aiStallSinceTick = undefined;
     return undefined;
   }
 
-  // 1) 选不中 / 丢目标（宽限后持续 hold）
-  if (elapsed >= AI_ACQUIRE_GRACE_MS) {
-    if (!hasSeekMarkerTarget(maid, session.marker)) {
-      const since = session.aiNoTargetSince ?? now();
-      session.aiNoTargetSince = since;
-      if (now() - since >= AI_NO_TARGET_HOLD_MS) {
-        return "ai_no_target";
-      }
-    } else {
-      session.aiNoTargetSince = undefined;
+  // 1) 无正确目标：连续空 ≥35 游戏 tick（首次与丢目标同一阈值）
+  if (hasSeekMarkerTarget(maid, session.marker)) {
+    session.aiNoTargetSinceTick = undefined;
+  } else {
+    const tick = system.currentTick;
+    const sinceTick = session.aiNoTargetSinceTick ?? tick;
+    session.aiNoTargetSinceTick = sinceTick;
+    if (tick - sinceTick >= AI_NO_TARGET_HOLD_TICKS) {
+      return "ai_no_target";
     }
   }
 
-  // 2) 水平距无实质靠近
-  if (session.aiStallRefH === undefined || session.aiStallSince === undefined) {
+  // 2) 水平距无实质靠近：连续 ≥50 游戏 tick 未缩短 ≥0.25 格
+  const tick = system.currentTick;
+  if (session.aiStallRefH === undefined || session.aiStallSinceTick === undefined) {
     session.aiStallRefH = hDist;
-    session.aiStallSince = now();
+    session.aiStallSinceTick = tick;
   } else if (hDist <= session.aiStallRefH - AI_STALL_IMPROVE_H) {
     session.aiStallRefH = hDist;
-    session.aiStallSince = now();
-  } else if (now() - session.aiStallSince >= AI_STALL_MS) {
+    session.aiStallSinceTick = tick;
+  } else if (tick - session.aiStallSinceTick >= AI_STALL_HOLD_TICKS) {
     return "ai_stall";
   }
 
