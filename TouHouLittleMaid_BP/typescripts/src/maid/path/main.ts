@@ -36,6 +36,29 @@ export {
   withinLookCone,
   checkScriptArrive,
 } from "./Arrive";
+export {
+  PATHMOV_CRUISE_VXZ,
+  PATHMOV_DEF_MOVEMENT,
+  CRUISE_PER_MOVEMENT,
+  PLAYER_JUMP_HY,
+  SCRIPT_DECEL_H,
+  JUMP1_PLANNED_DIST,
+  JUMP1_PLANNED_DY,
+  JUMP1_MIN_TARGET_H,
+  defaultDriveParams,
+  readDefMovement,
+  faceOnce,
+  enterScriptProxy,
+  restoreMaidMovement,
+  tickWalkDrive,
+  inJump1Window,
+  applyJump1Impulse,
+} from "./ScriptDrive";
+export type {
+  CardinalDir,
+  DriveParams,
+  Jump1ImpulseInfo,
+} from "./ScriptDrive";
 export { unreachableCache, UnreachableCache, UNREACHABLE_TTL_MS } from "./UnreachableCache";
 export {
   ASTAR_MAX_EXPAND,

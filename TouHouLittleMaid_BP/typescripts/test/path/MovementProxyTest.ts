@@ -16,14 +16,12 @@ import {
   BlockPermutation,
   Dimension,
   Entity,
-  EntityMovementComponent,
   Player,
   system,
   Vector3,
 } from "@minecraft/server";
 import { Logger } from "../../src/controller/Logger";
 import { EntityMaid } from "../../src/maid/EntityMaid";
-import { Level } from "../../src/maid/facets/Level";
 import {
   ARRIVE_LOOK_HALF_DEG,
   ARRIVE_REACH_H,
@@ -31,9 +29,22 @@ import {
   checkScriptArrive,
 } from "../../src/maid/path/Arrive";
 import {
-  hxForHorizontalRange,
-  resolveImpulseEx,
-} from "../../src/maid/path/ImpulseTable";
+  applyJump1Impulse,
+  CRUISE_PER_MOVEMENT,
+  CardinalDir,
+  defaultDriveParams,
+  DriveParams,
+  inJump1Window,
+  JUMP1_MIN_TARGET_H,
+  JUMP1_PLANNED_DIST,
+  JUMP1_PLANNED_DY,
+  PATHMOV_CRUISE_VXZ,
+  PATHMOV_DEF_MOVEMENT,
+  PLAYER_JUMP_HY,
+  readDefMovement,
+  SCRIPT_DECEL_H,
+  tickWalkDrive,
+} from "../../src/maid/path/ScriptDrive";
 import { testCommandRegister } from "../TestCommandRegister";
 import { getLastPlayerJumpSample } from "./PlayerJumpCaptureTest";
 
@@ -47,8 +58,8 @@ const SETTLE_BEFORE = 8;
 const MAX_TICKS = 120;
 /** 与 Arrive.ARRIVE_REACH_H 同值；稳态均值过滤用 */
 const ARRIVE_H = ARRIVE_REACH_H;
-/** 贴近目标时开始按距离降速（对齐采集 hDist≈0.85 起减速） */
-const DECEL_H = 0.85;
+/** 近距降速（与 ScriptDrive 同值） */
+const DECEL_H = SCRIPT_DECEL_H;
 const PAD_AHEAD = 2;
 const WALK_LEN = 10;
 const JUMP1_APPROACH = 4;
@@ -62,48 +73,10 @@ const JUMP_TRIGGER_BEFORE = 1.55;
 const JUMP_RETRY_AFTER = 12;
 /** 单次用例最多起跳次数（含重试） */
 const JUMP_MAX_ATTEMPTS = 2;
-/**
- * Jump1 水平仍按 Gap 桶取距反解 hx；竖直用玩家起飞冲量（见 PLAYER_JUMP_HY）。
- * 使用场景：一次 clearVelocity + (hx,hy)。
- */
-const JUMP1_PLANNED_DIST = 2;
-const JUMP1_PLANNED_DY = 1;
-/** 起跳瞄准水平射程下限（格），避免贴墙 actualH 过小 */
-const JUMP1_MIN_TARGET_H = 1.35;
-/**
- * 玩家站定起跳起飞 vy（path_pjump / 采集日志11；与 PATHMOV peakVy 一致）。
- * 使用场景：无现场 path_pjump 采样时的默认 hy；有采样则用最新 takeoffVy。
- */
-const PLAYER_JUMP_HY = 0.42;
-
-/**
- * PATHMOV@lv1 锁定真值：getVelocity 巡航与 Level.movement 的比值。
- * 使用场景：把实体定义移速换算成代理目标巡航速（两套 API 标度，非失败特例）。
- */
-const PATHMOV_CRUISE_VXZ = 0.135;
-const PATHMOV_DEF_MOVEMENT = Level.properties[0].movement; // 0.25
-const CRUISE_PER_MOVEMENT = PATHMOV_CRUISE_VXZ / PATHMOV_DEF_MOVEMENT;
 const PATHMOV_WALK_TICKS = 65;
 
-type Cardinal = { dx: number; dz: number };
+type Cardinal = CardinalDir;
 type CaseKind = "walk" | "jump1" | "calib";
-
-/**
- * 冲量控制器可调参数（会话级；tune 写入，run 读取）。
- * 使用场景：着地 walk；Jump1 直接查 ImpulseTable，不进本结构。
- */
-type DriveParams = {
-  /** 实体 minecraft:movement 当前值（定义移速） */
-  defMovement: number;
-  /** 着地目标水平巡航 getVelocity */
-  targetCruise: number;
-  /** 指令速 / 显示目标速（抵消地面摩擦） */
-  frictionScale: number;
-  /** 加速段单 tick 沿程冲量上限 */
-  maxDvAccel: number;
-  /** 刹车/超速纠正单 tick 上限 */
-  maxDvBrake: number;
-};
 
 type Sample = {
   t: number;
@@ -435,15 +408,7 @@ export class MovementProxyTest {
    * 使用场景：run 无会话参；tune 自适应种子。
    */
   private defaultParamsFromMovement(defMovement: number): DriveParams {
-    const targetCruise = defMovement * CRUISE_PER_MOVEMENT;
-    return {
-      defMovement,
-      targetCruise,
-      // 日志3：无放大稳态≈0.093@0.135 目标 → 比值作初值；tune 会改写
-      frictionScale: PATHMOV_CRUISE_VXZ / 0.093,
-      maxDvAccel: Math.max(0.03, targetCruise * 0.33),
-      maxDvBrake: Math.max(0.06, targetCruise * 0.6),
-    };
+    return defaultDriveParams(defMovement);
   }
 
   private beginJob(): void {
@@ -785,15 +750,14 @@ export class MovementProxyTest {
   }
 
   /**
-   * 着地限幅追巡航；Jump1 巡航带内 Gap 表一次冲量；空中不补。
-   * 使用场景：tracking 每 tick，采样前执行。
+   * 着地限幅追巡航；Jump1 巡航带内一次冲量；空中不补。
+   * 使用场景：tracking 每 tick，采样前执行；驱动核见 ScriptDrive。
    */
   private drive(
     st: Extract<ProxyState, { kind: "running" }>,
     maid: Entity,
     caseKind: "walk" | "jump1"
   ): void {
-    const p = st.activeParams;
     let onGround = false;
     try {
       onGround = maid.isOnGround;
@@ -820,8 +784,6 @@ export class MovementProxyTest {
     }
 
     const along = vx * st.dir.dx + vz * st.dir.dz;
-    const latX = vx - along * st.dir.dx;
-    const latZ = vz - along * st.dir.dz;
 
     if (caseKind === "jump1") {
       if (
@@ -845,47 +807,14 @@ export class MovementProxyTest {
       }
     }
 
-    const goal = st.goalFeet!;
-    const loc = maid.location;
-    const hDist = Math.hypot(loc.x - goal.x, loc.z - goal.z);
-
-    if (hDist <= ARRIVE_H) {
-      if (Math.hypot(latX, latZ) > 1e-4) {
-        try {
-          maid.applyImpulse({ x: -latX, y: 0, z: -latZ });
-        } catch {
-          /* ignore */
-        }
-      }
-      return;
-    }
-
-    let displayTarget = p.targetCruise;
-    if (hDist < DECEL_H) {
-      displayTarget =
-        p.targetCruise * Math.max(0, (hDist - ARRIVE_H) / (DECEL_H - ARRIVE_H));
-    }
-    const cmdTarget = displayTarget * p.frictionScale;
-    let delta = cmdTarget - along;
-    if (delta > p.maxDvAccel) {
-      delta = p.maxDvAccel;
-    } else if (delta < -p.maxDvBrake) {
-      delta = -p.maxDvBrake;
-    }
-    const ix = st.dir.dx * delta - latX;
-    const iz = st.dir.dz * delta - latZ;
-    if (Math.hypot(ix, iz) < 1e-4) {
-      return;
-    }
-    try {
-      maid.applyImpulse({ x: ix, y: 0, z: iz });
-    } catch {
-      /* ignore */
-    }
+    tickWalkDrive(maid, st.dir, st.goalFeet!, st.activeParams, {
+      arriveH: ARRIVE_H,
+      decelH: DECEL_H,
+    });
   }
 
   /**
-   * Jump1：竖直 = 玩家起飞 hy；水平 = Gap 距反解 hx；clear 后一次冲量。
+   * Jump1：竖直 = 玩家起飞 hy；水平 = Gap 距反解 hx（ScriptDrive.applyJump1Impulse）。
    * 使用场景：巡航速内、距台沿 TRIGGER 窗。
    */
   private doGapStyleJump(
@@ -905,54 +834,37 @@ export class MovementProxyTest {
       y: st.origin.y,
       z: Math.floor(maid.location.z),
     };
-    const dbg = resolveImpulseEx(
-      maid.location,
-      toSupport,
-      JUMP1_PLANNED_DIST,
-      JUMP1_PLANNED_DY,
-      fromSupport
-    );
-    if (!dbg) {
-      this.msg(st.source, "resolveImpulseEx 失败，跳过起跳");
-      return;
-    }
     const playerJump = getLastPlayerJumpSample();
-    const hy = playerJump ? playerJump.takeoffVy : PLAYER_JUMP_HY;
-    const hySrc = playerJump ? "pjump" : "player_default";
-    const targetH = Math.max(dbg.actualH, JUMP1_MIN_TARGET_H);
-    const hx = hxForHorizontalRange(targetH, hy);
-    const ddx = dbg.toFeet.x - maid.location.x;
-    const ddz = dbg.toFeet.z - maid.location.z;
-    const len = Math.hypot(ddx, ddz);
-    if (len < 1e-4) {
-      this.msg(st.source, "起跳方向长度为 0");
+    const info = applyJump1Impulse(maid, {
+      toSupport,
+      fromSupport,
+      hy: playerJump ? playerJump.takeoffVy : PLAYER_JUMP_HY,
+      hySrc: playerJump ? "pjump" : "player_default",
+      plannedDist: JUMP1_PLANNED_DIST,
+      plannedDy: JUMP1_PLANNED_DY,
+      minTargetH: JUMP1_MIN_TARGET_H,
+    });
+    if (!info) {
+      this.msg(st.source, "applyJump1Impulse 失败，跳过起跳");
       return;
     }
-    const ix = (ddx / len) * hx;
-    const iz = (ddz / len) * hx;
-    try {
-      maid.clearVelocity();
-      maid.applyImpulse({ x: ix, y: hy, z: iz });
-      st.jumped = true;
-      st.jumpedAt = st.trackTicks;
-      st.jumpAttempts += 1;
-      this.logData(
-        [
-          `CTRL,jump`,
-          `t=${st.trackTicks}`,
-          `attempt=${st.jumpAttempts}`,
-          `hx=${f3(hx)}`,
-          `hy=${f3(hy)}`,
-          `hySrc=${hySrc}`,
-          `actualH=${f3(dbg.actualH)}`,
-          `targetH=${f3(targetH)}`,
-          `imp=${f3(ix)},${f3(hy)},${f3(iz)}`,
-          `vBefore=${f3(vx)},${f3(vy)},${f3(vz)}`,
-        ].join(",")
-      );
-    } catch (e) {
-      this.msg(st.source, `jump impulse 失败: ${String(e)}`);
-    }
+    st.jumped = true;
+    st.jumpedAt = st.trackTicks;
+    st.jumpAttempts += 1;
+    this.logData(
+      [
+        `CTRL,jump`,
+        `t=${st.trackTicks}`,
+        `attempt=${st.jumpAttempts}`,
+        `hx=${f3(info.hx)}`,
+        `hy=${f3(info.hy)}`,
+        `hySrc=${info.hySrc}`,
+        `actualH=${f3(info.actualH)}`,
+        `targetH=${f3(info.targetH)}`,
+        `imp=${f3(info.ix)},${f3(info.hy)},${f3(info.iz)}`,
+        `vBefore=${f3(vx)},${f3(vy)},${f3(vz)}`,
+      ].join(",")
+    );
   }
 
   /**
@@ -968,20 +880,18 @@ export class MovementProxyTest {
       return false;
     }
     const loc = maid.location;
-    if (loc.y >= st.goalSupportY + 0.9) {
-      return false;
-    }
-    const cruise = st.activeParams.targetCruise;
-    const alongMin = cruise * 0.55;
-    const alongMax = cruise * 1.45;
-    if (alongVel < alongMin || alongVel > alongMax) {
-      return false;
-    }
-    const along =
+    const alongPos =
       (loc.x - (st.origin.x + 0.5)) * st.dir.dx +
       (loc.z - (st.origin.z + 0.5)) * st.dir.dz;
-    const edge = JUMP1_APPROACH;
-    return along >= edge - JUMP_TRIGGER_BEFORE && along < edge + 0.15;
+    return inJump1Window({
+      maidY: loc.y,
+      goalSupportY: st.goalSupportY,
+      alongPos,
+      edgeAlong: JUMP1_APPROACH,
+      triggerBefore: JUMP_TRIGGER_BEFORE,
+      alongVel,
+      targetCruise: st.activeParams.targetCruise,
+    });
   }
 
   private sampleOnce(
@@ -1333,38 +1243,6 @@ export class MovementProxyTest {
     }
     Logger.info(TAG, text);
   }
-}
-
-/**
- * 读取女仆定义移速（优先 Level 表；其次 movement 当前值且 >0）。
- * 使用场景：spawn 后、lock 前同步 targetCruise。
- */
-function readDefMovement(maid: Entity): number {
-  try {
-    const lv = Level.get(maid);
-    if (typeof lv === "number" && lv >= 1) {
-      const m = Level.properties[lv - 1]?.movement;
-      if (typeof m === "number" && m > 0) {
-        return m;
-      }
-    }
-  } catch {
-    /* fallthrough */
-  }
-  try {
-    const c = maid.getComponent("minecraft:movement") as
-      | EntityMovementComponent
-      | undefined;
-    if (c) {
-      const v = c.currentValue;
-      if (typeof v === "number" && v > 0) {
-        return v;
-      }
-    }
-  } catch {
-    /* fallthrough */
-  }
-  return PATHMOV_DEF_MOVEMENT;
 }
 
 /**
