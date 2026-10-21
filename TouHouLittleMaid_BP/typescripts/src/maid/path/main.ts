@@ -28,6 +28,14 @@ export {
   snapshotImpulseTable,
 } from "./ImpulseTable";
 export type { ImpulseKey, ImpulseVec, ImpulsePos } from "./ImpulseTable";
+export {
+  ARRIVE_REACH_H,
+  ARRIVE_REACH_V,
+  ARRIVE_LOOK_HALF_DEG,
+  withinReachDistance,
+  withinLookCone,
+  checkScriptArrive,
+} from "./Arrive";
 export { unreachableCache, UnreachableCache, UNREACHABLE_TTL_MS } from "./UnreachableCache";
 export {
   ASTAR_MAX_EXPAND,

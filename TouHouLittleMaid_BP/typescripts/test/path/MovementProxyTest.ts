@@ -25,6 +25,12 @@ import { Logger } from "../../src/controller/Logger";
 import { EntityMaid } from "../../src/maid/EntityMaid";
 import { Level } from "../../src/maid/facets/Level";
 import {
+  ARRIVE_LOOK_HALF_DEG,
+  ARRIVE_REACH_H,
+  ARRIVE_REACH_V,
+  checkScriptArrive,
+} from "../../src/maid/path/Arrive";
+import {
   hxForHorizontalRange,
   resolveImpulseEx,
 } from "../../src/maid/path/ImpulseTable";
@@ -39,8 +45,8 @@ const LOG_PREFIX = "PATHPROXY";
 
 const SETTLE_BEFORE = 8;
 const MAX_TICKS = 120;
-const ARRIVE_H = 0.75;
-const ARRIVE_V = 1.6;
+/** 与 Arrive.ARRIVE_REACH_H 同值；稳态均值过滤用 */
+const ARRIVE_H = ARRIVE_REACH_H;
 /** 贴近目标时开始按距离降速（对齐采集 hDist≈0.85 起减速） */
 const DECEL_H = 0.85;
 const PAD_AHEAD = 2;
@@ -1044,23 +1050,34 @@ export class MovementProxyTest {
     );
   }
 
+  /**
+   * 抵达：触及距 + 视线锥（着地）；Jump1 另要求已上一级台面。
+   * 使用场景：tracking；成功 reason=`reach_cone`。
+   */
   private checkArrived(
     st: Extract<ProxyState, { kind: "running" }>,
     maid: Entity,
     caseKind: "walk" | "jump1",
     onGround: boolean
   ): string | undefined {
+    if (!onGround) {
+      return undefined;
+    }
     const goal = st.goalFeet!;
-    const loc = maid.location;
-    const h = Math.hypot(loc.x - goal.x, loc.z - goal.z);
-    const vOk = Math.abs(loc.y - goal.y) <= ARRIVE_V;
     if (caseKind === "jump1" && st.goalSupportY !== undefined) {
-      if (loc.y < st.goalSupportY + 1 - 0.2) {
+      if (maid.location.y < st.goalSupportY + 1 - 0.2) {
         return undefined;
       }
     }
-    if (h <= ARRIVE_H && vOk && onGround) {
-      return "near";
+    if (
+      checkScriptArrive(maid, goal, {
+        reachH: ARRIVE_REACH_H,
+        reachV: ARRIVE_REACH_V,
+        lookHalfDeg: ARRIVE_LOOK_HALF_DEG,
+        requireOnGround: true,
+      })
+    ) {
+      return "reach_cone";
     }
     return undefined;
   }
