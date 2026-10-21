@@ -148,7 +148,10 @@ export function enterScriptProxy(
   maid: Entity,
   options?: {
     marker?: Entity;
-    /** 与抵达判定对齐的脚位点；有则 teleport marker */
+    /**
+     * 目视 / 抵达对齐点（AI 路点为 stamp：via 眼高或 goal 体心；Gap 仍为对岸脚位）。
+     * 有则 teleport marker 到此点。
+     */
     lookAtFeet?: Vector3;
   }
 ): void {

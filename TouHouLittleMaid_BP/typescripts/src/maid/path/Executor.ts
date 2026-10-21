@@ -138,9 +138,9 @@ const AI_EDGE_TIMEOUT_MS = 12_000;
 const AI_NO_TARGET_FIRST_HOLD_TICKS = 35;
 /**
  * 本 AI 步曾有正确目标后又丢：连续空满这么多游戏 tick → 切脚本。
- * 使用场景：中途丢 target；比首次短，避免卡在「有过再丢」的空窗。
+ * 使用场景：中途丢 target；0 = 观测到空窗当拍即切（仍受近抵达窗保护）。
  */
-const AI_NO_TARGET_LOST_HOLD_TICKS = 11;
+const AI_NO_TARGET_LOST_HOLD_TICKS = 0;
 /**
  * 水平距无实质靠近连续超过此时长（游戏 tick）→ 切脚本（卡死但仍可能有 target）。
  * 使用场景：人为堵路 / 原版绕不过；不必等满 AI_EDGE_TIMEOUT。50 tick ≈ 原 2.5s@20TPS。
@@ -182,8 +182,12 @@ type Phase =
 type ScriptFollowState = {
   params: DriveParams;
   dir: CardinalDir;
+  /**
+   * 本路点统一目标点（via 眼高 / goal 作物体心），与 FollowAI marker stamp 相同。
+   * 使用场景：冲量巡航、锥形抵达、朝向；水平距取 xz。
+   */
   goalFeet: Vector3;
-  /** 目标支撑顶面 y（Jump1 窗）；平地可与 goalFeet.y-1 同量级 */
+  /** 目标支撑顶面 y（Jump1 窗） */
   goalSupportY: number;
   jumped: boolean;
   jumpedAtTick: number | undefined;
@@ -282,7 +286,7 @@ type Session = {
    */
   aiNoTargetSinceTick?: number;
   /**
-   * 本 AI 步是否曾挂上正确 marker 目标（决定空窗用首次 35 还是丢目标 11）。
+   * 本 AI 步是否曾挂上正确 marker 目标（决定空窗用首次 35 还是丢目标 LOST 阈值）。
    * 使用场景：tickFollowAI `ai_no_target`；beginStep / 切入 ScriptFollow 时清空。
    */
   aiHadSeekTarget?: boolean;
@@ -358,6 +362,21 @@ function goalMarkerOf(support: StandNode, blocksAbove: number): Vector3 {
 function eyeOf(support: StandNode): Vector3 {
   const feet = feetOf(support);
   return { x: feet.x, y: feet.y + EYE_OFFSET_FROM_FEET, z: feet.z };
+}
+
+/**
+ * AI 路点统一 stamp / 朝向 / 脚本抵达点（与 FollowAI、粒子、ScriptFollow 一致）。
+ * via → 眼高；goal → 支撑上方第 goalBlocksAbove 格体心。
+ * 使用场景：beginStep、enterScriptFollow、路点粒子。
+ */
+function aiStampPos(
+  support: StandNode,
+  role: WaypointRole,
+  goalBlocksAbove: number
+): Vector3 {
+  return role === "goal"
+    ? goalMarkerOf(support, goalBlocksAbove)
+    : eyeOf(support);
 }
 
 /**
@@ -1012,8 +1031,7 @@ function beginStep(session: Session): void {
   }
   session.phase = "FollowAI";
   session.goalRangeSince = undefined;
-  const stampPos =
-    step.role === "goal" ? goalMarkerOf(step.support, session.goalBlocksAbove) : eyeOf(step.support);
+  const stampPos = aiStampPos(step.support, step.role, session.goalBlocksAbove);
   if (!ensureMarker(session, stampPos)) {
     failSession(session, "spawn_marker");
     return;
@@ -1064,25 +1082,22 @@ function enterScriptFollow(session: Session, reason: string): void {
     return;
   }
   const maid = session.maid;
-  const goalFeet = feetOf(step.support);
+  // 与 FollowAI stamp 同一点：via 眼高 / goal 作物体心（勿改脚位，避免切换后 marker 跳变）
+  const stamp = aiStampPos(step.support, step.role, session.goalBlocksAbove);
   // 须在 disableAutonomous 前读定义移速
   const defMov = readDefMovement(maid);
   const params = defaultDriveParams(defMov);
-  const lookAt =
-    step.role === "goal"
-      ? goalMarkerOf(step.support, session.goalBlocksAbove)
-      : goalFeet;
-  enterScriptProxy(maid, { marker: session.marker, lookAtFeet: lookAt });
+  enterScriptProxy(maid, { marker: session.marker, lookAtFeet: stamp });
   session.pursueRole = undefined;
-  faceOnce(maid, lookAt);
+  faceOnce(maid, stamp);
   session.aiNoTargetSinceTick = undefined;
   session.aiHadSeekTarget = undefined;
   session.aiStallRefH = undefined;
   session.aiStallSinceTick = undefined;
   session.scriptFollow = {
     params,
-    dir: cardinalToward(maid.location, goalFeet),
-    goalFeet,
+    dir: cardinalToward(maid.location, stamp),
+    goalFeet: stamp,
     goalSupportY: step.support.y,
     jumped: false,
     jumpedAtTick: undefined,
@@ -1120,7 +1135,7 @@ function shouldEarlyScriptFollow(session: Session): string | undefined {
     return undefined;
   }
 
-  // 1) 无正确目标：首次空 ≥35 tick；曾有 target 再丢 ≥11 tick
+  // 1) 无正确目标：首次空 ≥35 tick；曾有 target 再丢 ≥ LOST（现为 0）
   if (hasSeekMarkerTarget(maid, session.marker)) {
     session.aiHadSeekTarget = true;
     session.aiNoTargetSinceTick = undefined;
@@ -1495,7 +1510,7 @@ function spawnWaypointParticles(session: Session): void {
     let isGoal = false;
     if (step.kind === "ai") {
       isGoal = step.role === "goal";
-      pos = isGoal ? goalMarkerOf(step.support, session.goalBlocksAbove) : eyeOf(step.support);
+      pos = aiStampPos(step.support, step.role, session.goalBlocksAbove);
     } else {
       // Gap：粒子与 Seek marker 同偏置，便于对照
       isGoal = i === last;
