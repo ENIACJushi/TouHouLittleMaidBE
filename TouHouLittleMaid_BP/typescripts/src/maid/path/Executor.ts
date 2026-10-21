@@ -12,7 +12,8 @@
  * - Gap 腾空：用当前速度积分落点（按起跳 FIT 缩放），曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
  * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_H）即 advance（避免贴脸互推）。
  * - AI 终点：近战命中本会话 seek_marker 即 Done。进入终点距离后先等几秒，这段里仍以打中为准；到点还没打中才按距离结束。
- * - AI 路点超时：切 `ScriptFollow`（巡航 + 可选 Jump1 + reach_cone），不再直接 Fail。
+ * - AI→脚本回退：无正确目标 / 水平距无进展 / 整段超时 → `ScriptFollow`
+ *   （现行 NAT `must_reach:false` 供农作近距锁目标；失败信号用脚本侧观测，不改实体 JSON）。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
  */
@@ -128,7 +129,25 @@ const MAID_COLLISION_RADIUS = 0.3;
  */
 const GAP_MARKER_UP = 1.5;
 
+/** 单 AI 路点硬超时（最后兜底） */
 const AI_EDGE_TIMEOUT_MS = 12_000;
+/**
+ * NAT 选敌宽限：过后再判定「无正确目标」。
+ * 使用场景：scan_interval≈10 tick；给引擎起索敌的时间。
+ */
+const AI_ACQUIRE_GRACE_MS = 1_500;
+/**
+ * 无正确目标需持续多久才切脚本（防瞬时空窗误触发）。
+ * 使用场景：对齐 §5.2「选不中 / 丢目标」；marker 已 stamp 但 maid.target 对不上。
+ */
+const AI_NO_TARGET_HOLD_MS = 800;
+/**
+ * 水平距无实质靠近超过此时长 → 切脚本（卡死但仍可能有 target）。
+ * 使用场景：人为堵路 / 原版绕不过；不必等满 AI_EDGE_TIMEOUT。
+ */
+const AI_STALL_MS = 2_500;
+/** 判定「有进展」：相对窗口起点水平距至少缩短这么多（格） */
+const AI_STALL_IMPROVE_H = 0.25;
 const FLIGHT_TIMEOUT_MS = 1_500;
 const PREP_TIMEOUT_MS = 3_000;
 /**
@@ -257,6 +276,17 @@ type Session = {
    * 使用场景：tickScriptFollow。
    */
   scriptFollow?: ScriptFollowState;
+  /**
+   * 首次发现无正确 Seek 目标的时刻；恢复正确目标则清空。
+   * 使用场景：tickFollowAI 提早回退。
+   */
+  aiNoTargetSince?: number;
+  /**
+   * 无进展窗口：起点水平距与起始时刻。
+   * 使用场景：tickFollowAI stall 判定。
+   */
+  aiStallRefH?: number;
+  aiStallSince?: number;
   /**
    * 本会话 entityHitEntity 回调（subscribe 时用 entities:[maid] 限定攻击方；已验证有效）。
    * 使用场景：AI 路点抵达；teardown 时 unsubscribe。
@@ -947,6 +977,9 @@ function beginStep(session: Session): void {
   const step = session.steps[session.index];
   session.phaseAt = now();
   session.scriptFollow = undefined;
+  session.aiNoTargetSince = undefined;
+  session.aiStallRefH = undefined;
+  session.aiStallSince = undefined;
   if (step.kind === "gap") {
     session.phase = "PrepGap";
     try {
@@ -992,13 +1025,29 @@ function cardinalToward(from: Vector3, to: Vector3): CardinalDir {
 }
 
 /**
- * AI 路点超时：切脚本冲量回退（不立刻 Fail）。
- * 使用场景：tickFollowAI；对齐实验设计 §5.2。
+ * 女仆当前 AI 目标是否为本会话 marker（stamp 正确且仍有效）。
+ * 使用场景：§5.2 选不中 / 丢目标观测。
  */
-function enterScriptFollow(session: Session): void {
+function hasSeekMarkerTarget(maid: Entity, marker: Entity | undefined): boolean {
+  if (!marker?.isValid) {
+    return false;
+  }
+  try {
+    const t = maid.target;
+    return t !== undefined && t.isValid && t.id === marker.id;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * 切脚本冲量回退（不立刻 Fail）。
+ * 使用场景：tickFollowAI；reason=ai_no_target|ai_stall|ai_timeout。
+ */
+function enterScriptFollow(session: Session, reason: string): void {
   const step = session.steps[session.index];
   if (step.kind !== "ai") {
-    failSession(session, "ai_timeout");
+    failSession(session, reason);
     return;
   }
   const maid = session.maid;
@@ -1013,6 +1062,9 @@ function enterScriptFollow(session: Session): void {
   enterScriptProxy(maid, { marker: session.marker, lookAtFeet: lookAt });
   session.pursueRole = undefined;
   faceOnce(maid, lookAt);
+  session.aiNoTargetSince = undefined;
+  session.aiStallRefH = undefined;
+  session.aiStallSince = undefined;
   session.scriptFollow = {
     params,
     dir: cardinalToward(maid.location, goalFeet),
@@ -1027,8 +1079,59 @@ function enterScriptFollow(session: Session): void {
   session.phaseAt = now();
   Logger.info(
     TAG,
-    `ScriptFollow enter maid=${session.maidId} i=${session.index} role=${step.role} cruise=${params.targetCruise.toFixed(3)}`
+    `ScriptFollow enter maid=${session.maidId} i=${session.index} role=${step.role} reason=${reason} cruise=${params.targetCruise.toFixed(3)}`
   );
+}
+
+/**
+ * FollowAI：无正确目标 / 无进展 → 提早 ScriptFollow；仍保留硬超时兜底。
+ * 使用场景：tickFollowAI 每拍。
+ */
+function shouldEarlyScriptFollow(session: Session): string | undefined {
+  const maid = session.maid;
+  const step = session.steps[session.index];
+  if (step.kind !== "ai") {
+    return undefined;
+  }
+  const elapsed = now() - session.phaseAt;
+  const loc = maid.location;
+  const goalFeet = feetOf(step.support);
+  const hDist = Math.hypot(loc.x - goalFeet.x, loc.z - goalFeet.z);
+
+  // 已近到可 AI 抵达窗内：勿因瞬态丢 target 抢切
+  const nearH = step.role === "goal" ? ARRIVE_GOAL_H : ARRIVE_VIA_H;
+  if (hDist <= nearH) {
+    session.aiNoTargetSince = undefined;
+    session.aiStallRefH = undefined;
+    session.aiStallSince = undefined;
+    return undefined;
+  }
+
+  // 1) 选不中 / 丢目标（宽限后持续 hold）
+  if (elapsed >= AI_ACQUIRE_GRACE_MS) {
+    if (!hasSeekMarkerTarget(maid, session.marker)) {
+      const since = session.aiNoTargetSince ?? now();
+      session.aiNoTargetSince = since;
+      if (now() - since >= AI_NO_TARGET_HOLD_MS) {
+        return "ai_no_target";
+      }
+    } else {
+      session.aiNoTargetSince = undefined;
+    }
+  }
+
+  // 2) 水平距无实质靠近
+  if (session.aiStallRefH === undefined || session.aiStallSince === undefined) {
+    session.aiStallRefH = hDist;
+    session.aiStallSince = now();
+  } else if (hDist <= session.aiStallRefH - AI_STALL_IMPROVE_H) {
+    session.aiStallRefH = hDist;
+    session.aiStallSince = now();
+  } else if (now() - session.aiStallSince >= AI_STALL_MS) {
+    return "ai_stall";
+  }
+
+  return undefined;
 }
 
 function tickFollowAI(session: Session): void {
@@ -1038,7 +1141,12 @@ function tickFollowAI(session: Session): void {
     return;
   }
   if (now() - session.phaseAt > AI_EDGE_TIMEOUT_MS) {
-    enterScriptFollow(session);
+    enterScriptFollow(session, "ai_timeout");
+    return;
+  }
+  const early = shouldEarlyScriptFollow(session);
+  if (early) {
+    enterScriptFollow(session, early);
     return;
   }
   // 途经：距离抵达（恢复旧逻辑）
