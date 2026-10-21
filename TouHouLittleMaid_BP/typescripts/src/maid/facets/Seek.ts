@@ -1,14 +1,21 @@
 /**
  * 精准目标 Seek 门面（Task6 Phase 2）。
  * 使用场景：allocate 槽位 → mount 女仆 → stamp 目标；quit/release/resetTarget 释放。
- * 不接入 Farm / Work；验收走 SeekTest。
+ * NAT：默认严格 must_reach=true（原版寻路）；脚本段 mountSoft（false）。
  */
 import { Entity } from "@minecraft/server";
+import { DP } from "../../libs/DynamicPropertyInterface";
+import { Logger } from "../../controller/Logger";
 import { IntSlotDef } from "../slots/registry";
 import { clearIntSlot, isIntTokenInRange, setIntSlot } from "../slots/runtime";
-import { Logger } from "../../controller/Logger";
 
 const TAG = "EntityMaid.Seek";
+
+/**
+ * 动态属性：当前 NAT 是否为宽松档（must_reach false）。
+ * 使用场景：ensureSeek 从脚本段切回原版时强制 remount 严格档。
+ */
+const DP_NAT_SOFT = "seek_nat_soft";
 
 /** Seek 槽元数据：与 MaidGenerator Seek.js 的 0..255 对齐 */
 const SEEK_SLOT: IntSlotDef = {
@@ -99,8 +106,8 @@ export const Seek = {
   },
 
   /**
-   * 挂载 `slot:seek_<id>`（仅索敌 NAT）；若已有其它档会先 quit（含 reset_target）。
-   * 追逐须另调 `mountPursue`（不与本事件绑定，便于换追逐实现）。
+   * 挂载严格 NAT（`slot:seek_<id>`，must_reach=true）。
+   * 使用场景：Path FollowAI / 原版追逐段；同档若在 soft 上则强制切回严格。
    * @returns 是否成功
    */
   mount(maid: Entity, seekId: number): boolean {
@@ -108,20 +115,88 @@ export const Seek = {
       Logger.warn(TAG, `mount: 非法 seekId=${seekId}`);
       return false;
     }
-    return setIntSlot(maid, SEEK_SLOT, seekId, {
+    // 同档时 setIntSlot 会短路，软档须走 mountStrict
+    if (readSeekIndex(maid) === seekId) {
+      return Seek.mountStrict(maid, seekId);
+    }
+    const ok = setIntSlot(maid, SEEK_SLOT, seekId, {
       readCurrent: readSeekIndex,
       trackDp: false,
     });
+    if (ok) {
+      try {
+        DP.setBoolean(maid, DP_NAT_SOFT, false);
+      } catch {
+        /* ignore */
+      }
+    }
+    return ok;
   },
 
   /**
-   * 卸下当前 Seek 档（NAT）；不自动卸追逐，请配合 `quitPursue`。
+   * 强制切回严格 NAT（同档也会再 trigger；卸 soft）。
+   * 使用场景：ScriptFollow 结束 → ensureSeek；setIntSlot 同档短路时用本 API。
+   */
+  mountStrict(maid: Entity, seekId: number): boolean {
+    if (!isIntTokenInRange(SEEK_SLOT, seekId)) {
+      Logger.warn(TAG, `mountStrict: 非法 seekId=${seekId}`);
+      return false;
+    }
+    try {
+      maid.triggerEvent(`slot:seek_${seekId}`);
+      DP.setBoolean(maid, DP_NAT_SOFT, false);
+      return true;
+    } catch (e) {
+      Logger.warn(TAG, `mountStrict(${seekId}) failed: ${String(e)}`);
+      return false;
+    }
+  },
+
+  /**
+   * 切宽松 NAT（`slot:seek_<id>_soft`，must_reach=false）。
+   * 使用场景：脚本冲量 / ScriptFollow；须已挂载同档 seek_index。
+   */
+  mountSoft(maid: Entity, seekId?: number): boolean {
+    const id = seekId ?? readSeekIndex(maid);
+    if (id === undefined || !isIntTokenInRange(SEEK_SLOT, id)) {
+      Logger.warn(TAG, `mountSoft: 无有效 seekId`);
+      return false;
+    }
+    try {
+      maid.triggerEvent(`slot:seek_${id}_soft`);
+      DP.setBoolean(maid, DP_NAT_SOFT, true);
+      return true;
+    } catch (e) {
+      Logger.warn(TAG, `mountSoft(${id}) failed: ${String(e)}`);
+      return false;
+    }
+  },
+
+  /**
+   * 当前是否宽松 NAT。
+   * 使用场景：ensureSeek 决定是否 mountStrict。
+   */
+  isNatSoft(maid: Entity): boolean {
+    try {
+      return DP.getBoolean(maid, DP_NAT_SOFT) === true;
+    } catch {
+      return false;
+    }
+  },
+
+  /**
+   * 卸下当前 Seek 档（严格+soft NAT）；不自动卸追逐，请配合 `quitPursue`。
    */
   quit(maid: Entity): void {
     clearIntSlot(maid, SEEK_SLOT, {
       readCurrent: readSeekIndex,
       trackDp: false,
     });
+    try {
+      DP.setBoolean(maid, DP_NAT_SOFT, false);
+    } catch {
+      /* ignore */
+    }
   },
 
   /**

@@ -20,9 +20,43 @@ const SEEK_PURSUE_VIA = "slot:seek_pursue_via";
 const SEEK_LOOK = "slot:seek_look";
 
 /**
+ * 构造某一 Seek 档的 NAT（仅 must_reach 不同）。
+ * 使用场景：严格档（原版寻路）/ 宽松档（脚本寻路）。
+ * @param {number} i seekId
+ * @param {boolean} mustReach
+ */
+function makeNat(i, mustReach) {
+  return {
+    "minecraft:follow_range": { max: 32, value: 32 },
+    "minecraft:behavior.nearest_attackable_target": {
+      priority: 7,
+      must_reach: mustReach,
+      must_see: false,
+      persist_time: 0,
+      reselect_targets: true,
+      within_radius: 32,
+      scan_interval: 10,
+      entity_types: [
+        {
+          filters: {
+            test: "int_property",
+            domain: "thlmt:value",
+            subject: "other",
+            value: i,
+          },
+          max_dist: 32,
+          must_see: false,
+          reevaluate_description: true,
+        },
+      ],
+    },
+  };
+}
+
+/**
  * 精准目标 Seek 枚举（Task6 Phase 1 + Task7 追逐分离）。
- * 使用场景：生成 `slot:seek_<n>`（仅索敌）与独立追逐组（终点 / 途经可换）。
- * 定稿：档内仅 NAT；追逐由脚本另调；脚本代理另挂目视组。
+ * 使用场景：生成 `slot:seek_<n>`（严格 NAT）与 `slot:seek_<n>_soft`（宽松 NAT）；
+ * 追逐 / 目视另挂。原版寻路 must_reach=true；脚本寻路切 soft=false。
  */
 export class Seek {
   /**
@@ -30,7 +64,7 @@ export class Seek {
    */
   static process(g) {
     console.log(
-      `添加精准目标 Seek: 0~${END_INDEX}；追逐 ${SEEK_PURSUE} / ${SEEK_PURSUE_VIA}；目视 ${SEEK_LOOK}`
+      `添加精准目标 Seek: 0~${END_INDEX}（严格+soft）；追逐 ${SEEK_PURSUE} / ${SEEK_PURSUE_VIA}；目视 ${SEEK_LOOK}`
     );
 
     g.addProperty("thlm:seek_index", {
@@ -134,45 +168,34 @@ export class Seek {
 
     for (let i = 0; i <= END_INDEX; i++) {
       const groupName = `slot:seek_${i}`;
+      const softName = `slot:seek_${i}_soft`;
       const quitName = `slot:seek_${i}_quit`;
 
-      g.addComponentGroup(groupName, {
-        "minecraft:follow_range": { max: 32, value: 32 },
-        "minecraft:behavior.nearest_attackable_target": {
-          priority: 7,
-          must_reach: false,
-          must_see: false,
-          persist_time: 0,
-          reselect_targets: true,
-          within_radius: 32,
-          scan_interval: 10,
-          entity_types: [
-            {
-              filters: {
-                test: "int_property",
-                domain: "thlmt:value",
-                subject: "other",
-                value: i,
-              },
-              max_dist: 32,
-              must_see: false,
-              reevaluate_description: true,
-            },
-          ],
-        },
-      });
+      // 原版寻路：must_reach true → 选不中/丢目标可作失败信号
+      g.addComponentGroup(groupName, makeNat(i, true));
+      // 脚本寻路：must_reach false → 无通路也能盯着 stamp 目标
+      g.addComponentGroup(softName, makeNat(i, false));
 
-      // 装载：只加本档 NAT（追逐另由脚本 mountPursue）
+      // 装载严格档（默认 mount）；卸 soft 防双 NAT
       g.addEvent(groupName, {
         sequence: [
+          { remove: { component_groups: [softName] } },
           { add: { component_groups: [groupName] } },
+          { set_property: { "thlm:seek_index": i } },
+        ],
+      });
+      // 切宽松档（脚本段）；卸严格组
+      g.addEvent(softName, {
+        sequence: [
+          { remove: { component_groups: [groupName] } },
+          { add: { component_groups: [softName] } },
           { set_property: { "thlm:seek_index": i } },
         ],
       });
 
       g.addEvent(quitName, {
         sequence: [
-          { remove: { component_groups: [groupName] } },
+          { remove: { component_groups: [groupName, softName] } },
           { set_property: { "thlm:seek_index": -1 } },
           { reset_target: {} },
         ],

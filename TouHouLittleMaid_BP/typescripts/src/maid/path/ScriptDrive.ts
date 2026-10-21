@@ -141,7 +141,7 @@ export function faceOnce(maid: Entity, lookAt: Vector3): void {
 }
 
 /**
- * 切入脚本代理：禁走 + 卸追逐挂目视；可选把 marker 挪到 look 目标点。
+ * 切入脚本代理：禁走 + 宽松 NAT（must_reach false）+ 卸追逐挂目视。
  * 使用场景：Gap 冲量前；AI 回退；探针冲量段（Seek 已 mount 后）。
  */
 export function enterScriptProxy(
@@ -158,6 +158,8 @@ export function enterScriptProxy(
     /* ignore */
   }
   try {
+    // 脚本段：无通路也能盯着 stamp 目标（§5.2 soft）
+    Seek.mountSoft(maid);
     Seek.quitPursue(maid);
     Seek.mountLook(maid);
   } catch (e) {

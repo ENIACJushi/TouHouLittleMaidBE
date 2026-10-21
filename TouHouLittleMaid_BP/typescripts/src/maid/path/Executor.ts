@@ -797,12 +797,19 @@ function ensureMarker(session: Session, pos: Vector3): boolean {
 function ensureSeek(session: Session, role: WaypointRole): boolean {
   const maid = session.maid;
   if (Seek.getIndex(maid) !== session.seekId) {
+    // 默认严格 NAT（must_reach true）
     if (!Seek.mount(maid, session.seekId)) {
       return false;
     }
     Seek.mountPursue(maid, pursueEventFor(role));
     session.pursueRole = role;
     return true;
+  }
+  // 脚本段用过 soft：同档 setIntSlot 会短路，须强制切回严格
+  if (Seek.isNatSoft(maid)) {
+    if (!Seek.mountStrict(maid, session.seekId)) {
+      return false;
+    }
   }
   if (session.pursueRole !== role) {
     Seek.mountPursue(maid, pursueEventFor(role));
