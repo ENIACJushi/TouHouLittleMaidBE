@@ -1,0 +1,98 @@
+
+
+23:29:57[Scripting][inform]-§e[TLM]§7[PathFollow] §rgo maid=-1262290… dest=minecraft:pale_oak_planks
+plan ok=true reason=- edges=Walk>Walk>Walk>Walk>Jump1>Fall>Walk>SprintGap>Walk>Jump1>Jump1>Fall>Fall>Walk>Walk>Walk
+已启动；走到终点近战后应见 PATHDONE reason=done
+
+
+23:29:57[Scripting][inform]-PATHGO|PLAN,ok=true,reason=-,maidId=-12622908882942,start=-53.500,-56.000,120.500,destBlock=-71,-57,120,edges=16,nodes=17
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=0,kind=Walk,from=-54,-57,120,to=-55,-57,120,fromFeet=-53.500,-56.000,120.500,toFeet=-54.500,-56.000,120.500,h=1.000,dy=0
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=1,kind=Walk,from=-55,-57,120,to=-56,-57,120,fromFeet=-54.500,-56.000,120.500,toFeet=-55.500,-56.000,120.500,h=1.000,dy=0
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=2,kind=Walk,from=-56,-57,120,to=-57,-57,120,fromFeet=-55.500,-56.000,120.500,toFeet=-56.500,-56.000,120.500,h=1.000,dy=0
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=3,kind=Walk,from=-57,-57,120,to=-58,-57,120,fromFeet=-56.500,-56.000,120.500,toFeet=-57.500,-56.000,120.500,h=1.000,dy=0
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=4,kind=Jump1,from=-58,-57,120,to=-59,-56,120,fromFeet=-57.500,-56.000,120.500,toFeet=-58.500,-55.000,120.500,h=1.000,dy=1
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=5,kind=Fall,from=-59,-56,120,to=-60,-57,120,fromFeet=-58.500,-55.000,120.500,toFeet=-59.500,-56.000,120.500,h=1.000,dy=-1
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=6,kind=Walk,from=-60,-57,120,to=-61,-57,120,fromFeet=-59.500,-56.000,120.500,toFeet=-60.500,-56.000,120.500,h=1.000,dy=0
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=7,kind=SprintGap,from=-61,-57,120,to=-63,-57,120,fromFeet=-60.500,-56.000,120.500,toFeet=-62.500,-56.000,120.500,h=2.000,dy=0
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=8,kind=Walk,from=-63,-57,120,to=-64,-57,120,fromFeet=-62.500,-56.000,120.500,toFeet=-63.500,-56.000,120.500,h=1.000,dy=0
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=9,kind=Jump1,from=-64,-57,120,to=-65,-56,120,fromFeet=-63.500,-56.000,120.500,toFeet=-64.500,-55.000,120.500,h=1.000,dy=1
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=10,kind=Jump1,from=-65,-56,120,to=-66,-55,120,fromFeet=-64.500,-55.000,120.500,toFeet=-65.500,-54.000,120.500,h=1.000,dy=1
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=11,kind=Fall,from=-66,-55,120,to=-67,-56,120,fromFeet=-65.500,-54.000,120.500,toFeet=-66.500,-55.000,120.500,h=1.000,dy=-1
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=12,kind=Fall,from=-67,-56,120,to=-68,-57,120,fromFeet=-66.500,-55.000,120.500,toFeet=-67.500,-56.000,120.500,h=1.000,dy=-1
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=13,kind=Walk,from=-68,-57,120,to=-69,-57,120,fromFeet=-67.500,-56.000,120.500,toFeet=-68.500,-56.000,120.500,h=1.000,dy=0
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=14,kind=Walk,from=-69,-57,120,to=-70,-57,120,fromFeet=-68.500,-56.000,120.500,toFeet=-69.500,-56.000,120.500,h=1.000,dy=0
+
+
+23:29:57[Scripting][inform]-PATHGO|EDGE,i=15,kind=Walk,from=-70,-57,120,to=-71,-57,120,fromFeet=-69.500,-56.000,120.500,toFeet=-70.500,-56.000,120.500,h=1.000,dy=0
+
+
+23:29:58[Sound][verbose]-No sound found for block type 'normal' and event type 'fly'
+
+
+23:30:01[Scripting][inform]-PATHGAP|IMPULSE,i=4,plan=2:0,from=-59.904,-56.000,120.500,fromPad=-60.500,-56.000,120.500,padOffH=0.596,toFeet=-62.500,-56.000,120.500,toBlock=-63,-57,120,actualH=2.596,targetH=2.596,hx=0.538,hy=0.420,hyRaw=0.420,dir=-1.000,0.000,v=-0.538,0.420,0.000
+
+
+23:30:01[Scripting][inform]-PATHGAP|AIR_CORRECT,i=4,manh=0.652,pred=-63.152,120.500,toFeet=-62.500,120.500,alreadyH=0.538,remainPred=2.710,vel=-0.538,0.420,0.000,dHx=0.144,v=0.144,0,0.000
+
+
+23:30:01[Scripting][inform]-PATHGAP|AIR_CORRECT,i=4,manh=1.164,pred=-61.336,120.500,toFeet=-62.500,120.500,alreadyH=0.825,remainPred=0.608,vel=-0.136,0.248,0.000,dHx=0.257,v=-0.257,0,0.000
+
+
+23:30:01[Sound][verbose]-No sound found for block type 'normal' and event type 'fly'
+
+
+23:30:01[Scripting][inform]-PATHGAP|AIR_CORRECT,i=4,manh=0.246,pred=-62.746,120.500,toFeet=-62.500,120.500,alreadyH=1.553,remainPred=1.290,vel=-0.347,0.083,0.000,dHx=0.054,v=0.054,0,0.000
+
+
+23:30:01[Scripting][inform]-PATHGAP|AIR_CORRECT,i=4,manh=0.124,pred=-62.624,120.500,toFeet=-62.500,120.500,alreadyH=2.052,remainPred=0.669,vel=-0.238,-0.075,0.000,dHx=0.027,v=0.027,0,0.000
+
+
+23:30:01[Scripting][inform]-PATHGAP|AIR_CORRECT,i=4,manh=0.102,pred=-62.602,120.500,toFeet=-62.500,120.500,alreadyH=2.412,remainPred=0.285,vel=-0.172,-0.228,0.000,dHx=0.022,v=0.022,0,0.000
+
+
+23:30:01[Sound][verbose]-No sound found for block type 'normal' and event type 'fly'
+
+
+23:30:02[Scripting][inform]-PATHGAP|LAND,i=4,land=-62.784,-56.000,120.500,toFeet=-62.500,-56.000,120.500,toBlock=-63,-57,120,errH=0.284,errV=0.000,along=0.284,lateral=0.000,flightMs=697,arrive=reach_cone
+
+
+23:30:02[Sound][verbose]-No sound found for block type 'normal' and event type 'fly'
+
+
+23:30:06[Scripting][inform]-§e[TLM]§7[Path.Executor] §rDone maid=-12622908882942 reason=done
+
+
+23:30:06[Scripting][inform]-PATHDONE|COMPLETE,reason=done,detail=done,maidId=-12622908882942,dest=-71,-57,120,dtMs=9314
+
+
+23:30:06[Scripting][inform]-§e[TLM]§7[PathFollow] §rPATHDONE reason=done detail=done dt=9314ms

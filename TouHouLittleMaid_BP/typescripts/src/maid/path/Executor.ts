@@ -7,11 +7,12 @@
  * - **单 marker 实体**：会话内 spawn 一次，换路点只 teleport（Seek 一次锁定，不反复 reset）；
  * - 途经平视 + pursue_via；via→via 抵达后 quit+重挂 via melee 刷新追逐；
  * - 终点 marker 在支撑格上方若干格的中心（耕地 1 格即作物；甘蔗 2 格即要砍的那节）；
- * - Gap：**保留 Seek**；marker 对岸脚位沿跳向偏出碰撞半径(0.3)再抬高(1.5)；冲量前脚本朝向对岸；
+ * - Gap Prep：Seek 追逐走上跳沿；Impulse 起切脚本代理段（见下）；
+ * - Gap 冲量段（对齐代理运动实现方案 §1）：`disableAutonomous`；`mountLook`；
+ *   冲量前 **只一次** facing（`keepVelocity`）；落地 `Arrive.checkScriptArrive`（触及+视线锥）；
  * - Gap 腾空：用当前速度积分落点（按起跳 FIT 缩放），曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
  * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_H）即 advance（避免贴脸互推）。
  * - AI 终点：近战命中本会话 seek_marker 即 Done。进入终点距离后先等几秒，这段里仍以打中为准；到点还没打中才按距离结束。
- * - Gap 起跳/落地仍用支撑格距离（冲量段无有效近战抵达语义）。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
  */
@@ -26,6 +27,7 @@ import { config } from "../../controller/Config";
 import { Logger } from "../../controller/Logger";
 import { Movement } from "../facets/Movement";
 import { Seek, SEEK_MARKER_TYPE } from "../facets/Seek";
+import { checkScriptArrive } from "./Arrive";
 import {
   resolveImpulseEx,
   feetOfSupport,
@@ -300,14 +302,61 @@ function horizDist(a: Vector3, b: Vector3): number {
 }
 
 /**
- * 冲量前脚本朝向对岸（teleport + facingLocation）。
- * 使用场景：doImpulse；跨沟不依赖 Seek/NAT 转头。
+ * 冲量前脚本朝向对岸（teleport + facingLocation + keepVelocity）。
+ * 使用场景：doImpulse 一次；之后由 mountLook 控头，不再改朝向。
  */
 function faceToward(maid: Entity, lookAt: Vector3): void {
   try {
-    maid.teleport(maid.location, { facingLocation: lookAt });
+    maid.teleport(maid.location, {
+      facingLocation: lookAt,
+      keepVelocity: true,
+    });
   } catch (e) {
     Logger.warn(TAG, `faceToward failed: ${String(e)}`);
+  }
+}
+
+/**
+ * 恢复原版站立移速：若在脚本禁走中则 enableAutonomous，否则 unlock。
+ * 使用场景：Gap 落地 / 飞行超时 / teardown。
+ */
+function restoreMaidMovement(maid: Entity): void {
+  try {
+    if (Movement.isScriptMoveActive(maid)) {
+      Movement.enableAutonomous(maid);
+    } else {
+      Movement.unlock(maid);
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
+ * Gap 冲量段切入脚本代理：禁走 + 卸追逐挂目视；marker 挪到对岸脚位对齐视线锥目标。
+ * 使用场景：doImpulse 起跳前；与 MovementProxy 契约一致。
+ */
+function enterGapScriptProxy(session: Session, toFeet: Vector3): void {
+  const maid = session.maid;
+  try {
+    Movement.disableAutonomous(maid);
+  } catch {
+    /* ignore */
+  }
+  try {
+    Seek.quitPursue(maid);
+    Seek.mountLook(maid);
+    session.pursueRole = undefined;
+  } catch (e) {
+    Logger.warn(TAG, `enterGapScriptProxy seek: ${String(e)}`);
+  }
+  // 目视目标与抵达判定同一点（对岸脚位），避免偏置 marker 导致锥失败
+  if (session.marker?.isValid) {
+    try {
+      session.marker.teleport(toFeet);
+    } catch {
+      /* ignore */
+    }
   }
 }
 
@@ -778,6 +827,7 @@ export function isHomeReturnSuppressed(maidId: string): boolean {
 }
 function quitSeekWithPursue(maid: Entity): void {
   Seek.quitPursue(maid);
+  Seek.quitLook(maid);
   Seek.quit(maid);
 }
 
@@ -861,7 +911,7 @@ function teardown(
   try {
     if (maid.isValid) {
       quitSeekWithPursue(maid);
-      Movement.unlock(maid);
+      restoreMaidMovement(maid);
     }
   } catch {
     /* ignore */
@@ -1055,7 +1105,8 @@ function doImpulse(session: Session): void {
       `v=${f3(vx)},${f3(imp.hy)},${f3(vz)}`,
     ].join(",")
   );
-  // 冲量前脚本朝向对岸（不依赖跨沟 Seek 转头）
+  // 脚本代理段：禁走 + look-only；一次 facing（keepVelocity）后冲量
+  enterGapScriptProxy(session, toFeet);
   faceToward(maid, toFeet);
   try {
     maid.clearVelocity();
@@ -1090,7 +1141,7 @@ function tickInFlight(session: Session): void {
   }
   const edge = step.edge;
   if (now() - session.phaseAt > FLIGHT_TIMEOUT_MS) {
-    Movement.unlock(maid);
+    restoreMaidMovement(maid);
     session.gapAir = undefined;
     failSession(session, "flight_timeout");
     return;
@@ -1106,8 +1157,12 @@ function tickInFlight(session: Session): void {
     tryAirCorrect(session);
     return;
   }
-  if (onGround && nearSupport(maid, edge.to, ARRIVE_VIA_H)) {
-    const toFeet = feetOfSupport(edge.to);
+  const toFeet = feetOfSupport(edge.to);
+  // 脚本段抵达：触及距 + 视线锥（无 melee）
+  if (
+    onGround &&
+    checkScriptArrive(maid, toFeet, { requireOnGround: true })
+  ) {
     const loc = maid.location;
     const errH = Math.hypot(loc.x - toFeet.x, loc.z - toFeet.z);
     const errV = loc.y - toFeet.y;
@@ -1130,14 +1185,15 @@ function tickInFlight(session: Session): void {
         `along=${f3(along)}`,
         `lateral=${f3(lateral)}`,
         `flightMs=${now() - session.phaseAt}`,
+        `arrive=reach_cone`,
       ].join(",")
     );
     // 落地刹住水平动量，避免滑出垫格（小碰撞箱后续更依赖此点）
     clearHorizontalVelocity(maid);
     session.gapAir = undefined;
     inFlightCount = Math.max(0, inFlightCount - 1);
-    Movement.unlock(maid);
-    // Gap 保留 Seek；下一段 beginStep 按需 teleport / 切角色
+    restoreMaidMovement(maid);
+    // 下一段 beginStep 按需 teleport / 重挂追逐
     advance(session);
   }
 }
