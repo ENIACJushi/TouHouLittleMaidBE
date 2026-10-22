@@ -7,6 +7,7 @@ import { Entity, EntityMovementComponent, Vector3 } from "@minecraft/server";
 import { Logger } from "../../controller/Logger";
 import { Level } from "../facets/Level";
 import { Movement } from "../facets/Movement";
+import { Pose } from "../facets/Pose";
 import { Seek } from "../facets/Seek";
 import { ARRIVE_REACH_H } from "./Arrive";
 import {
@@ -181,6 +182,7 @@ export function enterScriptProxy(
 
 /**
  * 恢复原版站立移速：脚本禁走中则 enableAutonomous，否则 unlock。
+ * 若仍坐下，再 lock，避免 Path.cancel/teardown 解开坐下锁。
  * 使用场景：脚本段结束 / teardown / 飞行超时。
  */
 export function restoreMaidMovement(maid: Entity): void {
@@ -189,6 +191,13 @@ export function restoreMaidMovement(maid: Entity): void {
       Movement.enableAutonomous(maid);
     } else {
       Movement.unlock(maid);
+    }
+  } catch {
+    /* ignore */
+  }
+  try {
+    if (Pose.isSitting(maid)) {
+      Movement.lock(maid);
     }
   } catch {
     /* ignore */

@@ -16,6 +16,7 @@
  *   FollowAI 挂严格 NAT（`must_reach:true`），脚本代理挂宽松 NAT（`must_reach:false`）。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
+ * 外力终止：坐下 / 抱起 / 睡觉 → Path.cancel（Pose 边沿 + tickAll 兜底；start 拒绝）。
  */
 import {
   Entity,
@@ -26,6 +27,7 @@ import {
 } from "@minecraft/server";
 import { config } from "../../controller/Config";
 import { Logger } from "../../controller/Logger";
+import { Pose, setCancelFollowHook } from "../facets/Pose";
 import { Seek, SEEK_MARKER_TYPE } from "../facets/Seek";
 import { checkScriptArrive } from "./Arrive";
 import {
@@ -1555,6 +1557,11 @@ function tickAll(): void {
       failSession(session, "maid_invalid");
       continue;
     }
+    // 坐下 / 抱起 / 睡觉：外力终止（与 Pose.set* 边沿 cancel 互补）
+    if (Pose.blocksFollow(session.maid)) {
+      Executor.cancel(session.maid);
+      continue;
+    }
     spawnTrailParticle(session);
     spawnWaypointParticles(session);
     switch (session.phase) {
@@ -1595,6 +1602,13 @@ export const Executor = {
     options?: ExecutorStartOptions
   ): boolean {
     if (!maid.isValid) {
+      return false;
+    }
+    if (Pose.blocksFollow(maid)) {
+      Logger.info(
+        TAG,
+        `start refused maid=${maid.id} reason=pose_blocks_follow`
+      );
       return false;
     }
     suppressHomeReturn(maid.id);
@@ -1665,3 +1679,8 @@ export const Executor = {
     return sessions.size;
   },
 };
+
+// 姿态边沿 cancel：坐下 / 抱起 / 睡觉 → 终止 follow（避免 Pose 静态依赖本模块）
+setCancelFollowHook((maid) => {
+  Executor.cancel(maid);
+});
