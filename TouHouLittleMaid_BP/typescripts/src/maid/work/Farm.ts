@@ -17,7 +17,6 @@ import { EntityMaid } from "../EntityMaid";
 import { FarmBlocks } from "../../../data/FarmBlocks/main";
 import { StandableCache } from "../path/StandableCache";
 import { standNodeFromFeet } from "../path/Path";
-import { ARRIVE_GOAL_R } from "../path/Arrive";
 import { unreachableCache } from "../path/UnreachableCache";
 import {
   activityCircleOf,
@@ -73,6 +72,13 @@ export class Farm {
   static maxCount = 25;
   /** 与调度扫描默认范围一致 */
   static claimRange = 15;
+  /**
+   * 脉冲兜底「挨着作物」水平半宽（格）；脚位方盒，非 Arrive 球形触及。
+   * 使用场景：nearTask / onSchedulePulse。
+   */
+  static NEAR_TASK_H = 2.5;
+  /** 脉冲兜底竖直容差（格）；与 NEAR_TASK_H 配套。 */
+  static NEAR_TASK_V = 5;
 
   static cellKey(dimId, x, y, z) {
     return `${dimId}|${x},${y},${z}`;
@@ -373,15 +379,15 @@ export class Farm {
   }
 
   /**
-   * 人是否已在作物旁（水平用终点触及半径 ARRIVE_GOAL_R=3，与 Seek pursue 对齐）。
-   * 同步：改触及改 Arrive.SEEK_PURSUE_REACH_MULTIPLIER / Seek.js pursue，勿只改此处。
+   * 调度脉冲兜底：人是否已挨着作物格（脚位水平方盒，**不是** Arrive 头点球形触及）。
+   * 使用场景：onComplete 丢失时补 acquire；与 `ARRIVE_GOAL_R` / Seek melee 无关，勿混用。
    */
   static nearTask(maid, task) {
     const a = maid.location;
     const dx = Math.abs(a.x - (task.x + 0.5));
     const dz = Math.abs(a.z - (task.z + 0.5));
     const dy = Math.abs(a.y - task.y);
-    return dx <= ARRIVE_GOAL_R && dz <= ARRIVE_GOAL_R && dy <= 5;
+    return dx <= Farm.NEAR_TASK_H && dz <= Farm.NEAR_TASK_H && dy <= Farm.NEAR_TASK_V;
   }
 
   static dist2Maid(maid, task) {
@@ -735,7 +741,7 @@ export class Farm {
    * 调度脉冲：follow 中、以及走完通知还没跑时，都不要收割。
    * 使用场景：MaidTarget.stepEvent（farm）。正常收尾由 onFollowComplete 推送。
    * 通知已经丢了、人又在格子旁边时，才由这里补一次 acquire。
-   * 注意：!near 时不得清 job，近战触及可宽于 nearTask。
+   * 注意：!near 时不得清 job；nearTask 是旁圈兜底，与脚本/近战球形触及无关。
    */
   static onSchedulePulse(maid) {
     if (!maid?.isValid) {

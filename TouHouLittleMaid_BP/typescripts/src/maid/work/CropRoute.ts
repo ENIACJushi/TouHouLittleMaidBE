@@ -19,7 +19,6 @@ import {
   ensureStandHeight,
   reversiblePathResult,
 } from "../path/field/StandField";
-import { ARRIVE_GOAL_R } from "../path/Arrive";
 import { PathFollowCompleteInfo, StandNode } from "../path/types";
 import { SpeedController } from "./SpeedController";
 
@@ -65,10 +64,10 @@ export type CropRouteOptions = {
 };
 
 /**
- * 与 Farm.nearTask 相同（ARRIVE_GOAL_R）。出发不再靠它当场收；调度脉冲丢了通知时仍用它补一次。
- * 同步：Arrive.SEEK_PURSUE_REACH_MULTIPLIER / Seek.js pursue。
+ * 调度脉冲「挨着作物」兜底（脚位水平方盒，**不是** Arrive 球形触及）。
+ * 使用场景：onComplete 丢失时补 acquire；与 Farm.NEAR_TASK_* 同量级，勿接到 ARRIVE_*_R。
  */
-const NEAR_H = ARRIVE_GOAL_R;
+const NEAR_H = 2.5;
 const NEAR_V = 5;
 
 const BESIDE: ReadonlyArray<readonly [number, number]> = [
