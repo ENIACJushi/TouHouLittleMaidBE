@@ -109,10 +109,10 @@ const ARRIVE_VIA_H = 0.75;
  */
 const ARRIVE_GOAL_H = 2.5;
 /**
- * 进入终点距离后再等多久，才允许按距离结束。
- * 使用场景：给近战留时间。打中路点仍立刻结束，不必等满。
+ * 进入终点距离后再等多久（游戏 tick），才允许按距离结束。
+ * 使用场景：给近战留时间。打中路点仍立刻结束，不必等满。60 tick ≈ 原 3s@20TPS。
  */
-const GOAL_RANGE_GRACE_MS = 3000;
+const GOAL_RANGE_GRACE_TICKS = 60;
 /** 途经 / Gap 到达竖直容差 */
 const ARRIVE_V = 1.6;
 /**
@@ -131,8 +131,11 @@ const MAID_COLLISION_RADIUS = 0.3;
  */
 const GAP_MARKER_UP = 1.5;
 
-/** 单 AI 路点硬超时（最后兜底） */
-const AI_EDGE_TIMEOUT_MS = 12_000;
+/**
+ * 单 AI 路点硬超时（游戏 tick，最后兜底 → ScriptFollow）。
+ * 使用场景：tickFollowAI；240 tick ≈ 原 12s@20TPS。
+ */
+const AI_EDGE_TIMEOUT_TICKS = 240;
 /**
  * 本 AI 步从未拿到正确 marker 目标：连续空满这么多游戏 tick → 切脚本。
  * 使用场景：起索敌 / 选不中；约覆盖 NAT scan_interval(10) + 余量。
@@ -150,8 +153,16 @@ const AI_NO_TARGET_LOST_HOLD_TICKS = 0;
 const AI_STALL_HOLD_TICKS = 50;
 /** 判定「有进展」：相对窗口起点水平距至少缩短这么多（格） */
 const AI_STALL_IMPROVE_H = 0.25;
-const FLIGHT_TIMEOUT_MS = 1_500;
-const PREP_TIMEOUT_MS = 3_000;
+/**
+ * Gap 腾空硬超时（游戏 tick）。
+ * 使用场景：tickInFlight；30 tick ≈ 原 1.5s@20TPS。
+ */
+const FLIGHT_TIMEOUT_TICKS = 30;
+/**
+ * Gap Prep 硬超时（游戏 tick）。
+ * 使用场景：tickPrepGap；60 tick ≈ 原 3s@20TPS。
+ */
+const PREP_TIMEOUT_TICKS = 60;
 /**
  * 腾空预计落点与目标的曼哈顿距离阈值（格）；超过则本 tick 做 xz 修正。
  * 使用场景：tickInFlight / tryAirCorrect。
@@ -257,7 +268,11 @@ type Session = {
   /** 当前追逐角色；仅 via→goal（或反之）时切换组件组 */
   pursueRole: WaypointRole | undefined;
   phase: Phase;
-  phaseAt: number;
+  /**
+   * 当前 phase 起始的 system.currentTick（超时判定用，非墙钟）。
+   * 使用场景：FollowAI / ScriptFollow / PrepGap / InFlight 硬超时。
+   */
+  phaseAtTick: number;
   dest: StandNode;
   failReason?: string;
   /** Gap 腾空中才有；落地 / 失败清除 */
@@ -273,10 +288,10 @@ type Session = {
    */
   goalBlocksAbove: number;
   /**
-   * 第一次进入终点距离的时刻。离开范围就清掉。
-   * 使用场景：终点 FollowAI。未满 GOAL_RANGE_GRACE_MS 时只接受近战命中。
+   * 第一次进入终点距离的 system.currentTick。离开范围就清掉。
+   * 使用场景：终点 FollowAI。未满 GOAL_RANGE_GRACE_TICKS 时只接受近战命中。
    */
-  goalRangeSince?: number;
+  goalRangeSinceTick?: number;
   /**
    * AI 超时切入的脚本回退；离开 ScriptFollow 时清空。
    * 使用场景：tickScriptFollow。
@@ -305,8 +320,11 @@ type Session = {
   hitHandler?: (ev: EntityHitEntityAfterEvent) => void;
 };
 
-/** 脚本回退单路点超时（ms） */
-const SCRIPT_FOLLOW_TIMEOUT_MS = 10_000;
+/**
+ * 脚本回退单路点超时（游戏 tick）。
+ * 使用场景：tickScriptFollow；200 tick ≈ 原 10s@20TPS。
+ */
+const SCRIPT_FOLLOW_TIMEOUT_TICKS = 200;
 /** 脚本回退最多 Jump1 次数 */
 const SCRIPT_JUMP_MAX = 2;
 const SCRIPT_JUMP_RETRY_TICKS = 12;
@@ -328,10 +346,6 @@ function f3(n: number): string {
 /** Gap 诊断：只走 console.log */
 function logGap(line: string): void {
   console.log(`${GAP_LOG}|${line}`);
-}
-
-function now(): number {
-  return Date.now();
 }
 
 /**
@@ -1008,7 +1022,7 @@ function beginStep(session: Session): void {
     return;
   }
   const step = session.steps[session.index];
-  session.phaseAt = now();
+  session.phaseAtTick = system.currentTick;
   session.scriptFollow = undefined;
   session.aiNoTargetSinceTick = undefined;
   session.aiHadSeekTarget = undefined;
@@ -1032,7 +1046,7 @@ function beginStep(session: Session): void {
     return;
   }
   session.phase = "FollowAI";
-  session.goalRangeSince = undefined;
+  session.goalRangeSinceTick = undefined;
   const stampPos = aiStampPos(step.support, step.role, session.goalBlocksAbove);
   if (!ensureMarker(session, stampPos)) {
     failSession(session, "spawn_marker");
@@ -1107,7 +1121,7 @@ function enterScriptFollow(session: Session, reason: string): void {
     tickCount: 0,
   };
   session.phase = "ScriptFollow";
-  session.phaseAt = now();
+  session.phaseAtTick = system.currentTick;
   Logger.info(
     TAG,
     `ScriptFollow enter maid=${session.maidId} i=${session.index} role=${step.role} reason=${reason} cruise=${params.targetCruise.toFixed(3)}`
@@ -1174,7 +1188,7 @@ function tickFollowAI(session: Session): void {
   if (step.kind !== "ai") {
     return;
   }
-  if (now() - session.phaseAt > AI_EDGE_TIMEOUT_MS) {
+  if (system.currentTick - session.phaseAtTick > AI_EDGE_TIMEOUT_TICKS) {
     enterScriptFollow(session, "ai_timeout");
     return;
   }
@@ -1188,17 +1202,18 @@ function tickFollowAI(session: Session): void {
     advance(session);
     return;
   }
-  // 终点：先进范围只记时刻。近战打中仍走 onSeekMarkerHit，不必等满。
+  // 终点：先进范围只记 tick。近战打中仍走 onSeekMarkerHit，不必等满。
   if (step.role !== "goal") {
     return;
   }
   if (!nearSupport(maid, step.support, ARRIVE_GOAL_H)) {
-    session.goalRangeSince = undefined;
+    session.goalRangeSinceTick = undefined;
     return;
   }
-  const since = session.goalRangeSince ?? now();
-  session.goalRangeSince = since;
-  if (now() - since >= GOAL_RANGE_GRACE_MS) {
+  const tick = system.currentTick;
+  const since = session.goalRangeSinceTick ?? tick;
+  session.goalRangeSinceTick = since;
+  if (tick - since >= GOAL_RANGE_GRACE_TICKS) {
     advance(session);
   }
 }
@@ -1215,7 +1230,7 @@ function tickScriptFollow(session: Session): void {
     return;
   }
   const maid = session.maid;
-  if (now() - session.phaseAt > SCRIPT_FOLLOW_TIMEOUT_MS) {
+  if (system.currentTick - session.phaseAtTick > SCRIPT_FOLLOW_TIMEOUT_TICKS) {
     restoreMaidMovement(maid);
     session.scriptFollow = undefined;
     failSession(session, "script_follow_timeout");
@@ -1319,7 +1334,7 @@ function tickPrepGap(session: Session): void {
     return;
   }
   const edge = step.edge;
-  if (now() - session.phaseAt > PREP_TIMEOUT_MS) {
+  if (system.currentTick - session.phaseAtTick > PREP_TIMEOUT_TICKS) {
     failSession(session, "prep_timeout");
     return;
   }
@@ -1341,7 +1356,7 @@ function tickPrepGap(session: Session): void {
   }
   // movement=0 不吃 applyImpulse；代理段可用 Movement.disableAutonomous（含 lock）
   session.phase = "Impulse";
-  session.phaseAt = now();
+  session.phaseAtTick = system.currentTick;
   doImpulse(session);
 }
 
@@ -1424,7 +1439,7 @@ function doImpulse(session: Session): void {
   };
   inFlightCount++;
   session.phase = "InFlight";
-  session.phaseAt = now();
+  session.phaseAtTick = system.currentTick;
 }
 
 function tickInFlight(session: Session): void {
@@ -1434,7 +1449,7 @@ function tickInFlight(session: Session): void {
     return;
   }
   const edge = step.edge;
-  if (now() - session.phaseAt > FLIGHT_TIMEOUT_MS) {
+  if (system.currentTick - session.phaseAtTick > FLIGHT_TIMEOUT_TICKS) {
     restoreMaidMovement(maid);
     session.gapAir = undefined;
     failSession(session, "flight_timeout");
@@ -1478,7 +1493,7 @@ function tickInFlight(session: Session): void {
         `errV=${f3(errV)}`,
         `along=${f3(along)}`,
         `lateral=${f3(lateral)}`,
-        `flightMs=${now() - session.phaseAt}`,
+        `flightTicks=${system.currentTick - session.phaseAtTick}`,
         `arrive=reach_cone`,
       ].join(",")
     );
@@ -1637,7 +1652,7 @@ export const Executor = {
       marker: undefined,
       pursueRole: undefined,
       phase: "Idle",
-      phaseAt: now(),
+      phaseAtTick: system.currentTick,
       dest,
       onComplete: options?.onComplete,
       goalBlocksAbove: options?.goalBlocksAbove ?? 1,

@@ -13,7 +13,7 @@
 | 冲量代理 | `PATHPROXY\|` / `path_proxy_*` | 契约：一次 facing、`mountLook`、`reach_cone`；日志13 |
 | 玩家起跳 | `PATHPJUMP\|` / `path_pjump*` | `hy` 默认 0.42（日志11） |
 
-Executor：日志14 正常 Gap；日志15 人为原版卡 via → 12s ScriptFollow → Gap 收尾。
+Executor：日志14 正常 Gap；日志15 人为原版卡 via → AI 超时 ScriptFollow → Gap 收尾（现 `ai_timeout`=240 tick）。
 
 权威方案：同级目录 `代理运动实现方案.md`、`实验设计.md`；代表性日志仍在同级 `采集日志*.log`。
 
