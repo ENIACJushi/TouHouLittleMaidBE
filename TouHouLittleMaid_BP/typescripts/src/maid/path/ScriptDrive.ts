@@ -9,7 +9,7 @@ import { Level } from "../facets/Level";
 import { Movement } from "../facets/Movement";
 import { Pose } from "../facets/Pose";
 import { Seek } from "../facets/Seek";
-import { ARRIVE_REACH_H } from "./Arrive";
+import { ARRIVE_REACH_R } from "./Arrive";
 import {
   hxForHorizontalRange,
   resolveImpulseEx,
@@ -219,7 +219,7 @@ export function tickWalkDrive(
     decelH?: number;
   }
 ): boolean {
-  const arriveH = options?.arriveH ?? ARRIVE_REACH_H;
+  const arriveH = options?.arriveH ?? ARRIVE_REACH_R;
   const decelH = options?.decelH ?? SCRIPT_DECEL_H;
   let vx = 0;
   let vz = 0;

@@ -200,14 +200,15 @@ export const Seek = {
   },
 
   /**
-   * 终点追逐事件名（melee_attack，reach_multiplier≈10）。
+   * 终点追逐事件名（melee reach_multiplier=10 → 世界距 3，与 Arrive.ARRIVE_GOAL_R 对齐）。
    * 使用场景：Path.follow 终点；命中 seek_marker → Executor 判抵达。
+   * 改触及：Seek.js `slot:seek_pursue` + Arrive.SEEK_PURSUE_REACH_MULTIPLIER → build:maid。
    */
   PURSUE_DEFAULT: "slot:seek_pursue",
 
   /**
-   * 途经追逐事件名（melee_attack，reach_multiplier=0，贴紧行走）。
-   * 使用场景：Path.follow 中间路点；脚本近距离判抵达后切段（不靠攻击事件）。
+   * 途经追逐事件名（melee reach_multiplier=0，贴紧；切段靠脚本距离）。
+   * 使用场景：Path.follow 中间路点；与 Arrive.ARRIVE_VIA_R 故意不同源。
    */
   PURSUE_VIA: "slot:seek_pursue_via",
 

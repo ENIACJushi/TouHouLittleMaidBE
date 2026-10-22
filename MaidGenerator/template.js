@@ -76,6 +76,7 @@ export let TEMPLATE = {
         "minecraft:nameable"     : { "always_show": false, "allow_name_tag_renaming": false },
         "minecraft:health"       : { "value": 64, "max": 64 },
         "minecraft:type_family"  : { "family": [ "maid", "mob" ] },
+        // width/2=0.3 → Arrive.MAID_COLLISION_RADIUS；改宽须同步 Arrive + Seek 触及世界距
         "minecraft:collision_box": { "width": 0.6, "height": 1.5 },
         "minecraft:loot"         : { "table": "loot_tables/empty.json" },
         "minecraft:on_death"     : { "event": "thlmm:d", "target": "self" },

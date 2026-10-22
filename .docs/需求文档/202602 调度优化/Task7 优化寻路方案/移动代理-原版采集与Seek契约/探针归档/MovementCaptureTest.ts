@@ -35,7 +35,7 @@ const LOG_PREFIX = "PATHMOV";
 const SETTLE_BEFORE = 8;
 /** 单次用例最大采样 tick */
 const MAX_TICKS = 120;
-/** 与 Executor ARRIVE_VIA_H 对齐，便于对照 */
+/** 与 Arrive.ARRIVE_VIA_R 对齐，便于对照 */
 const ARRIVE_H = 0.75;
 /** 竖直抵达容差 */
 const ARRIVE_V = 1.6;

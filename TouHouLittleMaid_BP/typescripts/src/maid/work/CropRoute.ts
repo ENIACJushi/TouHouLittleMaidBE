@@ -19,6 +19,7 @@ import {
   ensureStandHeight,
   reversiblePathResult,
 } from "../path/field/StandField";
+import { ARRIVE_GOAL_R } from "../path/Arrive";
 import { PathFollowCompleteInfo, StandNode } from "../path/types";
 import { SpeedController } from "./SpeedController";
 
@@ -63,8 +64,11 @@ export type CropRouteOptions = {
   acquireAt(maid: Entity, task: CropTask): void;
 };
 
-/** 与 Farm.nearTask 相同。出发不再靠它当场收；调度脉冲丢了通知时仍用它补一次。 */
-const NEAR_H = 2.5;
+/**
+ * 与 Farm.nearTask 相同（ARRIVE_GOAL_R）。出发不再靠它当场收；调度脉冲丢了通知时仍用它补一次。
+ * 同步：Arrive.SEEK_PURSUE_REACH_MULTIPLIER / Seek.js pursue。
+ */
+const NEAR_H = ARRIVE_GOAL_R;
 const NEAR_V = 5;
 
 const BESIDE: ReadonlyArray<readonly [number, number]> = [

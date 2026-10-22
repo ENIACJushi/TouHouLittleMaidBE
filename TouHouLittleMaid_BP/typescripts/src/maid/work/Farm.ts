@@ -17,6 +17,7 @@ import { EntityMaid } from "../EntityMaid";
 import { FarmBlocks } from "../../../data/FarmBlocks/main";
 import { StandableCache } from "../path/StandableCache";
 import { standNodeFromFeet } from "../path/Path";
+import { ARRIVE_GOAL_R } from "../path/Arrive";
 import { unreachableCache } from "../path/UnreachableCache";
 import {
   activityCircleOf,
@@ -371,12 +372,16 @@ export class Farm {
     }
   }
 
+  /**
+   * 人是否已在作物旁（水平用终点触及半径 ARRIVE_GOAL_R=3，与 Seek pursue 对齐）。
+   * 同步：改触及改 Arrive.SEEK_PURSUE_REACH_MULTIPLIER / Seek.js pursue，勿只改此处。
+   */
   static nearTask(maid, task) {
     const a = maid.location;
     const dx = Math.abs(a.x - (task.x + 0.5));
     const dz = Math.abs(a.z - (task.z + 0.5));
     const dy = Math.abs(a.y - task.y);
-    return dx <= 2.5 && dz <= 2.5 && dy <= 5;
+    return dx <= ARRIVE_GOAL_R && dz <= ARRIVE_GOAL_R && dy <= 5;
   }
 
   static dist2Maid(maid, task) {

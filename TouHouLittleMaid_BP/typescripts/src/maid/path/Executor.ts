@@ -10,7 +10,7 @@
  * - Gap Prep：Seek 追逐走上跳沿；Impulse 起切脚本代理段（见下）；
  * - Gap 冲量段（`ScriptDrive`）：`enterScriptProxy`；一次 `faceOnce`；落地 `checkScriptArrive`；
  * - Gap 腾空：用当前速度积分落点（按起跳 FIT 缩放），曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
- * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_H）即 advance（避免贴脸互推）。
+ * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_R）即 advance（避免贴脸互推）。
  * - AI 终点：近战命中本会话 seek_marker 即 Done。进入终点距离后先等几秒，这段里仍以打中为准；到点还没打中才按距离结束。
  * - AI→脚本回退：无正确目标 / 水平距无进展 / 整段超时 → `ScriptFollow`；
  *   FollowAI 挂严格 NAT（`must_reach:true`），脚本代理挂宽松 NAT（`must_reach:false`）。
@@ -29,7 +29,11 @@ import { config } from "../../controller/Config";
 import { Logger } from "../../controller/Logger";
 import { Pose, setCancelFollowHook } from "../facets/Pose";
 import { Seek, SEEK_MARKER_TYPE } from "../facets/Seek";
-import { checkScriptArrive } from "./Arrive";
+import {
+  ARRIVE_GOAL_R,
+  ARRIVE_VIA_R,
+  checkScriptArrive,
+} from "./Arrive";
 import {
   resolveImpulseEx,
   feetOfSupport,
@@ -99,21 +103,14 @@ export const IN_FLIGHT_MAX = 4;
 const VIA_STEP = 16;
 
 /**
- * 途经到达水平容差（触及≈0，略放宽抖动）。
- * 使用场景：AI via 路点；Gap 起跳/落地（tickPrepGap / tickInFlight）。
- */
-const ARRIVE_VIA_H = 0.75;
-/**
- * 终点水平距离（格）。与耕地、甘蔗、瓜、可可「人已经在作物旁边」同一圈。
- * 使用场景：进入这一圈后不立刻结束，先留给近战转向并打中路点。
- */
-const ARRIVE_GOAL_H = 2.5;
-/**
  * 进入终点距离后再等多久（游戏 tick），才允许按距离结束。
  * 使用场景：给近战留时间。打中路点仍立刻结束，不必等满。60 tick ≈ 原 3s@20TPS。
  */
 const GOAL_RANGE_GRACE_TICKS = 60;
-/** 途经 / Gap 到达竖直容差 */
+/**
+ * AI nearSupport 竖直容差（格）；与球形触及无关。
+ * 使用场景：FollowAI via/goal 水平圈配套。
+ */
 const ARRIVE_V = 1.6;
 /**
  * 途经 marker 相对脚位的眼高偏移（女仆 collision height≈1.5）。
@@ -121,8 +118,8 @@ const ARRIVE_V = 1.6;
  */
 const EYE_OFFSET_FROM_FEET = 1.2;
 /**
- * 女仆水平碰撞半径（collision_box width 0.6 的一半）。
- * 使用场景：Gap 对岸 marker 沿跳向再偏出，避免与落地躯体重叠互推。
+ * Gap marker 水平偏置用碰撞半径（与 Arrive.MAID_COLLISION_RADIUS 同值）。
+ * 同步：改 collision width 时改 Arrive.MAID_COLLISION_RADIUS 与 template.js，并改此处。
  */
 const MAID_COLLISION_RADIUS = 0.3;
 /**
@@ -1143,7 +1140,7 @@ function shouldEarlyScriptFollow(session: Session): string | undefined {
   const hDist = Math.hypot(loc.x - goalFeet.x, loc.z - goalFeet.z);
 
   // 已近到可 AI 抵达窗内：勿因瞬态丢 target 抢切
-  const nearH = step.role === "goal" ? ARRIVE_GOAL_H : ARRIVE_VIA_H;
+  const nearH = step.role === "goal" ? ARRIVE_GOAL_R : ARRIVE_VIA_R;
   if (hDist <= nearH) {
     session.aiNoTargetSinceTick = undefined;
     session.aiStallRefH = undefined;
@@ -1198,7 +1195,7 @@ function tickFollowAI(session: Session): void {
     return;
   }
   // 途经：距离抵达（恢复旧逻辑）
-  if (step.role === "via" && nearSupport(maid, step.support, ARRIVE_VIA_H)) {
+  if (step.role === "via" && nearSupport(maid, step.support, ARRIVE_VIA_R)) {
     advance(session);
     return;
   }
@@ -1206,7 +1203,7 @@ function tickFollowAI(session: Session): void {
   if (step.role !== "goal") {
     return;
   }
-  if (!nearSupport(maid, step.support, ARRIVE_GOAL_H)) {
+  if (!nearSupport(maid, step.support, ARRIVE_GOAL_R)) {
     session.goalRangeSinceTick = undefined;
     return;
   }
@@ -1238,10 +1235,10 @@ function tickScriptFollow(session: Session): void {
   }
   sf.tickCount += 1;
 
-  const reachH = step.role === "goal" ? ARRIVE_GOAL_H : ARRIVE_VIA_H;
+  const reachR = step.role === "goal" ? ARRIVE_GOAL_R : ARRIVE_VIA_R;
   if (
     checkScriptArrive(maid, sf.goalFeet, {
-      reachH,
+      reachR,
       requireOnGround: true,
     })
   ) {
@@ -1323,7 +1320,7 @@ function tickScriptFollow(session: Session): void {
   // 方向可随相对位置刷新（拐弯后回退）
   sf.dir = cardinalToward(loc, sf.goalFeet);
   tickWalkDrive(maid, sf.dir, sf.goalFeet, sf.params, {
-    arriveH: reachH,
+    arriveH: reachR,
   });
 }
 
@@ -1339,7 +1336,7 @@ function tickPrepGap(session: Session): void {
     return;
   }
   // Gap 起跳格：用途经紧容差，确保站稳再冲量
-  if (!nearSupport(maid, edge.from, ARRIVE_VIA_H)) {
+  if (!nearSupport(maid, edge.from, ARRIVE_VIA_R)) {
     return;
   }
   let onGround = true;
@@ -1467,10 +1464,13 @@ function tickInFlight(session: Session): void {
     return;
   }
   const toFeet = feetOfSupport(edge.to);
-  // 脚本段抵达：触及距 + 视线锥（无 melee）
+  // 头点球形：目标在脚位时竖直分量约 1.2～1.5，默认 via 半径 0.75 不够；用终点触及 3（与 pursue 对齐）
   if (
     onGround &&
-    checkScriptArrive(maid, toFeet, { requireOnGround: true })
+    checkScriptArrive(maid, toFeet, {
+      requireOnGround: true,
+      reachR: ARRIVE_GOAL_R,
+    })
   ) {
     const loc = maid.location;
     const errH = Math.hypot(loc.x - toFeet.x, loc.z - toFeet.z);

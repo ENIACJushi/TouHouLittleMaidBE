@@ -24,8 +24,7 @@ import { Logger } from "../../src/controller/Logger";
 import { EntityMaid } from "../../src/maid/EntityMaid";
 import {
   ARRIVE_LOOK_HALF_DEG,
-  ARRIVE_REACH_H,
-  ARRIVE_REACH_V,
+  ARRIVE_REACH_R,
   checkScriptArrive,
 } from "../../src/maid/path/Arrive";
 import {
@@ -56,8 +55,8 @@ const LOG_PREFIX = "PATHPROXY";
 
 const SETTLE_BEFORE = 8;
 const MAX_TICKS = 120;
-/** 与 Arrive.ARRIVE_REACH_H 同值；稳态均值过滤用 */
-const ARRIVE_H = ARRIVE_REACH_H;
+/** 与 Arrive.ARRIVE_REACH_R 同值；稳态均值过滤用 */
+const ARRIVE_H = ARRIVE_REACH_R;
 /** 近距降速（与 ScriptDrive 同值） */
 const DECEL_H = SCRIPT_DECEL_H;
 const PAD_AHEAD = 2;
@@ -981,8 +980,7 @@ export class MovementProxyTest {
     }
     if (
       checkScriptArrive(maid, goal, {
-        reachH: ARRIVE_REACH_H,
-        reachV: ARRIVE_REACH_V,
+        reachR: ARRIVE_REACH_R,
         lookHalfDeg: ARRIVE_LOOK_HALF_DEG,
         requireOnGround: true,
       })

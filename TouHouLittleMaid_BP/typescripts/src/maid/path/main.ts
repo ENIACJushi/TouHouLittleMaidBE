@@ -29,8 +29,11 @@ export {
 } from "./ImpulseTable";
 export type { ImpulseKey, ImpulseVec, ImpulsePos } from "./ImpulseTable";
 export {
-  ARRIVE_REACH_H,
-  ARRIVE_REACH_V,
+  MAID_COLLISION_RADIUS,
+  SEEK_PURSUE_REACH_MULTIPLIER,
+  ARRIVE_GOAL_R,
+  ARRIVE_VIA_R,
+  ARRIVE_REACH_R,
   ARRIVE_LOOK_HALF_DEG,
   withinReachDistance,
   withinLookCone,

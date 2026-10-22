@@ -1,36 +1,66 @@
 /**
- * 脚本代理段抵达判定：触及距 + 视线锥。
- * 使用场景：MovementProxy / 后续 Executor 脚本段；对齐实验设计 §5.3、代理运动实现方案 §1.3。
+ * 脚本代理段抵达判定：球形触及（头点）+ 视线锥。
+ * 使用场景：Executor Gap / ScriptFollow；对齐实验设计 §5.3、代理运动实现方案 §1.3。
  *
- * 阈值：水平触及与现 via `0.75` 对齐；目视半角为标定前临时门限（非失败用例特例）。
+ * 终点触及与 Seek pursue JSON 同源：世界距 = 碰撞半径 × reach_multiplier。
+ * 途经：JSON `reach_multiplier=0`（贴紧）与脚本 `ARRIVE_VIA_R`（抖动容差）故意不同源。
+ * 改终点触及：本文件 `SEEK_PURSUE_REACH_MULTIPLIER` ↔ Seek.js `slot:seek_pursue`
+ * → `npm run build:maid`；`Seek.ts` 注释一并改。
  */
 import { Entity, Vector3 } from "@minecraft/server";
 
-/** 水平触及距（格）；与 Executor ARRIVE_VIA_H 同量级 */
-export const ARRIVE_REACH_H = 0.75;
-/** 竖直容差（格） */
-export const ARRIVE_REACH_V = 1.6;
+/**
+ * 女仆水平碰撞半径（格）= collision_box.width / 2。
+ * 权威 JSON：`MaidGenerator/template.js` → `minecraft:collision_box.width`（现 0.6）。
+ * 同步：改 width 时改本常量，并重算下方 ARRIVE_*_R（或改 Seek 的 reach_multiplier 保持世界距不变）。
+ */
+export const MAID_COLLISION_RADIUS = 0.3;
+
+/**
+ * 终点追逐 `reach_multiplier`（与 JSON 同值）。
+ * 同步修改：`MaidGenerator/modules/Seek.js` → `slot:seek_pursue` → `reach_multiplier`。
+ */
+export const SEEK_PURSUE_REACH_MULTIPLIER = 10;
+
+/**
+ * 终点球形触及半径（格）= 碰撞半径 × SEEK_PURSUE_REACH_MULTIPLIER → 现 **3**。
+ * 使用场景：ScriptFollow goal；Executor FollowAI 终点距离宽限；Gap 落地。
+ * 同步：改世界距时优先改 `SEEK_PURSUE_REACH_MULTIPLIER`（并改 Seek.js），勿只改本导出。
+ */
+export const ARRIVE_GOAL_R =
+  MAID_COLLISION_RADIUS * SEEK_PURSUE_REACH_MULTIPLIER;
+
+/**
+ * 途经 / 默认球形触及半径（格）→ 现 **0.75**（脚本抖动容差）。
+ * 使用场景：ScriptFollow via、AI via nearSupport、默认 checkScriptArrive。
+ * 与 JSON `slot:seek_pursue_via` 的 `reach_multiplier:0` **故意不同源**；勿强行对齐。
+ */
+export const ARRIVE_VIA_R = 0.75;
+
+/**
+ * 默认球形触及半径（= via）。
+ * 使用场景：checkScriptArrive 未传 reachR；ScriptDrive 近距降速默认。
+ */
+export const ARRIVE_REACH_R = ARRIVE_VIA_R;
+
 /**
  * 目视锥半角（度）：目标方向与 getViewDirection 夹角 ≤ 此值。
  * 使用场景：标定前临时门限；正式值标定后只改此处。
+ * 注意：与 JSON `melee_attack.melee_fov`（默认 90）不是同一参数，勿混改。
  */
 export const ARRIVE_LOOK_HALF_DEG = 40;
 
 /**
- * 水平距离 + 竖直容差是否在触及范围内。
- * 使用场景：抵达判定距离腿。
+ * 从头位点（或给定 from）到目标的直线距离是否 ≤ 触及半径。
+ * 使用场景：抵达判定距离腿（球形）。
  */
 export function withinReachDistance(
-  maidLoc: Vector3,
+  from: Vector3,
   target: Vector3,
-  reachH: number = ARRIVE_REACH_H,
-  reachV: number = ARRIVE_REACH_V
+  reach: number = ARRIVE_REACH_R
 ): boolean {
-  const h = Math.hypot(maidLoc.x - target.x, maidLoc.z - target.z);
-  if (h > reachH) {
-    return false;
-  }
-  return Math.abs(maidLoc.y - target.y) <= reachV;
+  const d = Math.hypot(from.x - target.x, from.y - target.y, from.z - target.z);
+  return d <= reach;
 }
 
 /**
@@ -61,21 +91,20 @@ export function withinLookCone(
 }
 
 /**
- * 脚本段抵达：触及距且视线锥（可选要求着地）。
- * 使用场景：代理探针 checkArrived；返回 true 表示可结束本段。
+ * 脚本段抵达：头点球形触及且视线锥（可选要求着地）。
+ * 使用场景：Gap 落地 / ScriptFollow；返回 true 表示可结束本段。
  */
 export function checkScriptArrive(
   maid: Entity,
   target: Vector3,
   options?: {
-    reachH?: number;
-    reachV?: number;
+    /** 球形触及半径；缺省 ARRIVE_REACH_R（via）；goal / Gap 传 ARRIVE_GOAL_R */
+    reachR?: number;
     lookHalfDeg?: number;
     requireOnGround?: boolean;
   }
 ): boolean {
-  const reachH = options?.reachH ?? ARRIVE_REACH_H;
-  const reachV = options?.reachV ?? ARRIVE_REACH_V;
+  const reach = options?.reachR ?? ARRIVE_REACH_R;
   const lookHalf = options?.lookHalfDeg ?? ARRIVE_LOOK_HALF_DEG;
   if (options?.requireOnGround) {
     try {
@@ -86,7 +115,13 @@ export function checkScriptArrive(
       return false;
     }
   }
-  if (!withinReachDistance(maid.location, target, reachH, reachV)) {
+  let head: Vector3;
+  try {
+    head = maid.getHeadLocation();
+  } catch {
+    return false;
+  }
+  if (!withinReachDistance(head, target, reach)) {
     return false;
   }
   return withinLookCone(maid, target, lookHalf);

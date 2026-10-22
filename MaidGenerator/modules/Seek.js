@@ -2,14 +2,22 @@
 const END_INDEX = 255;
 
 /**
- * 终点追逐：短距 ranged_attack，有触及距离（历史默认）。
+ * 终点追逐：melee 有触及。
  * 使用场景：路径终点路点；脚本 `slot:seek_pursue` 挂载。
+ *
+ * 触及世界距 = 碰撞半径(0.3) × reach_multiplier，须与脚本球形触及对齐：
+ * - 本处 `reach_multiplier` ↔ `Arrive.ts` 的 `SEEK_PURSUE_REACH_MULTIPLIER` / `ARRIVE_GOAL_R`
+ * - 碰撞半径 ↔ `Arrive.ts` 的 `MAID_COLLISION_RADIUS`、`template.js` collision_box.width/2
+ * 改完后执行 `npm run build:maid`，并核对 `Seek.ts` 注释。
  */
 const SEEK_PURSUE = "slot:seek_pursue";
 
 /**
- * 途经追逐：触及定死为 0，迫使贴着路点走完，头部平视途经 marker。
+ * 途经追逐：reach_multiplier=0，近战几乎打不着，逼贴路点；切段靠脚本距离，不靠命中。
  * 使用场景：寻路过程中的中间路点；与终点追逐互斥，脚本 `slot:seek_pursue_via` 挂载。
+ *
+ * 故意不与脚本 `Arrive.ARRIVE_VIA_R`（0.75 球）同值——JSON=0 是「贴紧」策略，
+ * 脚本 0.75 是抖动容差。勿为「对齐」把此处改成非 0。
  */
 const SEEK_PURSUE_VIA = "slot:seek_pursue_via";
 
@@ -87,7 +95,8 @@ export class Seek {
       // 使用远攻组件会导致女仆在越过沟后短暂的往回走而掉下沟，使用近战就不会出现这种问题
       "minecraft:behavior.melee_attack": {
         "priority": 6,
-        "reach_multiplier": 10, // 实体半径（0.3）×reach_multiplier=实际距离(3)
+        // 0.3×10=3；同步 Arrive.SEEK_PURSUE_REACH_MULTIPLIER / ARRIVE_GOAL_R
+        "reach_multiplier": 10,
         "cooldown_time": 0.8,
         "control_flags": [ "move", "jump" ]
       },
@@ -99,7 +108,7 @@ export class Seek {
         control_flags: [ "look" ],
       },
     });
-    // 途经追逐：触及=0，中间路点要贴紧再切下一段
+    // 途经追逐：触及=0，中间路点要贴紧再切下一段（与 Arrive.ARRIVE_VIA_R 故意不同源）
     g.addComponentGroup(SEEK_PURSUE_VIA, {
       // "minecraft:behavior.ranged_attack": {
       //   priority: 6,
