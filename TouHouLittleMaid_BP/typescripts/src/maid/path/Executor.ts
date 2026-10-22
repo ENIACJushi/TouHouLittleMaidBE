@@ -11,8 +11,8 @@
  * - Gap 冲量段（`ScriptDrive`）：`enterScriptProxy`；一次 `faceOnce`；落地 `checkScriptArrive`；
  * - Gap 腾空：用当前速度积分落点（按起跳 FIT 缩放），曼哈顿误差大于阈值则每 tick xz 冲量修正，落地停修；
  * - AI 途经：脚本距离 nearSupport（ARRIVE_VIA_R）即 advance（避免贴脸互推）。
- * - AI 终点：近战命中本会话 seek_marker 即 Done。进入终点距离后先等几秒，这段里仍以打中为准；到点还没打中才按距离结束。
- * - AI→脚本回退：无正确目标 / 水平距无进展 / 整段超时 → `ScriptFollow`；
+ * - AI 终点：近战命中本会话 seek_marker 即 Done；近窗宽限后仍未打中 → ScriptFollow（目视+球形触及，不用纯距离完成）。
+ * - AI→脚本回退：无正确目标 / 无进展 / 终点无近战 / 整段超时 → `ScriptFollow`（近抵达窗内同样可切）；
  *   FollowAI 挂严格 NAT（`must_reach:true`），脚本代理挂宽松 NAT（`must_reach:false`）。
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
@@ -103,10 +103,10 @@ export const IN_FLIGHT_MAX = 4;
 const VIA_STEP = 16;
 
 /**
- * 进入终点距离后再等多久（游戏 tick），才允许按距离结束。
- * 使用场景：给近战留时间。打中路点仍立刻结束，不必等满。60 tick ≈ 原 3s@20TPS。
+ * 进入终点水平距离后，若一直未近战命中，再等多久（游戏 tick）改切 ScriptFollow。
+ * 使用场景：给近战留时间；不再用「纯距离」判抵达（无目视不自然）。60 tick ≈ 原 3s@20TPS。
  */
-const GOAL_RANGE_GRACE_TICKS = 60;
+const GOAL_MELEE_GRACE_TICKS = 60;
 /**
  * AI nearSupport 竖直容差（格）；与球形触及无关。
  * 使用场景：FollowAI via/goal 水平圈配套。
@@ -135,9 +135,9 @@ const GAP_MARKER_UP = 1.5;
 const AI_EDGE_TIMEOUT_TICKS = 240;
 /**
  * 本 AI 步从未拿到正确 marker 目标：连续空满这么多游戏 tick → 切脚本。
- * 使用场景：起索敌 / 选不中；约覆盖 NAT scan_interval(10) + 余量。
+ * 使用场景：起索敌 / 选不中；略长于 NAT scan_interval(10)。
  */
-const AI_NO_TARGET_FIRST_HOLD_TICKS = 35;
+const AI_NO_TARGET_FIRST_HOLD_TICKS = 15;
 /**
  * 本 AI 步曾有正确目标后又丢：连续空满这么多游戏 tick → 切脚本。
  * 使用场景：中途丢 target；0 = 观测到空窗当拍即切（仍受近抵达窗保护）。
@@ -285,8 +285,8 @@ type Session = {
    */
   goalBlocksAbove: number;
   /**
-   * 第一次进入终点距离的 system.currentTick。离开范围就清掉。
-   * 使用场景：终点 FollowAI。未满 GOAL_RANGE_GRACE_TICKS 时只接受近战命中。
+   * 第一次进入终点水平距离的 system.currentTick。离开范围就清掉。
+   * 使用场景：终点 FollowAI；满 GOAL_MELEE_GRACE_TICKS 仍未命中 → ScriptFollow（不用距离完成）。
    */
   goalRangeSinceTick?: number;
   /**
@@ -300,7 +300,7 @@ type Session = {
    */
   aiNoTargetSinceTick?: number;
   /**
-   * 本 AI 步是否曾挂上正确 marker 目标（决定空窗用首次 35 还是丢目标 LOST 阈值）。
+   * 本 AI 步是否曾挂上正确 marker 目标（决定空窗用首次 FIRST 还是丢目标 LOST 阈值）。
    * 使用场景：tickFollowAI `ai_no_target`；beginStep / 切入 ScriptFollow 时清空。
    */
   aiHadSeekTarget?: boolean;
@@ -1086,7 +1086,7 @@ function hasSeekMarkerTarget(maid: Entity, marker: Entity | undefined): boolean 
 
 /**
  * 切脚本冲量回退（不立刻 Fail）。
- * 使用场景：tickFollowAI；reason=ai_no_target|ai_stall|ai_timeout。
+ * 使用场景：tickFollowAI；reason=ai_no_target|ai_stall|ai_goal_no_melee|ai_timeout。
  */
 function enterScriptFollow(session: Session, reason: string): void {
   const step = session.steps[session.index];
@@ -1107,6 +1107,7 @@ function enterScriptFollow(session: Session, reason: string): void {
   session.aiHadSeekTarget = undefined;
   session.aiStallRefH = undefined;
   session.aiStallSinceTick = undefined;
+  session.goalRangeSinceTick = undefined;
   session.scriptFollow = {
     params,
     dir: cardinalToward(maid.location, stamp),
@@ -1139,16 +1140,8 @@ function shouldEarlyScriptFollow(session: Session): string | undefined {
   const goalFeet = feetOf(step.support);
   const hDist = Math.hypot(loc.x - goalFeet.x, loc.z - goalFeet.z);
 
-  // 已近到可 AI 抵达窗内：勿因瞬态丢 target 抢切
-  const nearH = step.role === "goal" ? ARRIVE_GOAL_R : ARRIVE_VIA_R;
-  if (hDist <= nearH) {
-    session.aiNoTargetSinceTick = undefined;
-    session.aiStallRefH = undefined;
-    session.aiStallSinceTick = undefined;
-    return undefined;
-  }
-
-  // 1) 无正确目标：首次空 ≥35 tick；曾有 target 再丢 ≥ LOST（现为 0）
+  // 近抵达窗内也允许切脚本：终点旁原版打不着 / 无 target 时不能再被「近了就不判」挡住
+  // 1) 无正确目标：首次空 ≥15 tick；曾有 target 再丢 ≥ LOST（现为 0）
   if (hasSeekMarkerTarget(maid, session.marker)) {
     session.aiHadSeekTarget = true;
     session.aiNoTargetSinceTick = undefined;
@@ -1165,6 +1158,7 @@ function shouldEarlyScriptFollow(session: Session): string | undefined {
   }
 
   // 2) 水平距无实质靠近：连续 ≥50 游戏 tick 未缩短 ≥0.25 格
+  // 已贴在终点旁（h 很小）时用 stall 表示「近了但原版无进展」
   const tick = system.currentTick;
   if (session.aiStallRefH === undefined || session.aiStallSinceTick === undefined) {
     session.aiStallRefH = hDist;
@@ -1199,7 +1193,7 @@ function tickFollowAI(session: Session): void {
     advance(session);
     return;
   }
-  // 终点：先进范围只记 tick。近战打中仍走 onSeekMarkerHit，不必等满。
+  // 终点：近战命中仍走 onSeekMarkerHit；进水平圈后宽限结束仍未打中 → 脚本（目视+球形触及）
   if (step.role !== "goal") {
     return;
   }
@@ -1210,8 +1204,8 @@ function tickFollowAI(session: Session): void {
   const tick = system.currentTick;
   const since = session.goalRangeSinceTick ?? tick;
   session.goalRangeSinceTick = since;
-  if (tick - since >= GOAL_RANGE_GRACE_TICKS) {
-    advance(session);
+  if (tick - since >= GOAL_MELEE_GRACE_TICKS) {
+    enterScriptFollow(session, "ai_goal_no_melee");
   }
 }
 

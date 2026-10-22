@@ -24,7 +24,7 @@ export const SEEK_PURSUE_REACH_MULTIPLIER = 10;
 
 /**
  * 终点球形触及半径（格）= 碰撞半径 × SEEK_PURSUE_REACH_MULTIPLIER → 现 **3**。
- * 使用场景：ScriptFollow goal；Executor FollowAI 终点距离宽限；Gap 落地。
+ * 使用场景：ScriptFollow goal；FollowAI 终点近窗 / Gap 落地。
  * 同步：改世界距时优先改 `SEEK_PURSUE_REACH_MULTIPLIER`（并改 Seek.js），勿只改本导出。
  */
 export const ARRIVE_GOAL_R =
