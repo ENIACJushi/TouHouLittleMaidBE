@@ -6,6 +6,7 @@
  */
 import { Dimension, Entity, Vector3 } from "@minecraft/server";
 import { aStar, AStarOptions } from "./AStar";
+import { MAID_COLLISION_RADIUS } from "./Arrive";
 import { SEARCH_H, SEARCH_V } from "./constants";
 import { Executor, isHomeReturnSuppressed, suppressHomeReturn, allowHomeReturn } from "./Executor";
 import { StandableCache, clampBoundsToDimension } from "./StandableCache";
@@ -56,20 +57,77 @@ function floor3(v: Vector3): BlockPos {
 }
 
 /**
+ * 中心失败后的足迹水平偏移（四轴 + 四角；不含中心）。
+ * 使用场景：standNodeFromFeet 边缘回退；半径 = MAID_COLLISION_RADIUS。
+ */
+const FEET_EDGE_OFFSETS: ReadonlyArray<Readonly<{ dx: number; dz: number }>> =
+  (() => {
+    const r = MAID_COLLISION_RADIUS;
+    return [
+      { dx: r, dz: 0 },
+      { dx: -r, dz: 0 },
+      { dx: 0, dz: r },
+      { dx: 0, dz: -r },
+      { dx: r, dz: r },
+      { dx: r, dz: -r },
+      { dx: -r, dz: r },
+      { dx: -r, dz: -r },
+    ];
+  })();
+
+/**
+ * 单点脚位 → 支撑格（耕地陷格 / 否则 y-1）。
+ * 使用场景：standNodeFromFeet 对中心与足迹采样点复用。
+ */
+function standNodeFromFeetSample(
+  cache: StandableCache,
+  x: number,
+  y: number,
+  z: number
+): StandNode | undefined {
+  const f = floor3({ x, y, z });
+  if (cache.isSunkSupportBlock(f.x, f.y, f.z)) {
+    return cache.tryStandNode(f.x, f.y, f.z);
+  }
+  return cache.tryStandNode(f.x, f.y - 1, f.z);
+}
+
+/**
  * 脚部位姿 → 支撑格。全项目只走这一条。
  * 脚所在格顶面低于整格（耕地）且能站：落脚点就是这一格。
  * 否则人站在下面那块完整方块顶上：落脚点是下一格。
+ * 中心 floor 落在空气柱、但碰撞箱仍压在邻格实心上时：在足迹内多点采样，取距中心水平最近的可站支撑。
  * 使用场景：女仆起点；锚点和作物下方的土也要先换成脚位再调用。
  */
 export function standNodeFromFeet(
   cache: StandableCache,
   feet: Vector3
 ): StandNode | undefined {
-  const f = floor3(feet);
-  if (cache.isSunkSupportBlock(f.x, f.y, f.z)) {
-    return cache.tryStandNode(f.x, f.y, f.z);
+  const primary = standNodeFromFeetSample(cache, feet.x, feet.y, feet.z);
+  if (primary) {
+    return primary;
   }
-  return cache.tryStandNode(f.x, f.y - 1, f.z);
+  let best: StandNode | undefined;
+  let bestD2 = Infinity;
+  for (const { dx, dz } of FEET_EDGE_OFFSETS) {
+    const node = standNodeFromFeetSample(
+      cache,
+      feet.x + dx,
+      feet.y,
+      feet.z + dz
+    );
+    if (!node) {
+      continue;
+    }
+    const cx = node.x + 0.5;
+    const cz = node.z + 0.5;
+    const d2 = (cx - feet.x) * (cx - feet.x) + (cz - feet.z) * (cz - feet.z);
+    if (d2 < bestD2) {
+      bestD2 = d2;
+      best = node;
+    }
+  }
+  return best;
 }
 
 /**
