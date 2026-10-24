@@ -198,9 +198,12 @@ export const Seek = {
   },
 
   /**
-   * 卸下当前 Seek 档（严格+soft NAT）；不自动卸追逐，请配合 `quitPursue`。
+   * 卸下当前 Seek 档（严格+soft NAT）并卸追逐 / 目视；quit 事件含 reset_target。
+   * 使用场景：teardown / recoverResidual；仅卸追逐仍用 quitPursue（如脚本代理切 look）。
    */
   quit(maid: Entity): void {
+    Seek.quitPursue(maid);
+    Seek.quitLook(maid);
     clearIntSlot(maid, SEEK_SLOT);
     try {
       DP.setBoolean(maid, DP_NAT_SOFT, false);
@@ -357,16 +360,15 @@ export const Seek = {
 
   /**
    * 女仆加载时清理 Seek / 追逐 / 目视残留（退档时 teardown 未跑）。
+   * 有 Seek 档才 `quit`（内含卸追逐/目视）；无档则空操作。
    * 使用场景：MaidLifeCycleEvents.onLoad；调用方应跳过正在 Path.follow 的女仆。
    */
   recoverResidual(maid: Entity): void {
     try {
-      Seek.quitPursue(maid);
-      Seek.quitLook(maid);
-      if (Seek.getIndex(maid) >= SEEK_SLOT.min) {
-        Seek.resetTarget(maid);
-        Seek.quit(maid);
+      if (Seek.getIndex(maid) < SEEK_SLOT.min) {
+        return;
       }
+      Seek.quit(maid);
     } catch (e) {
       Logger.warn(TAG, `recoverResidual failed: ${String(e)}`);
     }

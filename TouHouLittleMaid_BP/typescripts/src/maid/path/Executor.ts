@@ -949,9 +949,8 @@ export function allowHomeReturn(maidId: string): void {
 export function isHomeReturnSuppressed(maidId: string): boolean {
   return homeReturnSuppress.has(maidId) || sessions.has(maidId);
 }
+/** teardown：卸 Seek 档及追逐/目视（见 Seek.quit）。 */
 function quitSeekWithPursue(maid: Entity): void {
-  Seek.quitPursue(maid);
-  Seek.quitLook(maid);
   Seek.quit(maid);
 }
 
