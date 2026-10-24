@@ -49,7 +49,6 @@ import {
   enterScriptProxy,
   faceOnce,
   JUMP1_ALONG_MAX_FACTOR,
-  JUMP1_ALONG_MIN_FACTOR,
   PLAYER_JUMP_HY,
   readDefMovement,
   restoreMaidMovement,
@@ -339,9 +338,10 @@ const SCRIPT_JUMP_MAX = 2;
 const SCRIPT_JUMP_RETRY_TICKS = 12;
 /**
  * 脚本回退爬升：距目标脚位水平距落在此闭区间才允许 Jump1（格）。
- * 使用场景：太远尚在平走过近则已可贴上台；非失败用例拟合。
+ * MIN=半格：贴上台块立面时脚心→格心 ≈0.5+碰撞半径，旧 0.9 把贴墙态排除在窗外。
+ * MAX：更远先平走靠近。
  */
-const SCRIPT_JUMP_HDIST_MIN = 0.9;
+const SCRIPT_JUMP_HDIST_MIN = 0.5;
 const SCRIPT_JUMP_HDIST_MAX = 2.2;
 
 const sessions = new Map<string, Session>();
@@ -1272,7 +1272,7 @@ function tickFollowAI(session: Session): void {
 
 /**
  * 脚本回退：巡航 + 可选 Jump1；抵达 checkScriptArrive。
- * 使用场景：AI 超时后；空中不补水平。
+ * 使用场景：AI 超时后。腾空补与行走同参的水平巡航（非 Gap tryAirCorrect）。
  */
 function tickScriptFollow(session: Session): void {
   const sf = session.scriptFollow;
@@ -1313,7 +1313,12 @@ function tickScriptFollow(session: Session): void {
   } catch {
     onGround = false;
   }
+  // 腾空：每 tick 持续水平巡航（与着地 tickWalkDrive 同参），把身体送上台面；不做 Gap 落点修正
   if (!onGround) {
+    sf.dir = cardinalToward(maid.location, sf.goalFeet);
+    tickWalkDrive(maid, sf.dir, sf.goalFeet, sf.params, {
+      arriveH: reachR,
+    });
     return;
   }
 
@@ -1330,7 +1335,8 @@ function tickScriptFollow(session: Session): void {
   const loc = maid.location;
   const hDist = Math.hypot(loc.x - sf.goalFeet.x, loc.z - sf.goalFeet.z);
 
-  // 需爬升：低台、水平距在窗内、巡航带内 → Jump1（空中不补）
+  // 需爬升：低台、水平距在窗内 → 着地 Jump1；腾空水平由上方分支补。
+  // 沿速过低（贴墙/未起速）也允许起跳——禁走段无原版上台。
   if (
     sf.jumpAttempts < SCRIPT_JUMP_MAX &&
     loc.y < sf.goalSupportY + 0.9 &&
@@ -1344,9 +1350,9 @@ function tickScriptFollow(session: Session): void {
     ) {
       sf.jumped = false;
     }
-    const alongMin = sf.params.targetCruise * JUMP1_ALONG_MIN_FACTOR;
+    // 只拒沿速过高；贴墙/未起速（alongVel 低于巡航带）也允许起跳
     const alongMax = sf.params.targetCruise * JUMP1_ALONG_MAX_FACTOR;
-    if (!sf.jumped && alongVel >= alongMin && alongVel <= alongMax) {
+    if (!sf.jumped && alongVel <= alongMax) {
       const toSupport = {
         x: step.support.x,
         y: step.support.y,

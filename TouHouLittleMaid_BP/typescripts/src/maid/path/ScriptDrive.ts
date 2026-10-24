@@ -205,8 +205,8 @@ export function restoreMaidMovement(maid: Entity): void {
 }
 
 /**
- * 着地：沿 cardinal 追巡航，近距降速，每 tick 抵侧向；空中调用方应先 return。
- * 使用场景：探针 drive；Executor ScriptFollow。
+ * 沿 cardinal 追巡航，近距降速，每 tick 抵侧向（仅水平冲量）。
+ * 使用场景：探针 / ScriptFollow 着地；ScriptFollow 腾空上台时同样调用（与行走同参，非 Gap 落点修正）。
  * @returns 是否施加了冲量
  */
 export function tickWalkDrive(
