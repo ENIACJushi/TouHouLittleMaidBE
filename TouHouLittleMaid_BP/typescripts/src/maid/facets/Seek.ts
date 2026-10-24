@@ -2,8 +2,9 @@
  * 精准目标 Seek 门面（Task6 Phase 2）。
  * 使用场景：allocate 槽位 → mount 女仆 → stamp 目标；quit/release/resetTarget 释放。
  * NAT：默认严格 must_reach=true（原版寻路）；脚本段 mountSoft（false）。
+ * 路点 TTL：spawn 后 ttl_start，持有方 ttl_renew；重启残留见 recoverResidual / purgeOrphanMarkers。
  */
-import { Entity } from "@minecraft/server";
+import { Entity, world } from "@minecraft/server";
 import { DP } from "../../libs/DynamicPropertyInterface";
 import { Logger } from "../../controller/Logger";
 import { IntSlotDef } from "../slots/registry";
@@ -315,5 +316,80 @@ export const Seek = {
    */
   resetTarget(maid: Entity): void {
     maid.triggerEvent("api:reset_target");
+  },
+
+  /**
+   * 启动路点 TTL 倒计时（组件组 `ttl`）。
+   * 使用场景：ensureMarker 刚 spawn；与 seek_marker.json 的 ttl_start 对齐。
+   */
+  startMarkerTtl(marker: Entity): void {
+    try {
+      if (marker.isValid) {
+        marker.triggerEvent("ttl_start");
+      }
+    } catch (e) {
+      Logger.warn(TAG, `startMarkerTtl failed: ${String(e)}`);
+    }
+  },
+
+  /**
+   * 重置路点 TTL（remove+add `ttl`）。
+   * 使用场景：Executor 持有 marker 期间周期性续命，避免倒计时自毁。
+   */
+  renewMarkerTtl(marker: Entity): void {
+    try {
+      if (marker.isValid) {
+        marker.triggerEvent("ttl_renew");
+      }
+    } catch (e) {
+      Logger.warn(TAG, `renewMarkerTtl failed: ${String(e)}`);
+    }
+  },
+
+  /**
+   * 女仆加载时清理 Seek / 追逐 / 目视残留（退档时 teardown 未跑）。
+   * 使用场景：MaidLifeCycleEvents.onLoad；调用方应跳过正在 Path.follow 的女仆。
+   */
+  recoverResidual(maid: Entity): void {
+    try {
+      Seek.quitPursue(maid);
+      Seek.quitLook(maid);
+      if (Seek.getIndex(maid) >= SEEK_SLOT.min) {
+        Seek.resetTarget(maid);
+        Seek.quit(maid);
+      }
+    } catch (e) {
+      Logger.warn(TAG, `recoverResidual failed: ${String(e)}`);
+    }
+  },
+
+  /**
+   * 扫当前已加载维度，移除全部 seek_marker（脚本启动时 sessions 必空）。
+   * 使用场景：MaidLifeCycleEvents.scanLoadedMaids；清理重启前残留路点。
+   */
+  purgeOrphanMarkers(): void {
+    const dimensionIds = ["overworld", "nether", "the_end"];
+    let removed = 0;
+    for (const dimensionId of dimensionIds) {
+      try {
+        const dim = world.getDimension(dimensionId);
+        for (const ent of dim.getEntities({ type: SEEK_MARKER_TYPE })) {
+          try {
+            if (ent.isValid) {
+              // 即将 remove，不必再 release（setProperty 无后续读者）
+              ent.remove();
+              removed++;
+            }
+          } catch {
+            /* ignore */
+          }
+        }
+      } catch {
+        /* 维度未加载等 */
+      }
+    }
+    if (removed > 0) {
+      Logger.info(TAG, `purgeOrphanMarkers removed=${removed}`);
+    }
   },
 };

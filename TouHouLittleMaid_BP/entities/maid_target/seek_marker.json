@@ -20,6 +20,16 @@
       }
     },
     "component_groups": {
+      "ttl": {
+        "minecraft:timer": {
+          "time": 12,
+          "looping": false,
+          "time_down_event": {
+            "event": "despawn",
+            "target": "self"
+          }
+        }
+      },
       "despawn": {
         "minecraft:instant_despawn": { "remove_child_entities": false }
       }
@@ -41,7 +51,6 @@
           }
         ]
       },
-      "minecraft:persistent": {},
       "minecraft:knockback_resistance": { "value": 1.0 },
       "minecraft:physics": {
         "has_gravity": false,
@@ -50,6 +59,13 @@
       }
     },
     "events": {
+      "ttl_start": {
+        "add": { "component_groups": ["ttl"] }
+      },
+      "ttl_renew": {
+        "remove": { "component_groups": ["ttl"] },
+        "add": { "component_groups": ["ttl"] }
+      },
       "despawn": {
         "add": { "component_groups": ["despawn"] }
       }

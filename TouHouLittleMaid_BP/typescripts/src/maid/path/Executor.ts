@@ -17,6 +17,7 @@
  *
  * Fail：quit + release + free + UnreachableCache（cancel 不写 ban）。
  * 外力终止：坐下 / 抱起 / 睡觉 → Path.cancel（Pose 边沿 + tickAll 兜底；start 拒绝）。
+ * 路点 TTL：spawn 后 startMarkerTtl；tickAll 周期性 renew；无效则按当前步重 spawn。
  */
 import {
   Entity,
@@ -315,7 +316,18 @@ type Session = {
    * 使用场景：AI 路点抵达；teardown 时 unsubscribe。
    */
   hitHandler?: (ev: EntityHitEntityAfterEvent) => void;
+  /**
+   * 上次对 marker 执行 ttl_renew 的 system.currentTick。
+   * 使用场景：keepaliveMarker；与 seek_marker 12s TTL 配合续命。
+   */
+  markerRenewAtTick?: number;
 };
+
+/**
+ * marker TTL 续命间隔（游戏 tick）。
+ * 使用场景：keepaliveMarker；160 tick ≈ 8s，相对实体 12s 倒计时仍有裕度。
+ */
+const MARKER_TTL_RENEW_TICKS = 160;
 
 /**
  * 脚本回退单路点超时（游戏 tick）。
@@ -786,7 +798,7 @@ function destroyMarker(session: Session): void {
   }
   try {
     if (m.isValid) {
-      Seek.release(m);
+      // 即将 remove，不必再 release（stamp 属性随实体消失）
       m.remove();
     }
   } catch {
@@ -795,7 +807,22 @@ function destroyMarker(session: Session): void {
 }
 
 /**
- * 确保会话内唯一 marker：无则 spawn+stamp，有则 teleport。
+ * 当前步应对齐的 marker 世界坐标。
+ * 使用场景：keepaliveMarker 重 spawn；与 beginStep 一致。
+ */
+function markerPosForCurrentStep(session: Session): Vector3 | undefined {
+  const step = session.steps[session.index];
+  if (!step) {
+    return undefined;
+  }
+  if (step.kind === "gap") {
+    return gapMarkerPos(step.edge);
+  }
+  return aiStampPos(step.support, step.role, session.goalBlocksAbove);
+}
+
+/**
+ * 确保会话内唯一 marker：无则 spawn+stamp+TTL，有则 teleport。
  * 使用场景：每个 AI 路点 / Gap 对岸指示。
  */
 function ensureMarker(session: Session, pos: Vector3): boolean {
@@ -815,6 +842,8 @@ function ensureMarker(session: Session, pos: Vector3): boolean {
       pos
     );
     Seek.stamp(marker, session.seekId);
+    Seek.startMarkerTtl(marker);
+    session.markerRenewAtTick = system.currentTick;
     // thlmt:visible 默认 false；仅生成时按「显示路点」开一次即可
     if (config.path_show_waypoints.value) {
       marker.setProperty("thlmt:visible", true);
@@ -824,6 +853,39 @@ function ensureMarker(session: Session, pos: Vector3): boolean {
   } catch (e) {
     Logger.warn(TAG, `ensureMarker spawn failed: ${String(e)}`);
     return false;
+  }
+}
+
+/**
+ * 持有中续命 / TTL 竞态后重 spawn。
+ * 使用场景：tickAll；会话仍在且需要路点时。
+ */
+function keepaliveMarker(session: Session): void {
+  if (
+    session.phase === "Idle" ||
+    session.phase === "Done" ||
+    session.phase === "Fail"
+  ) {
+    return;
+  }
+  const marker = session.marker;
+  if (marker?.isValid) {
+    const last = session.markerRenewAtTick ?? 0;
+    if (system.currentTick - last >= MARKER_TTL_RENEW_TICKS) {
+      Seek.renewMarkerTtl(marker);
+      session.markerRenewAtTick = system.currentTick;
+    }
+    return;
+  }
+  const pos = markerPosForCurrentStep(session);
+  if (!pos) {
+    return;
+  }
+  if (!ensureMarker(session, pos)) {
+    Logger.warn(
+      TAG,
+      `keepaliveMarker respawn failed maid=${session.maidId} phase=${session.phase}`
+    );
   }
 }
 
@@ -1571,6 +1633,7 @@ function tickAll(): void {
       Executor.cancel(session.maid);
       continue;
     }
+    keepaliveMarker(session);
     spawnTrailParticle(session);
     spawnWaypointParticles(session);
     switch (session.phase) {

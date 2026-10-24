@@ -47,6 +47,10 @@ export class MaidLifeCycleEvents {
       }
       // 代理运动中退档可能导致 script_movement 残留；按 DP 旗恢复站立寻路
       EntityMaid.Movement.recoverScriptMoveResidual(maid);
+      // Seek/追逐残留：仅非 follow 中清理，避免区块短暂重载误卸进行中的寻路
+      if (!EntityMaid.Path.isFollowing(maid)) {
+        EntityMaid.Seek.recoverResidual(maid);
+      }
       if (!isSpawn) {
         // 非首次生成时，检查皮肤包（首次生成有自己的随机皮肤逻辑）
         this.refreshUnregisteredSkin(maid);
@@ -67,8 +71,10 @@ export class MaidLifeCycleEvents {
   /**
    * 扫描当前已加载的女仆并触发 onLoad。
    * 事件订阅晚于世界加载时，已在场的女仆不会再触发 entityLoad，启动时补一次。
+   * 同时清扫重启残留的 seek_marker（脚本刚起 sessions 必空）。
    */
   scanLoadedMaids() {
+    EntityMaid.Seek.purgeOrphanMarkers();
     const dimensionIds = ["overworld", "nether", "the_end"];
     for (const dimensionId of dimensionIds) {
       const dimension = world.getDimension(dimensionId);
