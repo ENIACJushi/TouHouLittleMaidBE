@@ -87,12 +87,21 @@ type ChunkRec = {
   originZ: number;
 };
 
-/** 把小场编号改成大场编号，一拍写不完就接着写 */
+/**
+ * 把小场编号改成大场编号，一拍写不完就接着写。
+ * merge：整场并入 toId（队首再按 from 现场 nodes 取键，避免与传递合并抢快照）。
+ * recolor：拆场，keys 在入队时已固定为要搬走的子集。
+ */
 type WriteJob = {
+  kind: "merge" | "recolor";
   toId: number;
   keys: string[];
-  /** 写完后尝试恢复的场 */
+  /** 写完后尝试恢复的场；merge 时 [fromId, toId] */
   release: number[];
+  /** merge 队首尚未按 from 现场 nodes 装填 keys */
+  primed?: boolean;
+  /** 本任务已改写到 toId 的坐标，供写完补扫跨场边 */
+  doneKeys: string[];
 };
 
 type ProbeSide = {
@@ -334,21 +343,120 @@ function largerField(rec: DimRec, a: number, b: number): number {
   return Math.min(a, b);
 }
 
+/**
+ * 沿未完成的 merge 写任务解析场最终会落到的 id（传递闭包）。
+ * 使用场景：scheduleMerge 归一，避免同一 from 挂到两个 to（如 2→1 与 2→4）。
+ */
+function mergeRoot(rec: DimRec, id: number): number {
+  let cur = id;
+  const seen = new Set<number>();
+  while (!seen.has(cur)) {
+    seen.add(cur);
+    let next: number | undefined;
+    for (const job of rec.writes) {
+      if (job.kind !== "merge") {
+        continue;
+      }
+      const fromId = job.release[0];
+      if (fromId === cur && job.toId !== cur) {
+        next = job.toId;
+        break;
+      }
+    }
+    if (next === undefined) {
+      break;
+    }
+    cur = next;
+  }
+  return cur;
+}
+
+/**
+ * 是否已有把 a 整场并入 b（或反向）的 merge 任务。
+ * 使用场景：scheduleMerge 去重。
+ */
+function hasMergeJobBetween(rec: DimRec, a: number, b: number): boolean {
+  for (const job of rec.writes) {
+    if (job.kind !== "merge") {
+      continue;
+    }
+    const fromId = job.release[0];
+    if (
+      (fromId === a && job.toId === b) ||
+      (fromId === b && job.toId === a)
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * 排队把 from 并入 to；先经 mergeRoot 归一再比大小。
+ * 使用场景：建点桥接多场、重读加边、写完补扫发现跨场邻接。
+ */
 function scheduleMerge(rec: DimRec, fromId: number, toId: number): void {
   if (fromId === toId) {
     return;
   }
-  const from = rec.plaques.get(fromId);
-  const to = rec.plaques.get(toId);
-  if (!from || !to || from.nodes.size === 0) {
+  const rootFrom = mergeRoot(rec, fromId);
+  const rootTo = mergeRoot(rec, toId);
+  if (rootFrom === rootTo) {
+    return;
+  }
+  const keep = largerField(rec, rootFrom, rootTo);
+  const drop = keep === rootFrom ? rootTo : rootFrom;
+  if (hasMergeJobBetween(rec, drop, keep)) {
+    return;
+  }
+  const from = rec.plaques.get(drop);
+  const to = rec.plaques.get(keep);
+  // 允许 from.nodes 暂时为 0：上游 merge 尚未写入时，队首 primed 再取现场 keys
+  if (!from || !to) {
     return;
   }
   rec.writes.push({
-    toId,
-    keys: [...from.nodes],
-    release: [fromId, toId],
+    kind: "merge",
+    toId: keep,
+    keys: [],
+    release: [drop, keep],
+    primed: false,
+    doneKeys: [],
   });
   syncBusy(rec);
+}
+
+/**
+ * merge 写完后，对刚并入的点检查跨场邻居并再 scheduleMerge。
+ * 使用场景：2→1 完成后邻接 4，补上 1↔4，避免只桥接了中间场。
+ */
+function afterMergeRescan(rec: DimRec, toId: number, keys: string[]): void {
+  for (const key of keys) {
+    const parts = key.split(",");
+    const leaf = findLeaf(
+      rec,
+      Number(parts[0]),
+      Number(parts[1]),
+      Number(parts[2])
+    );
+    if (!leaf || leaf.fieldId !== toId) {
+      continue;
+    }
+    for (const step of leaf.steps) {
+      const other = findLeaf(rec, step.x, step.y, step.z);
+      if (!other || other.fieldId === toId) {
+        continue;
+      }
+      const a = mergeRoot(rec, toId);
+      const b = mergeRoot(rec, other.fieldId);
+      if (a === b) {
+        continue;
+      }
+      const keep = largerField(rec, a, b);
+      const drop = keep === a ? b : a;
+      scheduleMerge(rec, drop, keep);
+    }
+  }
 }
 
 function scheduleRecolor(rec: DimRec, fieldId: number, keys: string[]): void {
@@ -359,9 +467,11 @@ function scheduleRecolor(rec: DimRec, fieldId: number, keys: string[]): void {
   rec.nextId += 1;
   plaqueOf(rec, newId);
   rec.writes.push({
+    kind: "recolor",
     toId: newId,
     keys,
     release: [fieldId, newId],
+    doneKeys: [],
   });
   syncBusy(rec);
 }
@@ -518,8 +628,10 @@ function createLeaf(
     if (!other) {
       continue;
     }
-    if (fieldIds.indexOf(other.fieldId) < 0) {
-      fieldIds.push(other.fieldId);
+    // 邻场按未完成 merge 的落点算，避免桥接时仍看见已被并走的中间场 id
+    const root = mergeRoot(rec, other.fieldId);
+    if (fieldIds.indexOf(root) < 0) {
+      fieldIds.push(root);
     }
   }
   let fieldId: number;
@@ -618,6 +730,13 @@ function runWrites(rec: DimRec): void {
   if (!job || rec.mergeLeft <= 0) {
     return;
   }
+  // merge：成为队首时再按 from 现场 nodes 取键，吃进上游 merge 刚写入的点
+  if (job.kind === "merge" && !job.primed) {
+    const fromId = job.release[0];
+    const from = rec.plaques.get(fromId);
+    job.keys = from ? [...from.nodes] : [];
+    job.primed = true;
+  }
   while (job.keys.length > 0 && rec.mergeLeft > 0) {
     const key = job.keys.pop();
     rec.mergeLeft -= 1;
@@ -636,9 +755,13 @@ function runWrites(rec: DimRec): void {
     from?.nodes.delete(key);
     leaf.fieldId = job.toId;
     plaqueOf(rec, job.toId).nodes.add(key);
+    job.doneKeys.push(key);
   }
   if (job.keys.length === 0) {
     rec.writes.shift();
+    if (job.kind === "merge" && job.doneKeys.length > 0) {
+      afterMergeRescan(rec, job.toId, job.doneKeys);
+    }
     syncBusy(rec);
   }
 }
@@ -719,8 +842,8 @@ function runProbes(rec: DimRec): void {
       return;
     }
     if (job.a.queue.length === 0 && job.b.queue.length === 0) {
-      rec.probes.shift();
       const small = job.a.seen.size <= job.b.seen.size ? job.a.seen : job.b.seen;
+      rec.probes.shift();
       scheduleRecolor(rec, job.fieldId, [...small]);
       return;
     }
@@ -1155,7 +1278,7 @@ export function findReversiblePath(
   }
   if (!found) {
     const pendingOpen = openHasPending(open, expanded, gScore);
-    return pendingOpen ? { kind: "unknown" } : { kind: "unreachable" };
+    return { kind: pendingOpen ? "unknown" : "unreachable" };
   }
   const nodes: StandNode[] = [];
   let cursor: string | undefined = posKey(found.x, found.y, found.z);
