@@ -2,13 +2,20 @@
  * 精准目标 Seek 门面（Task6 Phase 2）。
  * 使用场景：allocate 槽位 → mount 女仆 → stamp 目标；quit/release/resetTarget 释放。
  * NAT：默认严格 must_reach=true（原版寻路）；脚本段 mountSoft（false）。
+ * 当前档：动态属性 `slot_seek`（不占实体属性、不同步客户端）。
  * 路点 TTL：spawn 后 ttl_start，持有方 ttl_renew；重启残留见 recoverResidual / purgeOrphanMarkers。
  */
 import { Entity, world } from "@minecraft/server";
 import { DP } from "../../libs/DynamicPropertyInterface";
 import { Logger } from "../../controller/Logger";
+import { slotDpKey } from "../slots/names";
 import { IntSlotDef } from "../slots/registry";
-import { clearIntSlot, isIntTokenInRange, setIntSlot } from "../slots/runtime";
+import {
+  clearIntSlot,
+  getIntSlot,
+  isIntTokenInRange,
+  setIntSlot,
+} from "../slots/runtime";
 
 const TAG = "EntityMaid.Seek";
 
@@ -36,17 +43,23 @@ export const SEEK_MARKER_TYPE = "thlmt:seek_marker";
 const usedIds = new Set<number>();
 
 /**
- * 从女仆属性读当前 Seek 档；未挂载（-1 / 非法）返回 undefined。
+ * 从动态属性读当前 Seek 档；未挂载 / 非法返回 undefined。
+ * 使用场景：mount / quit / getIndex；权威来源 `slot_seek`。
  */
 function readSeekIndex(maid: Entity): number | undefined {
-  const v = maid.getProperty("thlm:seek_index");
-  if (typeof v !== "number" || !Number.isInteger(v) || v < SEEK_SLOT.min) {
-    return undefined;
-  }
-  if (!isIntTokenInRange(SEEK_SLOT, v)) {
+  const v = getIntSlot(maid, SEEK_SLOT);
+  if (v === undefined || !isIntTokenInRange(SEEK_SLOT, v)) {
     return undefined;
   }
   return v;
+}
+
+/**
+ * 写入当前 Seek 档 DP（不触发实体事件）。
+ * 使用场景：mountStrict / mountSoft 只切组件组时与脚本记录对齐。
+ */
+function writeSeekIndex(maid: Entity, seekId: number): void {
+  DP.setInt(maid, slotDpKey(SEEK_SLOT.id), seekId);
 }
 
 /**
@@ -120,10 +133,7 @@ export const Seek = {
     if (readSeekIndex(maid) === seekId) {
       return Seek.mountStrict(maid, seekId);
     }
-    const ok = setIntSlot(maid, SEEK_SLOT, seekId, {
-      readCurrent: readSeekIndex,
-      trackDp: false,
-    });
+    const ok = setIntSlot(maid, SEEK_SLOT, seekId);
     if (ok) {
       try {
         DP.setBoolean(maid, DP_NAT_SOFT, false);
@@ -145,6 +155,7 @@ export const Seek = {
     }
     try {
       maid.triggerEvent(`slot:seek_${seekId}`);
+      writeSeekIndex(maid, seekId);
       DP.setBoolean(maid, DP_NAT_SOFT, false);
       return true;
     } catch (e) {
@@ -155,7 +166,7 @@ export const Seek = {
 
   /**
    * 切宽松 NAT（`slot:seek_<id>_soft`，must_reach=false）。
-   * 使用场景：脚本冲量 / ScriptFollow；须已挂载同档 seek_index。
+   * 使用场景：脚本冲量 / ScriptFollow；须已挂载同档（DP `slot_seek`）。
    */
   mountSoft(maid: Entity, seekId?: number): boolean {
     const id = seekId ?? readSeekIndex(maid);
@@ -165,6 +176,7 @@ export const Seek = {
     }
     try {
       maid.triggerEvent(`slot:seek_${id}_soft`);
+      writeSeekIndex(maid, id);
       DP.setBoolean(maid, DP_NAT_SOFT, true);
       return true;
     } catch (e) {
@@ -189,10 +201,7 @@ export const Seek = {
    * 卸下当前 Seek 档（严格+soft NAT）；不自动卸追逐，请配合 `quitPursue`。
    */
   quit(maid: Entity): void {
-    clearIntSlot(maid, SEEK_SLOT, {
-      readCurrent: readSeekIndex,
-      trackDp: false,
-    });
+    clearIntSlot(maid, SEEK_SLOT);
     try {
       DP.setBoolean(maid, DP_NAT_SOFT, false);
     } catch {

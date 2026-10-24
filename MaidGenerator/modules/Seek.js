@@ -75,12 +75,7 @@ export class Seek {
       `添加精准目标 Seek: 0~${END_INDEX}（严格+soft）；追逐 ${SEEK_PURSUE} / ${SEEK_PURSUE_VIA}；目视 ${SEEK_LOOK}`
     );
 
-    g.addProperty("thlm:seek_index", {
-      type: "int",
-      client_sync: true,
-      default: -1,
-      range: [-1, END_INDEX],
-    });
+    // 当前档由脚本 DP `slot_seek` 记录（无需实体属性 / client_sync）
 
     // 终点追逐：带触及半径，到终点附近即可停
     g.addComponentGroup(SEEK_PURSUE, {
@@ -185,12 +180,11 @@ export class Seek {
       // 脚本寻路：must_reach false → 无通路也能盯着 stamp 目标
       g.addComponentGroup(softName, makeNat(i, false));
 
-      // 装载严格档（默认 mount）；卸 soft 防双 NAT
+      // 装载严格档（默认 mount）；卸 soft 防双 NAT；档位 DP 由脚本维护
       g.addEvent(groupName, {
         sequence: [
           { remove: { component_groups: [softName] } },
           { add: { component_groups: [groupName] } },
-          { set_property: { "thlm:seek_index": i } },
         ],
       });
       // 切宽松档（脚本段）；卸严格组
@@ -198,14 +192,12 @@ export class Seek {
         sequence: [
           { remove: { component_groups: [groupName] } },
           { add: { component_groups: [softName] } },
-          { set_property: { "thlm:seek_index": i } },
         ],
       });
 
       g.addEvent(quitName, {
         sequence: [
           { remove: { component_groups: [groupName, softName] } },
-          { set_property: { "thlm:seek_index": -1 } },
           { reset_target: {} },
         ],
       });
