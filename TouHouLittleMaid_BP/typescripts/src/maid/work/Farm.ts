@@ -1,8 +1,8 @@
 // @ts-nocheck
 /**
- * 耕地农作（Phase3）：不再刷 thlmt:farm。
- * 扫描只收集坐标 → 同一可认领场才选点 → 沿可逆邻居 Path.follow →
- * 由 Path onComplete(done) 推送到位后再对方块 acquire（不再靠轮询距离收尾）。
+ * 耕地农作（Phase3 / P7）：不再刷 thlmt:farm。
+ * 扫描坐标 → 一次预占最近 N 格（无几何形状）→ 队列内逐格 Path.follow →
+ * onComplete(done) 后再 acquire；下一项仍先 follow（禁 near 直收）。
  */
 import {
   Entity,
@@ -56,13 +56,18 @@ type FarmTask = {
 
 /** 格占用：cellKey → maidId，避免双女仆同奔一格 */
 const cellClaims = new Map();
+/**
+ * 已预占、尚未派出 follow 的后续任务。
+ * 使用场景：P7 一次认领 N；key=maidId。
+ */
+const farmQueues = new Map();
 /** 人已卸载、任务动态属性还没清掉的女仆 id */
 const staleJobIds = new Set();
 /** 补种冷却：cellKey → expiryMs */
 const plantCooldown = new Map();
 
 /**
- * 耕地作物脚本农作（单女仆单目标 + Path.follow）。
+ * 耕地作物脚本农作（预占队列 + 逐格 Path.follow）。
  */
 export class Farm {
   static maxLack = 2;
@@ -72,6 +77,11 @@ export class Farm {
   static maxCount = 25;
   /** 与调度扫描默认范围一致 */
   static claimRange = 15;
+  /**
+   * 一次预占上限（按距女仆距离取最近 N，无形状）。
+   * 使用场景：assignNext 入队。
+   */
+  static CLAIM_BATCH_N = 5;
   /**
    * 脉冲兜底「挨着作物」水平半宽（格）；脚位方盒，非 Arrive 球形触及。
    * 使用场景：nearTask / onSchedulePulse。
@@ -136,8 +146,8 @@ export class Farm {
   }
 
   /**
-   * 放开这名女仆占着的每一格。人不在了也能按 id 做。
-   * 使用场景：切模式、走路结束时人已失效、失效通知。
+   * 放开这名女仆占着的每一格，并丢掉预占队列。
+   * 使用场景：切模式、走路结束时人已失效、失效通知、fail 整队释放。
    */
   static releaseOwner(ownerId) {
     for (const [key, id] of cellClaims) {
@@ -145,6 +155,26 @@ export class Farm {
         cellClaims.delete(key);
       }
     }
+    farmQueues.delete(ownerId);
+  }
+
+  /**
+   * 只清预占队列里尚未派出的格（当前 farm_job 不动）。
+   * 使用场景：follow fail 后丢掉剩余预占；单项校验失败时出队。
+   */
+  static releaseQueue(maid) {
+    if (!maid) {
+      return;
+    }
+    const q = farmQueues.get(maid.id);
+    if (!q || q.length === 0) {
+      farmQueues.delete(maid.id);
+      return;
+    }
+    for (const t of q) {
+      this.releaseCell(maid, t);
+    }
+    farmQueues.delete(maid.id);
   }
 
   /**
@@ -521,13 +551,150 @@ export class Farm {
   }
 
   /**
-   * 同一可认领场、且目标在活动圈内，才选点，再沿可逆邻居出发。
-   * 圈外的格子可以当路绕过去，但不能认领。NPC 不寻路。
-   * 跟随中主人已退出世界时，以女仆脚下为中心选目标。
-   * 场还没建完或场牌暂停：这一拍停下，不改去更远的格，也不记成走不到。
-   * 走路失败后短时间内不再走路去同一格，不改场。人已经站在旁边时仍当场收种。
-   * 找路结果是「不知道」时，给这名女仆记一次短的未知，不改场。
-   * @returns 是否已派出 follow 或已经就地收种
+   * 预占队列里的格是否仍值得去做。
+   * 使用场景：出队续 follow 前校验；作物被收走 / 无种子则释放该项。
+   */
+  static taskStillValid(maid, task, circle, seedsOnHand) {
+    const dim = maid.dimension;
+    if (!isInsideActivityCircle(circle, dim.id, task.x, task.z)) {
+      return false;
+    }
+    const owner = cellClaims.get(this.taskKey(dim.id, task));
+    if (owner !== undefined && owner !== maid.id) {
+      return false;
+    }
+    if (task.kind === "plant") {
+      if (this.isPlantCooling(dim.id, task)) {
+        return false;
+      }
+      if (!this.plantTaskHasSeed(maid, task, seedsOnHand)) {
+        return false;
+      }
+      const above = dim.getBlock({ x: task.x, y: task.y, z: task.z });
+      return above !== undefined && above.typeId === "minecraft:air";
+    }
+    const block = dim.getBlock({ x: task.x, y: task.y, z: task.z });
+    if (block === undefined) {
+      return false;
+    }
+    const corpInfo = FarmBlocks.getInstance().getCorp(block.typeId);
+    if (corpInfo === undefined) {
+      return false;
+    }
+    for (const key in corpInfo.state) {
+      if (block.permutation.getState(key) !== corpInfo.state[key]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * 对已认领的一格规划并 Path.follow（远近一律走 follow）。
+   * 使用场景：assignNext 队首；队列续派。
+   * @returns {true|false|"unready"|"unknown"}
+   */
+  static tryFollowTask(maid, task) {
+    const dim = maid.dimension;
+    const probe = new StandableCache(dim);
+    const start = standNodeFromFeet(probe, maid.location);
+    if (!start) {
+      return false;
+    }
+    ensureStandHeight(dim, start.x, start.y, start.z);
+    const goal = this.goalStandOfTask(task);
+    ensureStandHeight(dim, goal.x, goal.y, goal.z);
+    const fieldClaim = classifyFieldClaim(dim, start, goal);
+    if (fieldClaim === "unready") {
+      return "unready";
+    }
+    if (fieldClaim !== "same") {
+      return false;
+    }
+    if (unreachableCache.has(dim.id, goal, maid.id)) {
+      return false;
+    }
+    EntityMaid.Path.suppressHomeReturn(maid);
+    const planned = reversiblePathResult(dim, start, goal);
+    if (!planned.ok) {
+      EntityMaid.Path.allowHomeReturn(maid);
+      if (planned.reason === "field_unknown") {
+        return "unknown";
+      }
+      return false;
+    }
+    this.writeJob(maid, task);
+    const expected = task;
+    const started = EntityMaid.Path.followResult(maid, planned, {
+      onComplete: (info) => {
+        Farm.onFollowComplete(maid, expected, info);
+      },
+    });
+    if (!started) {
+      EntityMaid.Path.allowHomeReturn(maid);
+      this.writeJob(maid, undefined);
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * 从预占队列取出下一项并 follow；无效项释放后继续。
+   * 使用场景：onFollowComplete(done) / pulse 兜底收完后。
+   * @returns 是否已派出 follow
+   */
+  static tryStartNextFromQueue(maid) {
+    if (!maid?.isValid || EntityMaid.Path.isFollowing(maid)) {
+      return false;
+    }
+    if (EntityMaid.Pose.isSitting(maid)) {
+      this.releaseQueue(maid);
+      return false;
+    }
+    const circleState = activityCircleOf(maid);
+    if (circleState.kind !== "circle") {
+      this.releaseQueue(maid);
+      return false;
+    }
+    const seedsOnHand = this.backpackTypeIds(maid);
+    while (true) {
+      const q = farmQueues.get(maid.id);
+      if (!q || q.length === 0) {
+        farmQueues.delete(maid.id);
+        return false;
+      }
+      const next = q.shift();
+      if (q.length === 0) {
+        farmQueues.delete(maid.id);
+      } else {
+        farmQueues.set(maid.id, q);
+      }
+      if (!this.taskStillValid(maid, next, circleState.circle, seedsOnHand)) {
+        this.releaseCell(maid, next);
+        continue;
+      }
+      if (cellClaims.get(this.taskKey(maid.dimension.id, next)) !== maid.id) {
+        this.claimCell(maid, next);
+      }
+      const started = this.tryFollowTask(maid, next);
+      if (started === true) {
+        return true;
+      }
+      this.releaseCell(maid, next);
+      if (started === "unready" || started === "unknown") {
+        this.releaseQueue(maid);
+        if (started === "unknown") {
+          noteFieldUnknown(maid);
+        }
+        return false;
+      }
+    }
+  }
+
+  /**
+   * 空闲时：按距离取最近至多 N 格预占，队首 follow，其余进队列。
+   * 圈外可途经不可认领；场 unready 本拍不改去更远场；每格必 follow。
+   * @returns 是否已派出 follow
    */
   static assignNext(maid, tasks, _range = Farm.claimRange) {
     if (!maid?.isValid || tasks.length === 0) {
@@ -541,7 +708,6 @@ export class Farm {
     }
     const circleState = activityCircleOf(maid);
     if (circleState.kind !== "circle") {
-      // NPC 不寻路。主人不在时活动圈已改到女仆脚下，这里只会剩 none
       return false;
     }
     const circle = circleState.circle;
@@ -555,65 +721,87 @@ export class Farm {
     ensureStandHeight(dim, start.x, start.y, start.z);
 
     const seedsOnHand = this.backpackTypeIds(maid);
+    // 近者优先；同距收割先于补种
     const ranked = tasks
-      .filter((t) => this.isCellFreeFor(maid, t) && this.plantTaskHasSeed(maid, t, seedsOnHand))
+      .filter(
+        (t) =>
+          this.isCellFreeFor(maid, t) &&
+          this.plantTaskHasSeed(maid, t, seedsOnHand)
+      )
       .map((t) => ({ t, d2: this.dist2Maid(maid, t) }))
-      .sort((a, b) => a.d2 - b.d2);
+      .sort((a, b) => {
+        if (a.d2 !== b.d2) {
+          return a.d2 - b.d2;
+        }
+        if (a.t.kind === b.t.kind) {
+          return 0;
+        }
+        return a.t.kind === "harvest" ? -1 : 1;
+      });
 
+    /** @type {FarmTask[]} */
+    const batch = [];
     for (const { t } of ranked) {
+      if (batch.length >= Farm.CLAIM_BATCH_N) {
+        break;
+      }
       if (!isInsideActivityCircle(circle, dim.id, t.x, t.z)) {
         continue;
       }
       const goal = this.goalStandOfTask(t);
       ensureStandHeight(dim, goal.x, goal.y, goal.z);
-      const claim = classifyFieldClaim(dim, start, goal);
-      if (claim === "unready") {
-        return false;
+      const fieldClaim = classifyFieldClaim(dim, start, goal);
+      if (fieldClaim === "unready") {
+        if (batch.length === 0) {
+          return false;
+        }
+        break;
       }
-      if (claim !== "same") {
+      if (fieldClaim !== "same") {
         continue;
       }
-
-      // 人已经在作物旁边也不当场收。先 follow，终点等近战；距离兜底在执行器里延后。
-
-      // 超时、堵住、路点名额用完：只跳过这名女仆的这一格，场不动
       if (unreachableCache.has(dim.id, goal, maid.id)) {
         continue;
       }
+      batch.push(t);
+    }
+    if (batch.length === 0) {
+      return false;
+    }
 
-      EntityMaid.Path.suppressHomeReturn(maid);
-      const planned = reversiblePathResult(dim, start, goal);
-      if (!planned.ok) {
-        EntityMaid.Path.allowHomeReturn(maid);
-        if (planned.reason === "field_unknown") {
-          noteFieldUnknown(maid);
-          return false;
-        }
-        continue;
-      }
-
+    this.releaseQueue(maid);
+    for (const t of batch) {
       this.claimCell(maid, t);
-      this.writeJob(maid, t);
-      const expected = t;
-      const started = EntityMaid.Path.followResult(maid, planned, {
-        onComplete: (info) => {
-          Farm.onFollowComplete(maid, expected, info);
-        },
-      });
-      if (!started) {
-        EntityMaid.Path.allowHomeReturn(maid);
-        this.releaseCell(maid, t);
-        this.writeJob(maid, undefined);
-        continue;
+    }
+    /** 待派出列表：shift 当前项，剩余写入 farmQueues */
+    const pending = batch.slice();
+    while (pending.length > 0) {
+      const head = pending.shift();
+      if (pending.length > 0) {
+        farmQueues.set(maid.id, pending.slice());
+      } else {
+        farmQueues.delete(maid.id);
       }
-      return true;
+      const started = this.tryFollowTask(maid, head);
+      if (started === true) {
+        return true;
+      }
+      this.releaseCell(maid, head);
+      this.writeJob(maid, undefined);
+      if (started === "unready" || started === "unknown") {
+        this.releaseQueue(maid);
+        if (started === "unknown") {
+          noteFieldUnknown(maid);
+        }
+        return false;
+      }
     }
     return false;
   }
 
   /**
-   * Path.follow 结束：done 则 acquire；fail/cancel 只释锁。
-   * 使用场景：assignNext 注册的 onComplete；用 expected 防「换任务后旧 cancel」误清新 job。
+   * Path.follow 结束：done 则 acquire；再对队列下一项 follow（必经 follow）。
+   * fail 释放剩余预占；cancel 不自动续派。
    * @param {Entity} maid
    * @param {FarmTask} expected 启动 follow 时认领的任务
    * @param {PathFollowCompleteInfo} info
@@ -672,14 +860,22 @@ export class Farm {
     this.releaseCell(maid, job);
     this.writeJob(maid, undefined);
 
-    // done / fail：继续派下一格；cancel：不自动派（玩家取消 / 模式切换）
     if (info.reason === "cancel") {
+      this.releaseQueue(maid);
       return;
     }
+    if (info.reason === "fail") {
+      this.releaseQueue(maid);
+    }
     if (EntityMaid.Pose.isSitting(maid)) {
+      this.releaseQueue(maid);
       return;
     }
     if (EntityMaid.Path.isFollowing(maid)) {
+      return;
+    }
+    // done：先耗预占队列；fail 已清队列后重扫
+    if (info.reason === "done" && this.tryStartNextFromQueue(maid)) {
       return;
     }
     const tasks = this.collectTasks(maid, Farm.claimRange);
@@ -701,8 +897,8 @@ export class Farm {
       return;
     }
     const curJob = this.readJob(maid);
-    if (curJob) {
-      // 有未完成任务：交给 onSchedulePulse / onFollowComplete 收尾
+    if (curJob || (farmQueues.get(maid.id)?.length ?? 0) > 0) {
+      // 有当前任务或预占队列：交给 onSchedulePulse / onFollowComplete 收尾
       return;
     }
 
@@ -772,10 +968,17 @@ export class Farm {
       }
       this.releaseCell(maid, job);
       this.writeJob(maid, undefined);
+      // 通知丢失兜底后：队列下一项仍走 follow，不 near 直收
+      if (this.tryStartNextFromQueue(maid)) {
+        return;
+      }
     }
 
     // 空闲补派（轻量：用 claimRange 扫描）
     if (!EntityMaid.Pose.isSitting(maid)) {
+      if (this.tryStartNextFromQueue(maid)) {
+        return;
+      }
       const tasks = this.collectTasks(maid, Farm.claimRange);
       if (tasks.length > 0) {
         this.assignNext(maid, tasks, Farm.claimRange);
