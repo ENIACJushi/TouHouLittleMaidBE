@@ -129,7 +129,8 @@ N 的语义：**预占上限**，不是「必须凑满 N」。不足 N 有多少
 | 阶段 | 状态 |
 | --- | --- |
 | P7a | **已实现 + 已测过**（Farm）：`CLAIM_BATCH_N=5`、`farmQueues`、预占+逐格 follow、fail/cancel/abandon 清队列；同距收割优先 |
-| P7b～P7d | 未做（卡住作废 / 扫描最近 K / CropRoute） |
+| P7b | **已实现**（Farm）：`STUCK_PULSE_LIMIT=3`；有 job、未 follow、连续 !near 则作废并 `tryStartNextFromQueue` / 重扫；待测 |
+| P7c～P7d | 未做（扫描最近 K / CropRoute） |
 
 形状：无几何约束，按距女仆距离取最近 N（已确认）。
 

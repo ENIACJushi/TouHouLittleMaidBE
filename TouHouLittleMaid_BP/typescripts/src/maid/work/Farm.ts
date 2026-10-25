@@ -61,6 +61,11 @@ const cellClaims = new Map();
  * 使用场景：P7 一次认领 N；key=maidId。
  */
 const farmQueues = new Map();
+/**
+ * 卡住 job 的 pulse 计数：maidId → { key, count }。
+ * 使用场景：P7b；有 job、未 follow、连续 !near 时累加，达上限则作废当前项。
+ */
+const stuckPulseByMaid = new Map();
 /** 人已卸载、任务动态属性还没清掉的女仆 id */
 const staleJobIds = new Set();
 /** 补种冷却：cellKey → expiryMs */
@@ -82,6 +87,11 @@ export class Farm {
    * 使用场景：assignNext 入队。
    */
   static CLAIM_BATCH_N = 5;
+  /**
+   * 卡住 job：连续多少次调度 pulse 仍 !near 则作废当前项。
+   * 使用场景：onSchedulePulse（约 3s/步 → 约 9s）。
+   */
+  static STUCK_PULSE_LIMIT = 3;
   /**
    * 脉冲兜底「挨着作物」水平半宽（格）；脚位方盒，非 Arrive 球形触及。
    * 使用场景：nearTask / onSchedulePulse。
@@ -156,6 +166,32 @@ export class Farm {
       }
     }
     farmQueues.delete(ownerId);
+    stuckPulseByMaid.delete(ownerId);
+  }
+
+  /**
+   * 清掉卡住计数（换任务、follow 成功、已收割时）。
+   * 使用场景：writeJob / tryFollowTask / pulse 收完 / 作废当前项。
+   */
+  static clearStuckPulse(maidId) {
+    stuckPulseByMaid.delete(maidId);
+  }
+
+  /**
+   * 同一 job 上累加一次「未完成」pulse；换格则从 1 重计。
+   * 使用场景：onSchedulePulse 有 job 且 !near。
+   * @returns 累加后的次数
+   */
+  static bumpStuckPulse(maid, job) {
+    const id = maid.id;
+    const key = this.taskKey(maid.dimension.id, job);
+    const prev = stuckPulseByMaid.get(id);
+    if (!prev || prev.key !== key) {
+      stuckPulseByMaid.set(id, { key, count: 1 });
+      return 1;
+    }
+    prev.count += 1;
+    return prev.count;
   }
 
   /**
@@ -624,6 +660,7 @@ export class Farm {
       return false;
     }
     this.writeJob(maid, task);
+    this.clearStuckPulse(maid.id);
     const expected = task;
     const started = EntityMaid.Path.followResult(maid, planned, {
       onComplete: (info) => {
@@ -859,6 +896,7 @@ export class Farm {
 
     this.releaseCell(maid, job);
     this.writeJob(maid, undefined);
+    this.clearStuckPulse(maid.id);
 
     if (info.reason === "cancel") {
       this.releaseQueue(maid);
@@ -934,10 +972,37 @@ export class Farm {
   }
 
   /**
+   * 作废当前卡住的 farm_job，再尝试队列下一项 follow 或重扫入队。
+   * 使用场景：P7b 连续 STUCK_PULSE_LIMIT 次 pulse 仍 !near。
+   */
+  static abandonStuckJob(maid, job) {
+    Logger.info(
+      TAG,
+      `stuckJob abandon after ${Farm.STUCK_PULSE_LIMIT} pulses job=${job.x},${job.y},${job.z} kind=${job.kind}`
+    );
+    this.releaseCell(maid, job);
+    this.writeJob(maid, undefined);
+    this.clearStuckPulse(maid.id);
+    if (EntityMaid.Pose.isSitting(maid)) {
+      this.releaseQueue(maid);
+      return;
+    }
+    if (this.tryStartNextFromQueue(maid)) {
+      return;
+    }
+    const tasks = this.collectTasks(maid, Farm.claimRange);
+    if (tasks.length > 0) {
+      this.assignNext(maid, tasks, Farm.claimRange);
+    } else {
+      SpeedController.afterSearch(maid, 0, Farm.maxLack, Farm.minCount);
+    }
+  }
+
+  /**
    * 调度脉冲：follow 中、以及走完通知还没跑时，都不要收割。
    * 使用场景：MaidTarget.stepEvent（farm）。正常收尾由 onFollowComplete 推送。
    * 通知已经丢了、人又在格子旁边时，才由这里补一次 acquire。
-   * 注意：!near 时不得清 job；nearTask 是旁圈兜底，与脚本/近战球形触及无关。
+   * P7b：有 job、未 follow、连续 !near 达上限则作废当前项并续派（仍走 follow）。
    */
   static onSchedulePulse(maid) {
     if (!maid?.isValid) {
@@ -948,6 +1013,7 @@ export class Farm {
     }
 
     if (EntityMaid.Path.isFollowing(maid)) {
+      this.clearStuckPulse(maid.id);
       return;
     }
     // 跟随已结束，走完通知下一帧才收。这一拍不要抢收，也不要改派。
@@ -957,10 +1023,15 @@ export class Farm {
 
     const job = this.readJob(maid);
     if (job) {
-      // 只兜底「已靠近」：未靠近交给 onFollowComplete，避免抢清 job 漏收割
       if (!this.nearTask(maid, job)) {
+        // 未靠近：累加卡住计数；未达上限则保留 job（防漏收）
+        if (this.bumpStuckPulse(maid, job) < Farm.STUCK_PULSE_LIMIT) {
+          return;
+        }
+        this.abandonStuckJob(maid, job);
         return;
       }
+      this.clearStuckPulse(maid.id);
       try {
         this.acquireAt(maid, job);
       } catch (e) {
@@ -972,6 +1043,8 @@ export class Farm {
       if (this.tryStartNextFromQueue(maid)) {
         return;
       }
+    } else {
+      this.clearStuckPulse(maid.id);
     }
 
     // 空闲补派（轻量：用 claimRange 扫描）
